@@ -30,9 +30,9 @@ export default function Hero() {
             </div>
 
             <div className='flex justify-center '>
-                <p className={`max-w-[1000px] text- mt-4 text-lg leading-relaxed text-[#676B93] ${golos.className}`}>Maximize your Productivity by 10X with Zapllo's Custom Models and Seamless Integrations
+                <p className={`max-w-[1000px] text- mt-4 text-lg leading-relaxed text-[#676B93] ${golos.className}`}>Maximize your Productivity by 10X with Zapllo&apos;s Custom Models and Seamless Integrations
                     <span className='text-white font-'> PARA 4.0 , CORE 2.0, Ultimate Notion Brain Ver 4.0 and Business OS. </span>
-                      Effortlessly sync with Slack, Gmail, Hubspot, Salesforce, GoHighLevel, Custom CRMs, and more."</p>
+                      Effortlessly sync with Slack, Gmail, Hubspot, Salesforce, GoHighLevel, Custom CRMs, and more. </p>
             </div>
             <div className='flex -mt-8 justify-center'>
                 <ShinyText />
