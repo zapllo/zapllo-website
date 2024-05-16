@@ -25,7 +25,7 @@ export default function RootLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <FloatingNavbar />
+        {/* <FloatingNavbar /> */}
         <body className={inter.className}>{children}</body>
       </ThemeProvider>
     </html>
