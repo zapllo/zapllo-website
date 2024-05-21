@@ -11,8 +11,13 @@ export async function ShinyText() {
         )}
       >
         <TextShimmer className="inline-flex text-2xl items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-900  hover:dark:text-white">
-          <span className="flex mt-auto  gap-2"><img src="/call.gif" className="mt-auto h-7 animate-bounce" /> Book Your Demo </span>
-          <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+          <span className="flex mt-auto text-3xl   gap-2">
+            <div className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]   h-10 w-10 rounded-full ">
+            <img src="/avatar.png" className="mt-auto h-10 rounded-full " />
+            <img src="/avatar.png" className="mt-auto h-10 rounded-full " />
+            </div>
+             Book Your Demo </span>
+         
         </TextShimmer>
       </div>
     </div>

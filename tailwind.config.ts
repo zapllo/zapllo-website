@@ -70,6 +70,16 @@ const config = {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
+        'skew-scroll': {
+          '0%': {
+            transform:
+              'rotatex(20deg) rotateZ(-20deg) skewX(20deg) translateZ(0) translateY(0)',
+          },
+          '100%': {
+            transform:
+              'rotatex(20deg) rotateZ(-20deg) skewX(20deg) translateZ(0) translateY(-100%)',
+          },
+        },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
@@ -106,19 +116,29 @@ const config = {
             transform: "translate(calc(100cqw - 100%), 0)",
           },
         },
+        orbit: {
+          "0%": {
+            transform: "rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg)",
+          },
+          "100%": {
+            transform: "rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
+        'skew-scroll': 'skew-scroll 20s linear infinite',
         "accordion-up": "accordion-up 0.2s ease-out",
         "gradient": "gradient 8s linear infinite",
         "shimmer": "shimmer 8s infinite",
         "scroll": "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
         "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
         "slide": "slide var(--speed) ease-in-out infinite alternate",
+        "orbit": "orbit calc(var(--duration)*1s) linear infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [require("tailwindcss-animate"), addVariablesForColors, require('tailwind-scrollbar-hide')],
 } satisfies Config
 
 export default config

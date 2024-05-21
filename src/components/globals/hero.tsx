@@ -1,16 +1,19 @@
-import React from 'react'
+
+import React, { useRef, useState } from 'react'
 import AnimatedGradientText from '../magicui/animated-gradient-text'
 import { cn } from '@/lib/utils'
 import { Golos_Text } from 'next/font/google';
 import { ShinyText } from '../ui/shinytext';
 import Image from 'next/image';
+import VideoComponent from './video';
 
 const golos = Golos_Text({ subsets: ["latin"] });
 
 
 export default function Hero() {
+
     return (
-        <div className='bg-[#05071E]'>
+        <div className='bg-[#05071E] '>
             <div className="z-10 flex items-center justify-center">
                 <AnimatedGradientText>
 
@@ -30,15 +33,16 @@ export default function Hero() {
             </div>
 
             <div className='flex justify-center '>
-                <p className={`max-w-[1000px] text- mt-4 text-lg leading-relaxed text-[#676B93] ${golos.className}`}>Maximize your Productivity by 10X with Zapllo&apos;s Custom Models and Seamless Integrations
+                <p className={`max-w-[1000px] text-center mt-4 text-lg leading-relaxed text-[#676B93] ${golos.className}`}>Maximize your Productivity by 10X with Zapllo&apos;s Custom Models and Seamless Integrations
                     <span className='text-white font-'> PARA 4.0 , CORE 2.0, Ultimate Notion Brain Ver 4.0 and Business OS. </span>
-                      Effortlessly sync with Slack, Gmail, Hubspot, Salesforce, GoHighLevel, Custom CRMs, and more. </p>
+                    Effortlessly sync with Slack, Gmail, Hubspot, Salesforce, GoHighLevel, Custom CRMs, and more. </p>
             </div>
             <div className='flex -mt-8 justify-center'>
                 <ShinyText />
             </div>
-            <div className='flex justify-center'>
-                <video src='/intro.mp4' muted autoPlay loop className='rounded-xl shadow-2xl shadow-blue-500/20  max-w-[900px]' />
+            <div className='relative flex justify-center mt-8'>
+
+                <VideoComponent />
             </div>
         </div>
     )

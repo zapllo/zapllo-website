@@ -47,7 +47,7 @@ const content = [
 ];
 export function ServicesScroll() {
   return (
-    <div className="p-10">
+    <div className="p-10 ">
       <StickyScroll content={content} />
     </div>
   );

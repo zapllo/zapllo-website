@@ -34,7 +34,7 @@ export function AnimatedFeatures() {
 
   return (
     <div
-      className="relative flex h-full w-[1000px]  max-w-[32rem] items-center justify-center overflow-hidden rounded-3xl border  p-10 md:shadow-xl"
+      className="relative flex h-full   items-center justify-center overflow-hidden rounded-3xl   p-10 md:shadow-xl"
       ref={containerRef}
     >
       <div className="flex h-full w-full flex-row items-stretch justify-between gap-10">
