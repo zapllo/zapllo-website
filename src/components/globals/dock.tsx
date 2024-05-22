@@ -5,28 +5,28 @@ export type IconProps = React.HTMLAttributes<SVGElement>;
 
 export function DockDemo() {
   return (
-    <div className="relative flex px-3 py-4  flex-col items-center justify-center overflow- rounded-lg  bg- md:shadow-xl">
-      <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-4xl font-semibold leading-none text-white dark:to-slate-400/90">
+    <div className="relative flex px-3 py-4  flex-col items-center justify-center overflow- rounded-lg ">
+      {/* <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-4xl font-semibold leading-none text-white dark:to-slate-400/90">
       Seamless <br/> Integrations
-      </span>
-      <Dock>
+      </span> */}
+      <Dock className="scale-150 mt-16">
         <DockIcon>
-          <img src="/discord.png" className="h-8 w-8" />
+          <img src="/discord.png" className="h-full w-full" />
         </DockIcon>
         <DockIcon>
-          <Icons.googleDrive className="h-8 w-8" />
+          <Icons.googleDrive className="h-full w-full" />
         </DockIcon>
         <DockIcon>
-          <Icons.notion className="h-8 w-8" />
+          <Icons.notion className="h-full w-full" />
         </DockIcon>
         <DockIcon>
-          <Icons.openai className="h-8 w-8" />
+          <Icons.openai className="h-full w-full" />
         </DockIcon>
         <DockIcon>
-          <Icons.whatsapp className="h-8 w-8" />
+          <Icons.whatsapp className="h-full w-full" />
         </DockIcon>
       </Dock>
-      <div className="pointer-events-none absolute inset-0 h-full bg-[radial-gradient(circle_at_50%_200%,rgba(0,0,0,0.2),rgba(255,255,255,0))]" />
+    
     </div>
   );
 }

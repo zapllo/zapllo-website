@@ -23,7 +23,7 @@ export default function Features() {
                 {/* <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold text-4xl'>Key Features</h1> */}
                 <FlipWordsDemo />
                 <p className='mt-4 text-[#676B93] text-start'>
-                🚀 Supercharge your workflow with Zapllo ! Our done-for-you solutions, custom-crafted Notion systems, AI models, and tailored automations elevate your tech game. Whether you're a startup, e-commerce guru, entrepreneur, lawyer, realtor, doctor, or simply enhancing your personal efficiency, our expert engineers guide you to the perfect tools. At Zapllo, we craft cutting-edge solutions for every need. Let's innovate together ! 🤝
+                🚀 Supercharge your workflow with Zapllo ! Our done-for-you solutions, custom-crafted Notion systems, AI models, and tailored automations elevate your tech game. Whether you are a startup, e-commerce guru, entrepreneur, lawyer, realtor, doctor, or simply enhancing your personal efficiency, our expert engineers guide you to the perfect tools. At Zapllo, we craft cutting-edge solutions for every need. Lets innovate together ! 🤝
                 </p>
                 {/* <TypewriterEffectSmooth words={words} /> */}
 

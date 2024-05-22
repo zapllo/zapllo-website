@@ -6,6 +6,18 @@ html {
   background-color: #05071E;
 }
 
+
+.hollow-text {
+  color: transparent;
+  -webkit-text-stroke: 1px #FC8929;
+  /* Adjust the color and width of the stroke as needed */
+}
+
+
+.radial-gradient {
+  background: radial-gradient(circle, #141841, #05071E);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

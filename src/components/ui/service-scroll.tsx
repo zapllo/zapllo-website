@@ -3,7 +3,7 @@ import { useMotionValueEvent, useScroll } from "framer-motion";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export const StickyScroll = ({
+export const ServiceScroll = ({
   content,
   contentClassName,
 }: {
@@ -38,51 +38,52 @@ export const StickyScroll = ({
   });
 
   return (
-    <div className="h-[30rem]  flex justify-between relative space-x-36 rounded-md p-10">
-      <div className="relative flex flex-col items-start px-4">
-        <div className="sticky top-10 w-full">
-      
-            <div className="my-10">
-            <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text- font-bold text-3xl'>Our Top Picks</h1>
-
+    <motion.div
+      animate={{
+        backgroundColor: "#05071E", // Set background color here
+      }}
+      className="h-[30rem] max-w-[1200px] scrollbar-hide  overflow-y-auto flex justify-between relative space-x-36 rounded-md p-10"
+      ref={ref}
+    >
+      <div className="div relative flex items-start px-4">
+        <div className="max-w-[1200px]">
+          {content.map((item, index) => (
+            <div key={item.title + index} className="my-20">
               <motion.h2
-               
-                className="text-3xl mt-4 font-bold w-full text-slate-100"
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: activeCard === index ? 1 : 0.3,
+                }}
+                className="text-2xl font-bold text-slate-100"
               >
-                
-                Automation Made Simple at zapllo.com
-
+                {item.title}
               </motion.h2>
               <motion.p
-               
-                className=" text- max-w-[800px] mt-4 text-sm"
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: activeCard === index ? 1 : 0.3,
+                }}
+                className="text-kg text-slate-300 max-w-[500px] mt-10"
               >
-                🔓 Unlock your business potential with our expert team of engineers guiding you to the perfect tech tools tailored just for you.
+                {item.description}
               </motion.p>
             </div>
-        
+          ))}
+          <div className="h-40" />
         </div>
       </div>
       <motion.div
         className={cn(
-          "h-full w-[70%] overflow-y-auto scrollbar-hide",
+          "hidden lg:block h-full w-full rounded-2xl sticky top-10 overflow-hidden",
           contentClassName
         )}
-        ref={ref}
       >
-        {content.map((item, index) => (
-          <motion.div
-            key={item.title + index}
-            className="my-10"
-            initial={{ opacity: 0.3 }}
-            animate={{ opacity: activeCard === index ? 1 : 0.3 }}
-            transition={{ duration: 0.3 }}
-          >
-            {item.content ?? null}
-          </motion.div>
-        ))}
-        <div className="h-40 " />
+        {content[activeCard].content ?? null}
       </motion.div>
-    </div>
+    </motion.div>
   );
 };

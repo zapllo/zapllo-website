@@ -2,6 +2,7 @@
 import React from "react";
 import { StickyScroll } from "../ui/sticky-scroll-reveal";
 import Image from "next/image";
+import { ServiceScroll } from "../ui/service-scroll";
 
 const content = [
   {
@@ -48,7 +49,7 @@ const content = [
 export function ServicesScroll() {
   return (
     <div className="p-10 ">
-      <StickyScroll content={content} />
+      <ServiceScroll content={content} />
     </div>
   );
 }

@@ -1,10 +1,19 @@
+import Arrow from "@/components/globals/arrow";
 import Automate from "@/components/globals/automate";
+import Faq from "@/components/globals/faq";
 import Features from "@/components/globals/features";
+import Grow from "@/components/globals/grow";
+import GrowSubs from "@/components/globals/growsubs";
 import Hero from "@/components/globals/hero";
 import { FloatingNavbar } from "@/components/globals/navbar";
+import OfficialPartners from "@/components/globals/officialpartners";
+import OurTeam from "@/components/globals/ourteam";
 import Partners from "@/components/globals/partners";
 import Service from "@/components/globals/service";
+import Testimonials from "@/components/globals/testimonials";
+import Testimonials2 from "@/components/globals/testimonials2";
 import Tools from "@/components/globals/tools";
+import { TracingBeamDemo } from "@/components/globals/tracingbeam";
 import Image from "next/image";
 
 export default function Home() {
@@ -28,8 +37,48 @@ export default function Home() {
       <div className="justify-center mt-4  flex bg-[#05071E]">
         <Tools />
       </div>
-      <img src="light.png" className="-mt-36 absolute h-full w-96" />
+      <img src="light.png" className="-mt-72 h-96 w-[50%]" />
+      <div className="justify-center  flex bg-[#04061E]">
+        <Grow />
+      </div>
+      {/* <div className="mt-24 justify-center flex bg-[#0A0D28] ">
+        <div className="max-w-[1100px] w-full bg-[#0A0D28]">
+          <h1 className=" font-bold pt-12 text-start text-4xl">
+            The Power of <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent">AI</span>. The <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent"> Care of Humans</span>.
+          </h1>
+          <p className="text-sm mt-8 text-gray-200">Empowering brands with AI's precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
+        </div>
+      </div> */}
+      {/* <div className="justify-center  pt-12  flex bg-[#0A0D28]"> 
 
+        <Arrow />
+
+      </div> */}
+      <div className="justify-center mt-64  flex bg-[#04061E]">
+        <OfficialPartners />
+      </div>
+      <div className="justify-center mt-16  flex bg-[#04061E]">
+        <GrowSubs />
+      </div>
+      <img src='readers.png' className='mt-24 h-auto w-full' />
+      <div className="justify-center mt-32  flex b  ">
+        <Testimonials />
+      </div>
+      <div className="justify-center mt-32  flex bg-[#04061E]  ">
+        <Testimonials2 />
+      </div>
+      <div className="justify-center mt-4  flex bg-[#04061E]  ">
+        <Faq />
+      </div>
+      <div className="justify-center mt-32  flex b  ">
+        <Testimonials />
+      </div>
+      <div className="justify-center mt-20  flex bg-[#04061E]  ">
+        <OurTeam />
+      </div>
+      <footer>
+
+      </footer>
     </main>
   );
 }
