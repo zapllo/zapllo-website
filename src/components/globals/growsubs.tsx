@@ -17,7 +17,7 @@ export default function GrowSubs() {
                     <img src='rect.png' />
                     <h1 className='mt-4 text-3xl font-semibold '>Convert</h1>
                     <h2 className='mt-2'>Industries</h2>
-                    <p className='text-xs mt-2'>Our custom opt-in pages captivate and convert audiences into engaged subscribers. Designed for optimal conversion, these visually engaging pages capture attention and inspire action, all while maintaining your brand's unique identity for a cohesive user experience.</p>
+                    <p className='text-xs mt-2'>Our custom opt-in pages captivate and convert audiences into engaged subscribers. Designed for optimal conversion, these visually engaging pages capture attention and inspire action, all while maintaining your brand unique identity for a cohesive user experience.</p>
                 </div>
                 <div className=''>
                     <img src='rect.png' />
