@@ -1,4 +1,4 @@
-import Arrow from "@/components/globals/arrow";
+import Footer from "@/components/globals/Footer";
 import Automate from "@/components/globals/automate";
 import Faq from "@/components/globals/faq";
 import Features from "@/components/globals/features";
@@ -13,7 +13,6 @@ import Service from "@/components/globals/service";
 import Testimonials from "@/components/globals/testimonials";
 import Testimonials2 from "@/components/globals/testimonials2";
 import Tools from "@/components/globals/tools";
-import { TracingBeamDemo } from "@/components/globals/tracingbeam";
 import Image from "next/image";
 
 export default function Home() {
@@ -76,9 +75,9 @@ export default function Home() {
       <div className="justify-center mt-20  flex bg-[#04061E]  ">
         <OurTeam />
       </div>
-      <footer>
-
-      </footer>
+      <div className="flex bg-[#04061E] mt-8 justify-center">
+        <Footer />
+      </div>
     </main>
   );
 }
