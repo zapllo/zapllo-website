@@ -38,18 +38,18 @@ export default function Home() {
         <Tools />
       </div>
       <img src="light.png" className="-mt-72 h-96 w-[50%]" />
-      <div className="justify-center  flex bg-[#04061E]">
+      <div className="justify-center mt-64 md:mt-0 flex bg-[#04061E]">
         <Grow />
       </div>
       <div className="mt-24 justify-center flex bg-[#0A0D28] ">
         <div className="max-w-[1100px] w-full bg-[#0A0D28]">
-          <h1 className=" font-bold pt-12 text-start text-4xl">
+          <h1 className="mx-4 md:mx-0 font-bold pt-12 text-start text-4xl">
             The Power of <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent">AI</span>. The <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent"> Care of Humans</span>.
           </h1>
-          <p className="text-sm mt-8 text-gray-200">Empowering brands with AI precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
+          <p className="text-sm mt-8 mx-4 md:mx-0 text-gray-200">Empowering brands with AI precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
         </div>
       </div>
-      <div className="justify-center  hidden pt-12  md:flex bg-[#0A0D28]"> 
+      <div className="justify-center   pt-12  md:flex bg-[#0A0D28]"> 
 
         <Arrow />
 
@@ -60,7 +60,7 @@ export default function Home() {
       <div className="justify-center mt-16  flex bg-[#04061E]">
         <GrowSubs />
       </div>
-      <img src='readers.png' className='mt-24 h-auto w-full' />
+      <img src='readers.png' className='mt-24 md:h-auto md:w-full h-auto' />
       <div className="justify-center mt-32  flex b  ">
         <Testimonials />
       </div>

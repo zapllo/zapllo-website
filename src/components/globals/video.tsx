@@ -21,21 +21,21 @@ export default function VideoComponent() {
 
 
     return (
-        <div className='w-[900px] h-[500px] '>
+        <div className='w-[900px] md:mt-0 -mt-36  h-[500px] '>
             <video
                 ref={videoRef}
-                className='rounded-xl border border-white shadow-2xl shadow-blue-500/20 max-w-[900px]'
+                className='rounded-xl  shadow-2xl shadow-blue-500/20 w-full h-full max-w-[900px]'
                 
                 preload="auto"
             >
                 <source src="/intro.mp4" type="video/mp4" />
-
+k
             </video>
             {!isPlaying && (
                 <div className='flex  items-center justify-center'>
                     <button
                         onClick={handlePlay}
-                        className="  flex items-center justify-center bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-full  absolute  h-20 w-20 -mt-[100%] lg:-mt-[40%]    text-white"
+                        className="  flex items-center justify-center bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-full  absolute  h-20 w-20 -mt-[120%] lg:-mt-[38%]     text-white"
                     >
                         <PlayIcon className='' />
                     </button>

@@ -3,7 +3,7 @@ import { BookCall } from '../ui/bookcall'
 
 export default function OurTeam() {
     return (
-        <div className='text-center mb-32'>
+        <div className='text-center md:block hidden mb-32'>
             <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text-center font-bold text-3xl'>Our Staff</h1>
             <h1 className='text-4xl font-semibold text-center mt-4'>Our Team Members</h1>
             <div className='justify-center flex'>

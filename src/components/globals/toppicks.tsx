@@ -50,7 +50,7 @@ const content = [
 
 export function TopPicks() {
     return (
-        <div className="p-10 max-w-[1300px]">
+        <div className="md:p-10 md:max-w-[1300px]">
             <StickyScroll content={content} />
         </div>
     );

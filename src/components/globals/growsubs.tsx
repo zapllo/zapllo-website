@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function GrowSubs() {
     return (
-        <div className='text-center max-w-[1050px]'>
+        <div className='text-center mx-4 md:mx-0 max-w-[1050px]'>
             <div>
 
             </div>
@@ -12,7 +12,7 @@ export default function GrowSubs() {
             <div className='flex justify-center'>
                 <img src='zapllo.png' className='h-48' />
             </div>
-            <div className='grid grid-cols-3 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className=''>
                     <img src='rect.png' />
                     <h1 className='mt-4 text-3xl font-semibold '>Convert</h1>
