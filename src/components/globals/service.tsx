@@ -76,7 +76,7 @@ export default function Service() {
                     </motion.div>
                 </div>
                 <div className='flex items-center justify-center m-4'>
-                    <IconCloud iconSlugs={slugs} className="w-full md:w-auto" />
+                    <IconCloud iconSlugs={slugs}  />
                 </div>
                 <div className='flex flex-col'>
                     <motion.div
