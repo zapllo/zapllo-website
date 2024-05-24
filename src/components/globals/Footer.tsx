@@ -30,8 +30,8 @@ export default function Footer() {
                                 Get Started
                             </span>
                         </ShimmerButton>
-                       <LetsCall />
-                         
+                        <LetsCall />
+
                     </div>
                 </div>
                 <div className='empty rectangle'>
@@ -60,7 +60,7 @@ export default function Footer() {
                 </div>
                 <div className='flex gap-3'>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Terms of Use </h1>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1> 
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Privacy Policy</h1>
 
                 </div>
