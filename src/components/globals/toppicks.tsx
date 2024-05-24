@@ -12,7 +12,7 @@ const content = [
             "Work together in real time with your team, clients, and stakeholders. Collaborate on documents, share ideas, and make decisions quickly. With our platform, you can streamline your workflow and increase productivity.",
         content: (
             <div className="h-full w-[100%] object-contain">
-                <img src="/picktools.png" />
+                <img src="/picktools.png" className="" />
             </div>
         ),
     },
@@ -50,7 +50,7 @@ const content = [
 
 export function TopPicks() {
     return (
-        <div className="md:p-10 md:max-w-[1300px]">
+        <div className="md:p-10  md:max-w-[1300px]">
             <StickyScroll content={content} />
         </div>
     );
