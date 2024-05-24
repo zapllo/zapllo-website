@@ -21,10 +21,10 @@ export default function VideoComponent() {
 
 
     return (
-        <div>
+        <div className='w-[900px] h-[500px] '>
             <video
                 ref={videoRef}
-                className='rounded-xl  shadow-2xl shadow-blue-500/20 max-w-[900px]'
+                className='rounded-xl border border-white shadow-2xl shadow-blue-500/20 max-w-[900px]'
                 
                 preload="auto"
             >
