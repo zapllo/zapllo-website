@@ -46,7 +46,7 @@ export default function Home() {
           <h1 className=" font-bold pt-12 text-start text-4xl">
             The Power of <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent">AI</span>. The <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent"> Care of Humans</span>.
           </h1>
-          <p className="text-sm mt-8 text-gray-200">Empowering brands with AI's precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
+          <p className="text-sm mt-8 text-gray-200">Empowering brands with AI precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
         </div>
       </div>
       <div className="justify-center  hidden pt-12  md:flex bg-[#0A0D28]"> 
