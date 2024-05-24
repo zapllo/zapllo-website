@@ -1,4 +1,5 @@
 import Footer from "@/components/globals/Footer";
+import Arrow from "@/components/globals/arrow";
 import Automate from "@/components/globals/automate";
 import Faq from "@/components/globals/faq";
 import Features from "@/components/globals/features";
@@ -40,20 +41,20 @@ export default function Home() {
       <div className="justify-center  flex bg-[#04061E]">
         <Grow />
       </div>
-      {/* <div className="mt-24 justify-center flex bg-[#0A0D28] ">
+      <div className="mt-24 justify-center flex bg-[#0A0D28] ">
         <div className="max-w-[1100px] w-full bg-[#0A0D28]">
           <h1 className=" font-bold pt-12 text-start text-4xl">
             The Power of <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent">AI</span>. The <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent"> Care of Humans</span>.
           </h1>
           <p className="text-sm mt-8 text-gray-200">Empowering brands with AI's precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
         </div>
-      </div> */}
-      {/* <div className="justify-center  pt-12  flex bg-[#0A0D28]"> 
+      </div>
+      <div className="justify-center  hidden pt-12  md:flex bg-[#0A0D28]"> 
 
         <Arrow />
 
-      </div> */}
-      <div className="justify-center mt-64  flex bg-[#04061E]">
+      </div>
+      <div className="justify-center mt-24  flex bg-[#04061E]">
         <OfficialPartners />
       </div>
       <div className="justify-center mt-16  flex bg-[#04061E]">

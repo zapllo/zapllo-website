@@ -23,27 +23,35 @@ export default function NumberTicker({
   const isInView = useInView(ref, { once: true, margin: "0px" });
 
   useEffect(() => {
-    isInView &&
+    if (isInView) {
       setTimeout(() => {
         motionValue.set(direction === "down" ? 0 : value);
       }, delay * 1000);
+    }
   }, [motionValue, isInView, delay, value, direction]);
 
   useEffect(
     () =>
       springValue.on("change", (latest) => {
         if (ref.current) {
-          ref.current.textContent = `${Intl.NumberFormat("en-US").format(
-            latest.toFixed(0)
-          )}+`;
+          const formattedValue = Number.isInteger(value)
+            ? `${Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(latest)}+`
+            : `${Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }).format(latest)}`;
+          ref.current.textContent = formattedValue;
         }
       }),
-    [springValue],
+    [springValue, value],
   );
 
   return (
     <span
-      className={`inline-block tabular-nums text-transparent bg-gradient-to-r font-bold from-[#815BF5]  py-6 rounded-2xl  to-[#FC8929] bg-clip-text  ${className}`}
+      className={`inline-block tabular-nums text-transparent bg-gradient-to-r font-bold from-[#815BF5] py-6 rounded-2xl to-[#FC8929] bg-clip-text ${className}`}
       ref={ref}
     />
   );

@@ -7,20 +7,20 @@ import { Button } from '../ui/button'
 
 export default function Footer() {
     return (
-        <footer className='max-w-[1100px]  w-full'>
+        <footer className='max-w-full p-4 w-full'>
             <Separator />
-            <div className='grid grid-cols-3 gap-4'>
-                <div className='Zapllo my-8'>
-                    <img src='logo.png' className='h-8' />
+            <div className='grid grid-cols-3 gap-12'>
+                <div className='Zapllo my-8 '>
+                    <img src='logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
                         <h1>TEMPLATE</h1>
                         <h1>STORIES</h1>
                         <h1>CONTACT</h1>
                     </div>
                     <div className='flex gap-3 mt-6'>
-                        <img src="twitter.png" alt="" className='h-10' />
-                        <img src="facebook.png" alt="" className='h-10' />
-                        <img src="instagram.png" alt="" className='h-10' />
+                        <img src="twitter.png" alt="" className='h-8' />
+                        <img src="facebook.png" alt="" className='h-8' />
+                        <img src="instagram.png" alt="" className='h-8' />
                     </div>
                     <div className='flex gap-6 mt-8'>
                         <ShimmerButton className="shadow-2xl">
