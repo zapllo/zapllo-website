@@ -1,12 +1,15 @@
 import React from 'react'
 import NumberTicker from '../magicui/number-ticker'
+import AnimatedShinyDiv from '../magicui/animated-shiny-div'
 
 export default function OfficialPartners() {
     return (
         <div className=''>
-            <div className='bg-gradient-to-r from-[#815BF5] px-12 py-6 md:rounded-2xl  to-[#FC8929] grid lg:grid-cols-2 grid-cols-1 max-w-[1200px] gap-4  '>
-                <h1 className='text-4xl font-semibold mt-4'>Official Business Partners</h1>
-                <img src='partners.png' className='h-20 md:ml-auto' />
+            <div>
+                <AnimatedShinyDiv className='bg-gradient-to-r from-[#815BF5] px-12 py-6 md:rounded-2xl  to-[#FC8929] grid lg:grid-cols-2 grid-cols-1 z-10 max-w-[1200px] gap-4  '>
+                    <h1 className='text-4xl font-semibold mt-4'>Official Business Partners</h1>
+                    <img src='partners.png' className='h-20 md:ml-auto' />
+                </AnimatedShinyDiv>
             </div>
             <div className='flex justify-center'>
                 <div className='text-6xl max-w-[1100px] mt-16 grid grid-cols-1  md:grid-cols-3'>

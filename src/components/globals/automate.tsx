@@ -12,7 +12,7 @@ export default function Automate() {
             <div className='w-full'>
                 <h1 className='text-2xl font-bold'>Automate and Upgrade your Workflow</h1>
                 <p className={`${golos.className} text-sm mt-4 w-full text-gray-200`}>Automate and Upgrade your Workflow encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow. </p>
-                <div className='flex  mt-6 justify-start'>
+                <div className='flex   mt-6 justify-start'>
                     <BookCall2 />
                 </div>
             </div>
