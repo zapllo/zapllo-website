@@ -4,13 +4,15 @@ import ShimmerButton from '../magicui/shimmer-button'
 import { BookCall } from '../ui/bookcall'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import { BookCall2 } from '../ui/bookdemo'
+import { LetsCall } from '../ui/letscall'
 
 export default function Footer() {
     return (
         <footer className='max-w-full p-4 w-full'>
             <Separator />
-            <div className='grid grid-cols-3 gap-12'>
-                <div className='Zapllo my-8 '>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-12'>
+                <div className='Zapllo my-8  p-6'>
                     <img src='logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
                         <h1>TEMPLATE</h1>
@@ -28,14 +30,15 @@ export default function Footer() {
                                 Get Started
                             </span>
                         </ShimmerButton>
-                        <BookCall />
+                       <LetsCall />
+                         
                     </div>
                 </div>
                 <div className='empty rectangle'>
                     <img src='emptyrec.png' className='h-[90%]' />
                 </div>
-                <div className=' overflow-hidden my-8'>
-                    <div className='flex gap-8'>
+                <div className=' overflow-hidden my-8 p-6'>
+                    <div className='flex gap-8 '>
                         <img src='at.png' className='h-full' />
                         <div>
                             <h1 className='text-xl font-bold'>Subscribe to AI Insider</h1>
@@ -50,15 +53,15 @@ export default function Footer() {
                 </div>
             </div>
             <Separator />
-            <div className='flex justify-between'>
-                <div className='max-w-[600px]'>
-                    <h1 className='text-[#676B93] mt-6 text-sm'>Copyright © 2024 zapllo. All rights reserved.</h1>
+            <div className='md:flex md:justify-between'>
+                <div className='md:max-w-[600px]'>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 zapllo. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs mt-4'>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
                 <div className='flex gap-3'>
-                    <h1 className='text-[#676B93] mt-6 text-sm'>Terms of Use </h1>
-                    <h1 className='text-[#676B93] mt-6 text-sm'>|</h1> 
-                    <h1 className='text-[#676B93] mt-6 text-sm'>Privacy Policy</h1>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Terms of Use </h1>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1> 
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Privacy Policy</h1>
 
                 </div>
             </div>
