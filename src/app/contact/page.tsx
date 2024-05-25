@@ -19,7 +19,7 @@ export default function Contact() {
                 <div className='grid grid-cols-1 mt-32 md:grid-cols-2 '>
                     <div className=''>
                         <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] w-fit px-4 py-1 to-[#FC8929] rounded-2xl'>
-                            <h1>Let's Talk</h1>
+                            <h1>Let&apos;s Talk</h1>
                         </div>
                         <h1 className='md:text-4xl text-2xl mt-4 font-semibold mx-4'>We are Open To Talk To Good People</h1>
                         <p className='text-[#676B93] mx-4  mt-4'>Ready to redefine your online presence and elevate your brand with our 14-day mentorship program?</p>
