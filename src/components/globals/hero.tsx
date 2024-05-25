@@ -40,7 +40,7 @@ export default function Hero() {
             <div className='flex -mt-8 justify-center'>
                 <ShinyText />
             </div>
-            <div className='relative flex justify-center '>
+            <div className='relative flex -mt-40 md:mt-0  justify-center '>
 
                 <VideoComponent />
             </div>
