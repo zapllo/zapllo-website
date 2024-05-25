@@ -19,7 +19,7 @@ export default function VideoComponent() {
     };
 
     return (
-        <div className='relative w-[900px] md:mt-0 mt-36 h-[500px]'>
+        <div className='relative w-[900px] md:mt-0 mt h-[500px]'>
             <video
                 ref={videoRef}
                 className='rounded-xl shadow-2xl shadow-blue-500/20 w-full h-full max-w-[900px]'

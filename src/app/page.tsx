@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <main className="bg-[#] bg-[#05071E] mx-auto h-full z-10 overflow-hidden">
       <FloatingNavbar />
-      <Image src='/mask.png' height={1000} className=" absolute overflow-hidden    w-full 0" width={1000} alt="Background mask for zapllo automation" />
+      <Image src='/mask.png' height={1000} className=" absolute overflow-hidden w-full " width={1000} alt="Background mask for zapllo automation" />
       <Hero />
       <section>
         <Partners />
@@ -49,10 +49,8 @@ export default function Home() {
           <p className="text-sm mt-8 mx-4 md:mx-0 text-gray-200">Empowering brands with AI precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
         </div>
       </div>
-      <div className="justify-center   pt-12  md:flex bg-[#0A0D28]"> 
-
+      <div className="justify-center   pt-12  md:flex bg-[#0A0D28]">
         <Arrow />
-
       </div>
       <div className="justify-center mt-24  flex bg-[#04061E]">
         <OfficialPartners />
