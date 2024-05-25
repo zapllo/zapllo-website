@@ -9,7 +9,7 @@ export function DockDemo() {
       {/* <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-4xl font-semibold leading-none text-white dark:to-slate-400/90">
       Seamless <br/> Integrations
       </span> */}
-      <Dock className="scale-150 mt-16">
+      <Dock className="md:scale-150 scale-125 mt-16">
         <DockIcon>
           <img src="/discord.png" className="h-full w-full" />
         </DockIcon>

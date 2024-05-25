@@ -19,7 +19,7 @@ export default function Hero() {
 
                     <span
                         className={cn(
-                            `inline animate-gradient text-md text-center md:text-lg font-bold bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
+                            `inline animate- text-md text-center md:text-xl font-bold bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  bg-clip-text text-transparent`,
                         )}
                     >
                         Are you facing issues in you current Workflow  ?

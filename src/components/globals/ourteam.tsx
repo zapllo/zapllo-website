@@ -61,7 +61,7 @@ export default function OurTeam() {
                 <h1 className='text-4xl font-semibold text-center mt-4'>Our Team Members</h1>
                 <div className='flex justify-center mt-4'>
                     <div className='grid grid-cols-1 gap-12 text-center'>
-                        <div className='rounded-full bg-[#0A0D28] mt-4   h-32 w-32'>
+                        <div className='rounded-full bg-[#0A0D28] mt-4 ml-8  h-32 w-32'>
                             <img src='/avatar.png' className='' />
                             <h1>Dianne Russell</h1>
                         </div>

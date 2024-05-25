@@ -20,8 +20,15 @@ export function FloatingNavbar() {
       icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
     {
-      name: "Success Stories",
+      name: "Stories",
       link: "/successstories",
+      icon: (
+        <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
+      ),
+    },
+    {
+      name: "Contact",
+      link: "/contact",
       icon: (
         <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
@@ -62,18 +69,23 @@ export function FloatingNavbar() {
           <SheetContent>
             <SheetTitle><img src="logo.png" className="h-6" /></SheetTitle>
             <SheetDescription className="mt-12 my-24">
-              <h1 className="w-full text-2xl p-2">Home</h1>
+              <Link href='/'>
+                <h1 className="w-full text-2xl p-2">Home</h1>
+              </Link>
               <h1 className="w-full text-2xl p-2 mt-2">Templates</h1>
-              <h1 className="w-full text-2xl p-2 mt-2">Success Stories</h1>
-              <h1 className="w-full text-2xl p-2 mt-2">Contact Us</h1>
+              <Link href='/successstories'>
+                <h1 className="w-full text-2xl p-2 mt-2">Success Stories</h1>
+              </Link>
+              <Link href='/contact'>
+                <h1 className="w-full text-2xl p-2 mt-2">Contact</h1>
+              </Link>
 
-              
             </SheetDescription>
 
             <SheetFooter>
               <div className="p-2 my-5 ">
-              <h1 className="text-[#676B93]">Terms of Use</h1>
-              <h1 className="text-[#676B93] mt-4">Privacy</h1>
+                <h1 className="text-[#676B93]">Terms of Use</h1>
+                <h1 className="text-[#676B93] mt-4">Privacy</h1>
 
               </div>
               <SheetClose asChild>
