@@ -13,7 +13,7 @@ export async function BookCall2() {
                 )}
             >
                 <TextShimmer className="inline-flex text-2xl items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-900  hover:dark:text-white">
-                    <span className="flex mt-auto text-xl   gap-2">
+                    <span className="flex mt-auto text-xl font-medium  gap-2">
                         <div className="mr-4">
                             {/* <div className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]    h-10 w-10 rounded-full ">
                 <img src="/avatar.png" className="mt-auto h-10 rounded-full " />
@@ -23,7 +23,7 @@ export async function BookCall2() {
               </div> */}
                             <AnimatedTooltipPreview />
                         </div>
-                        Book Your Demo </span>
+                        Book Your Call </span>
 
                 </TextShimmer>
             </div>

@@ -18,6 +18,8 @@ html {
   background: radial-gradient(circle, #141841, #05071E);
 }
 
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

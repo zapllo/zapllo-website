@@ -6,6 +6,7 @@ import Features from "@/components/globals/features";
 import Grow from "@/components/globals/grow";
 import GrowSubs from "@/components/globals/growsubs";
 import Hero from "@/components/globals/hero";
+import { InfiniteMoving } from "@/components/globals/infinite-moving";
 import { FloatingNavbar } from "@/components/globals/navbar";
 import OfficialPartners from "@/components/globals/officialpartners";
 import OurTeam from "@/components/globals/ourteam";
@@ -58,16 +59,22 @@ export default function Home() {
       <div className="justify-center mt-16  flex bg-[#04061E]">
         <GrowSubs />
       </div>
-      <img src='readers.png' className='mt-24 md:h-auto md:w-full h-auto' />
+      <div className="mt-12 mb-12">
+        <InfiniteMoving
+          direction="right"
+          speed="slow"
+        />
+      </div>
       <div className="justify-center mt-32  flex b  ">
         <Testimonials />
       </div>
       <div className="justify-center mt-32  flex bg-[#04061E]  ">
         <Testimonials2 />
       </div>
-      <div className="justify-center mt-4  flex bg-[#04061E]  ">
+      <div className="justify-center  mt-4  flex bg-[#04061E]  ">
         <Faq />
       </div>
+      
       <div className="justify-center mt-32  flex b  ">
         <Testimonials />
       </div>

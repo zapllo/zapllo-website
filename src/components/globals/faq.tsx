@@ -11,6 +11,7 @@ export default function Faq() {
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Will this work form me, if i am not a thought leader?</AccordionTrigger>
                         <AccordionContent>
+
                             Yes. It adheres to the WAI-ARIA design pattern.
                         </AccordionContent>
                     </AccordionItem>

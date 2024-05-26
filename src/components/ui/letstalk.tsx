@@ -12,7 +12,7 @@ export async function LetsTalk() {
                 )}
             >
                 <TextShimmer className="inline-flex text-lg items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-900  hover:dark:text-white">
-                    <span className="flex mt-auto  gap-2"><MessageSquare /> Lets Talk</span>
+                    <span className="flex mt-auto font-medium gap-2"><img src="chat.gif" className="h-6" /> Lets Talk</span>
                     {/* <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" /> */}
                 </TextShimmer>
             </div>

@@ -6,6 +6,7 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { BookCall2 } from '../ui/bookdemo'
 import { LetsCall } from '../ui/letscall'
+import Link from 'next/link'
 
 export default function Footer() {
     return (
@@ -39,9 +40,12 @@ export default function Footer() {
                 </div>
                 <div className=' overflow-hidden my-8 p-6'>
                     <div className='flex gap-8 '>
-                        <img src='at.png' className='h-full' />
+                        {/* <img src='at.png' className='h-full' /> */}
+                        <div className=''>
+                            <img src='at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   w-full' />
+                        </div>
                         <div>
-                            <h1 className='text-xl font-bold'>Subscribe to AI Insider</h1>
+                            <h1 className='text-lg   font-bold'>Subscribe to AI Insider</h1>
                             <p className='text-[#676B93] text-sm mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI to get 10X results</p>
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
@@ -53,16 +57,19 @@ export default function Footer() {
                 </div>
             </div>
             <Separator />
-            <div className='md:flex md:justify-between'>
+            <div className='md:flex md:justify-between p-6'>
                 <div className='md:max-w-[600px]'>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 zapllo. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs mt-4'>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
                 <div className='flex gap-3'>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Terms of Use </h1>
+                    <Link href='/terms'>
+                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Terms of Use </h1>
+                    </Link>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Privacy Policy</h1>
-
+                    <Link href='/refundpolicy'>
+                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Refund Policy</h1>
+                    </Link>
                 </div>
             </div>
         </footer>
