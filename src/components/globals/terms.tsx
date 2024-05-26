@@ -52,7 +52,7 @@ export default function TermsandConditions() {
                     <section>
                         <h2 className="text-xl font-bold mb-2">Disclaimer of Warranties</h2>
                         <p>
-                            Our services are provided "as is" and we do not guarantee or warrant the accuracy, completeness, or usefulness of this service, and you are relying on this service at your own risk.
+                            Our services are provided &quot;as is&quot; and we do not guarantee or warrant the accuracy, completeness, or usefulness of this service, and you are relying on this service at your own risk.
                         </p>
                     </section>
                     <section>
