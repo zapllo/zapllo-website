@@ -1,4 +1,3 @@
-import Footer from "./Footer";
 
 export default function RefundPolicy() {
     return (
@@ -46,10 +45,10 @@ export default function RefundPolicy() {
                 </div>
             </div>
             <>
-                <div className="mt-8">
+                {/* <div className="mt-8">
                     <Footer />
 
-                </div>
+                </div> */}
             </>
         </main>
     )
