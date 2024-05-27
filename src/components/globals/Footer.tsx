@@ -1,5 +1,3 @@
-"use client"
-
 import React from 'react'
 import { Separator } from '../ui/separator'
 import ShimmerButton from '../magicui/shimmer-button'

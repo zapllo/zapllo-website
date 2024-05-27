@@ -1,10 +1,13 @@
+import Link from "next/link";
 
 export default function Disclaimer() {
     return (
-        <main className="bg- py-16 mt-24 px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
+        <main className="bg- py-16  px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
             <div className="max-w-4xl mx-auto">
                 <div className="md:flex items-center justify-between mb-8">
-                    <img alt="Zapllo Technologies" className="h-12" src="/logo.png" />
+                    <Link href='/'>
+                        <img alt="Zapllo Technologies" className="h-10 cursor-pointer" src="/logo.png" />
+                    </Link>
                     <h1 className="md:text-3xl text-2xl  text-gray-400 md:mt-0 mt-8 font-bold">Disclaimer</h1>
                 </div>
                 <div className="space-y-6 text-[#676B93]">
