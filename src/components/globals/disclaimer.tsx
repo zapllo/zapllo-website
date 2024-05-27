@@ -15,11 +15,11 @@ export default function Disclaimer() {
                         </p>
 
                         <p className="mb-2">
-                            Zapllo Technologies Private Limited does not offer a business opportunity, a "get rich quick" scheme, or any money-making system. Our goal is to provide high-quality services and training to enhance the operational efficiency and technological capabilities of businesses and individuals. However, we cannot guarantee specific results or financial gains as part of our services.
+                            Zapllo Technologies Private Limited does not offer a business opportunity, a "get rich quick&quot; scheme, or any money-making system. Our goal is to provide high-quality services and training to enhance the operational efficiency and technological capabilities of businesses and individuals. However, we cannot guarantee specific results or financial gains as part of our services.
                         </p>
                         <p className="mb-2">
 
-                            All content, ideas, strategies, and tools shared by Zapllo Technologies Private Limited are for educational purposes only. We aim to offer valuable insights and directions that have benefited our team and clients. Still, every business and individual's success depends on their dedication, effort, and the applicability of these strategies to their unique circumstances. Therefore, we do not make any promises or guarantees regarding the achievement of specific outcomes or earnings.
+                            All content, ideas, strategies, and tools shared by Zapllo Technologies Private Limited are for educational purposes only. We aim to offer valuable insights and directions that have benefited our team and clients. Still, every business and individual&quot;s success depends on their dedication, effort, and the applicability of these strategies to their unique circumstances. Therefore, we do not make any promises or guarantees regarding the achievement of specific outcomes or earnings.
                         </p>
                         <p className="mb-2">
 
