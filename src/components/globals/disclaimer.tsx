@@ -15,7 +15,7 @@ export default function Disclaimer() {
                         </p>
 
                         <p className="mb-2">
-                            Zapllo Technologies Private Limited does not offer a business opportunity, a "get rich quick&quot; scheme, or any money-making system. Our goal is to provide high-quality services and training to enhance the operational efficiency and technological capabilities of businesses and individuals. However, we cannot guarantee specific results or financial gains as part of our services.
+                            Zapllo Technologies Private Limited does not offer a business opportunity, a &quot;get rich quick&quot; scheme, or any money-making system. Our goal is to provide high-quality services and training to enhance the operational efficiency and technological capabilities of businesses and individuals. However, we cannot guarantee specific results or financial gains as part of our services.
                         </p>
                         <p className="mb-2">
 
