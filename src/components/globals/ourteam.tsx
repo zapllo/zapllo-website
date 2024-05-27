@@ -8,7 +8,7 @@ export default function OurTeam() {
                 <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text-center font-bold -ml-4 text-2xl'>ZAPLLONIANS</h1>
                 <h1 className='text-5xl font-semibold text-center -ml-4 mt-4'>Our Team</h1>
                 <div className='justify-center mt-6 flex'>
-                    <div className='rounded-full bg-[#0A0D28] mt-4 -ml-12 h-32 w-32'>
+                    <div className='rounded-full bg-[#0A0D28] mt-4   -ml-12 h-32 w-32'>
                         <img src='/avatar.png' className='' />
                         <h1>Dianne Russell</h1>
                         <h1 className='mt-12 font-bold -ml-24 absolute text-4xl'>We are Human Too.</h1>
@@ -23,12 +23,12 @@ export default function OurTeam() {
                             <img src='cta2.png' className='h-10' />
                             <img src='cta3.png' className='h-10' />
                             <img src='cta4.png' className='h-10' />
-                         
+
                         </div>
                         <div className='absolute mt-[32%]  -ml-[14%] gap- grid grid-cols-2  '>
-                                <BookCall />
-                                <h1 className='mt-3 text-sm'>Upgrade Your Engagement</h1>
-                            </div>
+                            <BookCall />
+                            <h1 className='mt-3 text-sm'>Upgrade Your Engagement</h1>
+                        </div>
                     </div>
 
                 </div>

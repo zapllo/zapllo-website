@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import { Separator } from '../ui/separator'
 import ShimmerButton from '../magicui/shimmer-button'
@@ -8,12 +10,13 @@ import { BookCall2 } from '../ui/bookdemo'
 import { LetsCall } from '../ui/letscall'
 import Link from 'next/link'
 
+
 export default function Footer() {
     return (
         <footer className='max-w-full p-4 w-full'>
             <Separator />
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-12'>
-                <div className='Zapllo my-8  p-6'>
+            <div className='grid grid-cols-1 md:grid-cols-3 p-6 gap-12'>
+                <div className='Zapllo my-8  '>
                     <img src='logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
                         <h1>TEMPLATE</h1>
@@ -38,15 +41,15 @@ export default function Footer() {
                 <div className='empty rectangle'>
                     <img src='emptyrec.png' className='h-[90%]' />
                 </div>
-                <div className=' overflow-hidden my-8 p-6'>
-                    <div className='flex gap-8 '>
+                <div className=' overflow-hidden my-8  '>
+                    <div className='flex gap-6'>
                         {/* <img src='at.png' className='h-full' /> */}
-                        <div className=''>
-                            <img src='at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   w-full' />
-                        </div>
+
+                        <img src='at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   h-20' />
+
                         <div>
                             <h1 className='text-lg   font-bold'>Subscribe to AI Insider</h1>
-                            <p className='text-[#676B93] text-sm mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI to get 10X results</p>
+                            <p className='text-[#676B93] text-xs mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI to get 10X results</p>
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
@@ -59,16 +62,24 @@ export default function Footer() {
             <Separator />
             <div className='md:flex md:justify-between p-6'>
                 <div className='md:max-w-[600px]'>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 zapllo. All rights reserved.</h1>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs mt-4'>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
                 <div className='flex gap-3'>
+                    <Link href='/disclaimer'>
+                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Disclaimer</h1>
+                    </Link>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
                     <Link href='/terms'>
-                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Terms of Use </h1>
+                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Terms and Conditions</h1>
                     </Link>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
                     <Link href='/refundpolicy'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Refund Policy</h1>
+                    </Link>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
+                    <Link href='/contactus'>
+                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Contact Us</h1>
                     </Link>
                 </div>
             </div>

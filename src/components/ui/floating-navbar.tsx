@@ -41,7 +41,7 @@ export const FloatingNav = ({
                             href={navItem.link}
                             className={cn(
                                 "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500",
-                                pathname === navItem.link && "underline-offset-8 decoration-purple-400 " // Apply different style for the current page
+                                pathname === navItem.link && " " // Apply different style for the current page
                             )}
                             style={{ position: 'relative' }} // Ensure the parent container has a relative position
                         >
@@ -49,7 +49,7 @@ export const FloatingNav = ({
                             <span className="hidden sm:block text-md">{navItem.name}</span>
                             {/* Glowing effect */}
                             {pathname === navItem.link && (
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-purple-400 rounded-sm shadow-purple-400 shadow-[4.0px_-2.0px_8.0px_rgba(0,0,0,0.38)]" />
+                                <span className="absolute bottom-0 left-0 top-8 w-full h-0.5 bg-purple-400   rounded-sm shadow-purple-400 shadow-[4.0px_-2.0px_8.0px_rgba(0,0,0,0.38)]" />
                             )}
                         </Link>
                     ))}

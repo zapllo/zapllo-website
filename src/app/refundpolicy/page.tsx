@@ -1,35 +1,34 @@
-"use client"
 import { FloatingNavbar } from '@/components/globals/navbar'
 import RefundPolicy from '@/components/globals/refundpolicy'
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 
 export default function Refund() {
-    useEffect(() => {
-        const handleContextMenu = (e: any) => e.preventDefault();
+    // useEffect(() => {
+    //     const handleContextMenu = (e: any) => e.preventDefault();
 
-        document.addEventListener('contextmenu', handleContextMenu);
+    //     document.addEventListener('contextmenu', handleContextMenu);
 
-        return () => {
-            document.removeEventListener('contextmenu', handleContextMenu);
-        };
-    }, []);
+    //     return () => {
+    //         document.removeEventListener('contextmenu', handleContextMenu);
+    //     };
+    // }, []);
 
-    useEffect(() => {
-        const handleCopy = (e:any) => e.preventDefault();
-        const handleCut = (e:any) => e.preventDefault();
-        const handlePaste = (e:any) => e.preventDefault();
+    // useEffect(() => {
+    //     const handleCopy = (e:any) => e.preventDefault();
+    //     const handleCut = (e:any) => e.preventDefault();
+    //     const handlePaste = (e:any) => e.preventDefault();
 
-        document.addEventListener('copy', handleCopy);
-        document.addEventListener('cut', handleCut);
-        document.addEventListener('paste', handlePaste);
+    //     document.addEventListener('copy', handleCopy);
+    //     document.addEventListener('cut', handleCut);
+    //     document.addEventListener('paste', handlePaste);
 
-        return () => {
-            document.removeEventListener('copy', handleCopy);
-            document.removeEventListener('cut', handleCut);
-            document.removeEventListener('paste', handlePaste);
-        };
-    }, []);
+    //     return () => {
+    //         document.removeEventListener('copy', handleCopy);
+    //         document.removeEventListener('cut', handleCut);
+    //         document.removeEventListener('paste', handlePaste);
+    //     };
+    // }, []);
 
     return (
         <main className="bg-[#] bg-[#05071E] mx-auto h-full z-10 overflow-hidden">
