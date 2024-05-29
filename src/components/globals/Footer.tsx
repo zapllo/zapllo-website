@@ -17,9 +17,15 @@ export default function Footer() {
                 <div className='Zapllo my-8  '>
                     <img src='logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
-                        <h1>TEMPLATE</h1>
-                        <h1>STORIES</h1>
-                        <h1>CONTACT</h1>
+                        <Link href='/Templates'>
+                            <h1>TEMPLATE</h1>
+                        </Link>
+                        <Link href='/successstories'>
+                            <h1>STORIES</h1>
+                        </Link>
+                        <Link href='/contact'>
+                            <h1>CONTACT</h1>
+                        </Link>
                     </div>
                     <div className='flex gap-3 mt-6'>
                         <img src="twitter.png" alt="" className='h-8' />
@@ -39,21 +45,21 @@ export default function Footer() {
                 <div className='empty rectangle'>
                     <img src='emptyrec.png' className='h-[100%]' />
                 </div>
-                <div className=' overflow-hidden my-8  '>
+                <div className=' overflow-visible my-8  '>
                     <div className='flex gap-6'>
                         {/* <img src='at.png' className='h-full' /> */}
 
                         <img src='at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   h-20' />
 
                         <div>
-                            <h1 className='text-lg   font-bold'>Subscribe to AI Insider</h1>
+                            <h1 className='text-lg   font-bold'>Subscribe to Zapllo Insider</h1>
                             <p className='text-[#676B93] text-xs mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI to get 10X results</p>
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
                     <div className='flex'>
                         <Input placeholder='Enter Your Email' className='mt-6 h-12 rounded-r-none' />
-                        <Button className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6 rounded-xl rounded-l-none mt-6 ' >Subscribe</Button>
+                        <Button className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6  rounded-xl rounded-l-none mt-6 ' >Subscribe</Button>
                     </div>
                 </div>
             </div>

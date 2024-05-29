@@ -20,7 +20,7 @@ export function FloatingNavbar() {
       icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
     {
-      name: "Stories",
+      name: "Success Stories",
       link: "/successstories",
       icon: (
         <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
