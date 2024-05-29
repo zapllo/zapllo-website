@@ -1,14 +1,31 @@
+import Link from "next/link";
+import ShimmerButton from "../magicui/shimmer-button";
+import { BookCall } from "../ui/bookcall";
 
 export default function RefundPolicy() {
     return (
-        <main className="bg- py-16 mt-24 px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
+        <main className="bg- py-16  px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
             <div className="max-w-4xl mx-auto">
                 <div className="md:flex items-center justify-between mb-8 ">
-                    <img alt="Zapllo Technologies" className="h-12" src="/logo.png" />
-                    <h1 className="text-3xl font-bold mt-8 text-gray-400">Refund Policy</h1>
+                    <Link href='/'>
+                        <img alt="Zapllo Technologies" className="h-7" src="/logo.png" />
+                    </Link>
+                    <div className="flex gap-2">
+                        <div className="scale-90">
+                            <BookCall />
+
+                        </div>
+                        <ShimmerButton className="shadow-2xl">
+                            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-[#1C1F3E] dark:to-[#010313] lg:text-md">
+                                Get Started
+                            </span>
+                        </ShimmerButton>
+                    </div>
                 </div>
                 <div className="space-y-6 text-[#676B93]">
                     <section>
+                        <h1 className="text-3xl text-center mb-2 font-bold mt-8 text-gray-400">Refund Policy</h1>
+
                         <h2 className="text-lg font-medium mb-2">At Zapllo Technologies Private Limited, we strive to ensure satisfaction with our services. However, we understand that there may be circumstances where a refund is requested. Please see below for our policy on refunds.</h2>
                     </section>
                     <section className="">

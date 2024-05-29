@@ -65,7 +65,7 @@ export const StickyScroll = ({
       </div>
       <motion.div
         className={cn(
-          "h-full w-[70%] ml-4 overflow-y-auto scrollbar-hide",
+          "h-full w-[100%] ml-4 overflow-y-auto scrollbar-hide",
           contentClassName
         )}
         ref={ref}

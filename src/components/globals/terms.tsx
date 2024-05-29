@@ -1,14 +1,32 @@
+import Link from "next/link";
+import { BookCall } from "../ui/bookcall";
+import ShimmerButton from "../magicui/shimmer-button";
 
 export default function TermsandConditions() {
     return (
-        <main className="bg- py-16 mt-24 px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
+        <main className="bg- py-16  px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
             <div className="max-w-4xl mx-auto">
                 <div className="md:flex items-center justify-between mb-8">
-                    <img alt="Zapllo Technologies" className="h-12" src="/logo.png" />
-                    <h1 className="md:text-3xl text-2xl  text-gray-400 md:mt-0 mt-8 font-bold">Terms and Conditions</h1>
+                    <Link href='/'>
+                        <img alt="Zapllo Technologies" className="h-7 cursor-pointer" src="/logo.png" />
+                    </Link>
+                    <div className="flex gap-2">
+                        <div className="scale-90">
+                            <BookCall />
+
+                        </div>
+                        <ShimmerButton className="shadow-2xl">
+                            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-[#1C1F3E] dark:to-[#010313] lg:text-md">
+                                Get Started
+                            </span>
+                        </ShimmerButton>
+                    </div>
+
                 </div>
                 <div className="space-y-6 text-[#676B93]">
                     <section>
+                        <h1 className="text-3xl text-center mb-2 font-bold mt-8 text-gray-400">Terms & Conditions</h1>
+
                         <h2 className="text-xl font-bold mb-2">Introduction</h2>
                         <p className="">
                             Welcome to Zapllo Technologies Private Limited. By accessing our website or using our services, you agree
@@ -64,19 +82,19 @@ export default function TermsandConditions() {
                     <section>
                         <h2 className="text-xl font-bold mb-2">Governing Law</h2>
                         <p>
-                           These Terms and Conditions are governed by the laws of the jurisdiction where Zapllo Technologies Private Limited is established, without regard to its conflict of law provisions.
+                            These Terms and Conditions are governed by the laws of the jurisdiction where Zapllo Technologies Private Limited is established, without regard to its conflict of law provisions.
                         </p>
                     </section>
                     <section>
                         <h2 className="text-xl font-bold mb-2">Changes to Terms and Conditions</h2>
                         <p>
-                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time.
+                            We reserve the right, at our sole discretion, to modify or replace these Terms at any time.
                         </p>
                     </section>
                     <section>
                         <h2 className="text-xl font-bold mb-2">Contact Us</h2>
                         <p>
-                        For any questions about these Terms, please contact us.
+                            For any questions about these Terms, please contact us.
                         </p>
                     </section>
                 </div>

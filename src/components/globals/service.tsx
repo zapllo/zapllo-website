@@ -84,9 +84,9 @@ export default function Service() {
                         <p className="mt-2 w-[300px] text-start md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                     </motion.div>
                 </div>
-                <div className='flex items-center justify-center m-4'>
+                {/* <div className='flex items-center justify-center m-4'>
                     <IconCloud iconSlugs={slugs}  />
-                </div>
+                </div> */}
                 <div className='flex flex-col'>
                     <motion.div
                         className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"

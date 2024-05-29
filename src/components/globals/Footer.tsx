@@ -12,8 +12,8 @@ import Link from 'next/link'
 export default function Footer() {
     return (
         <footer className='max-w-full p-4 w-full'>
-            <Separator />
-            <div className='grid grid-cols-1 md:grid-cols-3 p-6 gap-12'>
+            <Separator className='absolute w-[95%] flex mt-6' />
+            <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
                 <div className='Zapllo my-8  '>
                     <img src='logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
@@ -37,7 +37,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className='empty rectangle'>
-                    <img src='emptyrec.png' className='h-[90%]' />
+                    <img src='emptyrec.png' className='h-[100%]' />
                 </div>
                 <div className=' overflow-hidden my-8  '>
                     <div className='flex gap-6'>
@@ -57,8 +57,9 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-            <Separator />
-            <div className='md:flex md:justify-between p-6'>
+            <Separator className='absolute w-[95%] flex -mt-6' />
+
+            <div className='md:flex md:justify-between px-6 '>
                 <div className='md:max-w-[600px]'>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs mt-4'>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
