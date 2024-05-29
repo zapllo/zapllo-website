@@ -87,7 +87,7 @@ export const MovingCards = ({
             >
                 {items.map((item, idx) => (
                     <li
-                        className="w-[350px] max-w-full  relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-700 bg-gradient-to-b from-[#0A0D28]  to-[#05071E] px-8 py-6 md:w-[450px]"
+                        className="w-[350px] max-w-full border-r-0 border-l-0  relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-700 bg-gradient-to-b from-[#0A0D28]  to-[#05071E] px-8 py-6 md:w-[450px]"
 
                         key={item.name}
                     >

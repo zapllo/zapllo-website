@@ -6,9 +6,23 @@ export default function OfficialPartners() {
     return (
         <div className=''>
             <div>
-                <AnimatedShinyDiv  className='bg-gradient-to-r from-[#815BF5] px-12 py-6 md:rounded-2xl  to-[#FC8929] grid lg:grid-cols-2 grid-cols-1 z-10 max-w-[1200px] gap-4  '>
+                <AnimatedShinyDiv className='bg-gradient-to-r from-[#815BF5] px-12 py-6 md:rounded-2xl  to-[#FC8929] grid lg:grid-cols-2 grid-cols-1 z-10 max-w-[1200px] gap-4  '>
                     <h1 className='text-4xl font-semibold mt-4'>Official Business Partners</h1>
-                    <img src='partners.png' className='h-20 md:ml-auto' />
+                    <div className='grid grid-cols-3 gap-2 ml-auto'>
+                        <div>
+                            <img src='blackrec.png' className='h-20 md:ml-auto' />
+                            <img src='notionsvg.png' className='absolute h-12 -mt-16 ml-4' />
+                        </div>
+                        <div>
+                            <img src='blackrec.png' className='h-20 md:ml-auto' />
+                            <img src='slacksvg.png' className='absolute h-12 -mt-16 ml-4' />
+                        </div>
+                        <div>
+                            <img src='blackrec.png' className='h-20 md:ml-auto' />
+                            <img src='zapier.png' className='absolute h-5 -mt-12 ml-1' />
+                        </div>
+                    </div>
+
                 </AnimatedShinyDiv>
             </div>
             <div className='flex justify-center'>

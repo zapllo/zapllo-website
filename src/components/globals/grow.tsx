@@ -1,4 +1,5 @@
 import React from 'react'
+import CrossedText from './cross'
 
 export default function Grow() {
     return (
@@ -32,8 +33,9 @@ export default function Grow() {
             </div>
             <h1 className='mt-12 md:text-5xl font-bold text-center'>Grow your active subscribers</h1>
             <div className='md:flex hidden md:justify-center gap-8 mt-12 '>
-                <img src='line.png' className='absolute w-10/12 mt-4' />
-                <img src='/brands/fi.png' className='w-[60%]' />
+                {/* <img src='line.png' className='absolute w-10/12 mt-4' /> */}
+            <CrossedText />
+
             </div>
         </div>
     )
