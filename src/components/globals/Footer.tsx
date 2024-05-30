@@ -68,7 +68,7 @@ export default function Footer() {
             <div className='md:flex md:justify-between px-6 '>
                 <div className='md:max-w-[600px]'>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>
-                    <p className='text-[#676B93] text-xs mt-4'>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
+                    <p className='text-[#676B93] text-xs '>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
                 <div className='flex gap-3'>
                     <Link href='/disclaimer'>
