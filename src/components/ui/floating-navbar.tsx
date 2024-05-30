@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from 'next/navigation'
 import Image from "next/image";
 import ShimmerButton from "../magicui/shimmer-button";
+import ShineBorder from "../magicui/shine-border";
 
 export const FloatingNav = ({
     navItems,
@@ -47,30 +48,29 @@ export const FloatingNav = ({
                         >
                             <span className="block sm:hidden">{navItem.icon}</span>
                             <span className="hidden sm:block text-md">{navItem.name}</span>
-                            {/* Glowing effect */}
                             {pathname === navItem.link && (
                                 <span className="absolute bottom-0 left-0 top-8 w-full h-0.5 bg-purple-400   rounded-sm shadow-purple-400 shadow-[4.0px_-2.0px_8.0px_rgba(0,0,0,0.38)]" />
                             )}
                         </Link>
                     ))}
-
-
                 </motion.div>
-
                 <div className="py-3">
-                    <Image src='/logo.png' height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
+                    <Link href='/'>
+                        <Image src='/logo.png' height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
+                    </Link>
                 </div>
                 <Link
                     href="/dashboard"
                     className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
                 >
-
-                    <ShimmerButton className="shadow-2xl">
-                        <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-[#1C1F3E] dark:to-[#010313] lg:text-md">
+                    <ShineBorder borderRadius={50}
+                        className="text-center text-xl font-bold capitalize"
+                        color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+                    >
+                        <h1>
                             Get Started
-                        </span>
-                    </ShimmerButton>
-
+                        </h1>
+                    </ShineBorder>
                 </Link>
             </motion.div>
         </AnimatePresence>

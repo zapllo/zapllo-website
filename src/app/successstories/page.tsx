@@ -13,9 +13,9 @@ import React from 'react'
 
 export default function SuccessStories() {
     return (
-        <main className="bg-[#] bg-[#05071E] mx-auto h-full z-10 overflow-hidden">
+        <main className=" bg-[#05071E] mx-auto h-full z-10 overflow-hidden">
             <FloatingNavbar />
-            <Image src='/mask.png' height={1000} className=" absolute overflow-hidden    w-full 0" width={1000} alt="Background mask for zapllo automation" />
+            <Image src='/mask.png' height={1000} className=" absolute overflow-hidden -mt-56  z-10  w-full 0" width={1000} alt="Background mask for zapllo automation" />
             <div className='flex justify-center md:max-w-[1300px] w-full'>
                 <div className=' w-full  lg:justify-center md:mx-4 mt-32'>
                     <h1 className='lg:text-center text-start  bg-gradient-to-r mx-6 md:mx-0 from-[#815BF5] via-[#FC8929]  to-[#FC8929] bg-clip-text text-transparent font-semibold text-3xl lg:text-3xl'> Success Stories</h1>

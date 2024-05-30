@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import IconCloud from '../magicui/icon-cloud';
+import { Eye } from 'lucide-react';
 
 const cardVariants = (direction: string, delay: any) => ({
     hidden: { opacity: 0, x: direction === 'left' ? -200 : 200 },
@@ -57,63 +58,128 @@ export default function Service() {
             <div className="flex flex-col md:flex-row justify-center mt-8">
                 <div className='flex flex-col'>
                     <motion.div
-                        className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"
+                        className=" bg-[#0A0D28]  m-4"
                         initial="hidden"
                         animate="visible"
                         variants={cardVariants('left', 0.2)}
                     >
-                        <h2 className="text-2xl font-bold">Interactive Dashboard</h2>
-                        <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        <div>
+                            <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <div className=' flex justify-end'>
+                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
+                                    <Eye className='text-black' />
+                                </div>
+                            </div>
+                        </div>
+                        <div className='p-8 rounded-lg shadow-lg'>
+                            <h2 className="text-xl text-start font-bold">Interactive Dashboard</h2>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        </div>
                     </motion.div>
                     <motion.div
-                        className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"
+                        className=" bg-[#0A0D28] mt-32 m-4"
                         initial="hidden"
                         animate="visible"
-                        variants={cardVariants('left', 0.6)}
+                        variants={cardVariants('left', 1.2)}
                     >
-                        <h2 className="text-2xl font-bold">Interactive Dashboard</h2>
-                        <p className="mt-2 w-[300px] text-start md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        <div>
+                            <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <div className=' flex justify-end'>
+                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
+                                    <Eye className='text-black' />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className='p-8 rounded-lg shadow-lg'>
+                            <h2 className="text-2xl text-start font-bold">3rd Oversight</h2>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        </div>
                     </motion.div>
                     <motion.div
-                        className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"
+                        className=" bg-[#0A0D28] mt-32 m-4"
                         initial="hidden"
                         animate="visible"
-                        variants={cardVariants('left', 0.8)}
+                        variants={cardVariants('left', 2.2)}
                     >
-                        <h2 className="text-2xl font-bold">Interactive Dashboard</h2>
-                        <p className="mt-2 w-[300px] text-start md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        <div>
+                            <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <div className=' flex justify-end'>
+                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
+                                    <Eye className='text-black' />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className='p-8 rounded-lg shadow-lg'>
+                            <h2 className="text-2xl text-start font-bold">5th Oversight</h2>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        </div>
                     </motion.div>
                 </div>
                 {/* <div className='flex items-center justify-center m-4'>
                     <IconCloud iconSlugs={slugs}  />
                 </div> */}
                 <div className='flex flex-col'>
-                    <motion.div
-                        className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"
+                <motion.div
+                        className=" bg-[#0A0D28] mt-32 m-4"
                         initial="hidden"
                         animate="visible"
-                        variants={cardVariants('right', 1.0)}
+                        variants={cardVariants('right', 0.6)}
                     >
-                        <h2 className="text-2xl font-bold">Interactive Dashboard</h2>
-                        <p className="mt-2 w-[300px] text-start md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        <div>
+                        <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <div className=' flex justify-end'>
+                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
+                                    <Eye className='text-black' />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className='p-8 rounded-lg shadow-lg'>
+                            <h2 className="text-2xl text-start font-bold">2nd Oversight</h2>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        </div>
                     </motion.div>
                     <motion.div
-                        className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"
+                        className=" bg-[#0A0D28] mt-32 m-4"
                         initial="hidden"
                         animate="visible"
-                        variants={cardVariants('right', 1.4)}
+                        variants={cardVariants('right', 1.8)}
                     >
-                        <h2 className="text-2xl font-bold">Interactive Dashboard</h2>
-                        <p className="mt-2 w-[300px] text-start md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        <div>
+                        <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <div className=' flex justify-end'>
+                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
+                                    <Eye className='text-black' />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className='p-8 rounded-lg shadow-lg'>
+                            <h2 className="text-2xl text-start font-bold">4th Oversight</h2>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        </div>
                     </motion.div>
                     <motion.div
-                        className="bg-[#0A0D28] p-6 m-4 rounded-lg shadow-lg"
+                        className=" bg-[#0A0D28] mt-32 m-4"
                         initial="hidden"
                         animate="visible"
-                        variants={cardVariants('right', 1.6)}
+                        variants={cardVariants('right', 2.8)}
                     >
-                        <h2 className="text-2xl font-bold">Interactive Dashboard</h2>
-                        <p className="mt-2 w-[300px] text-start md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        <div>
+                        <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <div className=' flex justify-end'>
+                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
+                                    <Eye className='text-black' />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className='p-8 rounded-lg shadow-lg'>
+                            <h2 className="text-2xl text-start font-bold">6th    Oversight</h2>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                        </div>
                     </motion.div>
                 </div>
             </div>
