@@ -10,7 +10,7 @@ export default function NotFound() {
             <div className='text-center mt-32 p-10 flex justify-center'>
                 <h2 className='font-bold'>Oops! Not Found</h2>
             </div>
-            <p className='text-center p-10'>Could not find requested resource,<br /> We <area shape="" coords="" href="" alt="" />re working our best to keep your experience seamless</p>
+            <p className='text-center p-10'>Could not find requested resource,<br /> We are working our best to keep your experience seamless</p>
             <Link href="/" className='flex justify-center'>
                 <img src='/logo.png' className='h-12' />
             </Link>
