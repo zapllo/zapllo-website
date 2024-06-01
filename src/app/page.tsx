@@ -1,6 +1,5 @@
 import Footer from "@/components/globals/Footer";
 import Arrow from "@/components/globals/arrow";
-import ArrowNodes from "@/components/globals/arrownodes";
 import Automate from "@/components/globals/automate";
 import Faq from "@/components/globals/faq";
 import Features from "@/components/globals/features";
