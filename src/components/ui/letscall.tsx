@@ -3,7 +3,7 @@ import TextShimmer from "@/components/magicui/animated-shiny-text";
 import { ArrowRightIcon, ChatBubbleIcon } from "@radix-ui/react-icons";
 import { MessageSquare, Phone } from "lucide-react";
 
-export async function LetsCall() {
+export  function LetsCall() {
     return (
         <div className="z-10 flex  items-center justify-center">
             <div

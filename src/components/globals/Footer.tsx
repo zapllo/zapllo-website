@@ -1,4 +1,6 @@
-import React from 'react'
+"use client"
+
+import React, { useState } from 'react'
 import { Separator } from '../ui/separator'
 import ShimmerButton from '../magicui/shimmer-button'
 import { BookCall } from '../ui/bookcall'
@@ -8,9 +10,11 @@ import { BookCall2 } from '../ui/bookdemo'
 import { LetsCall } from '../ui/letscall'
 import Link from 'next/link'
 import ShineBorder from '../magicui/shine-border'
+import Newsletter from './newsletter'
 
 
 export default function Footer() {
+    
     return (
         <footer className='max-w-full p-4 w-full'>
             <Separator className='absolute w-[95%] flex mt-6' />
@@ -65,10 +69,7 @@ export default function Footer() {
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
-                    <div className='flex'>
-                        <Input placeholder='Enter Your Email' className='mt-6 h-12 rounded-r-none' />
-                        <Button className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6  rounded-xl rounded-l-none mt-6 ' >Subscribe</Button>
-                    </div>
+                    <Newsletter />
                 </div>
             </div>
             <Separator className='absolute w-[95%] flex -mt-6' />
@@ -96,6 +97,6 @@ export default function Footer() {
                     </Link>
                 </div>
             </div>
-        </footer>
+        </footer >
     )
 }

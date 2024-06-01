@@ -97,7 +97,7 @@ const config = {
         },
         "shimmer": {
           "0%, 90%, 100%": {
-            "background-position": "calc(-100% - var(--shimmer-width)) 0",
+            "background-position": "calc(-100% - var(--shimmer-width)) 0 ",
           },
           "30%, 60%": {
             "background-position": "calc(100% + var(--shimmer-width)) 0",
@@ -149,7 +149,7 @@ const config = {
         'skew-scroll': 'skew-scroll 20s linear infinite',
         "accordion-up": "accordion-up 0.2s ease-out",
         "gradient": "gradient 8s linear infinite",
-        "shimmer": "shimmer 8s infinite",
+        "shimmer": "shimmer 8s infinite ",
         "shimmerPartner": "shimmer 15s infinite",
         "scroll": "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
         "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import LoaderLayout from "@/components/globals/multi-step-loader";
 
 
 const inter = Space_Grotesk({ subsets: ["latin"] });
@@ -18,15 +19,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-        {/* <FloatingNavbar /> */}
-        <body className={inter.className}>{children}</body>
-      </ThemeProvider>
+      <LoaderLayout>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {/* <FloatingNavbar /> */}
+          <body className={inter.className}>{children}</body>
+        </ThemeProvider>
+      </LoaderLayout>
     </html>
   );
 }
