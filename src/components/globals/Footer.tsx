@@ -65,7 +65,7 @@ export default function Footer() {
 
                         <div>
                             <h1 className='text-lg   font-bold'>Subscribe to Zapllo Insider</h1>
-                            <p className='text-[#676B93] text-xs mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI to get 10X results</p>
+                            <p className='text-[#676B93] text-xs mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI for 10X results</p>
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
