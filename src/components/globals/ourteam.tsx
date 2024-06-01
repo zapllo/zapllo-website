@@ -46,7 +46,7 @@ export default function OurTeam() {
                 </div>
                 <div className='flex justify-between mt-8 ml-12 w-[900px] '>
                     <div className='rounded-full bg-[#0A0D28] mt-4 -ml-28  h-32 w-32'>
-                        <img src='/avatar.png' className='' />
+                        <img src='/notion.png' className='' />
                         <h1>Dianne Russell</h1>
                     </div>
                     <div className=''>
