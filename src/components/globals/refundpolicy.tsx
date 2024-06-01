@@ -3,6 +3,7 @@ import ShimmerButton from "../magicui/shimmer-button";
 import { BookCall } from "../ui/bookcall";
 
 export default function RefundPolicy() {
+    
     return (
         <main className="bg- py-16  px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
             <div className="max-w-4xl mx-auto">
@@ -22,9 +23,9 @@ export default function RefundPolicy() {
                         </ShimmerButton>
                     </div>
                 </div>
-                <div className="space-y-6 text-[#676B93]">
+                <div className="space-y-6 mt-12 text-[#676B93]">
                     <section>
-                        <h1 className="text-3xl text-center mb-2 font-bold mt-8 text-gray-400">Refund Policy</h1>
+                        <h1 className="text-3xl text-start mb-2 font-bold mt-8 text-gray-400">Refund Policy</h1>
 
                         <h2 className="text-lg font-medium mb-2">At Zapllo Technologies Private Limited, we strive to ensure satisfaction with our services. However, we understand that there may be circumstances where a refund is requested. Please see below for our policy on refunds.</h2>
                     </section>
