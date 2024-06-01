@@ -15,11 +15,6 @@ export function FloatingNavbar() {
       icon: <Home className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
     {
-      name: "Templates",
-      link: "/Templates",
-      icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
-    },
-    {
       name: "Success Stories",
       link: "/successstories",
       icon: (

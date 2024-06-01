@@ -7,6 +7,7 @@ import { Button } from '../ui/button'
 import { BookCall2 } from '../ui/bookdemo'
 import { LetsCall } from '../ui/letscall'
 import Link from 'next/link'
+import ShineBorder from '../magicui/shine-border'
 
 
 export default function Footer() {
@@ -32,14 +33,21 @@ export default function Footer() {
                         <img src="facebook.png" alt="" className='h-8' />
                         <img src="instagram.png" alt="" className='h-8' />
                     </div>
-                    <div className='flex gap-6 mt-8'>
-                        <ShimmerButton className="shadow-2xl">
-                            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-[#1C1F3E] dark:to-[#010313] lg:text-md">
-                                Get Started
-                            </span>
-                        </ShimmerButton>
+                    <div className='flex gap-4 mt-8'>
+                        <Link
+                            href="/dashboard"
+                            className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+                        >
+                            <ShineBorder borderRadius={50}
+                                className="text-center text-xl font-bold capitalize"
+                                color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+                            >
+                                <h1>
+                                    Get Started
+                                </h1>
+                            </ShineBorder>
+                        </Link>
                         <LetsCall />
-
                     </div>
                 </div>
                 <div className='empty rectangle'>

@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link";
 import ShimmerButton from "../magicui/shimmer-button";
 import { BookCall } from "../ui/bookcall";
@@ -5,6 +7,7 @@ import { BookCall } from "../ui/bookcall";
 export default function ContactUs() {
     return (
         <main className="bg- py-16   px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
+            
             <div className="max-w-4xl mx-auto">
                 <div className="md:flex items-center justify-between mb-8">
                     <Link href='/'>
@@ -39,7 +42,7 @@ export default function ContactUs() {
                             Address: 166A Dum Dum Park, PO - Bangur Avenue, Kolkata - 700055, India
                         </p>
                         <p className="mb-2">
-                        Feel free to contact them for any questions or support related to their software consultancy/development, automation solutions, training, or any other services they offer.
+                            Feel free to contact them for any questions or support related to their software consultancy/development, automation solutions, training, or any other services they offer.
                         </p>
                     </section>
                 </div>

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { DM_Sans, Inter, Space_Grotesk } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 
-import { FloatingNavbar } from "@/components/globals/navbar";
 
 const inter = Space_Grotesk({ subsets: ["latin"] });
 
