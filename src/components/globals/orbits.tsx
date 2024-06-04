@@ -23,7 +23,8 @@ export function OrbitingCirclesDemo() {
         delay={10}
         radius={80}
       >
-        <img src="/slack.png" className="h- w-full" />
+        <Icons.notion />
+
 
       </OrbitingCircles>
 
@@ -34,7 +35,8 @@ export function OrbitingCirclesDemo() {
         radius={190}
         duration={20}
       >
-        <Icons.notion />
+        <img src="/slack.png" className="h- w-full" />
+
       </OrbitingCircles>
       <OrbitingCircles
         className="h-[50px] w-[50px] border-none bg-transparent"
