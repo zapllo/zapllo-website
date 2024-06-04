@@ -14,6 +14,7 @@ export const MovingCards = ({
         quote: string;
         name: string;
         title: string;
+        image: string;
     }[];
     direction?: "left" | "right";
     speed?: "fast" | "normal" | "slow";
@@ -97,7 +98,7 @@ export const MovingCards = ({
                                 className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
                             ></div>
                             <div className="flex mb-6  gap-4">
-                                <img src="avtar.png" className="h-20" />
+                                <img src={item.image} className="h-20" />
                                 <span className=" text-lg leading-[1.6] text-white -400 font-normal">
                                     {item.name}
                                     <br />

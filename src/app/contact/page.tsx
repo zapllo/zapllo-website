@@ -30,15 +30,15 @@ export default function Contact() {
                                 <p className='text-[#676B93] mx-4  mt-4'>Our team is on standby to guide you through the process of content creation, monetization, and digital strategy that places you among the top 1% of creators.</p>
                                 <div className='grid grid-cols-1 gap-y-4 mt-8'>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><MapPin /> </div>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><img src='deep.png' className='h-6' /> </div>
                                         <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Craft endless content that elevates your brand voice.</h1>
                                     </div>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><MapPin /> </div>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><img src='deep.png' className=' w-7 h-6' /> </div>
                                         <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Gain valuable insights and connections that go beyond standard courses.</h1>
                                     </div>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><MapPin /> </div>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><img src='deep.png' className='h-6 w-7' /> </div>
                                         <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Transform your content into profitable opportunities for your brand.</h1>
                                     </div>
                                 </div>

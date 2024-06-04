@@ -18,22 +18,21 @@ const waveVariants = {
     }),
 };
 
-const SignalIcon: React.FC = () => {
+export const SignalIcon = ({ imgSrc }: { imgSrc: string }) => {
     const renderWaveCircles = () => {
         return [0, 1, 2].map((i) => (
             <>
-             
                 <motion.div
-                    key={i}
-                    className="absolute rounded-full  border-[#53A1F3] border-2 h-16 w-16"
+                    key={`wave1-${i}`}
+                    className="absolute rounded-full border-[#815BF5] border-2 h-16 w-16"
                     custom={i}
                     initial="hidden"
                     animate="visible"
                     variants={waveVariants}
                 />
                 <motion.div
-                    key={i}
-                    className="absolute rounded-full  border-[#53A1F3] border-4 h-20 w-20"
+                    key={`wave2-${i}`}
+                    className="absolute rounded-full border-[#815BF5] border-4 h-20 w-20"
                     custom={i}
                     initial="hidden"
                     animate="visible"
@@ -46,12 +45,14 @@ const SignalIcon: React.FC = () => {
     return (
         <div className="relative flex items-center justify-center h-20 w-20">
             {renderWaveCircles()}
-            <div className="absolute h-16 w-16  rounded-full flex items-center justify-center">
-            <div className="absolute h-16 w-16 border border-blue-400 z-[100] rounded-full flex items-center justify-center"/>
-            <div className="absolute h-[60px] w-[60px] border border-blue-400 z-[100] rounded-full flex items-center justify-center"/>
-            <div className="absolute h-14 w-14 border border-blue-400 z-[100] rounded-full flex items-center justify-center"/>
-            <div className="absolute h-16 w-16 border bg-[#4CD5FA] border-blue-700  rounded-full flex items-center justify-center"/>
-                <span className="text-white text-2xl z-[100]">Icon</span>
+            <div className="absolute h-16 w-16 rounded-full flex items-center justify-center">
+                <div className="absolute h-16 w-16 border border-[#815BF5] z-[100] rounded-full flex items-center justify-center" />
+                <div className="absolute h-[60px] w-[60px] border border-[#815BF5] z-[100] rounded-full flex items-center justify-center" />
+                <div className="absolute h-14 w-14 border border-[#815BF5] z-[100] rounded-full flex items-center justify-center" />
+                <div className="absolute h-16 w-16 border bg-[#815BF5] border-[#815BF5] rounded-full flex items-center justify-center" />
+                <span className="text-white text-2xl z-[100]">
+                    <img src={imgSrc} alt="signal" className="h-14 w-14 rounded-full" />
+                </span>
             </div>
         </div>
     );

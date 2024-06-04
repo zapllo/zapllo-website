@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { FormEvent, useRef, useState } from 'react'
 import { Separator } from '../ui/separator'
 import ShimmerButton from '../magicui/shimmer-button'
 import { BookCall } from '../ui/bookcall'
@@ -11,9 +11,22 @@ import { LetsCall } from '../ui/letscall'
 import Link from 'next/link'
 import ShineBorder from '../magicui/shine-border'
 import Newsletter from './newsletter'
+import { motion } from 'framer-motion'
 
 
 export default function Footer() {
+  
+
+    const gearVariant = {
+        hidden: { scale: 0.98 },
+        visible: {
+            scale: 1,
+            transition: {
+                duration: 0.2,
+                ease: "easeIn"
+            }
+        }
+    };
 
     return (
         <footer className='max-w-full p-4 w-full overflow-hidden'>
@@ -55,7 +68,12 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className='empty rectangle'>
-                    <img src='emptyrec.png' className='h-[100%]' />
+                    <motion.div className='-ml-12' initial="hidden" animate="visible" variants={gearVariant}>
+
+                        <img src='shards.png' className='absolute -mt-40  h-56' />
+
+                    </motion.div>
+                    <img src='gear.png' className='h-[100%]' />
                 </div>
                 <div className=' overflow-visible my-8  '>
                     <div className='flex gap-6'>

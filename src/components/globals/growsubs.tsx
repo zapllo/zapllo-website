@@ -15,7 +15,7 @@ export default function GrowSubs() {
             <div className='flex justify-center'>
                 <img src='zapllo.png' className='md:h-48' />
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+            {/* <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className=''>
                     <img src='rect.png' />
                     <h1 className='mt-4 text-3xl font-semibold '>Convert</h1>
@@ -34,7 +34,7 @@ export default function GrowSubs() {
                     <h2 className='mt-2'>Active Subscribers</h2>
                     <p className='text-xs mt-2'>Transform new subscribers into brand ambassadors with our referral incentives. Reward sharing, fueling organic growth and rapid newsletter expansion. Harness the conversion power of trusted, friend-referred subscribers.</p>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -89,11 +89,10 @@ export const InfiniteMoving = ({
             className=" relative w-screen   "
           /> */}
         <div className=' text-3xl font-bold flex gap-2 space-x-6 uppercase'>
-         <h1>😍 Engaged Readers</h1>
-         <h1>😍 Engaged Readers</h1>
-
-         <h1>😍 Engaged Readers</h1>
-
+          <h1>😍 Engaged Readers</h1>
+          <h1>😍 Engaged Readers</h1>
+          <h1>😍 Engaged Readers</h1>
+          {/* <img src='deep.png' /> */}
         </div>
       </ul>
     </div>

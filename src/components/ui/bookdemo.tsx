@@ -23,7 +23,7 @@ export async function BookCall2() {
               </div> */}
                             <AnimatedTooltipPreview />
                         </div>
-                        <h1 className="">
+                        <h1 className=" mt-1">
                         Book Your Call
                             </h1></span>
 

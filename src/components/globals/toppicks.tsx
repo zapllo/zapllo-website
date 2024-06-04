@@ -36,16 +36,16 @@ const content = [
             </div>
         ),
     },
-    {
-        title: "",
-        description:
-            "",
-        content: (
-            <div className="h-full w-[100%] object-contain">
-                <img src="/automationso.png" />
-            </div>
-        ),
-    },
+    // {
+    //     title: "",
+    //     description:
+    //         "",
+    //     content: (
+    //         <div className="h-full w-[100%] object-contain">
+    //             <img src="/automationso.png" />
+    //         </div>
+    //     ),
+    // },
 ];
 
 export function TopPicks() {

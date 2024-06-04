@@ -54,7 +54,15 @@ const slugs = [
     "figma",
 ];
 
+
 export default function Service() {
+    const imgSrc1 = 'deep.png';
+    const imgSrc2 = 'Aditya1.png';
+    const imgSrc3 = 'Jas.png';
+    const imgSrc4 = 'Jas.png';
+    const imgSrc5 = 'Jas.png';
+    const imgSrc6 = 'Jas.png';
+
     return (
         <div className='text-center pt-12 bg-[#05071E] justify-center min-h-screen'>
             <FloatingWhatsApp phoneNumber="+917064267635" accountName="Shubhodeep" avatar='/avatar.png' darkMode />
@@ -73,15 +81,16 @@ export default function Service() {
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
 
-                            <div className=' flex -mt-12 justify-end'>
+                            <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
-                                    <SignalIcon />
+                                    <SignalIcon imgSrc={imgSrc1} />
+
 
                                 </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
-                            <h2 className="text-xl text-start font-bold">Interactive Dashboard</h2>
+                            <h2 className="text-xl text-start font-bold">Interactive Notion Dashboards</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                         </div>
                     </motion.div>
@@ -93,15 +102,17 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex -mt-12 justify-end'>
+                            <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
-                                    <SignalIcon />
+                                    <SignalIcon imgSrc={imgSrc2} />
+
+
 
                                 </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
-                            <h2 className="text-2xl text-start font-bold">3rd Oversight</h2>
+                            <h2 className="text-2xl text-start font-bold">Done for you Custom Automations</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                         </div>
                     </motion.div>
@@ -113,15 +124,16 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex -mt-12 justify-end'>
-                            <div className='flex justify-center'>
-                                <SignalIcon />
+                            <div className=' flex -mt-10  ml-[80%]'>
+                                <div className='flex justify-center'>
+                                    <SignalIcon imgSrc={imgSrc3} />
 
-                            </div>
+
+                                </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
-                            <h2 className="text-2xl text-start font-bold">5th Oversight</h2>
+                            <h2 className="text-2xl text-start font-bold">Cross Platform Integrations</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                         </div>
                     </motion.div>
@@ -138,15 +150,16 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex -mt-12 justify-end'>
-                            <div className='flex justify-center'>
-                                <SignalIcon />
+                            <div className=' flex -mt-10  ml-[80%]'>
+                                <div className='flex justify-center'>
+                                    <SignalIcon imgSrc={imgSrc4} />
 
-                            </div>
+
+                                </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
-                            <h2 className="text-2xl text-start font-bold">2nd Oversight</h2>
+                            <h2 className="text-2xl text-start font-bold">Generative AI</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                         </div>
                     </motion.div>
@@ -158,15 +171,16 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex -mt-12 justify-end'>
-                            <div className='flex justify-center'>
-                                <SignalIcon />
+                            <div className=' flex -mt-10  ml-[80%]'>
+                                <div className='flex justify-center'>
+                                    <SignalIcon imgSrc={imgSrc5} />
 
-                            </div>
+
+                                </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
-                            <h2 className="text-2xl text-start font-bold">4th Oversight</h2>
+                            <h2 className="text-2xl text-start font-bold">Powerful Notion Teamspaces</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                         </div>
                     </motion.div>
@@ -178,15 +192,16 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex -mt-12 justify-end'>
-                            <div className='flex justify-center'>
-                                <SignalIcon />
+                            <div className=' flex -mt-10  ml-[80%]'>
+                                <div className='flex justify-center'>
+                                    <SignalIcon imgSrc={imgSrc6} />
 
-                            </div>
+
+                                </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
-                            <h2 className="text-2xl text-start font-bold">6th    Oversight</h2>
+                            <h2 className="text-2xl text-start font-bold">Business Operations</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
                         </div>
                     </motion.div>
@@ -195,3 +210,10 @@ export default function Service() {
         </div>
     );
 }
+
+const items = [
+    {
+        image: 'deep.png',
+    },
+
+];

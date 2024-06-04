@@ -3,7 +3,7 @@ import { IconProps } from "@radix-ui/react-icons/dist/types";
 
 export function OrbitingCirclesDemo() {
   return (
-    <div className="relative flex h-[480px] mt-4 w-full  max-w-[32rem] items-center justify-center overflow-hidden rounded-lg    md:shadow-xl">
+    <div className="relative flex h-[480px] mt-4 ml-24 w-[100%] max-w-[32rem] items-center justify-center overflow-hidden rounded-lg    md:shadow-xl">
       <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-8xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
         <img src='/logoonly.png' className="h-12 opacity-65" />
       </span>

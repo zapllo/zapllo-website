@@ -21,29 +21,34 @@ const testimonials = [
             "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief,  despair.",
         name: "Dianne Russell",
         title: "Marketing Coordinator",
+        image: 'deep.png'
     },
     {
         quote:
             "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it  winter of despair.",
         name: "Dianne Russell",
         title: "Marketing Coordinator",
+        image: ''
     },
     {
         quote:
             "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness,as the winter of despair.",
         name: "Dianne Russell",
         title: "Marketing Coordinator",
+        image: '',
     },
     {
         quote:
             "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light,",
         name: "Dianne Russell",
         title: "Marketing Coordinator",
+        image: '',
     },
     {
         quote:
             "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, ",
         name: "Dianne Russell",
         title: "Marketing Coordinator",
+        image: '',
     },
 ];
