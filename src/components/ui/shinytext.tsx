@@ -22,7 +22,11 @@ export async function ShinyText() {
               </div> */}
               <AnimatedTooltipPreview />
             </div>
-            Book Your Call </span>
+
+            <h1 className="mt-1 text-2xl">
+              Book Your Call
+            </h1>
+          </span>
 
         </TextShimmer>
       </div>

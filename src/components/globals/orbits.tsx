@@ -23,7 +23,8 @@ export function OrbitingCirclesDemo() {
         delay={10}
         radius={80}
       >
-        <Icons.notion />
+        <img src="/slack.png" className="h- w-full" />
+
       </OrbitingCircles>
 
       {/* Outer Circles (reverse) */}
@@ -42,7 +43,8 @@ export function OrbitingCirclesDemo() {
         duration={20}
         delay={20}
       >
-        <Icons.gitHub />
+        <img src="/zapier.png" className="h- w-full" />
+
       </OrbitingCircles>
     </div>
   );
