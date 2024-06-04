@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import IconCloud from '../magicui/icon-cloud';
 import { Eye } from 'lucide-react';
 import { FloatingWhatsApp } from 'react-floating-whatsapp'
+import GradientText from '../magicui/gradient';
+import SignalIcon from '../ui/signal';
 
 
 const cardVariants = (direction: string, delay: any) => ({
@@ -56,7 +58,9 @@ export default function Service() {
     return (
         <div className='text-center pt-12 bg-[#05071E] justify-center min-h-screen'>
             <FloatingWhatsApp phoneNumber="+917064267635" accountName="Shubhodeep" avatar='/avatar.png' darkMode />
-            <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold text-3xl'>Services</h1>
+            <GradientText>
+                <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold text-3xl'>Services</h1>
+            </GradientText>
             <h1 className='text-4xl mt-2 font-bold text-white'>Services we Provide</h1>
             <div className="flex flex-col md:flex-row justify-center mt-8">
                 <div className='flex flex-col'>
@@ -68,9 +72,11 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex justify-end'>
-                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
-                                    <Eye className='text-black' />
+
+                            <div className=' flex -mt-12 justify-end'>
+                                <div className='flex justify-center'>
+                                    <SignalIcon />
+
                                 </div>
                             </div>
                         </div>
@@ -87,9 +93,9 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex justify-end'>
-                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
-                                    <Eye className='text-black' />
+                            <div className=' flex -mt-12 justify-end'>
+                                <div className='flex justify-center'>
+                                    <SignalIcon />
 
                                 </div>
                             </div>
@@ -107,11 +113,11 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex justify-end'>
-                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
-                                    <Eye className='text-black' />
+                            <div className=' flex -mt-12 justify-end'>
+                            <div className='flex justify-center'>
+                                <SignalIcon />
 
-                                </div>
+                            </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
@@ -132,11 +138,11 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex justify-end'>
-                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
-                                    <Eye className='text-black' />
+                            <div className=' flex -mt-12 justify-end'>
+                            <div className='flex justify-center'>
+                                <SignalIcon />
 
-                                </div>
+                            </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
@@ -152,11 +158,11 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex justify-end'>
-                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
-                                    <Eye className='text-black' />
+                            <div className=' flex -mt-12 justify-end'>
+                            <div className='flex justify-center'>
+                                <SignalIcon />
 
-                                </div>
+                            </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
@@ -172,11 +178,11 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                            <div className=' flex justify-end'>
-                                <div className='mx-4 p-3 -mt-5 rounded-full bg-blue-300'>
-                                    <Eye className='text-black' />
+                            <div className=' flex -mt-12 justify-end'>
+                            <div className='flex justify-center'>
+                                <SignalIcon />
 
-                                </div>
+                            </div>
                             </div>
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>

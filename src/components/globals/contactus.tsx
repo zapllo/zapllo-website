@@ -1,34 +1,40 @@
-"use client"
-
 import Link from "next/link";
-import ShimmerButton from "../magicui/shimmer-button";
+// import ShimmerButton from "../magicui/shimmer-button";
 import { BookCall } from "../ui/bookcall";
+import ShineBorder from "../magicui/shine-border";
 
 export default function ContactUs() {
     return (
         <main className="bg- py-16   px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
-            
             <div className="max-w-4xl mx-auto">
                 <div className="md:flex items-center justify-between mb-8">
                     <Link href='/'>
                         <img alt="Zapllo Technologies" className="h-7 cursor-pointer" src="/logo.png" />
                     </Link>
-                    <div className="flex gap-2">
-                        <div className="scale-90">
+                    <div className="md:flex justify-start  mt-6 md:mt-0 gap-2">
+                        <div className="scale-90  justify-start flex">
                             <BookCall />
 
                         </div>
-                        <ShimmerButton className="shadow-2xl">
-                            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-[#1C1F3E] dark:to-[#010313] lg:text-md">
-                                Get Started
-                            </span>
-                        </ShimmerButton>
+                        <Link
+                            href="/dashboard"
+                            className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+                        >
+                            <ShineBorder borderRadius={50}
+                                className="text-center text-xl font-bold capitalize"
+                                color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+                            >
+                                <h1>
+                                    Get Started
+                                </h1>
+                            </ShineBorder>
+                        </Link>
                     </div>
 
                 </div>
-                <div className="space-y-6 text-[#676B93]">
+                <div className="space-y-12 mt-12 text-[#676B93]">
                     <section>
-                        <h1 className="md:text-3xl text-center mb-2 text-2xl  text-gray-400 md:mt-0 mt-8 font-bold">Contact Us</h1>
+                    <h1 className="md:text-3xl text-start  mb-6  text-2xl  text-gray-400 md:mt-0 mt-0 font-bold">Contact Us</h1>
 
                         <p className="mb-2">
                             For contacting Zapllo Technologies Private Limited, you can reach out through the following methods for support, inquiries, or any assistance you might need regarding their services:

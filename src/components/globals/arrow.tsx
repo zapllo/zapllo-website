@@ -5,7 +5,7 @@ export default function Arrow() {
         <div className=" w-screen bg-[#0A0D28]">
 
             <div className='relative  mx-'>
-                <img src='/arrow.png' className='lg:absolute hidden lg:block top-[-2%]  transform -translate-x- w-[92%] z-10' />
+                <img src='/arrow.png' className='lg:absolute 2xl:hidden hidden lg:block top-[-2%]  transform -translate-x- w-[92%] z-10' />
                 {/* First div placement */}
                 <div className='hidden   md:grid grid-cols-5'>
                     <div></div>
@@ -43,9 +43,9 @@ export default function Arrow() {
                 </div>
 
                 {/* Third div placement */}
-                <div className='hidden md:grid grid-cols-5 gap-12'>
+                <div className='hidden md:grid  grid-cols-5 gap-12'>
                     <div></div>
-                    <div className='-ml-28 -mt-44 z-20'>
+                    <div className='-ml-36 -mt-[165px] z-20'>
                         <div className='p-10 w-fit rounded-full w- bg-[#141841]'>
                             Hi 4
                         </div>

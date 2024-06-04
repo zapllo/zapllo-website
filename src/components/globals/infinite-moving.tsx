@@ -69,25 +69,32 @@ export const InfiniteMoving = ({
     <div
       ref={containerRef}
       className={cn(
-        'scroller relative z-20  max-w-7xl overflow- ',
+        'scroller relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-7xl overflow- space-x-6  ',
         className
       )}
     >
       <ul
         ref={scrollerRef}
         className={cn(
-          ' flex min-w-full shrink-0 -10 py-4 w-max flex-nowrap',
+          ' flex min-w-full shrink-0 space-x-4 -10 py-4 w-max flex-nowrap',
           start && 'animate-scroll ',
           pauseOnHover && 'hover:[animation-play-state:paused]'
         )}
       >
-       
-          <img
+
+        {/* <img
 
             src='/readers.png'
             alt='readers'
             className=" relative w-screen   "
-          />
+          /> */}
+        <div className=' text-3xl font-bold flex gap-2 space-x-6 uppercase'>
+         <h1>😍 Engaged Readers</h1>
+         <h1>😍 Engaged Readers</h1>
+
+         <h1>😍 Engaged Readers</h1>
+
+        </div>
       </ul>
     </div>
   )

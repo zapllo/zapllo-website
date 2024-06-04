@@ -1,37 +1,39 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import React, { useState } from 'react';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 
 export default function Newsletter() {
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
     const [error, setError] = useState('');
-    console.log(email, 'email')
-    // const subscribeToNewsletter = async () => {
-    //     try {
-    //         const response = await fetch(`/api/subscribe`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ email }),
-    //         });
 
-    //         if (response.ok) {
-    //             setSubscribed(true);
-    //             setEmail('');
-    //         } else {
-    //             const errorData = await response.json();
-    //             console.log(errorData)
-    //             setError(errorData.error);
-    //         }
-    //     } catch (error) {
-    //         setError('An error occurred while subscribing');
-    //     }
-    // };
+    const handleSubscribe = async () => {
+        setSubscribed(false);
+        setError('');
 
+        try {
+            const response = await fetch('/api/addSubscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(data.error || 'Something went wrong');
+                return;
+            }
+
+            setSubscribed(true);
+            setEmail('');
+        } catch (err) {
+            setError('Something went wrong');
+        }
+    };
 
     return (
         <div>
@@ -44,7 +46,7 @@ export default function Newsletter() {
                 />
                 <Button
                     className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6  rounded-xl rounded-l-none mt-6"
-                    
+                    onClick={handleSubscribe}
                 >
                     Subscribe
                 </Button>
@@ -54,5 +56,5 @@ export default function Newsletter() {
                 <p className="text-green-500 text-xs mt-2">Subscribed!</p>
             )}
         </div>
-    )
+    );
 }

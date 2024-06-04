@@ -19,7 +19,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <LoaderLayout>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -29,7 +28,7 @@ export default function RootLayout({
           {/* <FloatingNavbar /> */}
           <body className={inter.className}>{children}</body>
         </ThemeProvider>
-      </LoaderLayout>
+  
     </html>
   );
 }

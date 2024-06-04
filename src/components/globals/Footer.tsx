@@ -14,10 +14,10 @@ import Newsletter from './newsletter'
 
 
 export default function Footer() {
-    
+
     return (
-        <footer className='max-w-full p-4 w-full'>
-            <Separator className='absolute w-[95%] flex mt-6' />
+        <footer className='max-w-full p-4 w-full overflow-hidden'>
+            <Separator className=' w-[95%] flex mt-12' />
             <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
                 <div className='Zapllo my-8  '>
                     <img src='logo.png' className='h-6' />
@@ -37,7 +37,7 @@ export default function Footer() {
                         <img src="facebook.png" alt="" className='h-8' />
                         <img src="instagram.png" alt="" className='h-8' />
                     </div>
-                    <div className='flex gap-4 mt-8'>
+                    <div className='flex -ml-5 md:gap-4 mt-8'>
                         <Link
                             href="/dashboard"
                             className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
@@ -72,26 +72,26 @@ export default function Footer() {
                     <Newsletter />
                 </div>
             </div>
-            <Separator className='absolute w-[95%] flex -mt-6' />
+            <Separator className=' w-[95%] flex -mt-6' />
 
             <div className='md:flex md:justify-between px-6 '>
                 <div className='md:max-w-[600px]'>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs '>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
-                <div className='flex gap-3'>
+                <div className='md:flex grid grid-cols-2 gap-1 md:gap-3'>
                     <Link href='/disclaimer'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Disclaimer</h1>
                     </Link>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
+                    <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1>
                     <Link href='/terms'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Terms and Conditions</h1>
                     </Link>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
+                    <h1 className='text-[#676B93] hidden md:block mt-6 text-xs md:text-sm'>|</h1>
                     <Link href='/refundpolicy'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Refund Policy</h1>
                     </Link>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>|</h1>
+                    <h1 className='text-[#676B93] mt-6 hidden md:block text-xs md:text-sm'>|</h1>
                     <Link href='/contactus'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Contact Us</h1>
                     </Link>

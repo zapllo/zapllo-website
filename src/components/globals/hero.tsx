@@ -40,6 +40,9 @@ export default function Hero() {
             <div className='flex -mt-8 justify-center'>
                 <ShinyText />
             </div>
+            <div className='flex justify-center -mt-8 mb-12 '>
+                <img src='ratings.png' className='md:h-14 h-7' />
+            </div>
             <div className='relative flex -mt-40 md:mt-0  justify-center '>
 
                 <VideoComponent />

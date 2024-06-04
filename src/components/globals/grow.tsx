@@ -21,6 +21,7 @@ export default function Grow() {
                     <img src='/brands/09.png' className='h-auto w-40' />
                     <img src='/brands/10.png' className='h-auto w-40' />
                     <img src='/brands/11.png' className='h-auto w-40' />
+                    <img src='/brands/11.png' className='h-auto block md:hidden w-40' />
                 </div>
             </div>
             <div className='flex justify-center gap-8 mt-12 '>
@@ -28,6 +29,7 @@ export default function Grow() {
                     <img src='/brands/12.png' className='h-auto w-40' />
                     <img src='/brands/13.png' className='h-auto w-40' />
                     <img src='/brands/07.png' className='h-auto w-40 invert-[100]' />
+                    <img src='/brands/07.png' className='h-auto block md:hidden w-40 invert-[100]' />
                 </div>
 
             </div>

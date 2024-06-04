@@ -1,15 +1,19 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface ISubscriber extends Document {
   email: string;
-  subscribedAt: Date;
 }
 
-// Check if the model has already been defined
-const Subscriber = mongoose.models.Subscriber ||
-  mongoose.model<ISubscriber>('Subscriber', new mongoose.Schema({
-    email: { type: String },
-    subscribedAt: { type: Date, default: Date.now }
-  }));
+const SubscriberSchema: Schema<ISubscriber> = new Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
+});
+
+const Subscriber: Model<ISubscriber> =
+  mongoose.models.Subscriber || mongoose.model<ISubscriber>("Subscriber", SubscriberSchema);
 
 export default Subscriber;

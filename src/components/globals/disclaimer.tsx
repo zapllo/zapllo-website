@@ -8,26 +8,26 @@ import ShineBorder from "../magicui/shine-border";
 import { useEffect } from "react";
 
 export default function Disclaimer() {
-//    useEffect(() => {
-//         if (typeof document !== 'undefined') {
-//             const disableContextMenu = (e: MouseEvent) => e.preventDefault();
-//             const disableSelection = (e: Event) => {
-//                 e.preventDefault();
-//                 const selection = window.getSelection();
-//                 if (selection) {
-//                     selection.removeAllRanges();
-//                 }
-//             };
+    //    useEffect(() => {
+    //         if (typeof document !== 'undefined') {
+    //             const disableContextMenu = (e: MouseEvent) => e.preventDefault();
+    //             const disableSelection = (e: Event) => {
+    //                 e.preventDefault();
+    //                 const selection = window.getSelection();
+    //                 if (selection) {
+    //                     selection.removeAllRanges();
+    //                 }
+    //             };
 
-//             document.addEventListener('contextmenu', disableContextMenu);
-//             document.addEventListener('selectstart', disableSelection);
+    //             document.addEventListener('contextmenu', disableContextMenu);
+    //             document.addEventListener('selectstart', disableSelection);
 
-//             return () => {
-//                 document.removeEventListener('contextmenu', disableContextMenu);
-//                 document.removeEventListener('selectstart', disableSelection);
-//             };
-//         }
-//     }, []);
+    //             return () => {
+    //                 document.removeEventListener('contextmenu', disableContextMenu);
+    //                 document.removeEventListener('selectstart', disableSelection);
+    //             };
+    //         }
+    //     }, []);
     return (
         <main className="bg- py-16   px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg">
             <div className="max-w-4xl mx-auto">
@@ -35,8 +35,8 @@ export default function Disclaimer() {
                     <Link href='/'>
                         <img alt="Zapllo Technologies" className="h-7 cursor-pointer" src="/logo.png" />
                     </Link>
-                    <div className="flex gap-2">
-                        <div className="scale-90">
+                    <div className="md:flex justify-start  mt-6 md:mt-0 gap-2">
+                        <div className="scale-90  justify-start flex">
                             <BookCall />
 
                         </div>
@@ -58,7 +58,7 @@ export default function Disclaimer() {
                 </div>
                 <div className="space-y-12 mt-12 text-[#676B93]">
                     <section className="text-justify">
-                        <h1 className="md:text-3xl text-start  mb-6  text-2xl  text-gray-400 md:mt-0 mt-24 font-bold">Disclaimer</h1>
+                        <h1 className="md:text-3xl text-start  mb-6  text-2xl  text-gray-400 md:mt-0 mt-0 font-bold">Disclaimer</h1>
 
                         <p className="mb-2 text-justify">
                             This site is not a part of the Facebook™ website or Facebook™ Inc. Additionally, This site is NOT endorsed by Facebook™ in any way. FACEBOOK™ is a trademark of FACEBOOK™, Inc. Zapllo Technologies Private Limited is an independent entity offering software consultancy, development services, automation solutions, and specialized training. We are dedicated to assisting clients in leveraging Artificial Intelligence, facilitating cross-platform integration, and building robust Notion Business Systems.

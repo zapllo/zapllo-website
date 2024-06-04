@@ -18,7 +18,12 @@ html {
   background: radial-gradient(circle, #141841, #05071E);
 }
 
-
+.gradient-text {
+  background: linear-gradient(to right, #815BF5, #FC8929, #FC8929);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
 @layer base {
   :root {

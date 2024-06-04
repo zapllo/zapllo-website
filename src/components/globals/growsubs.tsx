@@ -1,4 +1,5 @@
 import React from 'react'
+import GradientText from '../magicui/gradient'
 
 export default function GrowSubs() {
     return (
@@ -6,11 +7,13 @@ export default function GrowSubs() {
             <div>
 
             </div>
-            <h1 className='text-center text-3xl font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent '>Grow</h1>
+            <GradientText>
+                <h1 className='text-center text-3xl font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent '>Grow</h1>
+            </GradientText>
             <h1 className='text-4xl mt-4 font-semibold text-white'>Grow Your Active Subscribers</h1>
             <p className='text-sm mt-4'>Each newsletter comes with a custom subscriber enrollment page that is tailored to capture leads and incentivize sharing, turning every new subscriber into a potential brand ambassador for exponential growth.</p>
             <div className='flex justify-center'>
-                <img src='zapllo.png' className='h-48' />
+                <img src='zapllo.png' className='md:h-48' />
             </div>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className=''>
