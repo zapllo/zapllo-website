@@ -19,16 +19,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {/* <FloatingNavbar /> */}
-          <body className={inter.className}>{children}</body>
-        </ThemeProvider>
-  
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {/* <FloatingNavbar /> */}
+        <body className={inter.className}>{children}</body>
+      </ThemeProvider>
+
     </html>
   );
 }
