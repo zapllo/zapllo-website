@@ -8,7 +8,7 @@ import { BookCall } from '../ui/bookcall';
 export default function TeamBubble() {
     const containerVariants = {
         hidden: { scale: 0.6 },
-        visible: { 
+        visible: {
             scale: 1,
             transition: {
                 duration: 0.8,
@@ -55,8 +55,8 @@ export default function TeamBubble() {
                         </motion.div>
                         <div className=''>
                             <h1 className='mt-12 mb-8 text-3xl font-bold'>We are Human Too.</h1>
-                            <p className='mt-4 text-sm text-balance'>"Automate and Upgrade your Workflow" encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
-                            <p className='mt-4 text-sm'>"Automate and Upgrade your Workflow" encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
+                            <p className='mt-4 text-sm text-balance'>Automate and Upgrade your Workflow encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
+                            <p className='mt-4 text-sm'>Automate and Upgrade your Workflow encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
                         </div>
                         <div className='grid grid-cols-2 mt-12 gap-4'>
                             <div className='bg-white w-64 h-10 text-black rounded-md'>
