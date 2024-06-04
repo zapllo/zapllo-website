@@ -69,7 +69,7 @@ export const InfiniteMoving = ({
     <div
       ref={containerRef}
       className={cn(
-        'scroller relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-7xl overflow- space-x-6  ',
+        'scroller relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-8xl overflow- space-x-6  ',
         className
       )}
     >
