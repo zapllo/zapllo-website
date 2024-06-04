@@ -34,7 +34,7 @@ export function OrbitingCirclesDemo() {
         radius={190}
         duration={20}
       >
-        <Icons.googleDrive />
+        <Icons.notion />
       </OrbitingCircles>
       <OrbitingCircles
         className="h-[50px] w-[50px] border-none bg-transparent"
