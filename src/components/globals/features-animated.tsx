@@ -40,10 +40,13 @@ export function AnimatedFeatures() {
       <div className="flex h-full w-full flex-row items-stretch justify-between gap-10">
         <div className="flex flex-col justify-center gap-2">
           <Circle ref={div1Ref} className="h-full w-16 ">
-            <Icons.googleDrive className=" h-full w-full" />
+            {/* <Icons.googleDrive className=" h-full w-full" /> */}
+            <img src="/brands/shopify.webp" />
+
           </Circle>
           <Circle ref={div2Ref} className="h-full w-16">
-            <Icons.discord className="h-full w-full" />
+            {/* <Icons.discord className="h-full w-full" /> */}
+            <img src="/brands/gorgias.png" />
           </Circle>
           <Circle ref={div3Ref} className="h-full w-16">
             <Icons.whatsapp className="h-full w-full" />
@@ -56,13 +59,13 @@ export function AnimatedFeatures() {
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
-          <Circle ref={div6Ref} className=" bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-black w-16">
+          <Circle ref={div6Ref} className=" bg-[#12173E] f shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-black w-16">
             <Icons.zapllo className=" w-full" />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
           <Circle ref={div7Ref}>
-            <User className="text-black"/>
+            <User className="text-black" />
           </Circle>
         </div>
       </div>

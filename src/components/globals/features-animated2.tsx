@@ -40,23 +40,17 @@ export function AnimatedFeatures2() {
       <div className="flex h-full w-full flex-row items-stretch justify-between gap-10">
         <div className="flex flex-col justify-center gap-2">
           <Circle ref={div1Ref} className="h-full w-16 ">
-            <Icons.googleDrive className=" h-full w-full" />
+            <Icons.slack className=" h-full w-full" />
           </Circle>
           <Circle ref={div2Ref} className="h-full w-16">
-            <Icons.discord className="h-full w-full" />
-          </Circle>
-          <Circle ref={div3Ref} className="h-full w-16">
-            <Icons.whatsapp className="h-full w-full" />
-          </Circle>
-          <Circle ref={div4Ref} className="h-full w-16">
             <Icons.notion className="h-full w-full" />
           </Circle>
-          <Circle ref={div5Ref} className="h-full w-16">
-            <Icons.slack className="h-full w-full" />
+          <Circle ref={div3Ref} className="h-full w-16">
+            <Icons.jira className="h-full w-full" />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
-          <Circle ref={div6Ref} className=" bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-black w-16">
+          <Circle ref={div6Ref} className=" bg-[#12173E]  shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-black w-16">
             <Icons.zapllo className=" w-full" />
           </Circle>
         </div>
@@ -82,16 +76,7 @@ export function AnimatedFeatures2() {
         fromRef={div3Ref}
         toRef={div6Ref}
       />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div4Ref}
-        toRef={div6Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div5Ref}
-        toRef={div6Ref}
-      />
+     f
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div6Ref}

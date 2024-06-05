@@ -1,3 +1,4 @@
+// app/components/Newsletter.tsx
 "use client";
 
 import React, { useState } from 'react';
@@ -14,7 +15,7 @@ export default function Newsletter() {
         setError('');
 
         try {
-            const response = await fetch('/api/addSubscription', {
+            const response = await fetch('/api/subscribers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ export default function Newsletter() {
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <Button
-                    className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6  rounded-xl rounded-l-none mt-6"
+                    className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6 rounded-xl rounded-l-none mt-6"
                     onClick={handleSubscribe}
                 >
                     Subscribe

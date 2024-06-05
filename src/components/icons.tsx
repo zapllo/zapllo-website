@@ -12,6 +12,35 @@ export const Icons: { [key: string]: React.FC<IconProps> } = {
       alt="Google Drive"
     />
   ),
+  hubspot: ({ className }) => (
+    <img
+      className={className}
+      src="/brands/hubspot.svg"
+      alt="Google Drive"
+    />
+  ),
+
+  gmail: ({ className }) => (
+    <img
+      className={className}
+      src="/brands/gmail.webp"
+      alt="Google Drive"
+    />
+  ),
+  dailyai: ({ className }) => (
+    <img
+      className={className}
+      src="/brands/dailyai.png"
+      alt="Daily ai"
+    />
+  ),
+  openai: ({ className }) => (
+    <img
+      className={className}
+      src="/brands/openai.png"
+      alt="Open AI"
+    />
+  ),
   discord: ({ className }) => (
     <img
       className={className}
@@ -43,7 +72,7 @@ export const Icons: { [key: string]: React.FC<IconProps> } = {
   zapllo: ({ className }) => (
     <img
       className={className}
-      src="/logoonly.png"
+      src="/Favicon.png"
       alt="Zapllo"
     />
   ),
@@ -54,4 +83,18 @@ export const Icons: { [key: string]: React.FC<IconProps> } = {
       alt="User"
     />
   ),
+  jira: ({ className }) => (
+    <img
+      className={className}
+      src="/brands/jira.png"
+      alt="User"
+    />
+  ),
+  jotform: ({ className }) => (
+    <img
+      className={className}
+      src="/brands/jotform.png"
+      alt="User"
+    />
+  )
 };
