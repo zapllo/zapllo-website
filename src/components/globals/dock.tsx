@@ -11,7 +11,7 @@ export function DockDemo() {
       </span> */}
       <Dock className="md:scale-150 scale-125 mt-16">
         <DockIcon>
-          <img src="/discord.png" className="h-full w-full" />
+          <img src="/zap.png" className="h-full w-full" />
         </DockIcon>
         <DockIcon>
           <Icons.googleDrive className="h-full w-full" />
