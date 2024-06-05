@@ -79,7 +79,7 @@ export default function Service() {
                         variants={cardVariants('left', 0.2)}
                     >
                         <div>
-                            <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <img src='/card/dashboard4.webp' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
 
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
@@ -103,7 +103,7 @@ export default function Service() {
                         variants={cardVariants('left', 1.2)}
                     >
                         <div>
-                            <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <img src='/card/custom.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
                                     <SignalIcon imgSrc={imgSrc2} />
@@ -151,7 +151,7 @@ export default function Service() {
                         variants={cardVariants('right', 0.6)}
                     >
                         <div>
-                            <img src='/card/01.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <img src='/card/genai5.webp' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
                                     <SignalIcon imgSrc={imgSrc4} />
