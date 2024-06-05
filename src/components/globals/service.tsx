@@ -56,7 +56,7 @@ const slugs = [
 
 
 export default function Service() {
-    const imgSrc1 = 'nd.svg';
+    const imgSrc1 = 'ND.svg';
     const imgSrc2 = 'gear.svg';
     const imgSrc3 = 'integrate.svg';
     const imgSrc4 = 'bot.svg';
