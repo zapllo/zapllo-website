@@ -91,7 +91,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-xl text-start font-bold">Interactive Notion Dashboards</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we specialize in crafting powerful Notion dashboards tailored to your unique business needs. Our innovative solutions help you manage everything in one place, so you can focus on what matters most. Experience seamless management with dashboards designed for efficiency. Our expert consultation ensures your business runs smoothly, even when you're not at the helm.
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we specialize in crafting powerful Notion dashboards tailored to your unique business needs. Our innovative solutions help you manage everything in one place, so you can focus on what matters most. Experience seamless management with dashboards designed for efficiency. Our expert consultation ensures your business runs smoothly, even when you&apos;re not at the helm.
 
 </p>
                         </div>
@@ -115,7 +115,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Done for you Custom Automations</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">We specialize in creating tailored automation solutions that cater to the unique needs of your business. Whether it's simplifying daily operations or integrating complex systems, our Done-For-You Custom Automations are designed to save you time and increase efficiency. Every business is different. We develop custom automations that perfectly fit your specific requirements. Leave the heavy lifting to us. Our experts handle everything from design to deployment, ensuring a seamless experience.</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">We specialize in creating tailored automation solutions that cater to the unique needs of your business. Whether it&apos;s simplifying daily operations or integrating complex systems, our Done-For-You Custom Automations are designed to save you time and increase efficiency. Every business is different. We develop custom automations that perfectly fit your specific requirements. Leave the heavy lifting to us. Our experts handle everything from design to deployment, ensuring a seamless experience.</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -185,7 +185,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Powerful Notion Teamspaces</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Transform the way your team works with Zapllo's expertly crafted Notion Teamspaces. We help you build comprehensive systems within the Notion application, tailored for various functions including Operations, Customer Support, Management, Admin, HR, Marketing, Content Creation, and more. Streamline your business operations with systems designed for every department. Our team creates tailored solutions that fit your unique business needs, ensuring maximum efficiency.</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Transform the way your team works with Zapllo&apos;s expertly crafted Notion Teamspaces. We help you build comprehensive systems within the Notion application, tailored for various functions including Operations, Customer Support, Management, Admin, HR, Marketing, Content Creation, and more. Streamline your business operations with systems designed for every department. Our team creates tailored solutions that fit your unique business needs, ensuring maximum efficiency.</p>
                         </div>
                     </motion.div>
                     <motion.div
