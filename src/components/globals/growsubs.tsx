@@ -7,10 +7,22 @@ export default function GrowSubs() {
             <div>
 
             </div>
-            <GradientText>
-                <h1 className='text-center text-3xl font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent '>No Jargons. Just one KPI - 10X Productivity</h1>
-            </GradientText>
-            <h1 className='text-2xl mt-4 font-semibold text-white'>Automate and Upgrade your Worklfow</h1>  
+            <div className=' flex justify-center'>
+                <div className='bg-[#2C325E] md:px-4 md:py-2 px-2 py-1 flex w-fit rounded-full'>
+                    <GradientText>
+                        <h1 className='text-center md:text-3xl text-xs font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent '>No Jargons. Just one KPI -
+
+                        </h1>
+                    </GradientText>
+                    <div className='bg-[#12173E] rounded-full md:px-4 px-2 py-1 md:py-2'>
+                        <span className='md:text-3xl text-xs font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent  '>
+                            10X Productivity
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+            <h1 className='text-2xl mt-4 font-semibold text-white'>Automate and Upgrade your Worklfow</h1>
             <p className='text-sm mt-4'>On a mission to transform 1 million businesses and SME&apos;s around the globe with the power of Automaiton, Gen AI and Business Workflows</p>
             <div className='flex justify-center'>
                 <img src='zapllo.png' className='md:h-48' />

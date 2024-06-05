@@ -53,10 +53,10 @@ export default function TeamBubble() {
                             <img src='/Deep3.png' className='h-44' />
                             <h1 className='bg-white px-2 w-fit ml-4 text-black rounded-full mt-2'>🧠 Shubhodeep</h1>
                         </motion.div>
-                        <div className=''>
+                        <div className='mt-24'>
                             <h1 className='mt-12 mb-8 text-3xl font-bold'>We are Human Too.</h1>
+                            <p className='mt-4 text-sm text-'>Automate and Upgrade your Workflow encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
                             <p className='mt-4 text-sm text-balance'>Automate and Upgrade your Workflow encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
-                            <p className='mt-4 text-sm'>Automate and Upgrade your Workflow encapsulates the idea of enhancing efficiency by implementing automated processes while simultaneously improving the quality or effectiveness of your workflow.</p>
                         </div>
                         <div className='grid grid-cols-2 mt-12 gap-4'>
                             <div className='bg-white w-64 h-10 text-black rounded-md'>
@@ -100,7 +100,7 @@ export default function TeamBubble() {
                         </div>
                         <div className='mt-12 ml-56'>
                             <img src='/Aditya1.png' className='h-44' />
-                            <h1 className='bg-white px-2 w-fit text-black rounded-full mt-2'>⚙️ Aditya</h1>
+                            <h1 className='bg-white px-2 w-fit ml-6 text-black rounded-full mt-2'>⚙️ Aditya</h1>
                         </div>
                     </motion.div>
                 </motion.div>

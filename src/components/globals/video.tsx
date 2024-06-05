@@ -31,9 +31,9 @@ export default function VideoComponent() {
                 <div className='absolute inset-0 flex items-center justify-center'>
                     <button
                         onClick={handlePlay}
-                        className="flex items-center justify-center bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-full h-20 w-20 text-white"
+                        className="flex items-center justify-center bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-full md:h-20 md:w-20 h-16 w-16 text-white"
                     >
-                        <PlayIcon className='h-8 w-8' />
+                        <PlayIcon className='md:h-8 md:w-8 h-6 w-6' />
                     </button>
                 </div>
             )}

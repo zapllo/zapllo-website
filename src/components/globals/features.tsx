@@ -9,13 +9,13 @@ export default function Features() {
 
     return (
         <div className='grid grid-cols-1 md:grid-cols-2  gap-8 mt-24 max-w-[1100px] '>
-            <div className='w-[130%]'>
+            <div className='md:w-[130%]'>
                 {/* <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold text-4xl'>Key Features</h1> */}
                 <FlipWordsDemo />
                 <p className='mt-4 text-[#ffffff] text-start mx-4 md:mx-0'>
                     <span className='text-lg font-bold'>
-                    🚀 Supercharge your workflow with Zapllo !
-                        </span>
+                        🚀 Supercharge your workflow with Zapllo !
+                    </span>
                     <div className='ml-4 mt-4 space-y-2 text-sm'>
 
                         <li>Get your Business Automation Score via our unique Business Health Check-Up</li>
@@ -30,7 +30,7 @@ export default function Features() {
                 {/* <TypewriterEffectSmooth words={words} /> */}
 
             </div>
-                       <OrbitingCirclesDemo />
+            <OrbitingCirclesDemo />
 
         </div>
     )

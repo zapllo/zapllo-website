@@ -5,7 +5,7 @@ export type IconProps = React.HTMLAttributes<SVGElement>;
 
 export function DockDemo() {
   return (
-    <div className="relative flex px-3 py-4  flex-col items-center justify-center overflow- rounded-lg ">
+    <div className="relative flex px-3 py-4 -ml-16 md:ml-0  flex-col items-center justify-center overflow- rounded-lg ">
       {/* <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-4xl font-semibold leading-none text-white dark:to-slate-400/90">
       Seamless <br/> Integrations
       </span> */}

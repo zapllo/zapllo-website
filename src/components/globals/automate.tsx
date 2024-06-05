@@ -12,7 +12,7 @@ export default function Automate() {
             <div className='w-full'>
                 <h1 className='text-xl font-bold'>Manage your Business working only 1 hour / Day</h1>
                 <p className={`${golos.className} text-sm mt-4 w-full text-gray-200`}>We identify areas in your business which is pulling in multiple hours and we help you in those areas by building automations and custom solutions which significantly reduces the bandwidth and also reduced the operational costs.</p>
-                <div className='flex a  mt-6 justify-start'>
+                <div className='flex a mt-12 md:mt-6 justify-start'>
                     <BookCall2 />
                 </div>
             </div>

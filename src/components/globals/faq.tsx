@@ -18,22 +18,50 @@ export default function Faq() {
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-                
-                <Accordion type="single" collapsible className=''>
+
+                <Accordion type="single" collapsible className='md:w-[900px] '>
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Is this business automation suitable for my business size?</AccordionTrigger>
                         <AccordionContent>
                             Our solutions is scalable and can be adapted to businesses of all sizes.
                         </AccordionContent>
                     </AccordionItem>
-                </Accordion> <Accordion type="single" collapsible className=''>
+                </Accordion> <Accordion type="single" collapsible className='md:w-[900px] '>
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Do I need any technical expertise to use your services?</AccordionTrigger>
                         <AccordionContent>
                             These applications are designed to be user-friendly and require minimal technical expertise. We also provide onboarding and support to ensure a smooth transition.
                         </AccordionContent>
                     </AccordionItem>
-                </Accordion> <Accordion type="single" collapsible className=''>
+                </Accordion>
+                <Accordion type="single" collapsible className='md:w-[900px] '>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>Do you offer any support after I purchase your services?</AccordionTrigger>
+                        <AccordionContent>
+                            Yes, we provide onboarding assistance, ongoing support, and training resources to ensure you get the most out of our package.
+                            We believe in customer satisfaction and this is a reson we have been able to put our footprints all around the globe with our services.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+                <Accordion type="single" collapsible className='md:w-[900px] '>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>Do you offer any support after I purchase your services?</AccordionTrigger>
+                        <AccordionContent>
+                            Yes, we provide onboarding assistance, ongoing support, and training resources to ensure you get the most out of our package.
+                            We believe in customer satisfaction and this is a reson we have been able to put our footprints all around the globe with our services.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+                <Accordion type="single" collapsible className='md:w-[900px] '>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>Do you offer any support after I purchase your services?</AccordionTrigger>
+                        <AccordionContent>
+                            Yes, we provide onboarding assistance, ongoing support, and training resources to ensure you get the most out of our package.
+                            We believe in customer satisfaction and this is a reson we have been able to put our footprints all around the globe with our services.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+                <Accordion type="single" collapsible className='md:w-[900px] '>
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Do you offer any support after I purchase your services?</AccordionTrigger>
                         <AccordionContent>

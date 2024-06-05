@@ -15,7 +15,7 @@ import { motion } from 'framer-motion'
 
 
 export default function Footer() {
-  
+
 
     const gearVariant = {
         hidden: { scale: 0.98 },
@@ -67,7 +67,7 @@ export default function Footer() {
                         <LetsCall />
                     </div>
                 </div>
-                <div className='empty rectangle'>
+                <div className='empty rectangle hidden lg:block '>
                     <motion.div className='-ml-12' initial="hidden" animate="visible" variants={gearVariant}>
 
                         <img src='shards.png' className='absolute -mt-40  h-56' />

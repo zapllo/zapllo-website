@@ -16,6 +16,7 @@ import Service from "@/components/globals/service";
 import TeamBubble from "@/components/globals/teambubble";
 import Testimonials from "@/components/globals/testimonials";
 import Testimonials2 from "@/components/globals/testimonials2";
+import TestimonialsCopy from "@/components/globals/testimonialscopy";
 import Tools from "@/components/globals/tools";
 import Image from "next/image";
 
@@ -79,7 +80,7 @@ export default function Home() {
         </div>
 
         <div className="justify-center mt-32   flex b  ">
-          <Testimonials />
+          <TestimonialsCopy />
         </div>
         <div className="justify-center mt-20  flex bg-[#04061E]  ">
           {/* <OurTeam /> */}

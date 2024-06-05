@@ -12,6 +12,7 @@ export const Icons: { [key: string]: React.FC<IconProps> } = {
       alt="Google Drive"
     />
   ),
+  
   hubspot: ({ className }) => (
     <img
       className={className}

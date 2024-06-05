@@ -13,7 +13,7 @@ export default function Arrow() {
                     <div></div>
                     <div></div>
                     <div className=' z-20'>
-                        <div className='p-8 w-fit rounded-full w- bg-[#141841]'>
+                        <div className='p-8 border-2 -mt-2 border-white w-fit rounded-full w- bg-[#141841]'>
                             <img src='magni.png' className='h-8' />
                         </div>
                         <h1 className='mt-12 font-bold text-white'>Expert Oversight</h1>
@@ -25,7 +25,7 @@ export default function Arrow() {
                     <div></div>
                     <div></div>
                     <div className='-ml-24 -mt-12 z-20'>
-                        <div className='p-8 w-fit rounded-full w- bg-[#141841]'>
+                        <div className='p-8 border-2 border-white w-fit rounded-full w- bg-[#141841]'>
                         <img src='notion.png' className='h-8' />
 
                         </div>
@@ -33,7 +33,7 @@ export default function Arrow() {
                         <p className='text-[#676B93] mt-4 max-w-[200px] text-xs w-full'>We use good old fashioned human oversight to ensure your newsletters are world-class. Your content always maintains a human touch to ensure a personal connection with your audience</p>
                     </div>
                     <div className='-mt-44 absolute ml-[60%] z-20'>
-                        <div className='p-8  w-fit rounded-full w- bg-[#141841]'>
+                        <div className='p-8 border-2 border-white  w-fit rounded-full w- bg-[#141841]'>
                         <img src='notion.png' className='h-8' />
 
                         </div>
@@ -48,7 +48,7 @@ export default function Arrow() {
                 <div className='hidden md:grid  grid-cols-5 gap-12'>
                     <div></div>
                     <div className='-ml-36 -mt-[165px] z-20'>
-                        <div className='p-8 w-fit rounded-full w- bg-[#141841]'>
+                        <div className='p-8 w-fit rounded-full w- border-2 border-white bg-[#141841]'>
                         <img src='notion.png' className='h-8' />
 
                         </div>
@@ -66,7 +66,7 @@ export default function Arrow() {
                 <div className='flex md:hidden justify-start p-4'>
                     <div className='grid grid-cols-1 '>
                         <div className=' z-20'>
-                            <div className='p-6 w-fit rounded-full w- bg-[#141841]'>
+                            <div className='p-6  w-fit rounded-full w- bg-[#141841]'>
                                 Hi
                             </div>
                             <h1 className='mt-4 font-bold text-white'>Expert Oversight</h1>

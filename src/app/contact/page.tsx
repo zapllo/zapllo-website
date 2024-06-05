@@ -81,11 +81,13 @@ export default function Contact() {
                         </div>
 
                     </div>
-                    <div className='mt-12'>
+                   
+                </main>
+                
+            </div>
+            <div className='pt-12 bg-[#05071E] '>
                         <Footer />
                     </div>
-                </main>
-            </div>
         </>
     )
 }
