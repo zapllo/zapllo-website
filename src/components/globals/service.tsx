@@ -56,12 +56,12 @@ const slugs = [
 
 
 export default function Service() {
-    const imgSrc1 = 'deep.png';
-    const imgSrc2 = 'Aditya1.png';
-    const imgSrc3 = 'Jas.png';
-    const imgSrc4 = 'Jas.png';
-    const imgSrc5 = 'Jas.png';
-    const imgSrc6 = 'Jas.png';
+    const imgSrc1 = 'nd.svg';
+    const imgSrc2 = 'gear.svg';
+    const imgSrc3 = 'integrate.svg';
+    const imgSrc4 = 'bot.svg';
+    const imgSrc5 = 'team.svg';
+    const imgSrc6 = 'biz.svg';
 
     return (
         <div className='text-center pt-12 bg-[#05071E] justify-center min-h-screen'>
@@ -91,7 +91,9 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-xl text-start font-bold">Interactive Notion Dashboards</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we specialize in crafting powerful Notion dashboards tailored to your unique business needs. Our innovative solutions help you manage everything in one place, so you can focus on what matters most. Experience seamless management with dashboards designed for efficiency. Our expert consultation ensures your business runs smoothly, even when you're not at the helm.
+
+</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -113,7 +115,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Done for you Custom Automations</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">We specialize in creating tailored automation solutions that cater to the unique needs of your business. Whether it's simplifying daily operations or integrating complex systems, our Done-For-You Custom Automations are designed to save you time and increase efficiency. Every business is different. We develop custom automations that perfectly fit your specific requirements. Leave the heavy lifting to us. Our experts handle everything from design to deployment, ensuring a seamless experience.</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -134,7 +136,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Cross Platform Integrations</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">We make your business operations smoother and more efficient with our Cross Platform Integrations. We specialize in connecting multiple applications like HubSpot, Salesforce, Gmail, Typeform, WhatsApp, Slack, Microsoft Teams, Google Calendar, and more, ensuring a seamless and integrated experience. Integrate all your essential tools and applications for a unified workflow. Streamline processes and improve productivity by connecting your favorite apps.</p>
                         </div>
                     </motion.div>
                 </div>
@@ -160,7 +162,9 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Generative AI</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we harness the power of Generative AI to streamline repetitive tasks and save you valuable time. By identifying areas where your team is bogged down by repetitive processes, we create bespoke automation solutions that boost efficiency and productivity. For Example how we transformed the Onboarding process for one of our customers where we helped them generating onboarding documents and checklists to designing unique onboarding sequences tailored to thier business, to ensure a smooth and efficient start for every customer.
+
+</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -181,7 +185,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Powerful Notion Teamspaces</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Transform the way your team works with Zapllo's expertly crafted Notion Teamspaces. We help you build comprehensive systems within the Notion application, tailored for various functions including Operations, Customer Support, Management, Admin, HR, Marketing, Content Creation, and more. Streamline your business operations with systems designed for every department. Our team creates tailored solutions that fit your unique business needs, ensuring maximum efficiency.</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -202,7 +206,7 @@ export default function Service() {
                         </div>
                         <div className='p-8 rounded-lg shadow-lg'>
                             <h2 className="text-2xl text-start font-bold">Business Operations</h2>
-                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat necessitatibus harum, ipsa repudiandae, debitis placeat quam quo quia incidunt consequatur deserunt officiis quisquam expedita asperiores. Quod repellendus pariatur atque ea!</p>
+                            <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we empower you to streamline and enhance every aspect of your business operations. From Operations, Customer Support, Management, Admin, HR, Marketing, to Content Creation, our expertise helps you build robust systems that run on autopilot. Our bespoke automation solutions are tailored to fit your unique requirements, ensuring optimal efficiency. Focus on growth and innovation while our systems handle the day-to-day operations seamlessly.</p>
                         </div>
                     </motion.div>
                 </div>
