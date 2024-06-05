@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { InfiniteMovingCards } from "./infinite-moving-cards";
 
 
-export const clients = [...new Array(10)].map((client, index) => ({
-  href: `/${index + 1}.png`,
+export const clients = [...new Array(8)].map((client, index) => ({
+  href: `/clients/${(index + 1).toString().padStart(2, '0')}.png`,
 }))
 
 export function InfiniteMovingCardsDemo() {
