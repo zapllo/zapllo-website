@@ -9,7 +9,7 @@ const inter = Space_Grotesk({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Zapllo - Automate and Upgrade your Workflow by 10x",
-  description: "Supercharge your Workflow with Zapllo and unleash the power of AI and Automation",
+  description: "Supercharge your Workflow with Zapllo and unleash the power of AI and Automation. Book your free demo now.",
 };
 
 export default function RootLayout({

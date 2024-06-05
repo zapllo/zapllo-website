@@ -48,9 +48,9 @@ export default function Home() {
         <div className="mt-24 justify-center flex bg-[#0A0D28] ">
           <div className="max-w-[1100px] w-full bg-[#0A0D28]">
             <h1 className="mx-4 md:mx-0 font-bold pt-12 text-start text-4xl">
-              The Power of <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent">AI</span>. The <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent"> Care of Humans</span>.
+              The Power of <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent">AI & Automation</span>. The <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent"> Care of Humans</span>.
             </h1>
-            <p className="text-sm mt-8 mx-4 md:mx-0 text-gray-200">Empowering brands with AI precision, enhanced by human insight, ensuring exceptional quality in every newsletter.</p>
+            <p className="text-sm mt-8 mx-4 md:mx-0 text-gray-200">Empowering businesses with AI precision and Robust Automations, enhanced by human insight, ensuring seamless worflows and 10X productivity.</p>
           </div>
         </div>
         <div className="justify-center   pt-12  md:flex bg-[#0A0D28]">

@@ -14,7 +14,7 @@ export default function Arrow() {
                     <div></div>
                     <div className=' z-20'>
                         <div className='p-8 w-fit rounded-full w- bg-[#141841]'>
-                            <img src='notion.png' className='h-8' />
+                            <img src='magni.png' className='h-8' />
                         </div>
                         <h1 className='mt-12 font-bold text-white'>Expert Oversight</h1>
                         <p className='text-[#676B93] mt-4 max-w-[200px] text-xs w-full'>We use good old fashioned human oversight to ensure your newsletters are world-class. Your content always maintains a human touch to ensure a personal connection with your audience</p>

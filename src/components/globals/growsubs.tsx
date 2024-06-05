@@ -8,10 +8,10 @@ export default function GrowSubs() {
 
             </div>
             <GradientText>
-                <h1 className='text-center text-3xl font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent '>Grow</h1>
+                <h1 className='text-center text-3xl font-bold bg-gradient-to-r from-[#815BF5] to-[#FC8929] bg-clip-text text-transparent '>No Jargons. Just one KPI - 10X Productivity</h1>
             </GradientText>
-            <h1 className='text-4xl mt-4 font-semibold text-white'>Grow Your Active Subscribers</h1>
-            <p className='text-sm mt-4'>Each newsletter comes with a custom subscriber enrollment page that is tailored to capture leads and incentivize sharing, turning every new subscriber into a potential brand ambassador for exponential growth.</p>
+            <h1 className='text-2xl mt-4 font-semibold text-white'>Automate and Upgrade your Worklfow</h1>  
+            <p className='text-sm mt-4'>On a mission to transform 1 million businesses and SME' around the globe with the power of Automaiton, Gen AI and Business Workflows</p>
             <div className='flex justify-center'>
                 <img src='zapllo.png' className='md:h-48' />
             </div>

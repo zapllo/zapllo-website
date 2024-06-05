@@ -30,19 +30,19 @@ export default function OfficialPartners() {
                     <div className=''>
                         <NumberTicker value={50} />
                         <h1 className='text-2xl font-semibold '>Industries</h1>
-                        <p className='text-[#676B93] mt-4 font-normal text-sm'>We use good old fashioned human <br />oversight to ensure your newsletters are<br /> world-class.</p>
+                        <p className='text-[#676B93] mt-4 font-normal text-sm'>We have experience of working <br />with multiple businesses which puts us<br /> in the position to guide you the best.</p>
                     </div>
                     <div>
-                        <NumberTicker value={150} />
+                        <NumberTicker value={120} />
                         <h1 className='text-2xl font-semibold '>Countries</h1>
-                        <p className='text-[#676B93] mt-4 font-normal text-sm'>We use good old fashioned human <br />oversight to ensure your newsletters are<br /> world-class.</p>
+                        <p className='text-[#676B93] mt-4 font-normal text-sm'>We have worked with clients all <br />all over the world with footprints<br /> in almost every kind of business.</p>
                     </div>  <div>
                         {/* <NumberTicker value={1500000} /> */}
                         <NumberTicker value={1.50} />
 
                         <h1 className='inline-block tabular-nums text-transparent bg-gradient-to-r font-bold from-[#815BF5]  py-6 rounded-2xl  to-[#FC8929] bg-clip-text '>M+</h1>
                         <h1 className='text-2xl font-semibold '>Operations Monthly</h1>
-                        <p className='text-[#676B93] mt-4 font-normal text-sm'>We use good old fashioned human <br />oversight to ensure your newsletters are<br /> world-class.</p>
+                        <p className='text-[#676B93] mt-4 font-normal text-sm'>We are proud to state that we handle <br />more than 1.5 million operations for our clients<br />globally.</p>
                     </div>
 
                 </div>
