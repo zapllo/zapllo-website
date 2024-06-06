@@ -3,7 +3,7 @@ import TextShimmer from "@/components/magicui/animated-shiny-text";
 import { ArrowRightIcon, ChatBubbleIcon } from "@radix-ui/react-icons";
 import { MessageSquare } from "lucide-react";
 
-export async function SendMessage() {
+export  function SendMessage() {
     return (
         <div className="z-10 flex hover:-mt-2 transition-all ease-in  items-center justify-center">
             <div

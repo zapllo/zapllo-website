@@ -1,4 +1,5 @@
 import Footer from '@/components/globals/Footer'
+import ContactForm from '@/components/globals/contactform'
 import { FloatingNavbar } from '@/components/globals/navbar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,9 +10,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { LocateIcon, Map, MapPin } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function Contact() {
+
     return (
         <>
             <div className='flex justify-center overflow-hidden bg-[#05071E]  w-full h-full'>
@@ -45,49 +47,18 @@ export default function Contact() {
                             </div>
                             <div className='p-5 mt-12 md:mt-0'>
                                 <h1 className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] w-fit px-4 py-1 to-[#FC8929] text-transparent bg-clip-text text-3xl  font-semibold'>Get in Touch</h1>
-                                <form className='p-8'>
-                                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                        <div className='space-y-4'>
-                                            <Label>First Name</Label>
-                                            <Input />
-                                        </div>
-                                        <div className='space-y-4'>
-                                            <Label>Last Name</Label>
-                                            <Input />
-                                        </div>
-                                        <div className='space-y-4'>
-                                            <Label>Email</Label>
-                                            <Input />
-                                        </div>
-                                        <div className='space-y-4'>
-                                            <Label>Mobile Number</Label>
-                                            <Input />
-                                        </div>
-                                    </div>
-                                    <div className="grid w-full gap-1.5 mt-4 space-y-4">
-                                        <Label htmlFor="message">Your message</Label>
-                                        <Textarea placeholder="Type your message here." className='h-32' id="message" />
-                                    </div>
-                                    <div className='md:flex md:justify-between mt-8'>
-                                        <SendMessage />
-                                        <div>
-                                            <p className='flex gap-2 md:max-w-[300px] md:mt-0 mt-4 text-[#676B93] text-xs'><InfoCircledIcon className='scale-150' /> All the fields are required. By sending the form you agree to the Terms & Conditions and Privacy Policy.</p>
-                                        </div>
-
-                                    </div>
-
-                                </form>
+                                <ContactForm />
                             </div>
                         </div>
 
                     </div>
-                   
+
                 </main>
-                
+
             </div>
             <div className='pt-12 bg-[#05071E] '>
-                        <Footer />
-                    </div>
+                <Footer />
+            </div>
         </>
     )
 }

@@ -48,13 +48,14 @@ export default function Newsletter() {
                 <Button
                     className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] p-6 rounded-xl rounded-l-none mt-6"
                     onClick={handleSubscribe}
+                    disabled={subscribed}
                 >
                     Subscribe
                 </Button>
             </div>
             {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
             {subscribed && (
-                <p className="text-green-500 text-xs mt-2">Subscribed!</p>
+                <p className="text-green-500 font-medium animate-bounce duration-1000 text-xs mt-2">Congratulations you are now subscribed to Zapllo Insider!</p>
             )}
         </div>
     );
