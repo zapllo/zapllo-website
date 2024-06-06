@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
 
         const emailOptions: SendEmailOptions = {
             to: email,
-            subject: 'Thank you for contacting us',
-            text: 'Thank you for reaching out. We will get back to you soon.',
+            subject: 'We have Received Your Inquiry!',
+            text: 'Thank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours.Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.',
         };
 
         await sendEmail(emailOptions);
