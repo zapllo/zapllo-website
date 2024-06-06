@@ -93,7 +93,7 @@ export default function Service() {
                             <h2 className="text-xl text-start font-bold">Interactive Notion Dashboards</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we specialize in crafting powerful Notion dashboards tailored to your unique business needs. Our innovative solutions help you manage everything in one place, so you can focus on what matters most. Experience seamless management with dashboards designed for efficiency. Our expert consultation ensures your business runs smoothly, even when you&apos;re not at the helm.
 
-                            </p>
+</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -126,7 +126,6 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/automation.jpg' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                         
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
                                     <SignalIcon imgSrc={imgSrc3} />
@@ -153,7 +152,6 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/genai5.png' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
                                     <SignalIcon imgSrc={imgSrc4} />
@@ -166,7 +164,7 @@ export default function Service() {
                             <h2 className="text-2xl text-start font-bold">Generative AI</h2>
                             <p className="mt-2 w-[300px] text-start  md:w-[400px]">At Zapllo, we harness the power of Generative AI to streamline repetitive tasks and save you valuable time. By identifying areas where your team is bogged down by repetitive processes, we create bespoke automation solutions that boost efficiency and productivity. For Example how we transformed the Onboarding process for one of our customers where we helped them generating onboarding documents and checklists to designing unique onboarding sequences tailored to thier business, to ensure a smooth and efficient start for every customer.
 
-                            </p>
+</p>
                         </div>
                     </motion.div>
                     <motion.div
@@ -177,7 +175,6 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/team.png' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                           
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
                                     <SignalIcon imgSrc={imgSrc5} />
@@ -199,10 +196,11 @@ export default function Service() {
                     >
                         <div>
                             <img src='/card/automation2.png' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
-                       
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
                                     <SignalIcon imgSrc={imgSrc6} />
+
+
                                 </div>
                             </div>
                         </div>
