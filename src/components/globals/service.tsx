@@ -198,7 +198,7 @@ export default function Service() {
                         variants={cardVariants('right', 2.8)}
                     >
                         <div>
-                            <img src='/card/automation2.png' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
+                            <img src='/card/team.png' className='w-full h-40 rounded-lg  object-cover rounded-b-none' />
                        
                             <div className=' flex -mt-10  ml-[80%]'>
                                 <div className='flex justify-center'>
