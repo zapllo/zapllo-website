@@ -32,7 +32,7 @@ const content = [
             "",
         content: (
             <div className="h-full w-[100%] object-contain">
-                <img src="/picktools.png" />
+                <img src="/biz.png" />
             </div>
         ),
     },
