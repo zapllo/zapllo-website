@@ -79,9 +79,18 @@ export function FloatingNavbar() {
 
             <SheetFooter>
               <div className="p-2 my-5 ">
-                <h1 className="text-[#676B93]">Terms of Use</h1>
-                <h1 className="text-[#676B93] mt-4">Privacy</h1>
-
+                <Link href='/disclaimer'>
+                  <h1 className="text-[#676B93] mt-4">Disclaimer</h1>
+                </Link>
+                <Link href='/terms'>
+                  <h1 className="text-[#676B93]">Terms & Conditions</h1>
+                </Link>
+                <Link href='/refundpolicy'>
+                  <h1 className="text-[#676B93] mt-4">Refund Policy</h1>
+                </Link>
+                <Link href='/contactus'>
+                  <h1 className="text-[#676B93] mt-4">Contact Us</h1>
+                </Link>
               </div>
               <SheetClose asChild>
 

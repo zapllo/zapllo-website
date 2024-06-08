@@ -24,17 +24,17 @@ const LoaderLayout: React.FC<LayoutProps> = ({ children }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        setLoading(true); // Set loading to true on initial render
+        
+        const interval = setInterval(() => {
+            setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+        }, 1000); // Update the progress every second
 
-        // Simulate a delay to demonstrate the loading state
-        const timeout = setTimeout(() => {
-            setLoading(false); // Set loading to false after the delay
-        }, 2000);
+        return () => clearInterval(interval);
+    }, [searchParams, pathname]);
 
-        return () => clearTimeout(timeout); // Cleanup the timeout on component unmount
-    }, [pathname, searchParams]);
 
     return (
         <div>

@@ -61,7 +61,7 @@ export const FloatingNav = ({
                 </div>
                 <Link
                     href="/dashboard"
-                    className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+                    className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] "
                 >
                     <ShineBorder borderRadius={50}
                         className="text-center text-xl font-bold capitalize"

@@ -8,6 +8,7 @@ import { LetsTalk } from '@/components/ui/letstalk'
 import { SendMessage } from '@/components/ui/sendMessage'
 import { Textarea } from '@/components/ui/textarea'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { Icon3dCubeSphereOff } from '@tabler/icons-react'
 import { LocateIcon, Map, MapPin } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
@@ -16,6 +17,7 @@ export default function Contact() {
 
     return (
         <>
+
             <div className='flex justify-center overflow-hidden bg-[#05071E]  w-full h-full'>
                 <main className="bg-[#05071E] max-w-6xl   h-full z-10 overflow-hidden">
                     <FloatingNavbar />
@@ -32,15 +34,15 @@ export default function Contact() {
                                 <p className='text-[#676B93] mx-4  mt-4'>Our team is on standby to guide you through the process of content creation, monetization, and digital strategy that places you among the top 1% of creators.</p>
                                 <div className='grid grid-cols-1 gap-y-4 mt-8'>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><img src='deep.png' className='h-6' /> </div>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '> <Map /></div>
                                         <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Craft endless content that elevates your brand voice.</h1>
                                     </div>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><img src='deep.png' className=' w-7 h-6' /> </div>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><MapPin /></div>
                                         <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Gain valuable insights and connections that go beyond standard courses.</h1>
                                     </div>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><img src='deep.png' className='h-6 w-7' /> </div>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><Icon3dCubeSphereOff/> </div>
                                         <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Transform your content into profitable opportunities for your brand.</h1>
                                     </div>
                                 </div>
