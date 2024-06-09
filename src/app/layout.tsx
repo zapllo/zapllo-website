@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
-import LoaderLayout from "@/components/globals/multi-step-loader";
-
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Space_Grotesk({ subsets: ["latin"] });
 
@@ -26,7 +25,10 @@ export default function RootLayout({
         disableTransitionOnChange
       >
         {/* <FloatingNavbar /> */}
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <NextTopLoader />
+          {children}
+        </body>
       </ThemeProvider>
 
     </html>

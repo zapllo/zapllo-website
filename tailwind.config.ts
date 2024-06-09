@@ -160,7 +160,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), addVariablesForColors, require('tailwind-scrollbar-hide')],
+  plugins: [require("tailwindcss-animate"), addVariablesForColors, require('tailwind-scrollbar-hide'), require('tailwind-scrollbar'),],
 } satisfies Config
 
 export default config
