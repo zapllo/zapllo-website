@@ -38,7 +38,7 @@ const InfoBar = (props: Props) => {
   const logout = async () => {
     try {
       await axios.get('/api/users/logout');
-      router.push('/')
+      router.push('/login')
     } catch (error: any) {
       console.log(error.message)
 

@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { ShiningButton } from "@/components/globals/shiningbutton";
 import { Button } from "@/components/ui/button";
 import Meteors from "@/components/magicui/meteors";
-
+import Cookies from "js-cookie";
+import { Toaster, toast } from "sonner";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -23,11 +24,14 @@ export default function LoginPage() {
         try {
             setLoading(true);
             const response = await axios.post("/api/users/login", user);
-            router.push("/dashboard");
+            if (response.status === 200) {
+                Cookies.set("token", response.data.token);
+                router.push("/dashboard");
+            }
 
         } catch (error: any) {
             console.log("Login failed", error.message);
-
+            toast.error("Invalid credentials"); // Display error toast
         } finally {
             setLoading(false);
         }
@@ -38,11 +42,13 @@ export default function LoginPage() {
                 <div className="z-10 bg-[#04071F]">
                     <Meteors number={30} />
                 </div>
-
+                <Toaster />
                 <div className="flex justify-center w-full mt-16 bg-[#] ">
                     <div className="h-full mb-8 p-8 z-20 shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-white bg-[#13163E] rounded-xl w-1/2">
                         <div className="flex justify-center">
-                            <img src="/logo.png" className="h-10" />
+                            <Link href='/'>
+                                <img src="/logo.png" className="h-10" />
+                            </Link>
                         </div>
                         <GradientText>
                             <h1 className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text-center font-bold text-3xl p-4">{loading ? "Processing" : "Login"}</h1>

@@ -42,12 +42,14 @@ export default function SignupPage() {
                 <div className="flex justify-center w-full  mt-16  ">
                     <div className="h-full p-8 z-20 shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-white bg-[#13163E] rounded-xl mb-8 w-1/2">
                         <div className="flex justify-center">
-                            <img src="/logo.png" className="h-10" />
+                            <Link href='/'>
+                                <img src="/logo.png" className="h-10" />
+                            </Link>
                         </div>
-                            <GradientText>
-                                <h1 className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text-center font-bold text-3xl p-4">Get Started </h1>🚀
-                            </GradientText>
-                    
+                        <GradientText>
+                            <h1 className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text-center font-bold text-3xl p-4">Get Started </h1>🚀
+                        </GradientText>
+
                         <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <Label htmlFor="username">Username</Label>
