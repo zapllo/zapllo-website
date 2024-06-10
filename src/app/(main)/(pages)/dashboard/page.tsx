@@ -1,4 +1,5 @@
 import { ShiningButton } from '@/components/globals/shiningbutton'
+import { Button } from '@/components/ui/button'
 import { Home } from 'lucide-react'
 import React from 'react'
 
@@ -11,7 +12,7 @@ const DashboardPage = () => {
         <div className='p-4 bg-[#121741] items-center flex justify-center rounded-md '>
           <div className='text-center font-bold text-xl space-y-4'>
             <h1>Tasks</h1>
-            <ShiningButton text='Go to Tasks' />
+            <Button>Go to Tasks</Button>
           </div>
         </div>
         <div className='p-4 bg-[#121741] items-center flex justify-center rounded-md '>

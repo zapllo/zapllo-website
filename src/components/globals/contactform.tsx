@@ -61,7 +61,7 @@ export default function ContactForm() {
                     <Label>First Name</Label>
                     <Input
                         placeholder=""
-                        className="rounded-r-none"
+                        className="rounded-r-"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
@@ -70,7 +70,7 @@ export default function ContactForm() {
                     <Label>Last Name</Label>
                     <Input
                         placeholder=""
-                        className="rounded-r-none"
+                        className="rounded-r"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
@@ -79,7 +79,7 @@ export default function ContactForm() {
                     <Label>Email</Label>
                     <Input
                         placeholder=""
-                        className="rounded-r-none"
+                        className="rounded-r"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
@@ -89,7 +89,7 @@ export default function ContactForm() {
                     <Input
                         placeholder=""
                         type="text"
-                        className="rounded-r-none"
+                        className="rounded-r"
                         value={mobNo}
                         onChange={(e) => setMobNo(e.target.value)}
                     />
