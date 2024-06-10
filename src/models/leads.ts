@@ -31,7 +31,7 @@ const LeadSchema: Schema<ILead> = new Schema({
         type: String,
         required: true,
     },
-});
+}, { timestamps: { createdAt: true, updatedAt: false } }); // Automatically add `createdAt` field);
 
 const Lead: Model<ILead> =
     mongoose.models.Lead || mongoose.model<ILead>("Lead", LeadSchema);
