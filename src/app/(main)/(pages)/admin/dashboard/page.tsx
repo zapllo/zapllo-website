@@ -15,7 +15,7 @@ const DashboardPage = () => {
                             <Bell className='h-5 ' />
                             <h1 className='mt-auto'>  Subscribers</h1>
                         </div>
-                        <Link href='/adminprivatesecured/subscribers'>
+                        <Link href='/admin/subscribers'>
                             <ShiningButton text='Manage Subscribers' />
                         </Link>
                     </div>
@@ -26,7 +26,7 @@ const DashboardPage = () => {
                             <MessageCircleReply className='h-5 ' />
                             <h1 className='mt-auto'>Messages</h1>
                         </div>
-                        <Link href='/adminprivatesecured/messages'>
+                        <Link href='/admin/messages'>
                             <ShiningButton text='View Messages' />
                         </Link>
                     </div>
@@ -37,7 +37,7 @@ const DashboardPage = () => {
                             <Users className='h-5 ' />
                             <h1 className='mt-auto'>  Users</h1>
                         </div>
-                        <Link href='/adminprivatesecured/users'>
+                        <Link href='/admin/users'>
                             <ShiningButton text='Manage Users' />
                         </Link>
                     </div>

@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 // import { ModeToggle } from '../global/mode-toggle'
-import { Book, Headphones, Search } from 'lucide-react'
+import { Book, Headphones, LogOutIcon, Search } from 'lucide-react'
 import Templates from '../icons/cloud_download'
 import { Input } from '@/components/ui/input'
 
@@ -11,6 +11,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
 // import { UserButton } from '@clerk/nextjs'
 // import { useBilling } from '@/providers/billing-provider'
 // import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connecetions'
@@ -31,6 +33,18 @@ const InfoBar = (props: Props) => {
   // useEffect(() => {
   //   onGetPayment()
   // }, [])
+  const router = useRouter();
+
+  const logout = async () => {
+    try {
+      await axios.get('/api/users/logout');
+      router.push('/')
+    } catch (error: any) {
+      console.log(error.message)
+
+    }
+
+  }
 
   return (
     <>
@@ -74,6 +88,16 @@ const InfoBar = (props: Props) => {
               </TooltipTrigger>
               <TooltipContent>
                 <p>Guide</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider >
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger>
+                <LogOutIcon className='hover:text-red-500' onClick={logout} />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Logout</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
