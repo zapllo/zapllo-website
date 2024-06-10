@@ -50,7 +50,7 @@ const InfoBar = (props: Props) => {
     <>
       <div className="flex flex-row justify-between gap-6 items-center px-4 py-4 w-full dark:bg-[#05071E] ">
         <div className='flex justify-center'>
-          <img src='/Zapllo.png' className='w-full h-10 mt-2' />
+          <img src='/zapllo.png' className='w-full h-10 mt-2' />
         </div>
         <span className="flex items-center gap-2 font-bold">
           {/* <p className="text-sm font-light text-gray-300">Credits</p>

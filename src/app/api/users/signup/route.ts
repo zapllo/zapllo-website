@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     // Defines an asynchronous POST request handler.
     try {
         const reqBody = await request.json()
-        const { username, email, password } = reqBody
+        const { whatsappNo, email, password } = reqBody
         // Parses the request body to extract username, email, and password.
 
         //Checks if a user with the provided email already exists. 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcryptjs.hash(password, salt)
 
         const newUser = new User({
-            username,
+            whatsappNo,
             email,
             password: hashedPassword
         })

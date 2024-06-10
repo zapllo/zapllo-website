@@ -85,6 +85,9 @@ export function FloatingNavbar() {
                 <Link href='/terms'>
                   <h1 className="text-[#676B93] mt-4">Terms & Conditions</h1>
                 </Link>
+                <Link href='/privacypolicy'>
+                  <h1 className="text-[#676B93] mt-4">Privacy Policy</h1>
+                </Link>
                 <Link href='/refundpolicy'>
                   <h1 className="text-[#676B93] mt-4">Refund Policy</h1>
                 </Link>

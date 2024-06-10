@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    username: {
+    whatsappNo: {
         type: String,
-        required: [true, "Please provide username"],
+        required: [true, "Please provide whatsappNo"],
         unique: true,
     },
     email: {

@@ -16,7 +16,7 @@ export default function SignupPage() {
     const [user, setUser] = React.useState({
         email: "",
         password: "",
-        username: "",
+        whatsappNo: "",
     })
 
 
@@ -52,13 +52,13 @@ export default function SignupPage() {
 
                         <div className="grid grid-cols-1 gap-4">
                             <div>
-                                <Label htmlFor="username">Username</Label>
+                                <Label htmlFor="whatsappNo">Whatsapp No</Label>
                                 <Input
-                                    id="username"
-                                    type="text"
-                                    value={user.username}
-                                    onChange={(e) => setUser({ ...user, username: e.target.value })}
-                                    placeholder="username"
+                                    id="whatsappNo"
+                                    type="number"
+                                    value={user.whatsappNo}
+                                    onChange={(e) => setUser({ ...user, whatsappNo: e.target.value })}
+                                    placeholder="Whatsapp No"
                                 />
                             </div>
                             <div>

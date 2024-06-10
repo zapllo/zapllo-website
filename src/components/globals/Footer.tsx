@@ -97,7 +97,7 @@ export default function Footer() {
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs '>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
-                <div className='md:flex grid grid-cols-2 gap-1 md:gap-3'>
+                <div className='md:flex grid grid-cols-2 gap-1 md:gap-2'>
                     <Link href='/disclaimer'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Disclaimer</h1>
                     </Link>
@@ -108,6 +108,11 @@ export default function Footer() {
                     <h1 className='text-[#676B93] hidden md:block mt-6 text-xs md:text-sm'>|</h1>
                     <Link href='/refundpolicy'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Refund Policy</h1>
+                    </Link>
+                    <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1>
+
+                    <Link href='/privacypolicy'>
+                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Privacy Policy</h1>
                     </Link>
                     <h1 className='text-[#676B93] mt-6 hidden md:block text-xs md:text-sm'>|</h1>
                     <Link href='/contactus'>

@@ -64,7 +64,6 @@ export default function LoginPage() {
                                     placeholder="Email"
                                 />
                             </div>
-
                             <div>
                                 <Label htmlFor="password">Password</Label>
                                 <Input
