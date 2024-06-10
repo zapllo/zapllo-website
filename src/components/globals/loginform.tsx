@@ -29,7 +29,7 @@ export function LoginForm() {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault()
-        router.push('/admin/dashboard');
+        router.push('/adminprivatesecured/dashboard');
         // const res = await postData('auth/login', userData)
 
         // if (res.error) {
