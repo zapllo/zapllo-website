@@ -6,18 +6,26 @@ const userSchema = new mongoose.Schema({
         required: [true, "Please provide whatsappNo"],
         unique: true,
     },
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
     email: {
         type: String,
         required: [true, "Please provide email"],
         unique: true,
     },
     password: {
-       type: String,
-       required: [true, "Please provide a password"],
+        type: String,
+        required: [true, "Please provide a password"],
     },
     isVerified: {
-       type: Boolean,
-       default: false,
+        type: Boolean,
+        default: false,
     },
     isAdmin: {
         type: Boolean,

@@ -16,6 +16,8 @@ export default function SignupPage() {
     const [user, setUser] = React.useState({
         email: "",
         password: "",
+        firstName: "",
+        lastName: "",
         whatsappNo: "",
     })
 
@@ -69,6 +71,26 @@ export default function SignupPage() {
                                     value={user.email}
                                     onChange={(e) => setUser({ ...user, email: e.target.value })}
                                     placeholder="email"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="firstName">First Name</Label>
+                                <Input
+                                    id="firstName"
+                                    type="text"
+                                    value={user.firstName}
+                                    onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+                                    placeholder="First Name"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="lastName">Last Name</Label>
+                                <Input
+                                    id="lastName"
+                                    type="text"
+                                    value={user.lastName}
+                                    onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+                                    placeholder="Last Name"
                                 />
                             </div>
                             <div>
