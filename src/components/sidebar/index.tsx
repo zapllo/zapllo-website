@@ -21,7 +21,7 @@ const MenuOptions = (props: Props) => {
   const pathName = usePathname()
 
   return (
-    <nav className=" dark:bg-[#05071E] h-screen  overflow-scroll scrollbar-hide  justify-between flex items-center flex-col rounded-b-full  gap-10 py-6 px-2">
+    <nav className=" dark:bg-[#05071E] h-screen  overflow-scroll scrollbar-hide  justify-between flex items-center flex-col rounded-b-full  gap-10 py-4 px-2">
       <div className="flex items-center justify-center flex-col gap-8">
         <Link
           className="flex font-bold flex-row "

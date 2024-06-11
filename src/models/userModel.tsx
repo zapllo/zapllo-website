@@ -31,6 +31,14 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    role: {
+        type: String,
+        default: 'member', //member, manager, orgAdmin
+    },
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization' // Referencing the Organization model
+    },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
@@ -40,3 +48,4 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.models.users || mongoose.model("users", userSchema);
 
 export default User;
+

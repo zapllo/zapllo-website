@@ -28,12 +28,18 @@ export async function POST(request: NextRequest) {
         const salt = await bcryptjs.genSalt(10)
         const hashedPassword = await bcryptjs.hash(password, salt)
 
+        const trialDays = 7;
+        const trialExpires = new Date();
+        trialExpires.setDate(trialExpires.getDate() + trialDays);
+
+
         const newUser = new User({
             whatsappNo,
             firstName,
             lastName,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            trialExpires,
         })
 
         // Saves the new user to the database.

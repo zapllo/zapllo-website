@@ -41,11 +41,11 @@ export default function BookDemo() {
                             <Buttonswow />
 
                         </div>
-                        <div className="w-1/2 h-fit bg-[#E2E8F0] rounded-2xl scrollbar-hide">
+                        <div className="w-1/2  bg-[#E2E8F0] rounded-2xl scrollbar-hide">
                             <InlineWidget
                                 url="https://calendly.com/shubhodeep-ssxk/30?back=1&month=2024-06"
                                 styles={{
-                                    height: '600px',
+                                    height: '900px',
                                     width: '100%',
                                     borderRadius: '2.5rem',
                                     border: '12px solid #e2e8f0',
