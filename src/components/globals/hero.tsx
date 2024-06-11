@@ -7,6 +7,7 @@ import { ShinyText } from '../ui/shinytext';
 import Image from 'next/image';
 import VideoComponent from './video';
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 
 const golos = Golos_Text({ subsets: ["latin"] });
 
@@ -37,7 +38,8 @@ export default function Hero() {
                 <p className={`max-w-[1000px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-[#676B93] ${golos.className}`}>Maximize your Productivity 10X with Zapllo’s custom DYF automations for every businesses.<br /> Our <span className='text-white'>PARA 4.0, CORE 2.0, Ultimate Notion Brain Version 4.0 and Business OS </span>has helped around <span className='text-white'>6000+</span> businesses all around the world in getting their workflow streamlined and efficient. We insists on using a single application rather than using multiple application to <span className='text-white'>manage your business in one place.</span> </p>
             </div>
             <div className='flex -mt-8 justify-center'>
-                <ShinyText />
+                    <ShinyText />
+              
             </div>
             <div className='flex justify-center'>
                 <div className='grid grid-cols-2 gap-2 max-w-3xl w-full  text-xs -mt-12 mb-12'>
