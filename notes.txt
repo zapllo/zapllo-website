@@ -2,6 +2,8 @@
 2. On creating Organization, redirect to /dashboard (Save the token on signup as well)
 3. Create a teams section, where the admin will add team members (might be manager or an admin => roles) that will register a new user associated to that organization (he can login and would be a part of the organization)
 4. Tasks assign.
+5. Delegate tasks.
+6. Display team member cards in teams section.
 
 
 

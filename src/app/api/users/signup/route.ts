@@ -1,38 +1,34 @@
 import connectDB from "@/lib/db";
 import User from "@/models/userModel";
+import Organization from "@/models/organizationModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { SendEmailOptions, sendEmail } from "@/lib/sendEmail";
 
-
-connectDB()
-// Calls the connect function to establish a connection to the database.
-
+connectDB();
 
 export async function POST(request: NextRequest) {
-    // Defines an asynchronous POST request handler.
     try {
-        const reqBody = await request.json()
-        const { whatsappNo, email, password, firstName, lastName } = reqBody
-        // Parses the request body to extract username, email, and password.
+        const reqBody = await request.json();
+        const { whatsappNo, email, password, organization, firstName, lastName, companyName, industry, teamSize, description, categories } = reqBody;
 
-        //Checks if a user with the provided email already exists. 
-        const user = await User.findOne({ email })
+        // Check if a user with the provided email already exists
+        const existingUser = await User.findOne({ email });
 
-        //If yes, returns a 400 response.
-        if (user) {
-            return NextResponse.json({ error: "User already exists" }, { status: 400 })
+        if (existingUser) {
+            return NextResponse.json({ error: "User already exists" }, { status: 400 });
         }
 
-        //hash password using bcryptjs.
-        const salt = await bcryptjs.genSalt(10)
-        const hashedPassword = await bcryptjs.hash(password, salt)
+        // Hash the password using bcryptjs
+        const salt = await bcryptjs.genSalt(10);
+        const hashedPassword = await bcryptjs.hash(password, salt);
 
+        // Create trial expiration date
         const trialDays = 7;
         const trialExpires = new Date();
         trialExpires.setDate(trialExpires.getDate() + trialDays);
 
-
+        // Initialize user creation object
         const newUser = new User({
             whatsappNo,
             firstName,
@@ -40,10 +36,37 @@ export async function POST(request: NextRequest) {
             email,
             password: hashedPassword,
             trialExpires,
-        })
+            role: 'orgAdmin', // Set the initial role to 'orgAdmin' for the creator
+            organization: organization ? undefined : null,
+        });
 
-        // Saves the new user to the database.
-        const savedUser = await newUser.save()
+        // Initialize variable for organization
+        let savedOrganization = null;
+
+        // Conditionally create the organization if organization fields are provided
+        if (companyName && industry && teamSize && description && categories) {
+            const newOrganization = new Organization({
+                companyName,
+                industry,
+                teamSize,
+                description,
+                categories,
+                users: [newUser._id], // Associate the new user with this organization
+                trialExpires
+            });
+
+            // Save the new organization
+            savedOrganization = await newOrganization.save();
+
+            // Associate the user with the organization
+            newUser.organization = savedOrganization._id;
+            newUser.isAdmin = true;
+        }
+
+        // Save the new user
+        const savedUser = await newUser.save();
+
+        // Send a welcome email
         const emailOptions: SendEmailOptions = {
             to: email,
             subject: 'Thanks for registering at Zapllo!',
@@ -55,12 +78,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: "User created successfully",
             success: true,
-            savedUser,
-        })
-
+            user: savedUser,
+            organization: savedOrganization
+        });
 
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
-
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

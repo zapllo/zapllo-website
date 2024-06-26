@@ -37,10 +37,10 @@ export default function BookDemo() {
 
                     </div>
                     <div className="flex justify-evenly mt-6 mb-6 gap-4">
-                        <div className=" ">
+                        {/* <div className=" ">
                             <Buttonswow />
 
-                        </div>
+                        </div> */}
                         <div className="w-1/2  bg-[#E2E8F0] rounded-2xl scrollbar-hide">
                             <InlineWidget
                                 url="https://calendly.com/shubhodeep-ssxk/30?back=1&month=2024-06"

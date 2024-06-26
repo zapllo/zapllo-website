@@ -7,11 +7,12 @@ import Settings from "@/components/icons/settings";
 import Tasks from "@/components/icons/tasks";
 import Workflows from "@/components/icons/workflows";
 import { DashboardIcon } from "@radix-ui/react-icons";
+import { IconBrandTeams } from "@tabler/icons-react";
 
 export const menuOptions = [
     { name: 'Dashboard', Component: Home, href: '/dashboard' },
     { name: 'Tasks', Component: Tasks, href: '/dashboard/tasks' },
-    { name: 'Settings', Component: Settings, href: '/settings' },
+    { name: 'Teams', Component: IconBrandTeams, href: '/dashboard/teams' },
     { name: 'Connections', Component: Category, href: '/connections' },
     { name: 'Billing', Component: Payment, href: '/billing' },
     { name: 'Templates', Component: Templates, href: '/templates' },
