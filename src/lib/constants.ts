@@ -10,19 +10,37 @@ import { DashboardIcon } from "@radix-ui/react-icons";
 import { IconBrandTeams } from "@tabler/icons-react";
 
 export const menuOptions = [
-    { name: 'Dashboard', Component: Home, href: '/dashboard' },
-    { name: 'Tasks', Component: Tasks, href: '/dashboard/tasks' },
-    { name: 'Teams', Component: IconBrandTeams, href: '/dashboard/teams' },
-    { name: 'Connections', Component: Category, href: '/connections' },
-    { name: 'Billing', Component: Payment, href: '/billing' },
-    { name: 'Templates', Component: Templates, href: '/templates' },
-    { name: 'Logs', Component: Logs, href: '/logs' },
-]
+  { name: "Dashboard", Component: Home, href: "/dashboard" },
+  { name: "Tasks", Component: Tasks, href: "/dashboard/tasks" },
+  { name: "Teams", Component: IconBrandTeams, href: "/dashboard/teams" },
+  { name: "Connections", Component: Category, href: "/connections" },
+  { name: "Billing", Component: Payment, href: "/billing" },
+  { name: "Templates", Component: Templates, href: "/templates" },
+  { name: "Logs", Component: Logs, href: "/logs" },
+];
 
 export const taskOptions = [
-    { name: 'Dashboard', Component: DashboardIcon, href: '/dashboard/tasks' },
-    { name: 'My Tasks', Component: Tasks, href: '/dashboard/tasks/assigned' },
-    { name: 'Delegated Tasks', Component: Tasks, href: '/dashboard/tasks/delegated' },
-    { name: 'All Tasks', Component: Tasks, href: '/dashboard/tasks/allTasks' },
-    { name: 'Calendar View', Component: Tasks, href: '/dashboard/tasks/calendar' },
-]
+  { name: "Dashboard", Component: DashboardIcon, href: "/dashboard/tasks" },
+  { name: "My Tasks", Component: Tasks, href: "/dashboard/tasks/assigned" },
+  {
+    name: "Delegated Tasks",
+    Component: Tasks,
+    href: "/dashboard/tasks/delegated",
+  },
+  { name: "All Tasks", Component: Tasks, href: "/dashboard/tasks/allTasks" },
+  {
+    name: "Calendar View",
+    Component: Tasks,
+    href: "/dashboard/tasks/calendar",
+  },
+];
+
+export const businessCategories: string[] = [
+  "Sales",
+  "Marketing",
+  "Operations",
+  "Admin",
+  "HR",
+  "Automation",
+  "General",
+];
