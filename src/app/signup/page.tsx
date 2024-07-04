@@ -62,10 +62,11 @@ export default function SignupPage() {
         // If organization form is not shown, show it
         setShowOrganizationForm(true);
       } else {
+
         // Otherwise, submit both user and organization data
-        const userData = await axios.post("/api/users/signup", {
-          user,
-          organization,
+        await axios.post("/api/users/signup", {
+          ...user,
+          ...organization,
         });
         router.push("/login"); // Redirect after signup
       }
@@ -191,7 +192,9 @@ export default function SignupPage() {
                     </span>
                   ))}
                 </div>
-                <span className="text-sm pt-5">Dont &apos;t worry you can change these later</span>
+                <span className="text-sm pt-5">
+                  Dont &apos;t worry you can change these later
+                </span>
               </LabelInputContainer>
               <button
                 className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
