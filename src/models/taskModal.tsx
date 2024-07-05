@@ -34,7 +34,7 @@ const taskSchema = new mongoose.Schema({
         default: false,
     },
     days: {
-        type: String,
+        type: [String],
         enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     },
     dueDate: {
@@ -46,6 +46,11 @@ const taskSchema = new mongoose.Schema({
     },
     links: {
         type: [String],
+    },
+    status: {
+        type: String,
+        default: "Pending",
+        enum: ["Pending", "In Progress", 'Completed', 'Reopen'],
     },
     // reminder: {
 

@@ -1,4 +1,3 @@
-import TaskModal from "@/components/globals/taskModal";
 import connectDB from "@/lib/db";
 import Task from "@/models/taskModal";
 import { NextRequest, NextResponse } from "next/server";
