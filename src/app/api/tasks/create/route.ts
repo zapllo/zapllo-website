@@ -8,7 +8,7 @@ connectDB();
 const sendWebhookNotification = async (taskData: any) => {
     const payload = {
         phoneNumber: "7064267635", // Assuming you have the phone number in the task data
-        bodyVariables: [taskData.title, taskData.description, taskData.dueDate, taskData.priority, taskData.repeatType, taskData.status, taskData.assignedUser] // Adjust as per your needs
+        bodyVariables: [taskData.title, taskData.description, taskData.dueDate, taskData.priority, taskData.repeatType, taskData.status, taskData.assignedUser, taskData.title] // Adjust as per your needs
     };
 
     try {
