@@ -59,13 +59,12 @@ export async function POST(request: NextRequest) {
             throw new Error("Assigned user not found");
         }
 
-        // Send webhook notification with the assigned user's whatsappNo
-        await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName);
-
         return NextResponse.json({
             message: "Task created successfully",
             data: savedTask,
         });
+        // Send webhook notification with the assigned user's whatsappNo
+        await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 400 });
     }

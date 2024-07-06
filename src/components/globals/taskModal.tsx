@@ -53,7 +53,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('/api/users/all');
+                const response = await fetch('/api/users/organization');
                 const result = await response.json();
 
                 if (response.ok) {
@@ -252,7 +252,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <div className="flex gap-2 items-center mb-2">
                             <Repeat className='h-4' />
                             <Label htmlFor="repeat" className="font-semibold">Repeat</Label>
-                            <input type="checkbox"  id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-5" />
+                            <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-5" />
                         </div>
 
                         {repeat && (
@@ -267,31 +267,31 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                     </select>
                                 </div>
 
-                               
+
                             </div>
                         )}
-                        
+
                     </div>
                     {repeatType === 'Weekly' && (
-                                    <div className="mb-4">
-                                        <Label className="block font-semibold mb-2">Select Days</Label>
-                                        <div className="grid grid-cols-7 ">
-                                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                                                <div key={day} className="flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        id={day}
-                                                        value={day}
-                                                        checked={days.includes(day)}
-                                                        onChange={() => handleDaysChange(day)}
-                                                        className="mr-2"
-                                                    />
-                                                    <Label htmlFor={day} className="font-semibold">{day.slice(0, 3)}</Label>
-                                                </div>
-                                            ))}
-                                        </div>
+                        <div className="mb-4">
+                            <Label className="block font-semibold mb-2">Select Days</Label>
+                            <div className="grid grid-cols-7 ">
+                                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                                    <div key={day} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id={day}
+                                            value={day}
+                                            checked={days.includes(day)}
+                                            onChange={() => handleDaysChange(day)}
+                                            className="mr-2"
+                                        />
+                                        <Label htmlFor={day} className="font-semibold">{day.slice(0, 3)}</Label>
                                     </div>
-                                )}
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <div className="mb-4">
                         <Label htmlFor="dueDate" className="block font-semibold">Due Date</Label>
                         <Input type="date" id="dueDate" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border rounded px-3 py-2" />

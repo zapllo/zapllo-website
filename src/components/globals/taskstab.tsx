@@ -1,14 +1,13 @@
-"use client"
 // TasksTab.tsx
-import { useEffect, useState } from "react"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card } from "@/components/ui/card"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import DashboardAnalytics from "@/components/globals/dashboardAnalytics"
-import { Label } from "../ui/label"
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "../ui/sheet"
-import { Button } from "../ui/button"
+import { useEffect, useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import DashboardAnalytics from "@/components/globals/dashboardAnalytics";
+import { Label } from "@/components/ui/label";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 interface Task {
   title: string;
@@ -30,10 +29,10 @@ interface TasksTabProps {
   tasks: Task[];
 }
 
+
 export default function TasksTab({ tasks }: TasksTabProps) {
-  const [activeTab, setActiveTab] = useState("all")
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [activeTab, setActiveTab] = useState("all");
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -54,7 +53,7 @@ export default function TasksTab({ tasks }: TasksTabProps) {
       ) : (
         <div className="grid text-sm gap-4">
           {tasks.map((task) => (
-            <div key={task.title}>
+            <div key={task._id}>
               <Card
                 className="flex items-center justify-between cursor-pointer"
                 onClick={() => setSelectedTask(task)}
@@ -62,22 +61,24 @@ export default function TasksTab({ tasks }: TasksTabProps) {
                 <div className="flex items-center gap-4">
                   <Avatar>
                     <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback>{task.user}</AvatarFallback>
+                    <AvatarFallback>
+                      {`${task.user.firstName} ${task.user.lastName}`} {/* Display user's full name */}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{task.description}</p>
+                    <p className="font-medium">{task.title}</p>
                     <p className="text-muted-foreground">{task.priority}</p>
                   </div>
                 </div>
-                <Badge>{task.dueDate}</Badge>
+                <Badge>{new Date(task.dueDate).toLocaleDateString()}</Badge>
               </Card>
-              {selectedTask && selectedTask.title === task.title && (
+              {selectedTask && selectedTask._id === task._id && (
                 <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
                   <SheetContent>
                     <SheetHeader>
                       <SheetTitle>{selectedTask.title}</SheetTitle>
                       <SheetDescription>
-                        Task details .
+                        Task details
                       </SheetDescription>
                     </SheetHeader>
                     <div className="grid gap-4 py-4">
@@ -91,7 +92,7 @@ export default function TasksTab({ tasks }: TasksTabProps) {
                         <Label htmlFor="user" className="text-right">
                           User
                         </Label>
-                        <h1 id="user" className="col-span-3">{selectedTask.user}</h1>
+                        <h1 id="user" className="col-span-3">{`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}</h1>
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="description" className="text-right">
@@ -103,7 +104,7 @@ export default function TasksTab({ tasks }: TasksTabProps) {
                         <Label htmlFor="assignedUser" className="text-right">
                           Assigned User
                         </Label>
-                        <h1 id="assignedUser" className="col-span-3">{selectedTask.assignedUser}</h1>
+                        <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="categories" className="text-right">
@@ -181,5 +182,5 @@ export default function TasksTab({ tasks }: TasksTabProps) {
         </div>
       )}
     </div>
-  )
+  );
 }

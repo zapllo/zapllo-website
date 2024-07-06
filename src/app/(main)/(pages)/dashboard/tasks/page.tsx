@@ -20,7 +20,7 @@ interface Task {
     attachment?: string;
     links?: string[];
     status: string;
-  }
+}
 
 
 export default function TaskManagement() {
@@ -37,9 +37,8 @@ export default function TaskManagement() {
 
     const fetchTasks = async () => {
         try {
-            const response = await fetch('/api/tasks/get');
+            const response = await fetch('/api/tasks/organization');
             const result = await response.json();
-
             if (response.ok) {
                 setTasks(result.data);
             } else {
@@ -54,6 +53,7 @@ export default function TaskManagement() {
         fetchTasks();
     }, []);
 
+    console.log(tasks, 'tasks from organization')
 
 
     return (

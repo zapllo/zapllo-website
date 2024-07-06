@@ -7,7 +7,7 @@ const taskSchema = new mongoose.Schema({
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' // Referencing the Organization model 
+        ref: 'users' // Referencing the Organization model 
     },
     description: {
         type: String,
@@ -15,7 +15,7 @@ const taskSchema = new mongoose.Schema({
     },
     assignedUser: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' // Referencing the Organization model 
+        ref: 'users' // Referencing the Organization model 
     },
     categories: {
         type: [String],
