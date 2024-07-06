@@ -8,11 +8,19 @@ import TaskModal from '@/components/globals/taskModal';
 
 interface Task {
     title: string;
-    description: string;
     user: string;
+    description: string;
+    assignedUser: string;
+    categories: string[];
     priority: string;
+    repeatType?: string;
+    repeat: boolean;
+    days?: string[];
     dueDate: string;
-}
+    attachment?: string;
+    links?: string[];
+    status: string;
+  }
 
 
 export default function TaskManagement() {
