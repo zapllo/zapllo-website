@@ -11,7 +11,6 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, bo
             bodyValues: bodyVariables,
         },
     };
-
     try {
         const response = await fetch('https://api.interakt.ai/v1/public/message/', {
             method: 'POST',
