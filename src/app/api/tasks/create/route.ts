@@ -2,13 +2,14 @@ import connectDB from "@/lib/db";
 import Task from "@/models/taskModal";
 import { NextRequest, NextResponse } from "next/server";
 import { getDataFromToken } from "@/helper/getDataFromToken";
+import User from "@/models/userModel";
 
 connectDB();
 
-const sendWebhookNotification = async (taskData: any) => {
+const sendWebhookNotification = async (taskData: any, phoneNumber: any, assignedUserFirstName: any, userFirstName: any) => {
     const payload = {
-        phoneNumber: "7064267635", // Assuming you have the phone number in the task data
-        bodyVariables: [taskData.title, taskData.description, taskData.dueDate, taskData.priority, taskData.repeatType, taskData.status, taskData.assignedUser, taskData.title] // Adjust as per your needs
+        phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
+        bodyVariables: [assignedUserFirstName, userFirstName, "Marketing", taskData.title, taskData.description, taskData.priority, taskData.dueDate, "zapllo.com"] // Adjust as per your needs
     };
 
     try {
@@ -48,9 +49,18 @@ export async function POST(request: NextRequest) {
 
         // Save the new task to the database
         const savedTask = await newTask.save();
+        const taskUser = await User.findById(savedTask.user);
+        if (!taskUser) {
+            throw new Error("Task user not found");
+        }
+        // Fetch the assigned user's whatsappNo
+        const assignedUser = await User.findById(savedTask.assignedUser);
+        if (!assignedUser) {
+            throw new Error("Assigned user not found");
+        }
 
-        // Send webhook notification
-        await sendWebhookNotification(savedTask);
+        // Send webhook notification with the assigned user's whatsappNo
+        await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName);
 
         return NextResponse.json({
             message: "Task created successfully",
