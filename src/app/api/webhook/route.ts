@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         const { phoneNumber, bodyVariables } = reqBody;
 
         // Send WhatsApp message
-        await sendWhatsAppMessage(phoneNumber, 'task_notification_nu', bodyVariables);
+        // await sendWhatsAppMessage(phoneNumber, 'task_notification_nu', bodyVariables);
 
         return NextResponse.json({ status: 'success', message: 'WhatsApp message sent successfully' });
 
