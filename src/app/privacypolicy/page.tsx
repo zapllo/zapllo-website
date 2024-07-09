@@ -1,5 +1,5 @@
-import { FloatingNavbar } from '@/app/components/globals/navbar'
-import PrivacyPolicy from '@/app/components/globals/privacyPolicy'
+import { FloatingNavbar } from '@/components/globals/navbar'
+import PrivacyPolicy from '@/components/globals/privacyPolicy'
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 

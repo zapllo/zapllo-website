@@ -1,5 +1,5 @@
-import { FloatingNavbar } from '@/app/components/globals/navbar'
-import RefundPolicy from '@/app/components/globals/refundpolicy'
+import { FloatingNavbar } from '@/components/globals/navbar'
+import RefundPolicy from '@/components/globals/refundpolicy'
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 
