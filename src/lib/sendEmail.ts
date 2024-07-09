@@ -4,9 +4,10 @@ export interface SendEmailOptions {
     to: string;
     subject: string;
     text: string;
+    html: string;
 }
 
-export async function sendEmail({ to, subject, text }: SendEmailOptions): Promise<void> {
+export async function sendEmail({ to, subject, text, html }: SendEmailOptions): Promise<void> {
     // Check if SENDGRID_API_KEY is defined
     if (!process.env.SENDGRID_API_KEY) {
         console.error('SENDGRID_API_KEY is not defined');
@@ -20,6 +21,7 @@ export async function sendEmail({ to, subject, text }: SendEmailOptions): Promis
         from: process.env.SENDGRID_SENDER_EMAIL || 'contact@zapllo.com', // Provide a default sender if not defined
         subject,
         text,
+        html,
     };
 
     try {

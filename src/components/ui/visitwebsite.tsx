@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import TextShimmer from "@/components/magicui/animated-shiny-text";
+import TextShimmer from "@/app/components/magicui/animated-shiny-text";
 import { ArrowRightIcon, ChatBubbleIcon } from "@radix-ui/react-icons";
 import { Globe, MessageSquare } from "lucide-react";
 

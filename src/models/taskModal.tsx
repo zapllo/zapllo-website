@@ -52,6 +52,18 @@ const taskSchema = new mongoose.Schema({
         default: "Pending",
         enum: ["Pending", "In Progress", 'Completed', 'Reopen'],
     },
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization', // Referencing the Organization model
+        required: true,
+    },
+    comments: [
+        {
+            userName: String,
+            comment: String,
+        }
+    ]
+
     // reminder: {
 
     // },

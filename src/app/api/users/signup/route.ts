@@ -4,11 +4,20 @@ import Organization from "@/models/organizationModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { SendEmailOptions, sendEmail } from "@/lib/sendEmail";
+import { getDataFromToken } from "@/helper/getDataFromToken";
 
 connectDB();
 
 export async function POST(request: NextRequest) {
   try {
+
+    const userId = await getDataFromToken(request);
+    // Find the authenticated user in the database based on the user ID
+    const authenticatedUser = await User.findById(userId);
+    if (!authenticatedUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const reqBody = await request.json();
     const {
       whatsappNo,
@@ -52,7 +61,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       trialExpires,
       role: "orgAdmin", // Set the initial role to 'orgAdmin' for the creator
-      organization: organization ? undefined : null,
+      organization: authenticatedUser.organization,
     });
 
     // Initialize variable for organization

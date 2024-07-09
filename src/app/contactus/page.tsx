@@ -7,7 +7,6 @@ export default function ContactUsPage() {
       {/* <FloatingNavbar /> */}
       {/* <Image src='/mask.png' height={100} className=" absolute overflow-hidden -mt-[5%]   w-full 0" width={100} alt="Background mask for zapllo automation" /> */}
       <ContactUs />
-
     </main>
   )
 }

@@ -1,6 +1,6 @@
-import Footer from '@/components/globals/Footer'
-import { FloatingNavbar } from '@/components/globals/navbar'
-import TermsandConditions from '@/components/globals/terms'
+import Footer from '@/app/components/globals/Footer'
+import { FloatingNavbar } from '@/app/components/globals/navbar'
+import TermsandConditions from '@/app/components/globals/terms'
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 

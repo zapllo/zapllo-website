@@ -42,6 +42,7 @@ const organizationSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  
 });
 
 // Model for organizations

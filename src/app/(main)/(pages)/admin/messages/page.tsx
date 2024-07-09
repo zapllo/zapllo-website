@@ -1,6 +1,6 @@
 "use client"
 
-import { ShiningButton } from "@/components/globals/shiningbutton";
+import { ShiningButton } from "@/app/components/globals/shiningbutton";
 import React, { useEffect, useState } from "react";
 
 interface Lead {

@@ -17,25 +17,14 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Fetch tasks that are specific to the authenticated user's organization
+        // Fetch tasks where the user's organization field matches the authenticated user's organization field
         const tasks = await Task.find({
-            $or: [
-                { user: authenticatedUser._id },
-                { assignedUser: authenticatedUser._id }
-            ]
+            organization: authenticatedUser.organization
         }).populate('user assignedUser');
-
-        // Filter tasks by organization
-        const organizationTasks = tasks.filter(task => {
-            return (
-                task.user.organization.equals(authenticatedUser.organization) ||
-                task.assignedUser.organization.equals(authenticatedUser.organization)
-            );
-        });
 
         return NextResponse.json({
             message: "Tasks fetched successfully",
-            data: organizationTasks,
+            data: tasks,
         });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 400 });

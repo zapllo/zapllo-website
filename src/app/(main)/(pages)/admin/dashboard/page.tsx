@@ -1,4 +1,4 @@
-import { ShiningButton } from '@/components/globals/shiningbutton'
+import { ShiningButton } from '@/app/components/globals/shiningbutton'
 import { Bell, Home, MessageCircle, MessageCircleReply, Users } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'

@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlusCircleIcon } from 'lucide-react';
 import TaskModal from '@/components/globals/taskModal';
+import axios from 'axios';
 
 
 interface Task {
+    _id: string;
     title: string;
     user: string;
     description: string;
@@ -21,11 +23,28 @@ interface Task {
     links?: string[];
     status: string;
 }
+interface User {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    organization: string;
+}
 
 
 export default function TaskManagement() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [currentUser, setCurrentUser] = useState()
+
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            const res = await axios.get('/api/users/me')
+            setCurrentUser(res.data.data);
+        }
+        getUserDetails();
+    }, [])
+
     const openModal = () => {
         setIsModalOpen(true);
     };
@@ -78,7 +97,7 @@ export default function TaskManagement() {
             </AnimatePresence>
             <div className='p-2'>
                 {/* <h1 className='text-center font-bold text-xl p-4'>Teams</h1> */}
-                <TasksTab tasks={tasks} />
+                <TasksTab tasks={tasks} currentUser={currentUser} />
             </div>
         </div>
     )

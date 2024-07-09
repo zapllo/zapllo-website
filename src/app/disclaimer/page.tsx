@@ -1,5 +1,5 @@
-import Disclaimer from '@/components/globals/disclaimer'
-import { FloatingNavbar } from '@/components/globals/navbar'
+import Disclaimer from '@/app/components/globals/disclaimer'
+import { FloatingNavbar } from '@/app/components/globals/navbar'
 import Image from 'next/image'
 import React from 'react'
 
