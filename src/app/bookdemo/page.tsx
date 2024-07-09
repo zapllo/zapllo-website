@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { FloatingNavbar } from '@/app/components/globals/navbar'
-import { Calendar } from "@/app/components/ui/calendar"
+import { FloatingNavbar } from '@/components/globals/navbar'
+import { Calendar } from "@/components/ui/calendar"
 import { InlineWidget } from "react-calendly"
-import Buttonswow from "@/app/components/globals/buttonswow"
-import { TestimonialCards } from "@/app/components/globals/testimonialscards"
-import GradientText from "@/app/components/magicui/gradient"
-import Footer from "@/app/components/globals/Footer"
+import Buttonswow from "@/components/globals/buttonswow"
+import { TestimonialCards } from "@/components/globals/testimonialscards"
+import GradientText from "@/components/magicui/gradient"
+import Footer from "@/components/globals/Footer"
 
 export default function BookDemo() {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
