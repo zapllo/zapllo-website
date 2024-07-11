@@ -70,8 +70,7 @@ export async function POST(request: NextRequest) {
             to: `${assignedUser.email}`,
             subject: "New Task Assigned",
             text: `Dear ${assignedUser.firstName},\n\nA new task has been assigned to you, given below are the task details:\n\nTitle: ${savedTask.title} \n\nDescription: ${savedTask.description} \n\nDue Date: ${savedTask.dueDate} \n\nAssigned By: ${authenticatedUser.firstName} \n\nCategory: ${savedTask.category} \n\nPriority: ${savedTask.priority} & Regards\nTeam Zapllo`,
-            html: `
-            <p>Dear ${assignedUser.firstName},</p>
+            html: `<p>Dear ${assignedUser.firstName},</p>
             <p>A new task has been assigned to you. Below are the task details:</p>
             <ul>
                 <li><strong>Title:</strong> ${savedTask.title}</li>
@@ -87,7 +86,7 @@ export async function POST(request: NextRequest) {
         };
 
         await sendEmail(emailOptions);
-        await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName);
+        // await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName);
 
 
         return NextResponse.json({
