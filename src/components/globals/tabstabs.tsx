@@ -56,7 +56,7 @@ export default function TeamTabs() {
       });
       setIsModalOpen(false);
       // Optionally, you can add the new member to the users array here if you want to update the UI
-      setUsers((prevUsers) => [...prevUsers, data.user]);
+      // setUsers((prevUsers) => [...prevUsers, data.user]);
     } else {
       // Handle error
       alert(data.error);
@@ -141,7 +141,7 @@ export default function TeamTabs() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="grid text-sm gap-4">
+      {/* <div className="grid text-sm gap-4">
         {users
           .filter((user) => {
             if (activeTab === "all") return true;
@@ -162,7 +162,7 @@ export default function TeamTabs() {
               <Badge variant={user.role.toLowerCase() === "orgAdmin" ? "destructive" : "outline"}>{user.role}</Badge>
             </Card>
           ))}
-      </div>
+      </div> */}
     </div>
   );
 }
