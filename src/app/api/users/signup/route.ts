@@ -95,6 +95,8 @@ export async function POST(request: NextRequest) {
       to: email,
       subject: "Thanks for registering at Zapllo!",
       text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours.Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
+      html: `<h1>Thank You! </h1>
+        `,
     };
 
     await sendEmail(emailOptions);
