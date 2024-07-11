@@ -1,13 +1,53 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-const taskSchema = new mongoose.Schema({
+enum RepeatType {
+    Weekly = 'Weekly',
+    Monthly = 'Monthly',
+    Daily = 'Daily',
+}
+
+enum Status {
+    Pending = 'Pending',
+    Completed = 'Completed',
+    InProgress = 'In Progress',
+    Reopen = 'Reopen',
+}
+
+
+// Define an interface for the Task document
+export interface ITask extends Document {
+    title: string;
+    user: mongoose.Types.ObjectId;
+    description: string;
+    assignedUser: mongoose.Types.ObjectId;
+    category?: string;
+    priority: 'High' | 'Medium' | 'Low';
+    repeatType: RepeatType;
+    repeat: boolean;
+    days?: Array<'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'>;
+    dates?: number[]; // Assuming dates are numbers 1-31 for monthly
+    dueDate: Date;
+    attachment?: string;
+    links?: string[];
+    status: 'Pending' | 'In Progress' | 'Completed' | 'Reopen';
+    organization: mongoose.Types.ObjectId;
+    comments: {
+        userName: string;
+        comment: string;
+        createdAt?: Date;
+    }[];
+}
+
+// Define the schema
+const taskSchema: Schema<ITask> = new mongoose.Schema({
     title: {
         type: String,
         required: true,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users' // Referencing the Organization model 
+        ref: 'users', // Assuming referencing the User model
+        required: true,
     },
     description: {
         type: String,
@@ -15,10 +55,11 @@ const taskSchema = new mongoose.Schema({
     },
     assignedUser: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users' // Referencing the Organization model 
+        ref: 'users', // Assuming referencing the User model
+        required: true,
     },
-    categories: {
-        type: [String],
+    category: {
+        type: String,
     },
     priority: {
         type: String,
@@ -27,15 +68,32 @@ const taskSchema = new mongoose.Schema({
     },
     repeatType: {
         type: String,
-        enum: ['Weekly', 'Monthly', 'Daily'],
+        enum: Object.values(RepeatType), // Use enum values to ensure type safety
     },
     repeat: {
         type: Boolean,
         default: false,
     },
     days: {
-        type: [String],
-        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        type: [{
+            type: String,
+            enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        }],
+        validate: {
+            validator: function (days: string[]) {
+                return (this as ITask).repeatType === RepeatType.Weekly ? days.length > 0 : true;
+            },
+            message: 'Days must be provided for weekly repeat type',
+        },
+    },
+    dates: {
+        type: [Number],
+        validate: {
+            validator: function (dates: number[]) {
+                return (this as ITask).repeatType === RepeatType.Monthly ? dates.length > 0 : true;
+            },
+            message: 'Dates must be provided for monthly repeat type',
+        },
     },
     dueDate: {
         type: Date,
@@ -49,27 +107,32 @@ const taskSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "Pending",
-        enum: ["Pending", "In Progress", 'Completed', 'Reopen'],
+        enum: Object.values(Status), // Use enum values to ensure type safety
+        default: 'Pending'
     },
     organization: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Organization', // Referencing the Organization model
+        ref: 'Organization', // Assuming referencing the Organization model
         required: true,
     },
-    comments: [
-        {
-            userName: String,
-            comment: String,
-        }
-    ]
+    comments: [{
+        userName: {
+            type: String,
+            required: true,
+        },
+        comment: {
+            type: String,
+            required: true,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
+    }],
+}, {
+    timestamps: true,
+});
 
-    // reminder: {
-
-    // },
-})
-
-const Task = mongoose.models.tasks || mongoose.model("tasks", taskSchema);
-
+// Define and export the Task model
+const Task: Model<ITask> = mongoose.models.tasks || mongoose.model<ITask>('tasks', taskSchema);
 export default Task;
-

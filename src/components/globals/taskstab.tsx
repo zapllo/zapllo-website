@@ -6,11 +6,13 @@ import DashboardAnalytics from "@/components/globals/dashboardAnalytics";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, FileWarning, User as UserIcon, User, Search } from "lucide-react";
+import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Loader, Calendar, Flag, FlagIcon, Edit, Delete, Trash } from "lucide-react";
 import { IconClock } from "@tabler/icons-react";
-import { PlayIcon } from "@radix-ui/react-icons";
+import { PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "../ui/dialog";
+import { Separator } from "../ui/separator";
+import axios from "axios";
 
 // Define the User interface
 interface User {
@@ -27,26 +29,42 @@ interface Task {
   user: User;
   description: string;
   assignedUser: User;
-  categories: string[];
+  category: string;
   priority: string;
   repeatType?: string;
   repeat: boolean;
   days?: string[];
+  categories?: string[];
   dueDate: string;
   attachment?: string;
   links?: string[];
   status: string;
+  comments: Comment[];
+  createdAt: string;
 }
+
+interface Comment {
+  _id: string;
+  userId: string; // Assuming a user ID for the commenter
+  userName: string; // Name of the commenter
+  comment: string;
+  createdAt: string; // Date/time when the comment was added
+  status: string;
+}
+type TaskUpdateCallback = (updatedTask: Task) => void;
 
 interface TasksTabProps {
   tasks: Task[] | null;
   currentUser: User;
+  onTaskUpdate: TaskUpdateCallback;
+  onTaskDelete: (taskId: string) => void;
+
 }
 
-export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
+export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // State variables for filters
@@ -58,6 +76,7 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [statusToUpdate, setStatusToUpdate] = useState<string | null>(null);
   const [comment, setComment] = useState<string>("");
+
 
 
   useEffect(() => {
@@ -116,7 +135,6 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
       isFiltered = (
         task.title.toLowerCase().includes(lowerCaseQuery) ||
         task.description.toLowerCase().includes(lowerCaseQuery) ||
-        task.categories.some(cat => cat.toLowerCase().includes(lowerCaseQuery)) ||
         task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
         task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
         task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
@@ -141,19 +159,14 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
           id: selectedTask._id,
           status: statusToUpdate,
           comment,
-          userName: `${currentUser.firstName} ${currentUser.lastName}`,
+          userName: `${currentUser.firstName} `,
         }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        // Update the task in the state
-        const updatedTasks = tasks?.map(task =>
-          task._id === selectedTask._id ? result.task : task
-        );
-        // Assuming you have a setTasks state to update the tasks
-        setTasks(updatedTasks);
+        onTaskUpdate(result.task); // Call the callback function to update the task
         setIsDialogOpen(false);
         setSelectedTask(null);
       } else {
@@ -176,6 +189,54 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
       </div>
     );
   }
+
+  const formatDate = (dateTimeString: string) => {
+    const dateTime = new Date(dateTimeString);
+    const now = new Date();
+
+    // Calculate difference in milliseconds
+    const diffMs = now.getTime() - dateTime.getTime();
+    const diffMinutes = Math.round(diffMs / (1000 * 60));
+
+    // Display "a moment ago" if less than 1 minute ago
+    if (diffMinutes < 1) {
+      return "a moment ago";
+    }
+
+    // Display "today" if within the same day
+    if (
+      dateTime.getDate() === now.getDate() &&
+      dateTime.getMonth() === now.getMonth() &&
+      dateTime.getFullYear() === now.getFullYear()
+    ) {
+      const hours = ('0' + dateTime.getHours()).slice(-2);
+      const minutes = ('0' + dateTime.getMinutes()).slice(-2);
+      return `Today at ${hours}:${minutes}`;
+    }
+
+    // Display date if older than today
+    const day = ('0' + dateTime.getDate()).slice(-2);
+    const month = ('0' + (dateTime.getMonth() + 1)).slice(-2);
+    const year = dateTime.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+
+
+  const handleDelete = async (taskId: string) => {
+    try {
+      await axios.delete('/api/tasks/delete', {
+        data: { id: selectedTask?._id },
+      });
+      // Optionally, handle success (e.g., show a message, update state)
+      console.log('Task deleted successfully');
+    } catch (error: any) {
+      // Handle error (e.g., show an error message)
+      console.error('Failed to delete task:', error.message);
+    }
+  };
+
+
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -269,13 +330,13 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
                   <div className="gap-2 flex">
                     <div className="bg-gray-700 rounded px-4 flex gap-2 py-1">
                       <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
-                     <h1>
-                     In Progress
-                     </h1>  
+                      <h1>
+                        In Progress
+                      </h1>
                     </div>
                     <div className="bg-gray-700 rounded px-4 flex gap-2 py-1">
                       <CheckCheck className="h-4  rounded-full text-green-400" />
-                     <h1>
+                      <h1>
                         Mark as Completed
                       </h1>
                     </div>
@@ -297,8 +358,8 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
               </Card>
               {isDialogOpen && (
                 <Dialog
-                  isOpen={isDialogOpen}
-                  onDismiss={() => setIsDialogOpen(false)}
+                  open={isDialogOpen}
+                  onOpenChange={() => setIsDialogOpen(false)}
                 >
                   <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
                   <DialogContent className="bg-white rounded-lg p-6 mx-auto mt-20 max-w-sm">
@@ -330,80 +391,231 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
               )}
               {selectedTask && selectedTask._id === task._id && (
                 <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-                  <SheetContent>
+                  <SheetContent className="max-w-4xl w-full">
                     <SheetHeader>
-                      <SheetTitle>{selectedTask.title}</SheetTitle>
-                      <SheetDescription>
+                      <SheetTitle className="text-muted-foreground">
                         Task details
-                      </SheetDescription>
+                      </SheetTitle>
+                      <SheetDescription className="font-bold text-lg text-white">Title:  {selectedTask.title}</SheetDescription>
                     </SheetHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
+                    <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
+                      <div className="flex items-center gap-4">
+                        <Label htmlFor="user" className="text-right">
+                          Assigned To
+                        </Label>
+                        <div className="flex gap-2 justify-start">
+                          <div className="h-6 w-6 rounded-full bg-primary -400">
+                            <h1 className="text-center uppercase">
+                              {`${selectedTask.assignedUser.firstName.slice(0, 1)}`}
+                            </h1>
+                          </div>
+                          <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
+
+                        </div>
+                      </div>
+                      <div className=" flex items-center gap-4">
+                        <Label htmlFor="user" className="text-right">
+                          Assigned By
+                        </Label>
+                        <div className="flex gap-2 justify-start">
+                          <div className="h-6 w-6 rounded-full bg-primary -400">
+                            <h1 className="text-center uppercase">
+                              {`${selectedTask.user.firstName.slice(0, 1)}`}
+                            </h1>
+                          </div>
+                          <h1 id="assignedUser" className="col-span-3">{`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}</h1>
+
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Created At
+                      </Label>
+                      <div className="flex gap-2 ml-2  justify-start">
+                        <Calendar className="h-5" />
+
+                        <h1 id="assignedUser" className="col-span-3 font-bold">
+                          {`${new Date(selectedTask.createdAt).getDate().toString().padStart(2, '0')}-${(new Date(selectedTask.createdAt).getMonth() + 1).toString().padStart(2, '0')}-${new Date(selectedTask.createdAt).getFullYear()}`}
+                        </h1>
+                      </div>
+                    </div>
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Due Date
+                      </Label>
+                      <div className="flex gap-2 ml-4 justify-start">
+                        <Clock className="h-5" />
+                        <h1 id="assignedUser" className="col-span-3  font-bold ">
+                          {`${new Date(selectedTask.dueDate).getDate().toString().padStart(2, '0')}-${(new Date(selectedTask.createdAt).getMonth() + 1).toString().padStart(2, '0')}-${new Date(selectedTask.createdAt).getFullYear()}`}
+                        </h1>
+                      </div>
+                    </div>
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Frequency
+                      </Label>
+                      <div className="flex gap-2 ml-2  justify-start">
+                        <Repeat className="h-5" />
+                        <h1 id="assignedUser" className="col-span-3 font-bold">
+                          {`${selectedTask.repeatType}`}
+                        </h1>
+                      </div>
+                    </div>
+
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Status
+                      </Label>
+                      <div className="flex gap-2 ml-8  justify-start">
+                        {selectedTask.status === 'Pending' && <Circle className="h-5 text-red-500" />}
+                        {selectedTask.status === 'Completed' && <CheckCircle className="h-5 text-green-500" />}
+                        {selectedTask.status === 'In Progress' && <Loader className="h-5 text-orange-500" />}
+                        <h1 id="assignedUser" className="col-span-3 font-bold">
+                          {`${selectedTask.status}`}
+                        </h1>
+                      </div>
+                    </div>
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Category
+                      </Label>
+                      <div className="flex gap-2 ml-4  justify-start">
+
+                        <h1 id="assignedUser" className="col-span-3 font-bold">
+                          {`${selectedTask.category}`}
+                        </h1>
+                      </div>
+                    </div>
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Priority
+                      </Label>
+                      <div className="flex gap-2 ml-6  justify-start">
+                        {selectedTask.priority === 'High' && <Flag className="h-5 text-red-500" />}
+                        {selectedTask.priority === 'Medium' && <Flag className="h-5 text-orange-500" />}
+                        {selectedTask.priority === 'Low' && <Flag className="h-5 text-green-500" />}
+                        <h1 id="assignedUser" className={`col-span-3 font-bold ${selectedTask.priority === 'High'
+                          ? 'text-red-500'
+                          : selectedTask.priority === 'Medium'
+                            ? 'text-orange-500'
+                            : selectedTask.priority === 'Low'
+                              ? 'text-green-500'
+                              : ''
+                          }`}>
+                          {`${selectedTask.priority}`}
+                        </h1>
+                      </div>
+
+                    </div>
+                    <div className=" flex items-center gap-4 mt-4">
+                      <Label htmlFor="user" className="text-right">
+                        Description
+                      </Label>
+                      <div className="flex gap-2 ml-2  justify-start">
+
+                        <h1 id="assignedUser" className="col-span-3 font-bold">
+                          {`${selectedTask.description}`}
+                        </h1>
+                      </div>
+                    </div>
+                    <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                      <Button
+                        onClick={() => {
+                          setStatusToUpdate("In Progress");
+                          setIsDialogOpen(true);
+                        }}
+                        className="gap-2 bg-gray-600 w-full"
+                      >
+                        <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
+                        In Progress
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setStatusToUpdate("Completed");
+                          setIsDialogOpen(true);
+                        }}
+                        className="bg-gray-600 w-full "
+                      >
+                        <CheckCheck className="h-4 rounded-full text-green-400" />
+                        Completed
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setStatusToUpdate("Completed");
+                          setIsDialogOpen(true);
+                        }}
+                        className="bg-gray-600 w-full"
+                      >
+                        <Edit className="h-4 rounded-full text-blue-400" />
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(selectedTask._id)}
+                        className="bg-gray-600 w-full"
+                      >
+                        <Trash className="h-4 rounded-full text-red-400" />
+                        Delete
+                      </Button>
+                    </div>
+                    {/* <div className="grid gap-2  p-4 rounded-xl text-xs  grid-cols-1 py-2">
+                      <div className="grid grid-cols-4  items-center gap-2">
                         <Label htmlFor="title" className="text-right">
                           Title
                         </Label>
                         <h1 id="title" className="col-span-3">{selectedTask.title}</h1>
                       </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="user" className="text-right">
-                          User
-                        </Label>
-                        <h1 id="user" className="col-span-3">{`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}</h1>
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
+
+                      <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="description" className="text-right">
                           Description
                         </Label>
                         <h1 id="description" className="col-span-3">{selectedTask.description}</h1>
                       </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="assignedUser" className="text-right">
-                          Assigned User
-                        </Label>
-                        <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
+
+                      <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="categories" className="text-right">
-                          Categories
+                          Category
                         </Label>
                         <h1 id="categories" className="col-span-3">{selectedTask.categories.join(', ')}</h1>
                       </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="priority" className="text-right">
                           Priority
                         </Label>
                         <h1 id="priority" className="col-span-3">{selectedTask.priority}</h1>
                       </div>
                       {selectedTask.repeatType && (
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        <div className="grid grid-cols-4 items-center gap-2">
                           <Label htmlFor="repeatType" className="text-right">
                             Repeat Type
                           </Label>
                           <h1 id="repeatType" className="col-span-3">{selectedTask.repeatType}</h1>
                         </div>
                       )}
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="repeat" className="text-right">
                           Repeat
                         </Label>
                         <h1 id="repeat" className="col-span-3">{selectedTask.repeat ? 'Yes' : 'No'}</h1>
                       </div>
                       {selectedTask.days && selectedTask.days.length > 0 && (
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        <div className="grid grid-cols-4 items-center gap-2">
                           <Label htmlFor="days" className="text-right">
                             Days
                           </Label>
                           <h1 id="days" className="col-span-3">{selectedTask.days.join(', ')}</h1>
                         </div>
                       )}
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="dueDate" className="text-right">
                           Due Date
                         </Label>
                         <h1 id="dueDate" className="col-span-3">{new Date(selectedTask.dueDate).toLocaleDateString()}</h1>
                       </div>
                       {selectedTask.attachment && (
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        <div className="grid grid-cols-4 items-center gap-2">
                           <Label htmlFor="attachment" className="text-right">
                             Attachment
                           </Label>
@@ -411,64 +623,53 @@ export default function TasksTab({ tasks, currentUser }: TasksTabProps) {
                         </div>
                       )}
                       {selectedTask.links && selectedTask.links.length > 0 && (
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        <div className="grid grid-cols-4 items-center gap-2">
                           <Label htmlFor="links" className="text-right">
                             Links
                           </Label>
                           <h1 id="links" className="col-span-3">{selectedTask.links.join(', ')}</h1>
                         </div>
                       )}
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="status" className="text-right">
                           Status
                         </Label>
                         <h1 id="status" className="col-span-3">{selectedTask.status}</h1>
                       </div>
-                    </div>
-                    <Label className="mt-2">Comments</Label>
-                    <div className="space-y-2">
-                      {selectedTask.comments.map((commentObj, index) => (
-                        <div key={index} className="border rounded-lg p-2">
-                          <strong>{commentObj.userName}</strong>
-                          <p>{commentObj.comment}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <SheetFooter>
-                      <div className="gap-2  ">
-                        <div className=" rounded px-4 flex gap-2 py-1">
-                          <Button
-                            onClick={() => {
-                              setStatusToUpdate("In Progress");
-                              setIsDialogOpen(true);
-                            }}
-                            className=" gap-2 w-full"
-                          >
-                            <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
-                            In Progress
-                          </Button>
+                    </div> */}
+                    <Separator />
+                    <div className=" rounded-xl p-2 mt-4 mb-4">
+                      <div className="mb-4 gap-2 flex justify-start ">
+                        <UpdateIcon className="h-5" />
+                        <Label className=" text-md mt-auto">Task Updates</Label>
 
-                        </div>
-                        <div className=" rounded px-4 flex gap-2 py-1">
-                          <Button
-                            onClick={() => {
-                              setStatusToUpdate("Completed");
-                              setIsDialogOpen(true);
-                            }}
-                            className="bg--500 w-full"
-                          >
-                            <CheckCheck className="h-4  rounded-full text-green-400" />
-
-                            Completed
-                          </Button>
-                        </div>
                       </div>
+                      <div className="space-y-2">
+                        {selectedTask.comments.map((commentObj, index) => (
+                          <div key={index} className="border rounded-lg p-2">
+                            <div className="flex items-center">
+                              <UserIcon className="h-5 mr-2" />
+                              <strong>{commentObj.userName}</strong>
+                            </div>
+                            <p className="p-2 text-xs"> {formatDate(commentObj.createdAt)}</p>
+                            <p className="p-2">{commentObj.comment}</p>
+                            {commentObj.status && (
+                              <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded-lg">
+                                {commentObj.status}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                      {/* <Button onClick={() => setSelectedTask(null)}>Close</Button> */}
+                    <SheetFooter>
+
                     </SheetFooter>
                   </SheetContent>
                 </Sheet>
               )}
+
               {isDialogOpen && (
                 <Dialog
                   open={isDialogOpen}

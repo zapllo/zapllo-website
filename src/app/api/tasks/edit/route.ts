@@ -7,18 +7,20 @@ connectDB();
 
 export async function PATCH(request: NextRequest) {
     try {
-        const { id, status, comment, userName } = await request.json();
-        
+        const { id, title, description, priority } = await request.json();
+
         // Find the task by ID
         const task = await Task.findById(id);
-        
+
         if (!task) {
             return NextResponse.json({ error: 'Task not found' }, { status: 404 });
         }
 
         // Update task properties
-        task.status = status;
-        task.comments.push({ userName, comment, createdAt: new Date() }); // Assuming 'status' is already in task schema
+        task.title = title || task.title;
+        task.description = description || task.description;
+        task.priority = priority || task.priority;
+
         await task.save();
 
         return NextResponse.json({ message: 'Task updated successfully', task }, { status: 200 });

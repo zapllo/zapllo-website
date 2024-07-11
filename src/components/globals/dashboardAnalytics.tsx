@@ -70,7 +70,7 @@ export default function DashboardAnalytics() {
     : 0;
 
   // Calculate task categories and their counts
-  const categoryCounts = calculateCategoryCounts(tasksData);
+  // const categoryCounts = calculateCategoryCounts(tasksData);
 
   // Calculate percentages
   const completionPercentage = (tasksCompleted / totalTasks) * 100;

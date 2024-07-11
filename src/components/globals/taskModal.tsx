@@ -125,7 +125,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             title,
             description,
             assignedUser,
-            categories: [category],
+            category,
             priority,
             repeat,
             repeatType: repeat ? repeatType : '', // Only include repeatType if repeat is true
@@ -158,7 +158,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 rounded-xl flex justify-center items-center">
             <div className="bg-black text-white w-[40%] rounded-lg p-8">
                 <h2 className="text-lg font-bold mb-4">Create New Task</h2>
                 <form className="text-sm">
@@ -216,11 +216,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <div className="mb-4">
                             {/* <label htmlFor="category" className="block font-semibold">Category</label> */}
                             <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border rounded px-3 py-2">
-                                <option value="">Select Category</option>
-                                <option value="">Marketing</option>
-                                <option value="">Sales</option>
-                                <option value="">HR</option>
-                                <option value="">Automation</option>
+                                <option value="" disabled>Select Category</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="HR">HR</option>
+                                <option value="Automation">Automation</option>
 
                                 {/* Populate options dynamically */}
                             </select>
@@ -297,10 +297,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Input type="date" id="dueDate" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border rounded px-3 py-2" />
                     </div>
 
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <Label htmlFor="attachment" className="block font-semibold">Attachment</Label>
                         <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
-                    </div>
+                    </div> */}
 
                     <div className="mb-4">
                         <Label className="block font-semibold mb-2">Links</Label>

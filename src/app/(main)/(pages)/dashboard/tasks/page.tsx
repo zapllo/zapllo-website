@@ -7,22 +7,28 @@ import TaskModal from '@/components/globals/taskModal';
 import axios from 'axios';
 
 
-interface Task {
-    _id: string;
-    title: string;
-    user: string;
-    description: string;
-    assignedUser: string;
-    categories: string[];
-    priority: string;
-    repeatType?: string;
-    repeat: boolean;
-    days?: string[];
-    dueDate: string;
-    attachment?: string;
-    links?: string[];
-    status: string;
-}
+// Define the Task interface
+// interface Task {
+//     _id: string;
+//     title: string;
+//     user: User;
+//     description: string;
+//     assignedUser: User;
+//     category: string;
+//     priority: string;
+//     repeatType?: string;
+//     repeat: boolean;
+//     days?: string[];
+//     categories?: string[];
+//     dueDate: string;
+//     attachment?: string;
+//     links?: string[];
+//     status: string;
+//     comments: Comment[];
+//     createdAt: string;
+// }
+
+
 interface User {
     _id: string;
     firstName: string;
@@ -33,8 +39,8 @@ interface User {
 
 export default function TaskManagement() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [currentUser, setCurrentUser] = useState()
+    const [tasks, setTasks] = useState([]);
+    const [currentUser, setCurrentUser] = useState<any>();
 
 
     useEffect(() => {
@@ -74,6 +80,23 @@ export default function TaskManagement() {
 
     console.log(tasks, 'tasks from organization')
 
+    const deleteTaskAndUpdateList = async (taskId: string) => {
+        try {
+            await axios.delete('/api/tasks/delete', {
+                data: { id: taskId },
+            });
+            // Update tasks list after deletion
+            fetchTasks();
+        } catch (error: any) {
+            console.error('Error deleting task:', error.message);
+            // Handle error as needed
+        }
+    };
+
+
+    const handleTaskUpdate = () => {
+        fetchTasks();
+    };
 
     return (
         <div className='p-4'>
@@ -97,7 +120,7 @@ export default function TaskManagement() {
             </AnimatePresence>
             <div className='p-2'>
                 {/* <h1 className='text-center font-bold text-xl p-4'>Teams</h1> */}
-                <TasksTab tasks={tasks} currentUser={currentUser} />
+                <TasksTab tasks={tasks} currentUser={currentUser} onTaskDelete={deleteTaskAndUpdateList} onTaskUpdate={handleTaskUpdate} />
             </div>
         </div>
     )
