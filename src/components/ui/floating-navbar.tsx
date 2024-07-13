@@ -56,7 +56,7 @@ export const FloatingNav = ({
                 </motion.div>
                 <div className="py-3">
                     <Link href='/'>
-                        <Image src='/logo.png' height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
+                        <img src='/logo.png' height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
                     </Link>
                 </div>
                 <Link

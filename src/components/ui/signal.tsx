@@ -46,10 +46,12 @@ export const SignalIcon = ({ imgSrc }: { imgSrc: string }) => {
         <div className="relative flex items-center justify-center h-20 w-20">
             {renderWaveCircles()}
             <div className="absolute h-16 w-16 rounded-full flex items-center justify-center">
-                <div className="absolute h-16 w-16 border border-[#815BF5]  rounded-full flex items-center justify-center" />
+                <div className="absolute h-16 w-16 border  border-[#815BF5]  rounded-full flex items-center justify-center" />
                 <div className="absolute h-[60px] w-[60px] border border-[#815BF5]  rounded-full flex items-center justify-center" />
                 <div className="absolute h-14 w-14 border border-[#815BF5]  rounded-full flex items-center justify-center" />
-                <div className="absolute h-16 w-16 border bg-[#815BF5] border-[#815BF5] rounded-full flex items-center justify-center" />
+                <div className='absolute h-16 w-16 border bg-[#815BF5]  -[#ffffff] shadow-sm shadow-white rounded-full flex items-center justify-center'>
+                    <div className="absolute h-14 w-14 border bg-[#815BF5]  border-[#815BF5] rounded-full flex items-center justify-center" />
+                </div>
                 <span className="text-white text-2xl z-[10]">
                     <img src={imgSrc} alt="signal" className="h-14 w-14 rounded-full" />
                 </span>

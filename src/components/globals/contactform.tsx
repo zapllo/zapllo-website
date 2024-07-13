@@ -59,37 +59,37 @@ export default function ContactForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
                     <Label>First Name</Label>
-                    <Input
-                        placeholder=""
-                        className="rounded-r-"
+                    <input
+                        placeholder="First Name"
+                        className="bg-transparent border rounded-md p-2"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
                 </div>
                 <div className="space-y-4">
                     <Label>Last Name</Label>
-                    <Input
-                        placeholder=""
-                        className="rounded-r"
+                    <input
+                        placeholder="Last Name"
+                        className="bg-transparent border rounded-md p-2"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
                 </div>
                 <div className="space-y-4">
                     <Label>Email</Label>
-                    <Input
-                        placeholder=""
-                        className="rounded-r"
+                    <input
+                        placeholder="Email"
+                        className="bg-transparent border rounded-md p-2"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
                 <div className="space-y-4">
-                    <Label>Mobile Number</Label>
-                    <Input
-                        placeholder=""
+                    <Label>WhatsApp Number</Label>
+                    <input
+                        placeholder="WhatsApp Number"
+                        className="bg-transparent border  rounded-md p-2"
                         type="text"
-                        className="rounded-r"
                         value={mobNo}
                         onChange={(e) => setMobNo(e.target.value)}
                     />

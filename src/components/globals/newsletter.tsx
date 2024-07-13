@@ -39,9 +39,9 @@ export default function Newsletter() {
     return (
         <div>
             <div className="flex">
-                <Input
+                <input
                     placeholder="Enter Your Email"
-                    className="mt-6 h-12 rounded-r-none"
+                    className="mt-6 h-12 px-4 outline-none rounded-r-none"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />

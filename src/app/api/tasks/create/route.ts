@@ -10,11 +10,12 @@ connectDB();
 const sendWebhookNotification = async (taskData: any, phoneNumber: any, assignedUserFirstName: any, userFirstName: any) => {
     const payload = {
         phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
+        templateName: 'task_notification_nu',
         bodyVariables: [assignedUserFirstName, userFirstName, "Marketing", taskData.title, taskData.description, taskData.priority, taskData.dueDate, "zapllo.com"] // Adjust as per your needs
     };
 
     try {
-        const response = await fetch('https://zapllo.com/api/webhook', {
+        const response = await fetch('https://zapllo.com/api/webhook2', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

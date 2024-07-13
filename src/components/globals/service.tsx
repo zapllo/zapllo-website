@@ -65,7 +65,7 @@ export default function Service() {
 
     return (
         <div className='text-center pt-12 bg-[#05071E] justify-center min-h-screen'>
-            <FloatingWhatsApp phoneNumber="+917064267635" accountName="Ranit" avatar='/Satish.png' darkMode />
+            <FloatingWhatsApp phoneNumber="+918910748670" accountName="Ranit" avatar='/Satish.png' darkMode />
             <GradientText>
                 <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold text-3xl'>Services</h1>
             </GradientText>

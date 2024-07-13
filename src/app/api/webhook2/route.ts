@@ -37,10 +37,10 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, bo
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json();
-        const { phoneNumber, bodyVariables, templateName } = reqBody;
+        const { phoneNumber, bodyVariables } = reqBody;
 
         // Send WhatsApp message
-        await sendWhatsAppMessage(phoneNumber, templateName, bodyVariables);
+        await sendWhatsAppMessage(phoneNumber, 'leadenquirycontactus', bodyVariables);
 
         return NextResponse.json({ status: 'success', message: 'WhatsApp message sent successfully' });
 

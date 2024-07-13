@@ -6,6 +6,36 @@ import { SendEmailOptions, sendEmail } from '@/lib/sendEmail';
 
 export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 
+
+
+const sendWebhookNotification = async (firstName: any, phoneNumber: any) => {
+    const payload = {
+        phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
+        templateName: 'leadenquirycontactus',
+        bodyVariables: [firstName] // Adjust as per your needs
+    };
+
+    try {
+        const response = await fetch('https://zapllo.com/api/webhook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            throw new Error(`Webhook API error: ${responseData.message}`);
+        }
+        console.log('Webhook notification sent successfully:', payload);
+    } catch (error) {
+        console.error('Error sending webhook notification:', error);
+        throw new Error('Failed to send webhook notification');
+    }
+};
+
+
 export async function POST(request: NextRequest) {
     try {
         await connectDB();
@@ -35,6 +65,7 @@ export async function POST(request: NextRequest) {
         };
 
         await sendEmail(emailOptions);
+        await sendWebhookNotification(firstName, mobNo);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 

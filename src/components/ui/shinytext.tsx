@@ -14,7 +14,7 @@ export async function ShinyText() {
       >
         <Link href='/bookdemo'>
 
-          <TextShimmer className="inline-flex text-2xl items-center justify-center px-6 py-2 transition ease-out hover:text-neutral-600 hover:duration-900  hover:dark:text-white">
+          <div className="inline-flex text-2xl items-center justify-center px-6 py-2 transition ease-out hover:text-neutral-600 hover:duration-900  hover:dark:text-white">
             <span className="flex mt-auto text-xl  font-medium  gap-2">
               <div className="mr-4 ">
                 {/* <div className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]    h-10 w-10 rounded-full ">
@@ -31,7 +31,7 @@ export async function ShinyText() {
               </h1>
             </span>
 
-          </TextShimmer>
+          </div>
         </Link>
       </div>
     </div>

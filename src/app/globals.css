@@ -4,7 +4,7 @@
 
 html {
   background-color: #05071E;
-  @apply scrollbar-thumb-purple-600 scrollbar-track-black hover:scrollbar-thumb-[#059669] active:scrollbar-thumb-emerald-500/50 scrollbar h-32 overflow-y-scroll
+  @apply scrollbar-hide
 }
 
 
