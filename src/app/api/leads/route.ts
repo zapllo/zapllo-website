@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 
 
 
-const sendWebhookNotification = async (firstName: any, phoneNumber: any, mediaUrl: string) => {
+const sendWebhookNotification = async (phoneNumber: any, firstName: any, mediaUrl: string) => {
     const payload = {
         phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
         templateName: 'leadenquirycontactus',
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         };
 
         await sendEmail(emailOptions);
-        await sendWebhookNotification(firstName, mobNo, mediaUrl);
+        await sendWebhookNotification(mobNo, firstName, mediaUrl);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 
