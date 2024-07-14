@@ -61,7 +61,7 @@ export default function ContactForm() {
                     <Label>First Name</Label>
                     <input
                         placeholder="First Name"
-                        className="bg-transparent border rounded-md p-2"
+                        className="bg-transparent border focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring  rounded-md p-2"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
@@ -70,7 +70,7 @@ export default function ContactForm() {
                     <Label>Last Name</Label>
                     <input
                         placeholder="Last Name"
-                        className="bg-transparent border rounded-md p-2"
+                        className="bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border rounded-md p-2"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
@@ -79,7 +79,7 @@ export default function ContactForm() {
                     <Label>Email</Label>
                     <input
                         placeholder="Email"
-                        className="bg-transparent border rounded-md p-2"
+                        className="bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border rounded-md p-2"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
@@ -88,7 +88,7 @@ export default function ContactForm() {
                     <Label>WhatsApp Number</Label>
                     <input
                         placeholder="WhatsApp Number"
-                        className="bg-transparent border  rounded-md p-2"
+                        className="bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border  rounded-md p-2"
                         type="text"
                         value={mobNo}
                         onChange={(e) => setMobNo(e.target.value)}

@@ -29,7 +29,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className='max-w-full p-4 w-full overflow-hidden'>
+        <footer className='max-w-7xl p-4 w-full overflow-hidden'>
             <Separator className=' w-[95%] flex mt-12' />
             <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
                 <div className='Zapllo my-8  '>

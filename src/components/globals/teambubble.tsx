@@ -84,7 +84,7 @@ export default function TeamBubble() {
                                 </div>
                             </div>
                         </div>
-                        <div className='mt-12 mb-12 ml-32 gap-10 flex'>
+                        <div className='mt-12 absolute mb-12 ml-32 gap-10 flex'>
                             <BookCall />
                             <h1 className='mt-2 text-[18px] text-center font-bold'> 👈 Upgrade your Workflow </h1>
                         </div>

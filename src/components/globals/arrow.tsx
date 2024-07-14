@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function Arrow() {
     return (
-        <div className="flex justify-center items-center max-w-5xl mt-4 h-screen">
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-2">
+        <div className="flex justify-center items-center max-w-5xl mt-56 md:mt-4 h-screen">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <div className="radial-gradient rounded-lg shadow-lg transform transition-all duration-300 hover:scale-110">
                     <div className="p-6">
                         <div className="bg-primary rounded-full p-3 inline-block mb-4">

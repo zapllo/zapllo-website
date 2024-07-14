@@ -8,10 +8,10 @@ export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 
 
 
-const sendWebhookNotification = async (phoneNumber: any, firstName: any, mediaUrl: string) => {
+const sendWebhookNotification = async (phoneNumber: any, templateName: any, firstName: any, mediaUrl: string) => {
     const payload = {
         phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
-        templateName: 'leadenquirycontactus',
+        templateName: templateName,
         bodyVariables: [firstName], // Adjust as per your needs
         headerValues: [mediaUrl],
     };
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
         const newLead = new Lead({ email, firstName, lastName, message, mobNo });
         const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/DNLVjZYK4pvp/logo-02%204.png?se=2029-06-26T07%3A10%3A33Z&sp=rt&sv=2019-12-12&sr=b&sig=dAChtGOY3ztBj6Y0tvTPXTR5bibZVBx9MvQnUz/WiiA%3D"
-
+        const templateName = 'leadenquirycontactus'
         await newLead.save();
 
         const emailOptions: SendEmailOptions = {
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         };
 
         await sendEmail(emailOptions);
-        await sendWebhookNotification(mobNo, firstName, mediaUrl);
+        await sendWebhookNotification(mobNo, templateName, firstName, mediaUrl);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 

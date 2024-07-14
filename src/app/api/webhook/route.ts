@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const sendWhatsAppMessage = async (phoneNumber: string, mediaUrl: string, templateName: string, bodyVariables: string[]) => {
+const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string, bodyVariables: string[]) => {
     const payload = {
         countryCode: '+91',
         phoneNumber: phoneNumber,
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         const { phoneNumber, bodyVariables, templateName, mediaUrl } = reqBody;
 
         // Send WhatsApp message
-        await sendWhatsAppMessage(phoneNumber, templateName, bodyVariables, mediaUrl);
+        await sendWhatsAppMessage(phoneNumber, templateName, mediaUrl, bodyVariables);
 
         return NextResponse.json({ status: 'success', message: 'WhatsApp message sent successfully' });
 

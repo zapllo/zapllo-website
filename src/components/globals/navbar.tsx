@@ -28,6 +28,20 @@ export function FloatingNavbar() {
         <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
     },
+    {
+      name: "Careers",
+      link: "https://zapllo.notion.site/Work-at-Zapllo-9c970622e3d142919bdca4c42ee38aab?pvs=4",
+      icon: (
+        <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
+      ),
+    },
+    {
+      name: "Refer Us & Win",
+      link: "https://zapllo.notion.site/EXT-Referral-Programme-a18f7fe8ee634bffa917ca0c6f24ad0d?pvs=4",
+      icon: (
+        <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
+      ),
+    },
   ];
 
 

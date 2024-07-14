@@ -3,13 +3,13 @@ import CrossedText from './cross'
 
 export default function Grow() {
     return (
-        <div className=''>
+        <div className='md:mt-24'>
             <div className='mb-16 '>
-                <h1 className='text-center text-white text-2xl font-bold md:text-5xl'>Millions run on Notion every day</h1>
+                <h1 className='text-center texta-white text-2xl font-bold md:text-5xl'>Millions run on Notion every day</h1>
                 <p className='text-gray-300  text-center mt-2 text-md'>Powering the world’s best teams, from next-generation startups to established enterprises.</p>
             </div>
             <div className='flex justify-center '>
-                <div className='grid md:grid-cols-6 gap-8 grid-cols-2'>
+                <div className='grid md:grid-cols-6  gap-8 grid-cols-2'>
                     <img src='/brands/01.png' className='h-auto w-40' />
                     <img src='/brands/02.png' className='h-auto w-40' />
                     <img src='/brands/03.png' className='h-auto w-40' />

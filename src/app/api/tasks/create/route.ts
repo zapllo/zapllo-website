@@ -15,7 +15,7 @@ const sendWebhookNotification = async (taskData: any, phoneNumber: any, assigned
     };
 
     try {
-        const response = await fetch('https://zapllo.com/api/webhook2', {
+        const response = await fetch('https://zapllo.com/api/webhook', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
