@@ -12,8 +12,9 @@ const sendWebhookNotification = async (phoneNumber: any, templateName: any, firs
     const payload = {
         phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
         templateName: templateName,
-        bodyVariables: [firstName], // Adjust as per your needs
         headerValues: [mediaUrl],
+        bodyVariables: [firstName], // Adjust as per your needs
+
     };
 
     try {
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
 
         await sendEmail(emailOptions);
         await sendWebhookNotification(mobNo, templateName, firstName, mediaUrl);
+
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 
