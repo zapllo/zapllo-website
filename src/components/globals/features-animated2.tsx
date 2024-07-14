@@ -37,7 +37,7 @@ export function AnimatedFeatures2() {
       className="relative flex h-full   items-center justify-center overflow-hidden rounded-3xl   p-10 md:shadow-xl"
       ref={containerRef}
     >
-      <div className="flex h-full w-full flex-row items-stretch justify-between gap-10">
+      <div className="flex h-full w-full flex-row items-stretch justify-between gap-10 ">
         <div className="flex flex-col justify-center gap-2">
           <Circle ref={div1Ref} className="h-full w-16 ">
             <Icons.slack className=" h-full w-full" />
@@ -56,7 +56,7 @@ export function AnimatedFeatures2() {
         </div>
         <div className="flex flex-col justify-center">
           <Circle ref={div7Ref}>
-            <User className="text-black"/>
+            <User className="text-black" />
           </Circle>
         </div>
       </div>
@@ -76,7 +76,7 @@ export function AnimatedFeatures2() {
         fromRef={div3Ref}
         toRef={div6Ref}
       />
-     f
+
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div6Ref}
