@@ -1,4 +1,3 @@
-// app/api/leads/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Lead from '@/models/leads';
@@ -6,15 +5,12 @@ import { SendEmailOptions, sendEmail } from '@/lib/sendEmail';
 
 export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 
-
-
-const sendWebhookNotification = async (phoneNumber: any, templateName: any, firstName: any, mediaUrl: string) => {
+const sendWebhookNotification = async (phoneNumber: string, templateName: string, firstName: string, mediaUrl: string) => {
     const payload = {
-        phoneNumber: phoneNumber, // Assuming you have the phone number in the task data
-        templateName: templateName,
+        phoneNumber,
+        templateName,
         headerValues: [mediaUrl],
-        bodyVariables: [firstName], // Adjust as per your needs
-
+        bodyVariables: [firstName],
     };
 
     try {
@@ -37,7 +33,6 @@ const sendWebhookNotification = async (phoneNumber: any, templateName: any, firs
     }
 };
 
-
 export async function POST(request: NextRequest) {
     try {
         await connectDB();
@@ -55,21 +50,17 @@ export async function POST(request: NextRequest) {
         }
 
         const newLead = new Lead({ email, firstName, lastName, message, mobNo });
-        const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/DNLVjZYK4pvp/logo-02%204.png?se=2029-06-26T07%3A10%3A33Z&sp=rt&sv=2019-12-12&sr=b&sig=dAChtGOY3ztBj6Y0tvTPXTR5bibZVBx9MvQnUz/WiiA%3D"
-        const templateName = 'leadenquirycontactus'
         await newLead.save();
 
         const emailOptions: SendEmailOptions = {
             to: email,
             subject: 'We have Received Your Inquiry!',
-            text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours.Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
-            html: `<h1>Thank You </h1>
-        `,
+            text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
+            html: `<h1>Thank You </h1>`,
         };
 
         await sendEmail(emailOptions);
-        await sendWebhookNotification(mobNo, templateName, firstName, mediaUrl);
-
+        await sendWebhookNotification(mobNo, 'leadenquirycontactus', firstName, "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/DNLVjZYK4pvp/logo-02%204.png?se=2029-06-26T07%3A10%3A33Z&sp=rt&sv=2019-12-12&sr=b&sig=dAChtGOY3ztBj6Y0tvTPXTR5bibZVBx9MvQnUz/WiiA%3D");
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 
