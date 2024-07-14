@@ -58,9 +58,9 @@ export default function Contact() {
                 </main>
 
             </div>
-            <div className='pt-12 bg-[#05071E] '>
-                <Footer />
-            </div>
+            <div className="flex bg-[#04061E]  pt-12 justify-center">
+        <Footer />
+      </div>
         </>
     )
 }

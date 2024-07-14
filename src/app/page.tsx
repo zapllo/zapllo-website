@@ -89,7 +89,7 @@ export default function Home() {
         {/* <OurTeam /> */}
         <TeamBubble />
       </div>
-      <div className="flex bg-[#04061E] mt-56 justify-center">
+      <div className="flex bg-[#04061E]  mt-56 justify-center">
         <Footer />
       </div>
     </main>

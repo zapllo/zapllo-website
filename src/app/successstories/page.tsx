@@ -260,9 +260,9 @@ export default function SuccessStories() {
                 </div>
             </div>
             {/* <SuccessGrid /> */}
-            <div className='mt-12'>
-                <Footer />
-            </div>
+            <div className="flex bg-[#04061E]  mt-12 justify-center">
+        <Footer />
+      </div>
         </main>
     )
 }
