@@ -94,7 +94,6 @@ export function FloatingNavbar() {
               <Link href='https://zapllo.notion.site/EXT-Referral-Programme-a18f7fe8ee634bffa917ca0c6f24ad0d?pvs=4'>
                 <h1 className="w-full text-2xl p-2 mt-2">Refer Us & Win</h1>
               </Link>
-
             </SheetDescription>
 
             <SheetFooter>

@@ -39,22 +39,22 @@ export function AnimatedFeatures2() {
     >
       <div className="flex h-full w-full flex-row items-stretch justify-between gap-10 ">
         <div className="flex flex-col justify-center gap-2">
-          <Circle ref={div1Ref} className="h-full w-16 ">
+          <Circle ref={div1Ref} className="h-16 w-16 ">
             <Icons.slack className=" h-full w-full" />
           </Circle>
-          <Circle ref={div2Ref} className="h-full w-16">
+          <Circle ref={div2Ref} className="h-16 w-16">
             <Icons.notion className="h-full w-full" />
           </Circle>
-          <Circle ref={div3Ref} className="h-full w-16">
+          <Circle ref={div3Ref} className="h-16 w-16">
             <Icons.jira className="h-full w-full" />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
-          <Circle ref={div6Ref} className=" bg-[#12173E]  shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-black w-16">
+          <Circle ref={div6Ref} className=" bg-[#12173E]  shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-black w-16 mt-5">
             <Icons.zapllo className=" w-full" />
           </Circle>
         </div>
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col mt-5 m justify-center">
           <Circle ref={div7Ref}>
             <User className="text-black" />
           </Circle>

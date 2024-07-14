@@ -29,7 +29,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className='max-w-full 2xl:max-w-7xl p-4 w-full overflow-hidden'>
+        <footer className='max-w-full  p-4 w-full overflow-hidden'>
             <Separator className=' w-[95%] flex mt-12' />
             <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
                 <div className='Zapllo my-8  '>
@@ -56,7 +56,7 @@ export default function Footer() {
                     <div className='flex -ml-5 md:gap-4 mt-8'>
                         <Link
                             href="/dashboard"
-                            className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+                            className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] "
                         >
                             <ShineBorder borderRadius={50}
                                 className="text-center text-xl font-bold capitalize"

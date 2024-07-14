@@ -88,10 +88,9 @@ export default function SuccessStories() {
                         <div className='grid grid-cols-1 gap-4'>
                             <div className='bg-[#0A0D28] h-[500px]  p-4 md:p-8 rounded-2xl'>
                                 {/* <img src='emptyrec.png' className='opacity-0' /> */}
-                                <div className='mt-20 scale-110'>
+                         
                                     <AnimatedFeatures2 />
-
-                                </div>
+                             
 
                                 {/* <img src='bald.png' className='w-full opacity-0' /> */}
 
@@ -178,10 +177,10 @@ export default function SuccessStories() {
                         <div className='grid grid-cols-1 gap-4'>
                             <div className='bg-[#0A0D28] h-[500px] p-4 md:p-8 rounded-2xl'>
                                 {/* <img src='emptyrec.png' className='opacity-0' /> */}
-                                <div className='mt-6 scale-110'>
-                                <AnimatedFeatures3 />
+                                
+                                    <AnimatedFeatures3 />
+                               
 
-                                </div>
 
                                 {/* <img src='bald.png' className='w-full opacity-0' /> */}
 
@@ -206,7 +205,7 @@ export default function SuccessStories() {
                             <div className='bg-[#0A0D28] p-4 h-[500px] md:p-8 rounded-2xl'>
                                 {/* <img src='emptyrec.png' className='opacity-0' /> */}
                                 <div>
-                                <AnimatedFeatures4 />
+                                    <AnimatedFeatures4 />
 
                                 </div>
                                 {/* <img src='bald.png' className='w-full opacity-0' /> */}

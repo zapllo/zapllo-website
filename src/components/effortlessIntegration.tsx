@@ -5,7 +5,7 @@ type Props = {}
 export default function Effortless({ }: Props) {
     return (
         <div className='mb-16 mt-20 '>
-            <h1 className='text-center text-white text-2xl font-bold md:text-5xl'>Effortlessly automate all your favorite apps</h1>
+            <h1 className='text-center bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent  text-2xl font-bold md:text-5xl'>Effortlessly Automate all your favorite Apps</h1>
             <div className='   md:ml-24 mt-20'>
                 <div className='grid grid-cols-2 md:grid-cols-5 gap-x-md:mx-0 mx-4 gap-10'>
                     <img src='brands/highlevel.png' className='md:h-12' />

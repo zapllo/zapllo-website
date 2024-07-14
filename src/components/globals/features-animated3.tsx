@@ -39,16 +39,16 @@ export function AnimatedFeatures3() {
     >
       <div className="flex h-full w-full flex-row items-stretch justify-between gap-10">
         <div className="flex flex-col justify-center gap-2">
-          <Circle ref={div1Ref} className="h-full w-16 ">
+          <Circle ref={div1Ref} className="h-16 w-16 ">
             <Icons.jotform className=" h-full w-full" />
           </Circle>
-          <Circle ref={div2Ref} className="h-full w-16">
+          <Circle ref={div2Ref} className="h-16 w-16">
             <Icons.notion className="h-full w-full" />
           </Circle>
-          <Circle ref={div3Ref} className="h-full w-16">
+          <Circle ref={div3Ref} className="h-16 w-16">
             <Icons.slack className="h-full w-full" />
           </Circle>
-          <Circle ref={div4Ref} className="h-full w-16">
+          <Circle ref={div4Ref} className="h-16 w-16">
             <Icons.gmail className="h-full w-full" />
           </Circle>
         
