@@ -19,9 +19,9 @@ export default function Faq() {
                     </AccordionItem>
                 </Accordion>
 
-                <Accordion type="single" collapsible className='md:w-[900px] '>
+                <Accordion type="single" collapsible className='md:w-[900px]  '>
                     <AccordionItem value="item-1">
-                        <AccordionTrigger>Is this business automation suitable for my business size?</AccordionTrigger>
+                        <AccordionTrigger className=''>Is this business automation suitable for my business size?</AccordionTrigger>
                         <AccordionContent>
                             Our solutions is scalable and can be adapted to businesses of all sizes.
                         </AccordionContent>
