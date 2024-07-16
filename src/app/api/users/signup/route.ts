@@ -10,8 +10,8 @@ connectDB();
 
 export async function POST(request: NextRequest) {
   try {
-
     const userId = await getDataFromToken(request);
+
     // Find the authenticated user in the database based on the user ID
     const authenticatedUser = await User.findById(userId);
     if (!authenticatedUser) {
@@ -52,6 +52,12 @@ export async function POST(request: NextRequest) {
     const trialExpires = new Date();
     trialExpires.setDate(trialExpires.getDate() + trialDays);
 
+    // Determine the role of the new user
+    let newUserRole = "member";
+    if (!authenticatedUser.role || authenticatedUser.role !== "orgAdmin") {
+      newUserRole = "orgAdmin";
+    }
+
     // Initialize user creation object
     const newUser = new User({
       whatsappNo,
@@ -60,7 +66,7 @@ export async function POST(request: NextRequest) {
       email,
       password: hashedPassword,
       trialExpires,
-      role: "orgAdmin", // Set the initial role to 'orgAdmin' for the creator
+      role: newUserRole, // Set the role based on the condition
       organization: authenticatedUser.organization,
     });
 
@@ -94,9 +100,8 @@ export async function POST(request: NextRequest) {
     const emailOptions: SendEmailOptions = {
       to: email,
       subject: "Thanks for registering at Zapllo!",
-      text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours.Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
-      html: `<h1>Thank You! </h1>
-        `,
+      text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
+      html: `<h1>Thank You! </h1>`,
     };
 
     await sendEmail(emailOptions);

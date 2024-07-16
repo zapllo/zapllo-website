@@ -25,7 +25,8 @@ import {
 } from "@radix-ui/react-icons";
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { FlagIcon, Repeat } from 'lucide-react';
+import { ClipboardIcon, Clock, FlagIcon, Link, Paperclip, Repeat } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 
 interface TaskModalProps {
     closeModal: () => void;
@@ -49,6 +50,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
     const [open, setOpen] = useState<boolean>(false); // State for popover open/close
     const [popoverInputValue, setPopoverInputValue] = useState<string>(''); // State for input value in popover
+    const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -187,15 +189,20 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             </PopoverTrigger>
 
                             <PopoverContent className="w-[200px] p-0">
-                                <Command>
-                                    <CommandInput placeholder="Search user..." className="h-9" />
-                                    <CommandList>
+                                <div>
+                                    <input
+                                        placeholder="🔎 Search user..."
+                                        className="h-9 text-xs px-4 w-48 bg-transparent outline-none "
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                    <div>
                                         {filteredUsers.length === 0 ? (
                                             <CommandEmpty>No users found.</CommandEmpty>
                                         ) : (
-                                            <CommandGroup>
+                                            <div className='w-full text-sm p-2  max-h-20 overflow-y-scroll scrollbar-hide'>
                                                 {filteredUsers.map((user) => (
-                                                    <CommandItem
+                                                    <option
                                                         key={user._id}
                                                         value={user._id}
                                                         onSelect={() => handleSelectUser(user._id)}
@@ -204,12 +211,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                                         {assignedUser === user._id && (
                                                             <CheckIcon className="ml-auto h-4 w-4" />
                                                         )}
-                                                    </CommandItem>
+                                                    </option>
                                                 ))}
-                                            </CommandGroup>
+                                            </div>
                                         )}
-                                    </CommandList>
-                                </Command>
+                                    </div>
+                                </div>
                             </PopoverContent>
                         </Popover>
 
@@ -301,17 +308,36 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Label htmlFor="attachment" className="block font-semibold">Attachment</Label>
                         <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
                     </div> */}
-
-                    <div className="mb-4">
-                        <Label className="block font-semibold mb-2">Links</Label>
-                        {links.map((link, index) => (
-                            <div key={index} className="flex items-center mb-2">
-                                <Input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full border rounded px-3 py-2 mr-2" />
-                                <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 text-white px-2 py-1 rounded">Remove</Button>
-                            </div>
-                        ))}
-                        <Button type="button" onClick={addLinkField} className="bg-blue-500 text-white px-4 py-2 rounded">Add Link</Button>
+                    <div className='flex gap-4'>
+                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                            <Link className='h-5 text-center m-auto mt-1' />
+                        </div>
+                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                            <Paperclip className='h-5 text-center m-auto mt-1' />
+                        </div>
+                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                            <Clock className='h-5 text-center m-auto mt-1' />
+                        </div>
                     </div>
+                    <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
+                        <DialogContent>
+                            <DialogTitle>Add Links</DialogTitle>
+                            <DialogDescription>
+                                Attach Links to the Task.
+                            </DialogDescription>
+                            <div className="mb-4">
+                                <Label className="block font-semibold mb-2">Links</Label>
+                                {links.map((link, index) => (
+                                    <div key={index} className="flex gap-2 items-center mb-2">
+                                        <Input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full border rounded px-3 py-2 mr-2" />
+                                        <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 text-white px-2 py-1 rounded">Remove</Button>
+                                    </div>
+                                ))}
+                                <Button type="button" onClick={addLinkField} className="bg-blue-500 text-white px-4 py-2 rounded">Add Link</Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
 
                     <div className="flex justify-end">
                         <Button type="button" onClick={handleAssignTask} className="bg-blue-500 text-white px-4 py-2 rounded">Assign Task</Button>
