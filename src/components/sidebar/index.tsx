@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Tooltip,
   TooltipContent,
@@ -12,13 +12,28 @@ import { menuOptions } from '@/lib/constants'
 import clsx from 'clsx'
 import { Separator } from '@/components/ui/separator'
 import { Database, GitBranch, LucideMousePointerClick } from 'lucide-react'
+import axios from 'axios'
 // import { ModeToggle } from '../global/mode-toggle'
 // import { ModeToggle } from '../global/mode-toggle'
 
 type Props = {}
 
 const MenuOptions = (props: Props) => {
-  const pathName = usePathname()
+  const pathName = usePathname();
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      const res = await axios.get('/api/users/me');
+      const user = res.data.data;
+      setRole(user.role);
+    };
+    getUserDetails();
+  }, []);
+
+  const filteredMenuOptions = menuOptions.filter(menuItem => {
+    return role !== 'member' && role !== 'manager' || menuItem.name !== 'Billing';
+  });
 
   return (
     <nav className=" dark:bg-[#05071E] h-screen  overflow-scroll scrollbar-hide  justify-between flex items-center flex-col rounded-b-full  gap-10 py-4 px-2">
@@ -30,7 +45,7 @@ const MenuOptions = (props: Props) => {
           <img src='/Favicon.png' className='h-10 w-10' />
         </Link>
         <TooltipProvider>
-          {menuOptions.map((menuItem) => (
+        {filteredMenuOptions.map((menuItem) => (
             <ul key={menuItem.name}>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger>
@@ -62,7 +77,7 @@ const MenuOptions = (props: Props) => {
           ))}
         </TooltipProvider>
         <Separator />
-        <div className="flex items-center flex-col gap-9 dark:bg-[#353346]/30 py-4 px-2 rounded-full overflow-scroll scrollbar-hide border-[1px]">
+        {/* <div className="flex items-center flex-col gap-9 dark:bg-[#353346]/30 py-4 px-2 rounded-full overflow-scroll scrollbar-hide border-[1px]">
           <div className="relative dark:bg-[#353346]/70 p-2 rounded-full dark:border-t-[2px] border-[1px] dark:border-t-[#353346]">
             <LucideMousePointerClick
               className="dark:text-white"
@@ -90,7 +105,7 @@ const MenuOptions = (props: Props) => {
               size={18}
             />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="flex items-center justify-center flex-col gap-8">
         {/* <ModeToggle /> */}

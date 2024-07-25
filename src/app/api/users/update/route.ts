@@ -89,8 +89,8 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: "User to delete not found" }, { status: 404 });
         }
 
-        await userToDelete.remove();
-
+        await User.deleteOne({ _id: userIdToDelete });
+        
         return NextResponse.json({
             message: "User deleted successfully",
             success: true,

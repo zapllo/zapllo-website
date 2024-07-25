@@ -20,7 +20,7 @@ export interface ITask extends Document {
     user: mongoose.Types.ObjectId;
     description: string;
     assignedUser: mongoose.Types.ObjectId;
-    category?: string;
+    category?: mongoose.Types.ObjectId;
     priority: 'High' | 'Medium' | 'Low';
     repeatType: RepeatType;
     repeat: boolean;
@@ -59,7 +59,8 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
         required: true,
     },
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'categories', // Reference to the Category model
     },
     priority: {
         type: String,

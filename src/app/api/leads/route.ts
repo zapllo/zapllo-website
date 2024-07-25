@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
             text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
             html: `<h1>Thank You </h1>`,
         };
-
         await sendEmail(emailOptions);
         await sendWebhookNotification(mobNo, 'leadenquirycontactus', "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/DNLVjZYK4pvp/logo-02%204.png?se=2029-06-26T07%3A10%3A33Z&sp=rt&sv=2019-12-12&sr=b&sig=dAChtGOY3ztBj6Y0tvTPXTR5bibZVBx9MvQnUz/WiiA%3D", firstName);
 

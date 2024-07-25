@@ -8,16 +8,21 @@ connectDB();
 export async function PATCH(request: NextRequest) {
     try {
         const { id, status, comment, userName } = await request.json();
-        
+
         // Find the task by ID
         const task = await Task.findById(id);
-        
+
         if (!task) {
             return NextResponse.json({ error: 'Task not found' }, { status: 404 });
         }
 
         // Update task properties
-        task.status = status;
+        if (task.repeat === true) {
+            task.status = 'In Progress'
+        } else {
+            task.status = status;
+
+        }
         task.comments.push({ userName, comment, createdAt: new Date() }); // Assuming 'status' is already in task schema
         await task.save();
 

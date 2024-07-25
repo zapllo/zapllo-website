@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
-import { User } from "lucide-react";
+import { Phone, User, UserCheck } from "lucide-react";
 import axios from "axios";
 
 interface User {
@@ -31,6 +31,7 @@ interface User {
   firstName: string;
   lastName: string;
   whatsappNo: string;
+  reportingManager: string;
 }
 
 interface APIResponse<T> {
@@ -44,11 +45,12 @@ export default function TeamTabs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newMember, setNewMember] = useState({
     email: "",
-    role: "Team Member",
+    role: "member",
     password: "",
     firstName: "",
     lastName: "",
     whatsappNo: "",
+    reportingManager: "",
   });
 
   const [users, setUsers] = useState<User[]>([]);
@@ -63,7 +65,39 @@ export default function TeamTabs() {
     firstName: "",
     lastName: "",
     whatsappNo: "",
+    reportingManager: "",
   });
+  const [selectedManager, setSelectedManager] = useState('');
+  const [reportingManagerName, setReportingManagerName] = useState('');
+  const [reportingManagerNames, setReportingManagerNames] = useState<{ [key: string]: string }>({});
+  const [selectedReportingManager, setSelectedReportingManager] = useState("");
+
+  useEffect(() => {
+    // Update newMember's reportingManagerId when selectedManager changes
+    setNewMember(prevState => ({
+      ...prevState,
+      reportingManagerId: selectedManager
+    }));
+  }, [selectedManager]);
+
+
+  const fetchReportingManagerNames = async (users: User[]): Promise<{ [key: string]: string }> => {
+    const managerNames: { [key: string]: string } = {};
+
+    for (const user of users) {
+      if (user.reportingManager) {
+        try {
+          const response = await axios.get(`/api/users/${user.reportingManager}`);
+          const { data } = response.data;
+          managerNames[user._id] = `${data.firstName}`;
+        } catch (error: any) {
+          console.error(`Error fetching reporting manager for user ${user._id}:`, error);
+        }
+      }
+    }
+
+    return managerNames;
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -73,6 +107,8 @@ export default function TeamTabs() {
 
         if (response.ok) {
           setUsers(result.data);
+          const managerNames = await fetchReportingManagerNames(result.data);
+          setReportingManagerNames(managerNames);
         } else {
           console.error("Error fetching users:", result.error);
         }
@@ -90,7 +126,49 @@ export default function TeamTabs() {
       setLoggedInUserRole(res.data.data.role);
     }
     getUserDetails();
-  }, [])
+  }, []);
+
+  const handleReportingManagerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedReportingManager(event.target.value);
+  };
+
+  const filteredUsers = users.filter((user) => {
+    if (!selectedReportingManager) return true;
+    return user.reportingManager === selectedReportingManager;
+  });
+
+
+
+  const handleCreateUser = async () => {
+    try {
+      const response = await axios.post('/api/users/signup', newMember);
+
+      const data: APIResponse<User> = response.data;
+
+      if (data.success) {
+        // Add the new user to the list
+        setUsers([...users, data.user]);
+        // Close the modal
+        setIsModalOpen(false);
+        // Clear the new member form
+        setNewMember({
+          email: "",
+          role: "member",
+          password: "",
+          firstName: "",
+          lastName: "",
+          whatsappNo: "",
+          reportingManager: '',
+        });
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("Error creating user. Please try again.");
+    }
+  };
+
 
   const handleEditUser = async () => {
     try {
@@ -154,9 +232,15 @@ export default function TeamTabs() {
   };
 
 
+  // useEffect(() => {
+  //   if (selectedUser) {
+  //     fetchReportingManagerName(selectedUser.reportingManager);
+  //   }
+  // }, [selectedUser]);
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+
+      <div className="flex items-center gap-2 justify-between mb-6">
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex gap-4">
             <TabsTrigger value="all">All</TabsTrigger>
@@ -164,7 +248,9 @@ export default function TeamTabs() {
             <TabsTrigger value="manager">Manager</TabsTrigger>
             <TabsTrigger value="member">Team Member</TabsTrigger>
           </TabsList>
+
         </Tabs>
+
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           {loggedInUserRole === "orgAdmin" && (
             <DialogTrigger asChild>
@@ -203,9 +289,22 @@ export default function TeamTabs() {
                 className="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
               >
                 <option value="member">Team Member</option>
-                <option value="orgAdmin">Admin</option>
                 <option value="manager">Manager</option>
               </select>
+              <div>
+                {newMember.role !== 'orgAdmin' && (
+                  <select
+                    value={selectedManager}
+                    onChange={(e) => setSelectedManager(e.target.value)}
+                    className="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  >
+                    <option value="">Select Reporting Manager</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>{user.firstName}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
               <Input
                 placeholder="WhatsApp Number"
                 value={newMember.whatsappNo}
@@ -214,20 +313,34 @@ export default function TeamTabs() {
             </div>
             <div className="mt-4 flex justify-end gap-4">
               <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-              <Button size="sm" className="ml-4" onClick={() => setIsModalOpen(true)}>Add Member</Button>
+              <Button size="sm" className="ml-4" onClick={handleCreateUser}>Add Member</Button>
             </div>
           </DialogContent>
         </Dialog>
+        <div className="mt-1">
+
+          <select
+            value={selectedReportingManager}
+            onChange={handleReportingManagerChange}
+            className="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+          >
+            <option value="">Select Reporting Manager</option>
+            {users.map(user => (
+              <option key={user._id} value={user._id}>{user.firstName}</option>
+            ))}
+          </select>
+        </div>
       </div>
+
       <div className="grid text-sm gap-4">
-        {users
+        {filteredUsers
           .filter((user) => {
             if (activeTab === "all") return true;
             return user.role.toLowerCase().includes(activeTab.toLowerCase());
           })
           .map((user) => (
-            <div>
-              <Card key={user?.firstName} onClick={() => setSelectedUser(user)} className="flex cursor-pointer items-center justify-between">
+            <div key={user._id}>
+              <Card key={user.firstName} onClick={() => setSelectedUser(user)} className="flex cursor-pointer items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar>
                     <AvatarImage src="/placeholder-user.jpg" />
@@ -237,11 +350,19 @@ export default function TeamTabs() {
                     <p className="font-medium">{user.firstName}</p>
                     <p className="text-muted-foreground">{user.email}</p>
                   </div>
+                  <div className="flex">
+                    <Phone className="h-4 mt-6" />
+                    <p className="text-muted-foreground mt-6">{user.whatsappNo}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <UserCheck className="h-4 mt-6" />
+                    <p className="text-muted-foreground mt-6"> {reportingManagerNames[user._id]}</p>
+                  </div>
+
                 </div>
                 <Badge variant={user?.role.toLowerCase() === "orgadmin" ? "destructive" : "outline"}>
                   {user.role === "orgAdmin" ? "Admin" : user.role === "member" ? "Member" : user.role === "manager" ? "Manager" : user.role}
                 </Badge>
-
               </Card>
               {selectedUser && selectedUser._id === user._id && (
                 <Sheet open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
@@ -250,7 +371,6 @@ export default function TeamTabs() {
                       <SheetTitle className="text-muted-foreground">
                         <div className="flex gap-2">
                           <User />  User details
-
                         </div>
                       </SheetTitle>
                       {loggedInUserRole === "orgAdmin" && (
@@ -264,6 +384,7 @@ export default function TeamTabs() {
                               firstName: selectedUser.firstName,
                               lastName: selectedUser.lastName,
                               whatsappNo: selectedUser.whatsappNo,
+                              reportingManager: selectedManager,
                             });
                             setIsEditModalOpen(true);
                           }}>Edit</Button>
@@ -285,6 +406,9 @@ export default function TeamTabs() {
                             </h1>
                             <h1>
                               Role: {selectedUser.role}
+                            </h1>
+                            <h1>
+                              Reporting Manager: {reportingManagerNames[user._id]}
                             </h1>
                           </div>
                         </SheetDescription>
@@ -325,11 +449,15 @@ export default function TeamTabs() {
               value={editedUser.password}
               onChange={(e) => setEditedUser({ ...editedUser, password: e.target.value })}
             />
-            <Input
-              placeholder="Role"
+            <select
               value={editedUser.role}
               onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
-            />
+              className="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+            >
+              <option value="member">Team Member</option>
+              <option value="orgAdmin">Admin</option>
+              <option value="manager">Manager</option>
+            </select>
             <Input
               placeholder="WhatsApp Number"
               value={editedUser.whatsappNo}

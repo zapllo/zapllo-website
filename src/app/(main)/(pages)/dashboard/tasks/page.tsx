@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PlusCircleIcon } from 'lucide-react';
 import TaskModal from '@/components/globals/taskModal';
 import axios from 'axios';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 
 // Define the Task interface
@@ -41,12 +43,14 @@ export default function TaskManagement() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [currentUser, setCurrentUser] = useState<any>();
-
+    const [isTrialExpired, setIsTrialExpired] = useState(false);
 
     useEffect(() => {
         const getUserDetails = async () => {
             const res = await axios.get('/api/users/me')
             setCurrentUser(res.data.data);
+            const trialStatusRes = await axios.get('/api/organization/trial-status');
+            setIsTrialExpired(trialStatusRes.data.isExpired);
         }
         getUserDetails();
     }, [])
@@ -65,6 +69,7 @@ export default function TaskManagement() {
             const response = await fetch('/api/tasks/organization');
             const result = await response.json();
             if (response.ok) {
+                console.log(result.data, 'logging')
                 setTasks(result.data);
             } else {
                 console.error('Error fetching tasks:', result.error);
@@ -94,13 +99,27 @@ export default function TaskManagement() {
     };
 
 
-    const handleTaskUpdate = () => {
+    const handleTaskUpdate = (updatedTask: any) => {
         fetchTasks();
+
     };
+
+    if (isTrialExpired) {
+        return (
+            <div className='p-4 text-center mt-32'>
+                <h1 className='text-xl font-bold text-red-500'>Your trial has expired!</h1>
+                <p>Please purchase a subscription to continue using the Task Management features.</p>
+                <Link href='/dashboard/billing'>
+                    <Button className='h-10 bg-white text-black hover:text-white mt-4 text-lg '>👑 Upgrade to Pro</Button>
+                </Link>
+            </div>
+        );
+    }
+
 
     return (
         <div className='p-4'>
-            <h1 className='text-center text-xl font-bold under'>Task Management</h1>
+            {/* <h1 className='text-center text-xl font-bold under'>Task Management</h1> */}
             <div className="fixed bottom-8 right-8 z-50">
                 <button className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" onClick={openModal}>
                     <PlusCircleIcon size={24} />

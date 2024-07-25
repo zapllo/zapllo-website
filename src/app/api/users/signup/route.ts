@@ -1,6 +1,7 @@
 import connectDB from "@/lib/db";
 import User from "@/models/userModel";
 import Organization from "@/models/organizationModel";
+import Category from "@/models/categoryModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { SendEmailOptions, sendEmail } from "@/lib/sendEmail";
@@ -10,12 +11,20 @@ connectDB();
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getDataFromToken(request);
+    let authenticatedUser = null;
+    let userId: string | null = null;
 
-    // Find the authenticated user in the database based on the user ID
-    const authenticatedUser = await User.findById(userId);
-    if (!authenticatedUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    // Try to retrieve the token if present
+    try {
+      userId = await getDataFromToken(request);
+      if (userId) {
+        authenticatedUser = await User.findById(userId);
+        if (!authenticatedUser) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+      }
+    } catch (err: any) {
+      console.log('No token provided or error retrieving token:', err.message);
     }
 
     const reqBody = await request.json();
@@ -23,24 +32,19 @@ export async function POST(request: NextRequest) {
       whatsappNo,
       email,
       password,
-      organization,
-      firstName,
-      lastName,
       companyName,
       industry,
       teamSize,
       description,
-      categories,
+      role,
+      categories = [], // Default to empty array if not provided
+      reportingManagerId,
     } = reqBody;
 
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
-      return NextResponse.json(
-        { error: "User already exists" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "User already exists" }, { status: 400 });
     }
 
     // Hash the password using bcryptjs
@@ -54,54 +58,79 @@ export async function POST(request: NextRequest) {
 
     // Determine the role of the new user
     let newUserRole = "member";
-    if (!authenticatedUser.role || authenticatedUser.role !== "orgAdmin") {
-      newUserRole = "orgAdmin";
+    let newOrganizationId: string | null = null;
+
+    if (authenticatedUser) {
+      if (authenticatedUser.role === "orgAdmin") {
+        newUserRole = role || "member";
+        newOrganizationId = authenticatedUser.organization;
+      }
+    } else {
+      newUserRole = "orgAdmin"; // Default role for new users signing up
     }
 
     // Initialize user creation object
     const newUser = new User({
       whatsappNo,
-      firstName,
-      lastName,
+      firstName: reqBody.firstName,
+      lastName: reqBody.lastName,
       email,
       password: hashedPassword,
       trialExpires,
-      role: newUserRole, // Set the role based on the condition
-      organization: authenticatedUser.organization,
+      role: newUserRole,
+      organization: newOrganizationId,
+      reportingManager: reportingManagerId || null, // Assign reporting manager
     });
 
-    // Initialize variable for organization
     let savedOrganization = null;
 
-    // Conditionally create the organization if organization fields are provided
-    if (companyName && industry && teamSize && description && categories) {
-      const newOrganization = new Organization({
+    if (companyName && industry && teamSize && description && categories.length > 0) {
+      // Create a temporary organization without categories
+      const tempOrganization = new Organization({
         companyName,
         industry,
         teamSize,
         description,
-        categories: categories.toString(),
-        users: [newUser._id], // Associate the new user with this organization
         trialExpires,
       });
 
-      // Save the new organization
-      savedOrganization = await newOrganization.save();
+      const savedTempOrganization = await tempOrganization.save();
 
-      // Associate the user with the organization
+      // Create categories and associate them with the temporary organization
+      const createdCategories = await Promise.all(
+        categories.map(async (categoryName: string) => {
+          let category = await Category.findOne({ name: categoryName });
+          if (!category) {
+            category = new Category({
+              name: categoryName,
+              organization: savedTempOrganization._id, // Associate with temp organization
+            });
+            await category.save();
+          } else {
+            // Update existing categories with the temp organization ID
+            category.organization = savedTempOrganization._id;
+            await category.save();
+          }
+          return category._id;
+        })
+      );
+
+      // Update the temp organization with categories
+      savedTempOrganization.categories = createdCategories;
+      const savedOrganization = await savedTempOrganization.save();
+
+      // Finalize the new user with the organization ID
       newUser.organization = savedOrganization._id;
       newUser.isAdmin = true;
     }
 
-    // Save the new user
     const savedUser = await newUser.save();
 
-    // Send a welcome email
     const emailOptions: SendEmailOptions = {
       to: email,
       subject: "Thanks for registering at Zapllo!",
-      text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
-      html: `<h1>Thank You! </h1>`,
+      text: `Dear ${reqBody.firstName},\n\nThank you for reaching out to Zapllo! ...`,
+      html: `<h1>Thank You!</h1>`,
     };
 
     await sendEmail(emailOptions);
@@ -113,7 +142,7 @@ export async function POST(request: NextRequest) {
       organization: savedOrganization,
     });
   } catch (error: any) {
-    console.log(error.message);
+    console.error("Error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

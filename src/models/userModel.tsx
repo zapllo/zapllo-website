@@ -35,9 +35,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'member', //member, manager, orgAdmin
     },
+    reportingManager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users' // Referencing the Organization model
+    },
     organization: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Organization' // Referencing the Organization model
+        ref: 'organizations' // Referencing the Organization model
     },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,

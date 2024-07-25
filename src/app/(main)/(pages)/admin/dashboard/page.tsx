@@ -35,13 +35,24 @@ const DashboardPage = () => {
                     <div className='text-center font-bold text-xl space-y-4'>
                         <div className='flex justify-center gap-2 mb-4'>
                             <Users className='h-5 ' />
+                            <h1 className='mt-auto'>  Organizations</h1>
+                        </div>
+                        <Link href='/admin/organizations'>
+                            <ShiningButton text='Manage Organizations' />
+                        </Link>
+                    </div>
+                </div>
+                {/* <div className='p-4 bg-[#121741] items-center flex justify-center rounded-md '>
+                    <div className='text-center font-bold text-xl space-y-4'>
+                        <div className='flex justify-center gap-2 mb-4'>
+                            <Users className='h-5 ' />
                             <h1 className='mt-auto'>  Users</h1>
                         </div>
                         <Link href='/admin/users'>
                             <ShiningButton text='Manage Users' />
                         </Link>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )

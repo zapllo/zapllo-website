@@ -27,14 +27,17 @@ const organizationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  categories: {
-    type: String,
-    required: true,
-  },
+  categories:
+    [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "categories",
+      },
+    ],
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
     },
   ],
 
@@ -42,12 +45,12 @@ const organizationSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  
+
 });
 
 // Model for organizations
 const Organization =
-  mongoose.models.Organization ||
-  mongoose.model("Organization", organizationSchema);
+  mongoose.models.organizations ||
+  mongoose.model("organizations", organizationSchema);
 
 export default Organization;

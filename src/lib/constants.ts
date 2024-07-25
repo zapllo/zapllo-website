@@ -6,17 +6,23 @@ import Payment from "@/components/icons/payment";
 import Settings from "@/components/icons/settings";
 import Tasks from "@/components/icons/tasks";
 import Workflows from "@/components/icons/workflows";
-import { DashboardIcon } from "@radix-ui/react-icons";
+import { DashboardIcon, GearIcon, CardStackIcon, CheckboxIcon, GridIcon, PersonIcon, PieChartIcon, } from "@radix-ui/react-icons";
 import { IconBrandTeams } from "@tabler/icons-react";
+import { IndianRupee, UserCheck2, UserPlus, Users, UsersIcon, UsersRound, UsersRoundIcon } from "lucide-react";
 
 export const menuOptions = [
-  { name: "Dashboard", Component: Home, href: "/dashboard" },
-  { name: "Tasks", Component: Tasks, href: "/dashboard/tasks" },
-  { name: "Teams", Component: IconBrandTeams, href: "/dashboard/teams" },
-  { name: "Connections", Component: Category, href: "/connections" },
-  { name: "Billing", Component: Payment, href: "/billing" },
-  { name: "Templates", Component: Templates, href: "/templates" },
-  { name: "Logs", Component: Logs, href: "/logs" },
+  { name: "Dashboard", Component: GridIcon, href: "/dashboard" },
+  { name: "Tasks", Component: CheckboxIcon, href: "/dashboard/tasks" },
+  { name: "Teams", Component: PersonIcon, href: "/dashboard/teams" },
+  { name: "Settings", Component: GearIcon, href: "/dashboard/settings" },
+  { name: "Billing", Component: CardStackIcon, href: "/dashboard/billing" },
+];
+
+
+export const settingsOptions = [
+  { name: "General", Component: GearIcon, href: "/dashboard/settings" },
+  { name: "Categories", Component: PieChartIcon, href: "/dashboard/settings/categories" },
+  // { name: "Billing", Component: CardStackIcon, href: "/dashboard/billing" },
 ];
 
 export const taskOptions = [

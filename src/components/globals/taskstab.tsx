@@ -6,13 +6,16 @@ import DashboardAnalytics from "@/components/globals/dashboardAnalytics";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Loader, Calendar, Flag, FlagIcon, Edit, Delete, Trash } from "lucide-react";
-import { IconClock } from "@tabler/icons-react";
-import { PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
+import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Loader, Calendar, Flag, FlagIcon, Edit, Delete, Trash, PersonStanding, TagIcon, FilterIcon, CircleAlert, Check } from "lucide-react";
+import { IconBrandTeams, IconClock, IconProgress } from "@tabler/icons-react";
+import { PersonIcon, PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import axios from "axios";
+import EditTaskDialog from "./editTask";
+import { useRouter } from "next/navigation";
+import FilterModal from "./filterModal";
 
 // Define the User interface
 interface User {
@@ -20,6 +23,7 @@ interface User {
   firstName: string;
   lastName: string;
   organization: string;
+  role: string;
 }
 
 // Define the Task interface
@@ -31,9 +35,10 @@ interface Task {
   assignedUser: User;
   category: string;
   priority: string;
-  repeatType?: string;
+  repeatType: string;
   repeat: boolean;
   days?: string[];
+  dates?: string[];
   categories?: string[];
   dueDate: string;
   attachment?: string;
@@ -43,6 +48,7 @@ interface Task {
   createdAt: string;
 }
 
+
 interface Comment {
   _id: string;
   userId: string; // Assuming a user ID for the commenter
@@ -51,6 +57,13 @@ interface Comment {
   createdAt: string; // Date/time when the comment was added
   status: string;
 }
+
+interface Category {
+  _id: string;
+  name: string; // Assuming a user ID for the commenter
+  organization: string; // Name of the commenter
+}
+
 type TaskUpdateCallback = (updatedTask: Task) => void;
 
 interface TasksTabProps {
@@ -58,15 +71,16 @@ interface TasksTabProps {
   currentUser: User;
   onTaskUpdate: TaskUpdateCallback;
   onTaskDelete: (taskId: string) => void;
-
 }
 
 export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [activeDashboardTab, setActiveDashboardTab] = useState<string>("all");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
+  const [searchEmployeeQuery, setSearchEmployeeQuery] = useState<string>("");
   // State variables for filters
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [repeatFilter, setRepeatFilter] = useState<boolean | null>(null);
@@ -76,30 +90,24 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [statusToUpdate, setStatusToUpdate] = useState<string | null>(null);
   const [comment, setComment] = useState<string>("");
+  const router = useRouter();
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [assignedByFilter, setAssignedByFilter] = useState<string[]>([]);
+  const [frequencyFilter, setFrequencyFilter] = useState<string[]>([]);
+  const [priorityFilterModal, setPriorityFilterModal] = useState<string[]>([]);
+  const [userDetails, setUserDetails] = useState<User | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [selectedTaskCategory, setSelectedTaskCategory] = useState<Category | null>(null);
 
 
+  const applyFilters = (filters: any) => {
+    setCategoryFilter(filters.categories);
+    setAssignedByFilter(filters.users);
+    setFrequencyFilter(filters.frequency);
+    setPriorityFilterModal(filters.priority);
+  };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('/api/users/organization');
-        const result = await response.json();
-
-        if (response.ok) {
-          setUsers(result.data);
-        } else {
-          console.error('Error fetching users:', result.error);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-
-  // Function to filter tasks based on selected filters and search query
   const filteredTasks = tasks?.filter(task => {
     let isFiltered = true;
 
@@ -129,6 +137,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       isFiltered = task.dueDate === dueDateFilter;
     }
 
+    // Apply filters from modal
+    if (isFiltered && categoryFilter.length > 0) {
+      isFiltered = categoryFilter.includes(task.category);
+    }
+
+    if (isFiltered && assignedByFilter.length > 0) {
+      isFiltered = assignedByFilter.includes(task.user._id);
+    }
+
+    if (isFiltered && frequencyFilter.length > 0) {
+      isFiltered = frequencyFilter.includes(task.repeatType);
+    }
+
+    if (isFiltered && priorityFilterModal.length > 0) {
+      isFiltered = priorityFilterModal.includes(task.priority);
+    }
+
     // Apply search query filter globally
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
@@ -145,6 +170,120 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
     return isFiltered;
   });
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const userRes = await axios.get('/api/users/me');
+        const userData = userRes.data.data;
+        setUserDetails(userData);
+      } catch (error) {
+        console.error('Error fetching user details ', error);
+      }
+    };
+
+    getUserDetails();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users/organization');
+        const result = await response.json();
+
+        if (response.ok) {
+          setUsers(result.data);
+        } else {
+          console.error('Error fetching users:', result.error);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+
+  // Fetch categories from the server
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/category/get', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        setCategories(result.data);
+      } else {
+        console.log(result.error);
+      }
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  console.log(categories, 'categories?')
+
+  useEffect(() => {
+
+    fetchCategories();
+
+  }, []);
+
+  // Function to filter tasks based on selected filters and search query
+  // const filteredTasks = tasks?.filter(task => {
+  //   let isFiltered = true;
+
+  //   // Filter based on active tab
+  //   if (activeTab === "myTasks") {
+  //     isFiltered = task.assignedUser._id === currentUser._id || task.user._id === currentUser._id;
+  //   } else if (activeTab === "delegatedTasks") {
+  //     isFiltered = task.user._id === currentUser._id && task.assignedUser._id !== currentUser._id;
+  //   } else if (activeTab === "allTasks") {
+  //     isFiltered = task.user.organization === currentUser.organization;
+  //   }
+
+  //   // Apply other filters
+  //   if (isFiltered && priorityFilter) {
+  //     isFiltered = task.priority === priorityFilter;
+  //   }
+
+  //   if (isFiltered && repeatFilter !== null) {
+  //     isFiltered = task.repeat === repeatFilter;
+  //   }
+
+  //   if (isFiltered && assignedUserFilter) {
+  //     isFiltered = task.assignedUser._id === assignedUserFilter;
+  //   }
+
+  //   if (isFiltered && dueDateFilter) {
+  //     isFiltered = task.dueDate === dueDateFilter;
+  //   }
+
+  //   // Apply search query filter globally
+  //   if (searchQuery) {
+  //     const lowerCaseQuery = searchQuery.toLowerCase();
+  //     isFiltered = (
+  //       task.title.toLowerCase().includes(lowerCaseQuery) ||
+  //       task.description.toLowerCase().includes(lowerCaseQuery) ||
+  //       task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
+  //       task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
+  //       task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
+  //       task.assignedUser.lastName.toLowerCase().includes(lowerCaseQuery) ||
+  //       task.status.toLowerCase().includes(lowerCaseQuery)
+  //     );
+  //   }
+
+  //   return isFiltered;
+  // });
+
 
   const handleUpdateTaskStatus = async () => {
     if (!selectedTask || !statusToUpdate) return;
@@ -221,18 +360,166 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     return `${day}-${month}-${year}`;
   };
 
-
-
   const handleDelete = async (taskId: string) => {
     try {
       await axios.delete('/api/tasks/delete', {
         data: { id: selectedTask?._id },
       });
+
       // Optionally, handle success (e.g., show a message, update state)
       console.log('Task deleted successfully');
+
     } catch (error: any) {
       // Handle error (e.g., show an error message)
       console.error('Failed to delete task:', error.message);
+    }
+  };
+
+  // console.log(tasks, 'tasks');
+
+
+  const handleEditClick = () => {
+    setTaskToEdit(selectedTask);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleTaskUpdate = (updatedTask: any) => {
+    setSelectedTask(updatedTask);
+    onTaskUpdate(updatedTask);
+  };
+
+
+  // Function to fetch category details based on the selected task's category ID
+  const fetchCategoryOfSelectedTask = async (selectedTaskCategoryId: any) => {
+    try {
+      const response = await fetch('/api/category/getById', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ categoryId: selectedTaskCategoryId }), // Updated key
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        setSelectedTaskCategory(result.data);
+      } else {
+        console.error(result.error);
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch category:', error.message);
+    }
+  };
+
+  // Use useEffect to fetch the category when selectedTask changes
+  useEffect(() => {
+    if (selectedTask && selectedTask.category) {
+      fetchCategoryOfSelectedTask(selectedTask.category);
+    }
+  }, [selectedTask]);
+
+  // console.log(selectedTask?.category, 'category! ');
+  // console.log(selectedTaskCategory, 'is it?');
+
+  const getUserTaskStats = (userId: any) => {
+    const userTasks = tasks.filter(task => task.assignedUser._id === userId);
+    const overdueTasks = userTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
+    const completedTasks = userTasks.filter(task => task.status === 'Completed').length;
+    const inProgressTasks = userTasks.filter(task => task.status === 'In Progress').length;
+    const pendingTasks = userTasks.filter(task => task.status === 'Pending').length;
+
+    return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
+  };
+
+  const getCategoryTaskStats = (categoryId: any) => {
+    const categoryTasks = tasks.filter(task => task.category === categoryId);
+    const overdueTasks = categoryTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
+    const completedTasks = categoryTasks.filter(task => task.status === 'Completed').length;
+    const inProgressTasks = categoryTasks.filter(task => task.status === 'In Progress').length;
+    const pendingTasks = categoryTasks.filter(task => task.status === 'Pending').length;
+
+    return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
+  };
+
+  const getTotalTaskStats = () => {
+    const overdueTasks = tasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
+    const completedTasks = tasks.filter(task => task.status === 'Completed').length;
+    const inProgressTasks = tasks.filter(task => task.status === 'In Progress').length;
+    const pendingTasks = tasks.filter(task => task.status === 'Pending').length;
+
+    return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
+  };
+
+  {/**Task Summary */ }
+  const TaskSummary = () => {
+    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getTotalTaskStats();
+
+    return (
+      <div className="p-4 grid grid-cols-4 border gap-2 mb-2 rounded-lg shadow-md">
+        {/* <h2 className="text-lg font-medium mb-4">Task Summary</h2> */}
+
+        <div className="border flex gap-2 rounded-lg p-6">
+          <CircleAlert className="text-red-500 h-5" />
+          <div>
+            <p className="text-sm">Overdue </p>
+            <h1 className="font-bold text-xl">{overdueTasks}</h1>
+          </div>
+        </div>
+        <div className="border flex gap-2 rounded-lg p-6">
+          <Circle className="text-red-400 h-5" />
+          <div>
+            <p className="text-sm">Pending </p>
+            <h1 className="font-bold  text-xl">{pendingTasks}</h1>
+          </div>
+        </div>
+        <div className="border flex gap-2 rounded-lg p-6">
+          <IconProgress className="text-red-500 h-5" />
+          <div>
+            <p className="text-sm">In Progress </p>
+            <h1 className="font-bold  text-xl">{inProgressTasks}</h1>
+          </div>
+        </div>
+        <div className="border flex gap-2 rounded-lg p-6">
+          <CheckCircle className="text-green-500 h-5" />
+          <div>
+            <p className="text-sm">Completed </p>
+            <h1 className="font-bold  text-xl">{completedTasks}</h1>
+          </div>
+        </div>
+
+      </div>
+    );
+  };
+
+
+  const getCategoryReportTaskStats = (categoryId: any) => {
+    const categoryTasks = filteredTasks?.filter(task => task.category === categoryId);
+    return {
+      overdueTasks: categoryTasks?.filter(task => task.status === 'Overdue').length,
+      completedTasks: categoryTasks?.filter(task => task.status === 'Completed').length,
+      inProgressTasks: categoryTasks?.filter(task => task.status === 'In Progress').length,
+      pendingTasks: categoryTasks?.filter(task => task.status === 'Pending').length
+    };
+  };
+
+  const renderTabs = () => {
+    if (userDetails?.role === 'member') {
+      return (
+        <>
+          <TabsTrigger value="all">Dashboard</TabsTrigger>
+          <TabsTrigger value="myTasks">My Tasks</TabsTrigger>
+          <TabsTrigger value="delegatedTasks">Delegated Tasks</TabsTrigger>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <TabsTrigger value="all">Dashboard</TabsTrigger>
+          <TabsTrigger value="myTasks">My Tasks</TabsTrigger>
+          <TabsTrigger value="delegatedTasks">Delegated Tasks</TabsTrigger>
+          <TabsTrigger value="allTasks">All Tasks</TabsTrigger>
+        </>
+      );
     }
   };
 
@@ -240,81 +527,205 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="flex px-4 mt-2 space-x-2 items-center mb-6">
+      {/* <div className="flex px-4 mt-1 space-x-2 items-center mb-2">
         <Search />
         <input
           type="text"
           placeholder="Search tasks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-3 py-2 border rounded-md w-full"
+          className="px-3 py-2 border rounded-md w-1/4"
         />
-      </div>
+      </div> */}
       <div className="flex items-center justify-between mb-6">
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex gap-4">
-            <TabsTrigger value="all">Dashboard</TabsTrigger>
+            {/* <TabsTrigger value="all">Dashboard</TabsTrigger>
             <TabsTrigger value="myTasks">My Tasks</TabsTrigger>
             <TabsTrigger value="delegatedTasks">Delegated Tasks</TabsTrigger>
-            <TabsTrigger value="allTasks">All Tasks</TabsTrigger>
+            <TabsTrigger value="allTasks">All Tasks</TabsTrigger> */}
+            {renderTabs()}
           </TabsList>
         </Tabs>
-      </div>
-      <div className="flex gap-4 mb-4">
-        {/* Dropdown filters - render only if activeTab is not "all" */}
-        {activeTab !== "all" && (
-          <>
-            <div className="space-x-2 bg-gray-400 px-4 py-1 rounded">
-              <Label>Priority:</Label>
-              <select className="rounded px-4" onChange={(e) => setPriorityFilter(e.target.value)}>
-                <option value="">All</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-            </div>
-            <div className="space-x-2 bg-gray-400 px-4 py-1 rounded">
-              <Label>Repeat:</Label>
-              <select className="rounded px-4" onChange={(e) => setRepeatFilter(e.target.value === 'true')}>
-                <option value="">All</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            </div>
-            <div className="space-x-2 bg-gray-400 px-4 py-1 rounded">
-              <Label>Assigned User:</Label>
-              <select className="px-4 rounded" onChange={(e) => setAssignedUserFilter(e.target.value)}>
-                <option value="">All</option>
-                {/* Assuming you have a list of users to choose from */}
-                {users.map(user => (
-                  <option key={user._id} value={user._id}>{`${user.firstName}`}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-x-2 bg-gray-400 px-4 py-1 rounded">
-              <Label>Due Date:</Label>
-              <select className=" rounded" onChange={(e) => setDueDateFilter(e.target.value)}>
-                <option value="">All</option>
-                {/* Assuming you have a list of due dates to choose from */}
-                {tasks.map(task => (
-                  <option key={task._id} value={task.dueDate}>
-                    {new Date(task.dueDate).toLocaleDateString('en-GB')}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
-        )}
+
       </div>
 
+      {/*  */}
       {activeTab === "all" ? (
         <div>
-          <DashboardAnalytics />
+          <TaskSummary />
+
+          {/* <DashboardAnalytics /> */}
+          <Tabs defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="full ">
+            <TabsList className="flex gap-4">
+              <TabsTrigger className="flex gap-2" value="employee-wise"><PersonIcon className="h-4" />Employee Wise</TabsTrigger>
+              <TabsTrigger value="category-wise" className="flex gap-2"><TagIcon className="h-4" /> Category Wise</TabsTrigger>
+              <TabsTrigger value="my-report">My Report </TabsTrigger>
+              <TabsTrigger value="delegatedTasks">Delegated</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {activeDashboardTab === "employee-wise" && (
+            <div>
+              <div className="flex px-4 mt-4 space-x-2 justify-center mb-2">
+                <input
+                  type="text"
+                  placeholder="Search Employees..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="px-3 py-1 border rounded-md w-1/4"
+                />
+              </div>
+              <div className="grid gap-4">
+                {users.filter(user => {
+                  const query = searchQuery.toLowerCase();
+                  return (
+                    user.firstName.toLowerCase().includes(query) ||
+                    user.lastName.toLowerCase().includes(query)
+                  );
+                }).map(user => {
+                  const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+
+                  return (
+                    <Card key={user._id} className="p-4 flex flex-col gap-2">
+                      <div className="flex gap-2 justify-start">
+                        <div className="h-6 w-6 rounded-full bg-primary -400">
+                          <h1 className="text-center uppercase">
+                            {`${user?.firstName?.slice(0, 1)}`}
+                          </h1>
+                        </div>
+                        <h2 className="text-lg font-medium">{user.firstName} </h2>
+                      </div>
+                      {/* <p className="text-xs"> {user.email}</p> */}
+                      <div className="flex gap-4 mt-2">
+                        <div className="flex gap-1 font-bold">
+                          <CircleAlert className="text-red-500 h-5" />
+                          <p className="text-sm">Overdue: {overdueTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <Circle className="text-red-400 h-5" />
+                          <p className="text-sm">Pending: {pendingTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <IconProgress className="text-orange-600 h-5" />
+                          <p className="text-sm">In Progress: {inProgressTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <CheckCircle className="text-green-600 h-5" />
+                          <p className="text-sm">Completed: {completedTasks}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {activeDashboardTab === "my-report" && userDetails && (
+            <div>
+              <div className="flex px-4 mt-4 space-x-2 justify-center mb-2">
+                <input
+                  type="text"
+                  placeholder="Search Categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="px-3 py-2 border rounded-md w-1/4"
+                />
+                {/* <Button onClick={() => setIsModalOpen(true)} className="bg-green-700">Filter</Button> */}
+              </div>
+              <div className="grid gap-4">
+                {categories.filter(category => {
+                  const query = searchQuery.toLowerCase();
+                  return (
+                    category.name.toLowerCase().includes(query)
+                  );
+                }).map(category => {
+                  const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryReportTaskStats(category._id);
+
+                  return (
+                    <Card key={category._id} className="p-4 flex flex-col gap-2">
+                      <h2 className="text-lg font-medium">{category.name}</h2>
+                      <div className="flex gap-4 mt-2">
+                        <div className="flex gap-1 font-bold">
+                          <p className="text-sm">Overdue: {overdueTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <p className="text-sm">Pending: {pendingTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <p className="text-sm">In Progress: {inProgressTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <p className="text-sm">Completed: {completedTasks}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {activeDashboardTab === "category-wise" && (
+            <div>
+              <div className="flex px-4 mt-4 space-x-2 justify-center mb-2">
+                <input
+                  type="text"
+                  placeholder="Search Categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="px-3 py-2 border rounded-md w-1/4"
+                />
+              </div>
+              <div className="grid gap-4">
+                {categories.filter(category => {
+                  const query = searchQuery.toLowerCase();
+                  return category.name.toLowerCase().includes(query);
+                }).map(category => {
+                  const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+
+                  return (
+                    <Card key={category._id} className="p-4 flex flex-col gap-2">
+                      <h2 className="text-lg font-medium">{category.name}</h2>
+                      <div className="flex gap-4 mt-2">
+                        <div className="flex gap-1 font-bold">
+                          <CircleAlert className="text-red-500 h-5" />
+                          <p className="text-sm">Overdue: {overdueTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <Circle className="text-red-400 h-5" />
+                          <p className="text-sm">Pending: {pendingTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <IconProgress className="text-orange-600 h-5" />
+                          <p className="text-sm">In Progress: {inProgressTasks}</p>
+                        </div>
+                        <div className="flex gap-1 font-bold">
+                          <CheckCircle className="text-green-600 h-5" />
+                          <p className="text-sm">Completed: {completedTasks}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid text-sm gap-4">
+          <div className="flex px-4 mt-2  space-x-2 justify-center ">
+            <input
+              type="text"
+              placeholder="Search Tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-3 py-2 border rounded-md w-1/4"
+            />
+            <Button onClick={() => setIsModalOpen(true)} className="bg-green-700"><FilterIcon className="h-4" /> Filter</Button>
+          </div>
           {filteredTasks?.map((task) => (
             <div key={task._id}>
+
               <Card
                 className="flex items-center justify-between cursor-pointer p-4"
                 onClick={() => setSelectedTask(task)}
@@ -403,31 +814,35 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         <Label htmlFor="user" className="text-right">
                           Assigned To
                         </Label>
-                        <div className="flex gap-2 justify-start">
-                          <div className="h-6 w-6 rounded-full bg-primary -400">
-                            <h1 className="text-center uppercase">
-                              {`${selectedTask.assignedUser.firstName.slice(0, 1)}`}
-                            </h1>
-                          </div>
-                          <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
+                        {selectedTask?.assignedUser?.firstName ? (
+                          <div className="flex gap-2 justify-start">
+                            <div className="h-6 w-6 rounded-full bg-primary -400">
+                              <h1 className="text-center uppercase">
+                                {`${selectedTask?.assignedUser?.firstName?.slice(0, 1)}`}
+                              </h1>
+                            </div>
+                            <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
 
-                        </div>
+                          </div>
+                        ) : null}
                       </div>
                       <div className=" flex items-center gap-4">
                         <Label htmlFor="user" className="text-right">
                           Assigned By
                         </Label>
-                        <div className="flex gap-2 justify-start">
-                          <div className="h-6 w-6 rounded-full bg-primary -400">
-                            <h1 className="text-center uppercase">
-                              {`${selectedTask.user.firstName.slice(0, 1)}`}
+                        {selectedTask?.user?.firstName ? (
+                          <div className="flex gap-2 justify-start">
+                            <div className="h-6 w-6 rounded-full bg-primary-400">
+                              <h1 className="text-center uppercase">
+                                {selectedTask.user.firstName.slice(0, 1)}
+                              </h1>
+                            </div>
+                            <h1 id="assignedUser" className="col-span-3">
+                              {`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}
                             </h1>
                           </div>
-                          <h1 id="assignedUser" className="col-span-3">{`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}</h1>
-
-                        </div>
+                        ) : null}
                       </div>
-
                     </div>
                     <div className=" flex items-center gap-4 mt-4">
                       <Label htmlFor="user" className="text-right">
@@ -461,6 +876,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         <h1 id="assignedUser" className="col-span-3 font-bold">
                           {`${selectedTask.repeatType}`}
                         </h1>
+                        <div className="ml-2">
+                          {selectedTask?.dates?.length && selectedTask.dates.length > 0 ? (
+                            <h1 className="font-bold">
+                              ({selectedTask?.dates?.join(', ')})
+                            </h1>
+                          ) : (
+                            <p>No specific dates selected.</p>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -482,9 +906,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         Category
                       </Label>
                       <div className="flex gap-2 ml-4  justify-start">
-
                         <h1 id="assignedUser" className="col-span-3 font-bold">
-                          {`${selectedTask.category}`}
+                          {selectedTaskCategory?.name}
                         </h1>
                       </div>
                     </div>
@@ -542,15 +965,20 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         Completed
                       </Button>
                       <Button
-                        onClick={() => {
-                          setStatusToUpdate("Completed");
-                          setIsDialogOpen(true);
-                        }}
+                        onClick={handleEditClick}
                         className="bg-gray-600 w-full"
                       >
                         <Edit className="h-4 rounded-full text-blue-400" />
                         Edit
                       </Button>
+                      <EditTaskDialog
+                        open={isEditDialogOpen}
+                        onClose={() => setIsEditDialogOpen(false)}
+                        task={selectedTask}
+                        users={users}
+                        categories={categories}
+                        onTaskUpdate={handleTaskUpdate}
+                      />
                       <Button
                         onClick={() => handleDelete(selectedTask._id)}
                         className="bg-gray-600 w-full"
@@ -704,6 +1132,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               )}
             </div>
           ))}
+          <FilterModal
+            isOpen={isModalOpen}
+            closeModal={() => setIsModalOpen(false)}
+            categories={categories}
+            users={users}
+            applyFilters={applyFilters}
+          />
         </div>
       )}
     </div>

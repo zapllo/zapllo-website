@@ -19,7 +19,7 @@ export default function Testimonials() {
                     <div className='mt-8 md:justify-start  md:absolute md:flex'>
                         <LetsTalk />
 
-                    </div>
+                    </div>z
 
                 </div>
 

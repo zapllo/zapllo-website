@@ -26,7 +26,6 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, me
             const responseData = await response.json();
             throw new Error(`Interakt API error: ${responseData.message}`);
         }
-
         console.log('WhatsApp message sent successfully:', payload);
 
     } catch (error) {
