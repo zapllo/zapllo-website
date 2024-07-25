@@ -108,6 +108,33 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     setPriorityFilterModal(filters.priority);
   };
 
+  useEffect(() => {
+    const fetchCategoryOfSelectedTask = async (selectedTaskCategoryId: any) => {
+      try {
+        const response = await fetch('/api/category/getById', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ categoryId: selectedTaskCategoryId }),
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          setSelectedTaskCategory(result.data);
+        } else {
+          console.error(result.error);
+        }
+      } catch (error: any) {
+        console.error('Failed to fetch category:', error.message);
+      }
+    };
+
+    if (selectedTask && selectedTask.category) {
+      fetchCategoryOfSelectedTask(selectedTask.category);
+    }
+  }, [selectedTask]);
+
   const filteredTasks = tasks?.filter(task => {
     let isFiltered = true;
 
@@ -388,32 +415,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     onTaskUpdate(updatedTask);
   };
 
-  useEffect(() => {
-    const fetchCategoryOfSelectedTask = async (selectedTaskCategoryId: any) => {
-      try {
-        const response = await fetch('/api/category/getById', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ categoryId: selectedTaskCategoryId }),
-        });
-        const result = await response.json();
 
-        if (response.ok) {
-          setSelectedTaskCategory(result.data);
-        } else {
-          console.error(result.error);
-        }
-      } catch (error: any) {
-        console.error('Failed to fetch category:', error.message);
-      }
-    };
-
-    if (selectedTask && selectedTask.category) {
-      fetchCategoryOfSelectedTask(selectedTask.category);
-    }
-  }, [selectedTask]);
 
   // console.log(selectedTask?.category, 'category! ');
   // console.log(selectedTaskCategory, 'is it?');
