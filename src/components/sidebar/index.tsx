@@ -45,7 +45,7 @@ const MenuOptions = (props: Props) => {
           <img src='/Favicon.png' className='h-10 w-10' />
         </Link>
         <TooltipProvider>
-        {filteredMenuOptions.map((menuItem) => (
+          {filteredMenuOptions.map((menuItem) => (
             <ul key={menuItem.name}>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger>
@@ -61,7 +61,6 @@ const MenuOptions = (props: Props) => {
                       )}
                     >
                       <menuItem.Component
-                        selected={pathName === menuItem.href}
                       />
                     </Link>
                   </li>

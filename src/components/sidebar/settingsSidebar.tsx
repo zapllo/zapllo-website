@@ -73,7 +73,6 @@ const SettingsOptions = (props: Props) => {
                                             )}
                                         >
                                             <menuItem.Component className='mt-1'
-                                                selected={pathName === menuItem.href}
                                             />
                                             <p className='text-center'>{menuItem.name}</p>
 

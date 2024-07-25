@@ -1,7 +1,63 @@
-import React, { useState, useEffect } from 'react';
+'use client'
+
+import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
 import axios from 'axios';
 
-const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }) => {
+interface Task {
+    _id: string;
+    title: string;
+    user: User;
+    description: string;
+    assignedUser: User;
+    category: string;
+    priority: string;
+    repeatType: string;
+    repeat: boolean;
+    days?: string[];
+    dates?: string[];
+    categories?: string[];
+    dueDate: string;
+    attachment?: string;
+    links?: string[];
+    status: string;
+    comments: Comment[];
+    createdAt: string;
+}
+
+interface User {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    organization: string;
+    role: string;
+}
+
+
+
+interface Category {
+    _id: string;
+    name: string;
+}
+
+interface EditTaskDialogProps {
+    open: boolean;
+    onClose: () => void;
+    task: Task | null;
+    onTaskUpdate: (task: Task) => void;
+    users: User[];
+    categories: Category[];
+}
+
+interface Comment {
+    _id: string;
+    userId: string; // Assuming a user ID for the commenter
+    userName: string; // Name of the commenter
+    comment: string;
+    createdAt: string; // Date/time when the comment was added
+    status: string;
+}
+
+const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, onTaskUpdate, users, categories }) => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -11,10 +67,10 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
         repeat: false,
         repeatType: 'Daily',
         dueDate: '',
-        days: [],
-        dates: [],
+        days: [] as string[],
+        dates: [] as string[],
         attachment: '',
-        links: [],
+        links: [] as string[],
         status: 'Pending'
     });
 
@@ -25,7 +81,7 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
                 description: task.description || '',
                 priority: task.priority || 'Medium',
                 category: task.category || '',
-                assignedUser: task.assignedUser || '',
+                assignedUser: task.assignedUser._id || '',
                 repeat: task.repeat || false,
                 repeatType: task.repeatType || 'Daily',
                 dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
@@ -38,30 +94,29 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
         }
     }, [task]);
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, type } = e.target;
+
         if (type === 'checkbox') {
+            // Assert that e.target is an HTMLInputElement
+            const input = e.target as HTMLInputElement;
             setFormData(prevState => ({
                 ...prevState,
-                [name]: checked
-            }));
-        } else if (name === 'days' || name === 'dates') {
-            const updatedArray = formData[name].includes(value)
-                ? formData[name].filter(item => item !== value)
-                : [...formData[name], value];
-            setFormData(prevState => ({
-                ...prevState,
-                [name]: updatedArray
+                [name]: input.checked // Checkbox elements use 'checked'
             }));
         } else {
+            // For other types of elements, use 'value'
+            const input = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
             setFormData(prevState => ({
                 ...prevState,
-                [name]: value
+                [name]: input.value // Other elements use 'value'
             }));
         }
     };
 
-    const handleLinkChange = (index, value) => {
+
+
+    const handleLinkChange = (index: number, value: string) => {
         const updatedLinks = [...formData.links];
         updatedLinks[index] = value;
         setFormData(prevState => ({
@@ -77,7 +132,7 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
         }));
     };
 
-    const removeLink = (index) => {
+    const removeLink = (index: number) => {
         const updatedLinks = formData.links.filter((_, i) => i !== index);
         setFormData(prevState => ({
             ...prevState,
@@ -87,7 +142,7 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.patch('/api/tasks/edit', { id: task._id, ...formData });
+            const response = await axios.patch('/api/tasks/edit', { id: task?._id, ...formData });
             onTaskUpdate(response.data.data);
             onClose(); // Close the dialog on success
         } catch (error) {
@@ -118,7 +173,7 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
                         value={formData.description}
                         onChange={handleChange}
                         className="w-full p-2 border rounded mt-1"
-                        rows="4"
+                        rows={4}
                     />
                 </label>
                 <div className="grid gap-2 grid-cols-2">
@@ -161,7 +216,7 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
                     >
                         {users.map(user => (
                             <option key={user._id} value={user._id}>
-                                {user.firstName} {user.lastName}
+                                {user.firstName}
                             </option>
                         ))}
                     </select>
@@ -177,7 +232,7 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
                     Repeat
                 </label>
                 {formData.repeat && (
-                    <>
+                    <div className="grid gap-2 grid-cols-2">
                         <label className="block mb-2">
                             Repeat Type:
                             <select
@@ -191,71 +246,19 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
                                 <option value="Monthly">Monthly</option>
                             </select>
                         </label>
-                        {formData.repeatType === 'Weekly' && (
-                            <div className="block mb-2">
-                                <label className="block mb-2">Days:</label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                                        <label key={day} className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                name="days"
-                                                value={day}
-                                                checked={formData.days.includes(day)}
-                                                onChange={handleChange}
-                                                className="mr-2"
-                                            />
-                                            {day}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        {formData.repeatType === 'Monthly' && (
-                            <div className="block mb-2">
-                                <label className="block mb-2">Dates:</label>
-                                <div className="grid grid-cols-6 gap-2">
-                                    {Array.from({ length: 31 }, (_, i) => i + 1).map(date => (
-                                        <label key={date} className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                name="dates"
-                                                value={date}
-                                                checked={formData.dates.includes(date)}
-                                                onChange={handleChange}
-                                                className="mr-2"
-                                            />
-                                            {date}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </>
+                        <label className="block mb-2">
+                            Due Date:
+                            <input
+                                type="date"
+                                name="dueDate"
+                                value={formData.dueDate}
+                                onChange={handleChange}
+                                className="w-full p-2 border rounded mt-1"
+                            />
+                        </label>
+                    </div>
                 )}
-                <div className="grid grid-cols-2 gap-4">
-                    <label className="block mb-2">
-                        Due Date:
-                        <input
-                            type="date"
-                            name="dueDate"
-                            value={formData.dueDate}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded mt-1"
-                        />
-                    </label>
-                    <label className="block mb-2">
-                        Attachment:
-                        <input
-                            type="text"
-                            name="attachment"
-                            value={formData.attachment}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded mt-1"
-                        />
-                    </label>
-                </div>
-                <div className="block mb-4">
+                <div className="flex flex-col mb-4">
                     <label className="block mb-2">Links:</label>
                     {formData.links.map((link, index) => (
                         <div key={index} className="flex items-center mb-2">
@@ -265,35 +268,41 @@ const EditTaskDialog = ({ open, onClose, task, onTaskUpdate, users, categories }
                                 onChange={(e) => handleLinkChange(index, e.target.value)}
                                 className="w-full p-2 border rounded mr-2"
                             />
-                            <button onClick={() => removeLink(index)} className="px-2 py-1 bg-red-500 text-white rounded">Remove</button>
+                            <button
+                                onClick={() => removeLink(index)}
+                                className="bg-red-500 text-white p-2 rounded"
+                            >
+                                Remove
+                            </button>
                         </div>
                     ))}
-                    <button onClick={addLink} className="py-2 px-4 bg-primary -500 rounded text-white">Add Link</button>
+                    <button
+                        onClick={addLink}
+                        className="bg-blue-500 text-white p-2 rounded"
+                    >
+                        Add Link
+                    </button>
                 </div>
-                <label className="block mb-4">
-                    Status:
-                    <select
-                        name="status"
-                        value={formData.status}
+                <label className="block mb-2">
+                    Attachment URL:
+                    <input
+                        type="text"
+                        name="attachment"
+                        value={formData.attachment}
                         onChange={handleChange}
                         className="w-full p-2 border rounded mt-1"
-                    >
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Reopen">Reopen</option>
-                    </select>
+                    />
                 </label>
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end mt-4">
                     <button
                         onClick={onClose}
-                        className="py-2 px-4 bg- -300 rounded text-white"
+                        className="bg-gray-500 text-white p-2 rounded mr-2"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="py-2 px-4 bg-primary -500 rounded text-white"
+                        className="bg-blue-500 text-white p-2 rounded"
                     >
                         Save
                     </button>
