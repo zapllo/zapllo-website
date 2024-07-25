@@ -626,7 +626,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                                         transition={{ duration: 0.5 }}
                                                     >
                                                         <CustomDatePicker
-                                                            selectedDate={dueDate}
+                                                            selectedDate={dueDate ?? new Date()}
                                                             onDateChange={(date: Date) => {
                                                                 setDueDate(date);
                                                                 setIsDatePickerVisible(false);
