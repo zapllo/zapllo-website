@@ -388,31 +388,28 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     onTaskUpdate(updatedTask);
   };
 
-
-  // Function to fetch category details based on the selected task's category ID
-  const fetchCategoryOfSelectedTask = async (selectedTaskCategoryId: any) => {
-    try {
-      const response = await fetch('/api/category/getById', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ categoryId: selectedTaskCategoryId }), // Updated key
-      });
-      const result = await response.json();
-
-      if (response.ok) {
-        setSelectedTaskCategory(result.data);
-      } else {
-        console.error(result.error);
-      }
-    } catch (error: any) {
-      console.error('Failed to fetch category:', error.message);
-    }
-  };
-
-  // Use useEffect to fetch the category when selectedTask changes
   useEffect(() => {
+    const fetchCategoryOfSelectedTask = async (selectedTaskCategoryId: any) => {
+      try {
+        const response = await fetch('/api/category/getById', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ categoryId: selectedTaskCategoryId }),
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          setSelectedTaskCategory(result.data);
+        } else {
+          console.error(result.error);
+        }
+      } catch (error: any) {
+        console.error('Failed to fetch category:', error.message);
+      }
+    };
+
     if (selectedTask && selectedTask.category) {
       fetchCategoryOfSelectedTask(selectedTask.category);
     }
