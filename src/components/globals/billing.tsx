@@ -41,7 +41,7 @@ export default function Billing() {
 
     const totalCost = userCount * 1000;
 
-    const handleSubscribeClick = (plan) => {
+    const handleSubscribeClick = (plan: any) => {
         setSelectedPlan(plan);
         setIsDialogOpen(true);
         // Redirect to checkout page with the selected plan's price
@@ -144,7 +144,7 @@ export default function Billing() {
                         </CardHeader>
                         <CardContent className="grid gap-4">
                             <div className="flex items-center justify-between">
-                            <div className="text-4xl font-bold flex"><IndianRupee className='h-10' />1000</div>
+                                <div className="text-4xl font-bold flex"><IndianRupee className='h-10' />1000</div>
                                 <div className="text-muted-foreground">/month</div>
                             </div>
                             <ul className="grid gap-2 text-muted-foreground">
