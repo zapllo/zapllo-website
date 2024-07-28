@@ -2,7 +2,7 @@ import sendgrid from '@sendgrid/mail';
 
 export interface SendEmailOptions {
     to: string;
-    cc: string; // Optional cc field
+    cc?: string; // Optional cc field
     subject: string;
     text: string;
     html: string;
@@ -25,8 +25,9 @@ export async function sendEmail({ to, cc, subject, text, html }: SendEmailOption
         text,
         html,
     };
-
-
+    if (cc) {
+        msg.cc = cc;
+    }
 
     try {
         await sendgrid.send(msg);
