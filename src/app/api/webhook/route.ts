@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string, bodyVariables: string[]) => {
-    const payload = {
+const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string | null, bodyVariables: string[]) => {
+    const payload: any = {
         countryCode: '+91',
         phoneNumber,
         type: 'Template',
         template: {
             name: templateName,
             languageCode: 'en',
-            headerValues: [mediaUrl],
             bodyValues: bodyVariables,
         },
     };
+
+    // Conditionally add mediaUrl to headerValues if it exists
+    if (mediaUrl) {
+        payload.template.headerValues = [mediaUrl];
+    }
+
     try {
         const response = await fetch('https://api.interakt.ai/v1/public/message/', {
             method: 'POST',
@@ -38,6 +43,11 @@ export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json();
         const { phoneNumber, bodyVariables, templateName, mediaUrl } = reqBody;
+
+        // Validate input
+        if (!phoneNumber || !templateName || !bodyVariables || !Array.isArray(bodyVariables) || bodyVariables.length === 0) {
+            return NextResponse.json({ error: "Invalid input data" }, { status: 400 });
+        }
 
         // Send WhatsApp message
         await sendWhatsAppMessage(phoneNumber, templateName, mediaUrl, bodyVariables);
