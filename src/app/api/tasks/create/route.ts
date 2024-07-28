@@ -81,19 +81,19 @@ export async function POST(request: NextRequest) {
                 to: `${assignedUser.email}`,
                 subject: "New Task Assigned",
                 text: `Zapllo`,
-                html: `<div style="font-family: Arial, sans-serif; background-color: #13173F; color: #FFFFFF; padding: 20px; border-radius: 10px; text-align: center;">
+                html: `<div style="font-family: Arial, sans-serif; background-color: #13173F; color: #FFFFFF; padding: 20px; border-radius: 10px;">
                 <img src='https://www.zapllo.com/logo.png'  style="height:40px; " />
                 <p>Dear ${assignedUser.firstName},</p>
             <p>A new task has been assigned to you. Below are the task details:</p>
-            <ul>
-                <li><strong>Title:</strong> ${savedTask.title}</li>
-                <li><strong>Description:</strong> ${savedTask.description}</li>
-                <li><strong>Due Date:</strong> ${savedTask.dueDate}</li>
-                <li><strong>Assigned By:</strong> ${authenticatedUser.firstName}</li>
-                <li><strong>Category:</strong> ${category.name}</li>
-                <li><strong>Priority:</strong> ${savedTask.priority}</li>
-            </ul>u
-            <p><a href="https://zapllo.com/dashboard/tasks" style="display: inline-block; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Open Task App</a></p>
+            <div>
+                <h1><strong>Title:</strong> ${savedTask.title}</h1>
+                <h1><strong>Description:</strong> ${savedTask.description}</h1>
+                <h1><strong>Due Date:</strong> ${savedTask.dueDate}</h1>
+                <h1><strong>Assigned By:</strong> ${authenticatedUser.firstName}</h1>
+                <h1><strong>Category:</strong> ${category.name}</h1>
+                <h1><strong>Priority:</strong> ${savedTask.priority}</h1>
+            </div>
+            <p><a href="https://zapllo.com/dashboard/tasks" style="display: inline-block; padding: 10px 20px; color: white; background: linear-gradient(to right, #815BF5, #FC8929); text-decoration: none; border-radius: 5px;">Open Task App</a></p>
             <p>This is an automated notification. Please do not reply.</p>
             </div>
         `,
