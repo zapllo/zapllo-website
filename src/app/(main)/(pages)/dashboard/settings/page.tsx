@@ -212,7 +212,11 @@ export default function Page() {
                     </div>
                 </div>
             )}
-
+            <Link href='/dashboard/settings/notifications'>
+                <div className='bg-secondary mt-2 px-4 rounded py-2'>
+                    <h1 className=''>Notification Toggle</h1>
+                </div>
+            </Link>
             <div className='bg-secondary mt-2 px-4 rounded py-2'>
                 <h1 className=' '>Account Information</h1>
             </div>

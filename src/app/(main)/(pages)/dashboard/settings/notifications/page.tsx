@@ -29,7 +29,7 @@ export default function Settings() {
     };
 
     return (
-        <div className="settings-container p-6 bg-white shadow-md rounded-md">
+        <div className="settings-container p-6  shadow-md rounded-md">
             <h1 className="text-xl font-bold mb-4">Notification Settings</h1>
             <div className="mb-4">
                 <label className="flex items-center">
@@ -37,7 +37,7 @@ export default function Settings() {
                         type="checkbox"
                         checked={emailNotifications}
                         onChange={(e) => setEmailNotifications(e.target.checked)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
+                        className="form-checkbox h-5 w-5 text-white"
                     />
                     <span className="ml-2">Email Notifications</span>
                 </label>
@@ -48,14 +48,14 @@ export default function Settings() {
                         type="checkbox"
                         checked={whatsappNotifications}
                         onChange={(e) => setWhatsappNotifications(e.target.checked)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
+                        className="form-checkbox h-5 w-5 text-white"
                     />
                     <span className="ml-2">WhatsApp Notifications</span>
                 </label>
             </div>
             <button
                 onClick={updateSettings}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                className="px-4 py-2 bg-primary text-white rounded-md  transition"
             >
                 Save Settings
             </button>
