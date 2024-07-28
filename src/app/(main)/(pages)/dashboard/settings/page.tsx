@@ -213,7 +213,7 @@ export default function Page() {
                 </div>
             )}
             <Link href='/dashboard/settings/notifications'>
-                <div className='mb-2 mt-2 px-4 rounded py-2'>
+                <div className='mb-2 mt-2 px-4 border rounded py-2'>
                     <h1 className=''>Notification Toggle</h1>
                 </div>
             </Link>
