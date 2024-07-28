@@ -55,8 +55,11 @@ export async function POST(request: NextRequest) {
         const emailOptions: SendEmailOptions = {
             to: email,
             subject: 'We have Received Your Inquiry!',
-            text: `Dear ${firstName},\n\nThank you for reaching out to Zapllo! We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.\n\nThanks & Regards\nTeam Zapllo`,
-            html: `<h1>Thank You </h1>`,
+            text: `Zapllo`,
+            html: `<div style="font-family: Arial, sans-serif; background-color: #13173F; color: #FFFFFF; padding: 20px; border-radius: 10px;">
+                <img src='https://www.zapllo.com/logo.png'  style="height:40px; " />
+               <p> Dear ${firstName},\n\nThank you for reaching out to Zapllo!</p>
+               <p> We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.</p>\n\nThanks & Regards\nTeam Zapllo`,
         };
         await sendEmail(emailOptions);
         const mediaUrl = "https://www.zapllo.com/logo.png";
