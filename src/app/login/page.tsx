@@ -75,8 +75,6 @@ export default function LoginPage() {
                         <Input id="password" placeholder="••••••••" value={user.password}
                             onChange={(e) => setUser({ ...user, password: e.target.value })} type="password" />
                     </LabelInputContainer>
-
-
                     <button
                         className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
                         type="submit"
@@ -89,14 +87,19 @@ export default function LoginPage() {
                         <Link href="/signup" className="text-center hover:underline mt-2">Not a <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold">Zapllonian
                         </span>? Register Here</Link>
                     </div>
-                    <p className="text-xs text-center">By clicking continue, you agree to our <a href="/terms" className="underline">
+                    <div className="text-center ">
+                        <Link href="/dashboard/forgetPassword" className="hover:underline">
+                            Forgot your password?
+                        </Link>
+                    </div>
+                    <p className="text-xs text-center mt-2">By clicking continue, you agree to our <a href="/terms" className="underline">
                         Terms of Service
                     </a> and <a href="/privacypolicy" className="underline">
                             Privacy Policy
                         </a>.</p>
                     <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
                     <div className="flex justify-center gap-2">
-                            <Home selected />
+                        <Home selected />
                         <Link href='/'>
 
                             <h1 className="hover:underline cursor-pointer">Back to Home</h1>

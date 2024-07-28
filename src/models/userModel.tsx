@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'organizations' // Referencing the Organization model
     },
+    notifications: {
+        email: { type: Boolean, default: true },
+        whatsapp: { type: Boolean, default: true },
+    },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
