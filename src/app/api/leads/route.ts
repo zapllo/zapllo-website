@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
                <p> We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.</p>\n\nThanks & Regards\nTeam Zapllo`,
         };
         await sendEmail(emailOptions);
-        const mediaUrl = "https://www.zapllo.com/logo.png";
+        const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/w4B2cSkUyaf3/logo-02%204.png?se=2029-07-07T15%3A30%3A43Z&sp=rt&sv=2019-12-12&sr=b&sig=EtEFkVbZXLeBLJ%2B9pkZitby/%2BwJ4HzJkGgeT2%2BapgoQ%3D";
         const templateName = 'leadenquirycontactus'
         console.log(mediaUrl, templateName, 'media url & template name');
         await sendWebhookNotification(mobNo, templateName, mediaUrl, firstName);
