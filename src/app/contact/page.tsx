@@ -30,20 +30,22 @@ export default function Contact() {
                                     <h1>Let&apos;s Talk</h1>
                                 </div>
                                 <h1 className='md:text-4xl text-2xl mt-4 font-semibold mx-4'>We are Open To Talk To Good People</h1>
-                                <p className='text-[#676B93] mx-4  mt-4'>Ready to redefine your online presence and elevate your brand with our 14-day mentorship program?</p>
-                                <p className='text-[#676B93] mx-4  mt-4'>Our team is on standby to guide you through the process of content creation, monetization, and digital strategy that places you among the top 1% of creators.</p>
+                                <p className='text-[#676B93] mx-4  mt-4'>Ready to transform your business operations and optimize your workflows with Zapllo’s cutting-edge automation solutions?
+                                </p>
+                                <p className='text-[#676B93] mx-4  mt-4'>Our team is on standby to guide you through the process of automation, digital strategy, and custom solutions that place you among the top 1% of efficient and innovative businesses.</p>
                                 <div className='grid grid-cols-1 gap-y-4 mt-8'>
                                     <div className='flex '>
                                         <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '> <Map /></div>
-                                        <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Craft endless content that elevates your brand voice.</h1>
+                                        <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Automate your workflows and enhance your operational efficiency.</h1>
                                     </div>
                                     <div className='flex '>
                                         <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><MapPin /></div>
-                                        <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Gain valuable insights and connections that go beyond standard courses.</h1>
+                                        <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Gain valuable insights and connections that surpass traditional solutions.
+                                        </h1>
                                     </div>
                                     <div className='flex '>
-                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><Icon3dCubeSphereOff/> </div>
-                                        <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Transform your content into profitable opportunities for your brand.</h1>
+                                        <div className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] to-[#FC8929] p-2 h-fit w-fit rounded-full '><Icon3dCubeSphereOff /> </div>
+                                        <h1 className='text-sm md:text-lg text-[#676B93]  md:mt-1 md:mx-0 mx-4'>Transform your business processes into profitable opportunities with Zapllo.</h1>
                                     </div>
                                 </div>
                             </div>
@@ -59,8 +61,8 @@ export default function Contact() {
 
             </div>
             <div className="flex bg-[#04061E]  pt-12 justify-center">
-        <Footer />
-      </div>
+                <Footer />
+            </div>
         </>
     )
 }

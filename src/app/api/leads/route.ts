@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 const sendWebhookNotification = async (phoneNumber: string, templateName: string, mediaUrl: string, firstName: string,) => {
     const payload = {
         phoneNumber,
-        templateName,
-        headerValues: [mediaUrl],
         bodyVariables: [firstName],
+        templateName,
+        mediaUrl,
     };
 
     try {
@@ -63,8 +63,9 @@ export async function POST(request: NextRequest) {
         };
         await sendEmail(emailOptions);
         const mediaUrl = "https://www.zapllo.com/logo.png";
-        console.log(mediaUrl, 'medium url')
-        await sendWebhookNotification(mobNo, 'leadenquirycontactus', mediaUrl, firstName);
+        const templateName = 'leadenquirycontactus'
+        console.log(mediaUrl, templateName, 'media url & template name')
+        await sendWebhookNotification(mobNo, firstName, templateName, mediaUrl);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 
