@@ -14,7 +14,7 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, me
 
     // Conditionally add mediaUrl to headerValues if it exists
     if (mediaUrl) {
-        payload.template.headerValues = mediaUrl;
+        payload.template.headerValues = [mediaUrl];
     }
     console.log(payload, 'here is the payload')
     try {
