@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
 
         const emailOptions: SendEmailOptions = {
             to: email,
+            cc: 'support@zapllo.com',
             subject: 'We have Received Your Inquiry!',
             text: `Zapllo`,
             html: `<div style="font-family: Arial, sans-serif; background-color: #13173F; color: #FFFFFF; padding: 20px; border-radius: 10px;">

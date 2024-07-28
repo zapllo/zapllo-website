@@ -2,12 +2,13 @@ import sendgrid from '@sendgrid/mail';
 
 export interface SendEmailOptions {
     to: string;
+    cc: string; // Optional cc field
     subject: string;
     text: string;
     html: string;
 }
 
-export async function sendEmail({ to, subject, text, html }: SendEmailOptions): Promise<void> {
+export async function sendEmail({ to, cc, subject, text, html }: SendEmailOptions): Promise<void> {
     // Check if SENDGRID_API_KEY is defined
     if (!process.env.SENDGRID_API_KEY) {
         console.error('SENDGRID_API_KEY is not defined');
@@ -18,11 +19,14 @@ export async function sendEmail({ to, subject, text, html }: SendEmailOptions): 
 
     const msg = {
         to,
+        cc,
         from: process.env.SENDGRID_SENDER_EMAIL || 'contact@zapllo.com', // Provide a default sender if not defined
         subject,
         text,
         html,
     };
+
+
 
     try {
         await sendgrid.send(msg);
