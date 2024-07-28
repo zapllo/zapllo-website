@@ -33,14 +33,14 @@ export default function SuccessStories() {
                     <h1 className='md:text-center text-start mx-6 md:mx-0 mt-4 md:text-4xl text-4xl font-medium'>Real Success Stories with<span className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929]  to-[#FC8929] bg-clip-text text-transparent'>
                         Zapllo </span> </h1>
                     <div className=' flex justify-center'>
-                        <p className='mt-4 text-[#676B93] max-w-5xl text-sm mx-6 md:mx-0  text-start md:text-center'>From New York Times bestsellers to visionary entrepreneurs, our clients have unlocked exponential growth with our Bespoke Workflows, Automations, and Notion Systems. No matter your field, our expert engineers craft tools that not only save you thousands of dollars but also reclaim the precious time lost to manual tasks or unnecessary staffing. Elevate your business efficiency today!</p>
+                        <p className='mt-4 text-[#676B93] max-w-5xl text-sm mx-6 md:mx-0  text-start md:text-center'>From industry leaders to innovative entrepreneurs, our clients have unlocked exponential growth with Zapllo’s bespoke workflows, automation solutions, and advanced Business systems. No matter your field, our expert engineers craft tools that not only save you thousands of dollars but also reclaim the precious time lost to manual tasks or unnecessary staffing. Elevate your business efficiency today with Zapllo!</p>
                     </div>
                 </div>
             </div>
             <div className='p-8 flex justify-center'>
                 <div className='md:grid md:grid-cols-2 gap-4  text-center  md:max-w-5xl md:mx-4'>
                     <div className='bg-[#0A0D28] w-screen md:w-full   p-8    md:p-8 rounded-2xl'>
-                        <img src='bachand.png' className='w-full' />
+                        <img src='/clients/b.png' className='w-full h-auto' />
                         <div className='flex justify-center mt-4'>
                             <img src='star.png' className='h-5' />
                         </div>
@@ -109,7 +109,7 @@ export default function SuccessStories() {
                     </div>
                     <div className='md:grid md:grid-cols-1 gap-4  text-center  md:max-w-5xl md:mx-4'>
                         <div className='bg-[#0A0D28] w-screen md:w-full   p-8    md:p-8 rounded-2xl'>
-                            <img src='bald.png' className='w-full' />
+                            <img src='/clients/a.png' className='w-full' />
                             <div className='flex justify-center mt-4'>
                                 <img src='star.png' className='h-5' />
                             </div>
@@ -154,7 +154,7 @@ export default function SuccessStories() {
             <div className='p-8 flex justify-center'>
                 <div className='md:grid md:grid-cols-2 gap-4  text-center  md:max-w-5xl md:mx-4'>
                     <div className='bg-[#0A0D28] w-screen md:w-full   p-8    md:p-8 rounded-2xl'>
-                        <img src='bald.png' className='w-full' />
+                        <img src='/clients/c.png' className='w-full' />
                         <div className='flex justify-center mt-4'>
                             <img src='star.png' className='h-5' />
                         </div>
