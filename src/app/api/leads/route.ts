@@ -59,7 +59,9 @@ export async function POST(request: NextRequest) {
             html: `<h1>Thank You </h1>`,
         };
         await sendEmail(emailOptions);
-        await sendWebhookNotification(mobNo, 'leadenquirycontactus', "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/DNLVjZYK4pvp/logo-02%204.png?se=2029-06-26T07%3A10%3A33Z&sp=rt&sv=2019-12-12&sr=b&sig=dAChtGOY3ztBj6Y0tvTPXTR5bibZVBx9MvQnUz/WiiA%3D", firstName);
+        const mediaUrl = "https://www.zapllo.com/logo.png";
+        console.log(mediaUrl, 'medium url')
+        await sendWebhookNotification(mobNo, 'leadenquirycontactus', mediaUrl, firstName);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 
