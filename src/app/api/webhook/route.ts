@@ -16,7 +16,7 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, me
     if (mediaUrl) {
         payload.template.headerValues = [mediaUrl];
     }
-    console.log(payload, 'here is the payload');
+console.log(payload, 'here is the payload');
     try {
         const response = await fetch('https://api.interakt.ai/v1/public/message/', {
             method: 'POST',
@@ -44,7 +44,10 @@ export async function POST(request: NextRequest) {
         const reqBody = await request.json();
         const { phoneNumber, bodyVariables, templateName, mediaUrl } = reqBody;
 
-      
+        // Validate input
+        if (!phoneNumber || !templateName || !bodyVariables || !Array.isArray(bodyVariables) || bodyVariables.length === 0) {
+            return NextResponse.json({ error: "Invalid input data" }, { status: 400 });
+        }
 
         // Send WhatsApp message
         await sendWhatsAppMessage(phoneNumber, templateName, mediaUrl, bodyVariables);
