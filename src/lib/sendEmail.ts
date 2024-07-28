@@ -19,7 +19,6 @@ export async function sendEmail({ to, cc, subject, text, html }: SendEmailOption
 
     const msg = {
         to,
-        cc,
         from: process.env.SENDGRID_SENDER_EMAIL || 'contact@zapllo.com', // Provide a default sender if not defined
         subject,
         text,
