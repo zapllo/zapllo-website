@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string[] | null, bodyVariables: string[]) => {
+const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string | null, bodyVariables: string[]) => {
     const payload: any = {
         countryCode: '+91',
         phoneNumber,
@@ -14,9 +14,9 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, me
 
     // Conditionally add mediaUrl to headerValues if it exists
     if (mediaUrl) {
-        payload.template.headerValues = [mediaUrl];
+        payload.template.headerValues = mediaUrl;
     }
-console.log(payload, 'here is the payload');
+    console.log(payload, 'here is the payload')
     try {
         const response = await fetch('https://api.interakt.ai/v1/public/message/', {
             method: 'POST',
