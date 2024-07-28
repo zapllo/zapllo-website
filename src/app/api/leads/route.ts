@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
         await sendEmail(emailOptions);
         const mediaUrl = "https://www.zapllo.com/logo.png";
         const templateName = 'leadenquirycontactus'
-        console.log(mediaUrl, templateName, 'media url & template name')
-        await sendWebhookNotification(mobNo, firstName, templateName, mediaUrl);
+        console.log(mediaUrl, templateName, 'media url & template name');
+        await sendWebhookNotification(mobNo, templateName, firstName, mediaUrl);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 
