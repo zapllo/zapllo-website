@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string | null, bodyVariables: string[]) => {
+const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string[] | null, bodyVariables: string[]) => {
     const payload: any = {
         countryCode: '+91',
         phoneNumber,
