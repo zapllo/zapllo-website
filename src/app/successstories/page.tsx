@@ -19,7 +19,6 @@ import { AnimatedFeatures3 } from '@/components/globals/features-animated3'
 import { AnimatedFeatures4 } from '@/components/globals/features-animated4'
 import GradientText from '@/components/magicui/gradient'
 
-
 export default function SuccessStories() {
     return (
         <main className=" bg-[#05071E] mx-auto  h-full z-10 overflow-hidden">

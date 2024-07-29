@@ -1,4 +1,5 @@
 import Category from "@/components/icons/category";
+import Clipboard from "@/components/icons/clipboard";
 import Logs from "@/components/icons/clipboard";
 import Templates from "@/components/icons/cloud_download";
 import Home from "@/components/icons/home";
@@ -8,14 +9,15 @@ import Tasks from "@/components/icons/tasks";
 import Workflows from "@/components/icons/workflows";
 import { DashboardIcon, GearIcon, CardStackIcon, CheckboxIcon, GridIcon, PersonIcon, PieChartIcon, } from "@radix-ui/react-icons";
 import { IconBrandTeams } from "@tabler/icons-react";
-import { IndianRupee, UserCheck2, UserPlus, Users, UsersIcon, UsersRound, UsersRoundIcon } from "lucide-react";
+import { HomeIcon, IndianRupee, UserCheck2, UserPlus, Users, UsersIcon, UsersRound, UsersRoundIcon } from "lucide-react";
 
 export const menuOptions = [
-  { name: "Dashboard", Component: GridIcon, href: "/dashboard" },
-  { name: "Tasks", Component: CheckboxIcon, href: "/dashboard/tasks" },
-  { name: "Teams", Component: PersonIcon, href: "/dashboard/teams" },
-  { name: "Settings", Component: GearIcon, href: "/dashboard/settings" },
-  { name: "Billing", Component: CardStackIcon, href: "/dashboard/billing" },
+  { name: "Dashboard", Component: Home, href: "/dashboard" },
+  { name: "Tasks", Component: Tasks, href: "/dashboard/tasks" },
+  { name: "Teams", Component: Category, href: "/dashboard/teams" },
+  { name: "Settings", Component: Settings, href: "/dashboard/settings" },
+  { name: "Billing", Component: Payment, href: "/dashboard/billing" },
+  { name: "Help", Component: Clipboard, href: "/dashboard/billing" },
 ];
 
 

@@ -47,11 +47,19 @@ const userSchema = new mongoose.Schema({
         email: { type: Boolean, default: true },
         whatsapp: { type: Boolean, default: true },
     },
+    isPro:{
+        type: Boolean,
+        default: false,
+    },
+    promotionNotification: {
+        type: Boolean,
+        default: false,
+    },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
     verifyTokenExpiry: Date,
-})
+}, { timestamps: true });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);
 

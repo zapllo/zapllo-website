@@ -9,6 +9,36 @@ import { getDataFromToken } from "@/helper/getDataFromToken";
 
 connectDB();
 
+
+const sendWebhookNotification = async (phoneNumber: string, templateName: string, mediaUrl: string, firstName: string, organizationName: string) => {
+  const payload = {
+    phoneNumber,
+    bodyVariables: [firstName, organizationName],
+    templateName,
+    mediaUrl,
+  };
+
+  try {
+    const response = await fetch('https://zapllo.com/api/webhook', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const responseData = await response.json();
+      throw new Error(`Webhook API error: ${responseData.message}`);
+    }
+    console.log('Webhook notification sent successfully:', payload);
+  } catch (error) {
+    console.error('Error sending webhook notification:', error);
+    throw new Error('Failed to send webhook notification');
+  }
+};
+
+
 export async function POST(request: NextRequest) {
   try {
     let authenticatedUser = null;
@@ -125,6 +155,8 @@ export async function POST(request: NextRequest) {
     }
 
     const savedUser = await newUser.save();
+    const organization = await Organization.findById(savedUser.organization);
+
 
     const emailOptions: SendEmailOptions = {
       to: email,
@@ -134,6 +166,10 @@ export async function POST(request: NextRequest) {
     };
 
     await sendEmail(emailOptions);
+    const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/w4B2cSkUyaf3/logo-02%204.png?se=2029-07-07T15%3A30%3A43Z&sp=rt&sv=2019-12-12&sr=b&sig=EtEFkVbZXLeBLJ%2B9pkZitby/%2BwJ4HzJkGgeT2%2BapgoQ%3D";
+    const templateName = 'loginsuccessadmin'
+    console.log(mediaUrl, templateName, 'media url & template name');
+    await sendWebhookNotification(whatsappNo, templateName, mediaUrl, savedUser.firstName, organization.companyName);
 
     return NextResponse.json({
       message: "User created successfully",

@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Book, Headphones, LogOutIcon, Search, User } from 'lucide-react'
+import { Bell, BellDot, Book, Headphones, LogOutIcon, Search, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
@@ -20,16 +20,18 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '../ui/button'
 import { ModeToggle } from '../globals/mode-toggle'
 import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
+import { BellIcon } from '@radix-ui/react-icons'
 
 type Props = {}
 
 const InfoBar = (props: Props) => {
   const router = useRouter();
+  const pathName = usePathname();
   const [firstName, setFirstName] = useState("User");
   const [lastName, setLastName] = useState("User");
   const [role, setRole] = useState("role");
@@ -82,19 +84,38 @@ const InfoBar = (props: Props) => {
     }
   }
 
+  const getPageTitle = () => {
+    if (pathName === '/dashboard') {
+      return 'Dashboard';
+    } else if (pathName === '/dashboard/tasks') {
+      return 'Task Management';
+    } else {
+      return '';
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-row justify-between gap-6 items-center px-4 py-4 w-full dark:bg-[#05071E] ">
+      <div className="flex flex-row justify-between gap-6 items-center px-4 py-4 w-full z-[20]   bg-[#0A0D28] ">
+        {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
         <div className='flex ml-4'>
-          <h1 className='text-xl font-bold mt-1'>Hello, {firstName} 👋 </h1>
+          <h1 className='text-xl  mt-1 bg-gradient-to-r font-bold  from-[#815BF5] via-[#FC8929] to-[#FC8929] text-transparent bg-clip-text'>{getPageTitle()} </h1>
         </div>
-        <div className="flex items-center gap-2 font-bold">
-          <h1 className='text-sm mt-2'>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1>
+        <div className="flex items-center gap-4 font-bold">
+          <h1 className='text-sm mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1>
           <Link href='/dashboard/billing'>
-            <Button className='h-7 bg-white text-black hover:text-white mt-1'>👑 Upgrade to Pro</Button>
+            <Button className='h-8 dark:bg-[#176BC9] text-xs text-white'>Upgrade Now</Button>
           </Link>
           <ModeToggle />
-          <TooltipProvider>
+          <Button
+
+            className='relative rounded-full bg-[#212561] p-2 h-10 w-10'
+            size="icon"
+          >
+            <img src='/icons/bell.png' className='' alt="Notification Bell" />
+            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border-2 border-red-500 "></span>
+          </Button>
+          {/* <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger>
                 <Headphones />
@@ -103,12 +124,26 @@ const InfoBar = (props: Props) => {
                 <p>Contact Support</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
+          <div className='flex gap-4'>
+            <div className='h-10  items-center cursor-pointer flex justify-center w-10 border bg-purple-500 rounded-full '>
+              {/* <User className='h-5 w-5' />
+               */}
+              <img src='/icons/avatar.png' />
+
+            </div>
+            <div>
+              <h1 className='text-[#fd8829] text-sm '>
+                {firstName}
+              </h1>
+              {role === "orgAdmin" ? <h1 className='absolute text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
+            </div>
+          </div>
+
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className='h-8 items-center cursor-pointer flex justify-center w-8 border bg-purple-500 rounded-full mt-1'>
-                <User className='h-5 w-5' />
-              </div>
+
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>{firstName} {lastName}

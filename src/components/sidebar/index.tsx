@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Tooltip,
   TooltipContent,
@@ -11,16 +12,25 @@ import {
 import { menuOptions } from '@/lib/constants'
 import clsx from 'clsx'
 import { Separator } from '@/components/ui/separator'
-import { Database, GitBranch, LucideMousePointerClick } from 'lucide-react'
+import { Database, GitBranch, LucideMousePointerClick, LogOut } from 'lucide-react'
 import axios from 'axios'
-// import { ModeToggle } from '../global/mode-toggle'
-// import { ModeToggle } from '../global/mode-toggle'
+import { IconLogout2 } from '@tabler/icons-react'
 
 type Props = {}
 
 const MenuOptions = (props: Props) => {
   const pathName = usePathname();
   const [role, setRole] = useState("");
+  const router = useRouter();
+
+  const logout = async () => {
+    try {
+      await axios.get('/api/users/logout');
+      router.push('/login')
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -36,32 +46,31 @@ const MenuOptions = (props: Props) => {
   });
 
   return (
-    <nav className=" dark:bg-[#05071E] h-screen  overflow-scroll scrollbar-hide  justify-between flex items-center flex-col rounded-b-full  gap-10 py-4 px-2">
+    <nav className="dark:bg-[#0A0D28] h-screen border-r-2 border-gray-800 overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-20">
+
       <div className="flex items-center justify-center flex-col gap-8">
-        <Link
-          className="flex font-bold flex-row "
-          href="/"
-        >
-          <img src='/Favicon.png' className='h-10 w-10' />
+        <Link className="flex font-bold p-4 w-full flex-row" href="/">
+          <img src='/icons/zapllo.png' className='h-full scale-125 ' />
         </Link>
+        {/* <img src='/icons/ellipse.png' className='absolute h-[80%] z-[100] -mt-80 opacity-40 ' /> */}
+
         <TooltipProvider>
           {filteredMenuOptions.map((menuItem) => (
             <ul key={menuItem.name}>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger>
-                  <li>
+                  <li className="cursor-pointer">
                     <Link
                       href={menuItem.href}
                       className={clsx(
-                        'group h-8 w-8 flex items-center justify-center  scale-[1.5] rounded-lg p-[3px]  cursor-pointer',
+                        'group h-8 w-8 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer',
                         {
-                          'dark:bg-gradient-to-r from-[#A587FF]  to-[#5E29FF]  bg-[#EEE0FF] ':
+                          'dark:bg-transparent border-[#6b6276] border bg-[#EEE0FF] ':
                             pathName === menuItem.href,
                         }
                       )}
                     >
-                      <menuItem.Component
-                      />
+                      <menuItem.Component selected={pathName === menuItem.href} />
                     </Link>
                   </li>
                 </TooltipTrigger>
@@ -75,39 +84,29 @@ const MenuOptions = (props: Props) => {
             </ul>
           ))}
         </TooltipProvider>
-        <Separator />
-        {/* <div className="flex items-center flex-col gap-9 dark:bg-[#353346]/30 py-4 px-2 rounded-full overflow-scroll scrollbar-hide border-[1px]">
-          <div className="relative dark:bg-[#353346]/70 p-2 rounded-full dark:border-t-[2px] border-[1px] dark:border-t-[#353346]">
-            <LucideMousePointerClick
-              className="dark:text-white"
-              size={18}
-            />
-            <div className="border-l-2 border-muted-foreground/50 h-6 absolute left-1/2 transform translate-x-[-50%] -bottom-[30px]" />
-          </div>
-          <div className="relative dark:bg-[#353346]/70 p-2 rounded-full dark:border-t-[2px] border-[1px] dark:border-t-[#353346]">
-            <GitBranch
-              className="text-muted-foreground"
-              size={18}
-            />
-            <div className="border-l-2 border-muted-foreground/50 h-6 absolute left-1/2 transform translate-x-[-50%] -bottom-[30px]"></div>
-          </div>
-          <div className="relative dark:bg-[#353346]/70 p-2 rounded-full dark:border-t-[2px] border-[1px] dark:border-t-[#353346]">
-            <Database
-              className="text-muted-foreground"
-              size={18}
-            />
-            <div className="border-l-2 border-muted-foreground/50 h-6 absolute left-1/2 transform translate-x-[-50%] -bottom-[30px]"></div>
-          </div>
-          <div className="relative dark:bg-[#353346]/70 p-2 rounded-full dark:border-t-[2px] border-[1px] dark:border-t-[#353346]">
-            <GitBranch
-              className="text-muted-foreground"
-              size={18}
-            />
-          </div>
-        </div> */}
+
       </div>
-      <div className="flex items-center justify-center flex-col gap-8">
-        {/* <ModeToggle /> */}
+      <div className="flex items-center justify-center  flex-col mt-8">
+        {/* Add logout icon here */}
+        <TooltipProvider>
+          <ul>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger>
+                <li className="cursor-pointer h-8 w-8" onClick={logout}>
+
+                  <IconLogout2 className='text-[#FD8829] text-3xl' />
+
+                </li>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-black/10 backdrop-blur-xl"
+              >
+                <p>Logout</p>
+              </TooltipContent>
+            </Tooltip>
+          </ul>
+        </TooltipProvider>
       </div>
     </nav>
   )

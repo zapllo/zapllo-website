@@ -4,8 +4,8 @@ type Props = { children: React.ReactNode }
 
 const Layout = ({ children }: Props) => {
     return (
-        <div className='border-l-[1px] border-t-[1px] pb-20 scrollbar-hide h-full w-full overflow-hidden rounded-l-3xl border-muted-foreground/20 overflow-y-scroll'>
-            <div className='w-full'>
+        <div className=' bg-[#0A0D28]  scrollbar-hide h-full w-full  border-muted-foreground/20 overflow overflow-x-hidden'>
+            <div className='w-full h-full overflow-x-hidden'>
                 {children}
             </div>
         </div>
