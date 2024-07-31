@@ -54,11 +54,16 @@ export async function POST(request: NextRequest) {
 
         const data = await request.json();
 
-        const newTask = new Task({
+        // Set default values for repeat and repeatType if not provided
+        const taskData = {
             ...data,
+            repeat: data.repeat ?? false,
+            repeatType: data.repeat ? data.repeatType : undefined,
             user: userId,
             organization: authenticatedUser.organization,
-        });
+        };
+
+        const newTask = new Task(taskData);
 
         const savedTask = await newTask.save();
         const taskUser = await User.findById(savedTask.user);
@@ -106,10 +111,11 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             message: "Task created successfully",
-            data: savedTask,
-        });
+            task: savedTask,
+        }, { status: 201 });
 
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        console.error("Error creating task:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

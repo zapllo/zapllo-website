@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
 
         const tokenData = {
             id: user._id,
-            username: user.username,
             email: user.email
         }
 
@@ -47,16 +46,21 @@ export async function POST(request: NextRequest) {
             data: user,
         })
         console.log(user, 'user')
-        
+
 
         // Set the token as an HTTP-only cookie
         response.cookies.set("token", token, {
-            httpOnly: true,
-        })
+            httpOnly: true,  // This makes the cookie inaccessible to client-side JavaScript
+            secure: process.env.NODE_ENV === "production",  // Ensures the cookie is only sent over HTTPS in production
+            sameSite: "strict",  // Prevents the cookie from being sent along with cross-site requests
+            maxAge: 24 * 60 * 60,  // The duration (in seconds) for which the cookie will be valid (1 day here)
+            path: "/",  // The path scope of the cookie
+        });
+
 
         return response;
 
-        
+
 
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })

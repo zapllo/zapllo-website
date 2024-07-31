@@ -13,6 +13,7 @@ import Cookies from "js-cookie";
 import { Toaster, toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Home from "@/components/icons/home";
+import Loader from "@/components/ui/loader"; // Import the Loader component
 
 export default function LoginPage() {
     const router = useRouter();
@@ -20,7 +21,7 @@ export default function LoginPage() {
     const [user, setUser] = React.useState({
         email: "",
         password: "",
-    })
+    });
 
     const onLogin = async () => {
         try {
@@ -28,89 +29,90 @@ export default function LoginPage() {
             const response = await axios.post("/api/users/login", user);
             if (response.status === 200) {
                 Cookies.set("token", response.data.token);
-                router.push("/dashboard");
+                router.replace("/dashboard");
             }
-
         } catch (error: any) {
             console.log("Login failed", error.message);
             toast.error("Invalid credentials"); // Display error toast
         } finally {
             setLoading(false);
         }
-    }
-    return (<>
-        <div className="relative flex  bg-[#04071F] h-screen  items-center justify-center overflow-hidden rounded-lg  bg-background  md:shadow-xl">
-            <div className="z-10 bg-[#04071F]">
-                <Meteors number={30} />
-            </div>
+    };
 
-
-            <div className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-
-
-                <div className="flex justify-center">
-                    <img src='/logo.png' className="h-7 " />
-
-
+    return (
+        <>
+            <div className="relative flex bg-[#211123] h-screen items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
+                <div className="z-10 bg-[#211123]">
+                    <Meteors number={30} />
                 </div>
-                <p className="text-neutral-600 text-sm font-bold text-center max-w-sm mt-2 dark:text-neutral-300">
-                    Get Started
-                </p>
-
-                <div className="my-8" >
-
-                    <LabelInputContainer className="mb-4">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            className=" "
-                            value={user.email}
-                            onChange={(e) => setUser({ ...user, email: e.target.value })}
-                            placeholder="example@gmail.com"
-                        />
-                    </LabelInputContainer>
-                    <LabelInputContainer className="mb-4">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" placeholder="••••••••" value={user.password}
-                            onChange={(e) => setUser({ ...user, password: e.target.value })} type="password" />
-                    </LabelInputContainer>
-                    <button
-                        className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-                        type="submit"
-                        onClick={onLogin}
-                    >
-                        {loading ? "Logging in..." : "Login →"}
-                        <BottomGradient />
-                    </button>
-                    <div className="p-4 flex justify-center">
-                        <Link href="/signup" className="text-center hover:underline mt-2">Not a <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold">Zapllonian
-                        </span>? Register Here</Link>
+                <div className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+                    <div className="flex justify-center">
+                        <img src='/logo.png' className="h-7 " />
                     </div>
-                    <div className="text-center ">
-                        <Link href="/dashboard/forgetPassword" className="hover:underline">
-                            Forgot your password?
-                        </Link>
+                    <p className="text-neutral-600 text-sm font-bold text-center max-w-sm mt-2 dark:text-neutral-300">
+                        Get Started
+                    </p>
+                    <div className="my-8">
+                        <LabelInputContainer className="mb-4">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                className=" "
+                                value={user.email}
+                                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                                placeholder="example@gmail.com"
+                            />
+                        </LabelInputContainer>
+                        <LabelInputContainer className="mb-4">
+                            <Label htmlFor="password">Password</Label>
+                            <Input
+                                id="password"
+                                placeholder="••••••••"
+                                value={user.password}
+                                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                                type="password"
+                            />
+                        </LabelInputContainer>
+                        <button
+                            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                            type="submit"
+                            onClick={onLogin}
+                        >
+                            {loading ? <Loader /> : "Login →"}
+                            <BottomGradient />
+                        </button>
+                        <div className="p-4 flex justify-center">
+                            <Link href="/signup" className="text-center hover:underline mt-2">
+                                Not a <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold">Zapllonian</span>? Register Here
+                            </Link>
+                        </div>
+                        <div className="text-center ">
+                            <Link href="/dashboard/forgetPassword" className="hover:underline">
+                                Forgot your password?
+                            </Link>
+                        </div>
+                        <p className="text-xs text-center mt-2">
+                            By clicking continue, you agree to our{" "}
+                            <a href="/terms" className="underline">
+                                Terms of Service
+                            </a>{" "}
+                            and{" "}
+                            <a href="/privacypolicy" className="underline">
+                                Privacy Policy
+                            </a>.
+                        </p>
+                        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
+                        <div className="flex justify-center gap-2">
+                            <Home selected />
+                            <Link href='/'>
+                                <h1 className="hover:underline cursor-pointer">Back to Home</h1>
+                            </Link>
+                        </div>
                     </div>
-                    <p className="text-xs text-center mt-2">By clicking continue, you agree to our <a href="/terms" className="underline">
-                        Terms of Service
-                    </a> and <a href="/privacypolicy" className="underline">
-                            Privacy Policy
-                        </a>.</p>
-                    <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-                    <div className="flex justify-center gap-2">
-                        <Home selected />
-                        <Link href='/'>
-
-                            <h1 className="hover:underline cursor-pointer">Back to Home</h1>
-                        </Link>
-                    </div>
-
                 </div>
             </div>
-        </div>
-    </>
-
+        </>
     );
 }
 

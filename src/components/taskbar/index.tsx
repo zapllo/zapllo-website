@@ -21,7 +21,7 @@ const TaskOptions = (props: Props) => {
     const pathName = usePathname()
 
     return (
-        <nav className=" dark:bg-[#05071E] w-64 h-screen  overflow-scroll scrollbar-hide  justify- flex items- flex-col rounded-b-none   gap-10 py-4 justify-start">
+        <nav className=" dark:bg-[#211124] w-64 h-screen  overflow-scroll scrollbar-hide  justify- flex items- flex-col rounded-b-none   gap-10 py-4 justify-start">
             <div className="flex ml-5 mt-4 -center justify-center flex-col gap-8">
                 {/* <Link
                     className="flex font-bold flex-row "
@@ -31,7 +31,7 @@ const TaskOptions = (props: Props) => {
                 </Link> */}
                 {taskOptions.map((menuItem) => (
                     <ul className={
-                        `${pathName === menuItem.href ? "bg-gradient-to-r from-[#A587FF]  to-[#5E29FF] font-bold  rounded-md p-2 px-4" : ""}   bg- rounded-md p-2 ':
+                        `${pathName === menuItem.href ? "bg-[#74517A] font-bold  rounded-md p-2 px-4" : ""}   bg- rounded-md p-2 ':
                            ,
                     `} key={menuItem.name}>
 

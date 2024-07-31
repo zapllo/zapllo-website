@@ -34,6 +34,8 @@ import CustomDatePicker from './date-picker';
 import CustomTimePicker from './time-picker';
 import { Separator } from '../ui/separator';
 import axios from 'axios';
+import { toast, Toaster } from 'sonner';
+import Loader from '../ui/loader';
 
 
 interface TaskModalProps {
@@ -89,6 +91,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioURLRef = useRef<string | null>(null);
     const [role, setRole] = useState("");
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleSwitchChange = (event: any) => {
         setAssignMoreTasks(event.target.checked);
@@ -269,6 +272,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             alert('Due date and time are required.');
             return; // Stop execution if validation fails
         }
+        setLoading(true);
         const taskData = {
             title,
             description,
@@ -297,7 +301,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
             if (response.ok) {
                 console.log('Task Assigned:', result);
-
+                setLoading(false);
+                toast.success("Task created Successfuly!!");
                 if (assignMoreTasks) {
                     // Clear fields when "Assign More Tasks" is checked
                     setTitle("");
@@ -317,9 +322,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 }
             } else {
                 console.error('Error assigning task:', result.error);
+                // toast.error("Error:", result.error);
+                toast.error("Please provide all fields");
+
+
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error assigning task:', error);
+            toast.error(error);
+
         }
     };
 
@@ -379,18 +390,19 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 rounded-xl flex justify-center items-center">
-            <div className="bg-black text-white w-[40%] rounded-lg p-8">
+        <div className="fixed inset-0 bg-black -900 bg-opacity-50 rounded-xl flex justify-center items-center">
+            <Toaster />
+            <div className="bg-[#1A1D21] text-[#D0D3D3] w-[40%] rounded-lg p-8">
                 <h2 className="text-lg font-bold mb-4">Create New Task</h2>
                 <form className="text-sm">
                     <div className='grid grid-cols-1 gap-4'>
                         <div className="">
-                            <Label htmlFor="title" className="block text-white font-semibold">Title</Label>
-                            <Input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full border rounded px-3 py-2" />
+                            <Label htmlFor="title" className="block text-[#D0D3D3] font-semibold">Title</Label>
+                            <input type="text" placeholder='Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#755178] bg-transparent border border-[#505356]  mt-1 rounded-md px-3 py-2" />
                         </div>
                         <div className="mb-4">
                             <Label htmlFor="description" className="block font-semibold">Description</Label>
-                            <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border rounded px-3 py-2"></Textarea>
+                            <Textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-transparent border border-[#505356]  mt-1 rounded-md px-3 py-3"></Textarea>
                         </div>
                     </div>
                     <div className='grid-cols-2 gap-4 grid'>
@@ -477,7 +489,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </div>
                     </div>
                     <div className="">
-                        <div className="mb-4 bg-gray-900  rounded-md p-2 flex gap-4 mta">
+                        <div className="mb-4   rounded-md p-2 flex gap-4 mta">
                             <label className=" items-center mt-auto  font-semibold mb-4">
                                 <div className='flex gap-2'>
                                     <FlagIcon className='h-5' />
@@ -490,7 +502,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                     <label
                                         key={level}
                                         className={`px-4 py-2 rounded--xl font-semibold cursor-pointer ${priority === level
-                                            ? 'bg-primary text-white'
+                                            ? 'bg-[#017A5B]  text-white'
                                             : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                             }`}
                                     >
@@ -592,7 +604,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Button
                             type="button"
                             onClick={() => setIsDateTimeModalOpen(true)}
-                            className=" border rounded px-3 py-2"
+                            className=" border rounded bg-[#017A5B]  px-3 py-2"
                         >
                             {dueDate && dueTime
                                 ? `${format(dueDate, "PPP")} ${dueTime}`
@@ -684,16 +696,16 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
                     </div> */}
                     <div className='flex gap-4'>
-                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
                             <Link className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsAttachmentModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                        <div onClick={() => { setIsAttachmentModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
                             <Paperclip className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                        <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
                             <Clock className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-primary'>
+                        <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div>
                     </div>
@@ -781,7 +793,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </DialogContent>
                     </Dialog>
                     <div className="flex justify-end">
-                        <Button type="button" onClick={handleAssignTask} className="bg-blue-500 text-white px-4 py-2 rounded">Assign Task</Button>
+                        <Button type="button" onClick={handleAssignTask} className="bg-[#7C3886] selection:-500 text-white px-4 py-2 rounded">   {loading ? <Loader /> : "Assign Task →"}</Button>
                         <Button type="button" onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</Button>
                     </div>
                 </form>

@@ -46,7 +46,7 @@ const MenuOptions = (props: Props) => {
   });
 
   return (
-    <nav className="dark:bg-[#0A0D28] h-screen border-r-2 border-gray-800 overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-20">
+    <nav className="dark:bg-[#380E3D] h-screen border-r border-[#4F2F51] overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-20">
 
       <div className="flex items-center justify-center flex-col gap-8">
         <Link className="flex font-bold p-4 w-full flex-row" href="/">

@@ -89,27 +89,34 @@ const InfoBar = (props: Props) => {
       return 'Dashboard';
     } else if (pathName === '/dashboard/tasks') {
       return 'Task Management';
-    } else {
-      return '';
+    } else if (pathName === '/dashboard/teams') {
+      return 'Teams';
+    }
+    else if (pathName === '/dashboard/settings') {
+      return 'Settings';
+    } else if (pathName === '/dashboard/settings/categories') {
+      return 'Categories';
+    } else if (pathName === '/dashboard/billing') {
+      return 'Billing';
     }
   };
 
   return (
     <>
-      <div className="flex flex-row justify-between gap-6 items-center px-4 py-4 w-full z-[20]   bg-[#0A0D28] ">
+      <div className="flex flex-row justify-between gap-6 items-center px-4 py-4 w-full z-[20]   bg-[#211025] ">
         {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
         <div className='flex ml-4'>
-          <h1 className='text-xl  mt-1 bg-gradient-to-r font-bold  from-[#815BF5] via-[#FC8929] to-[#FC8929] text-transparent bg-clip-text'>{getPageTitle()} </h1>
+          <h1 className='text-xl  mt-1  text-white font-bold'>{getPageTitle()} </h1>
         </div>
         <div className="flex items-center gap-4 font-bold">
           <h1 className='text-sm mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1>
           <Link href='/dashboard/billing'>
-            <Button className='h-8 dark:bg-[#176BC9] text-xs text-white'>Upgrade Now</Button>
+            <Button className='h-8 dark:bg-[#007A5A] text-xs text-white'>Upgrade Now</Button>
           </Link>
           <ModeToggle />
           <Button
 
-            className='relative rounded-full bg-[#212561] p-2 h-10 w-10'
+            className='relative rounded-full bg-[#75517B] p-2 h-10 w-10'
             size="icon"
           >
             <img src='/icons/bell.png' className='' alt="Notification Bell" />
@@ -125,26 +132,25 @@ const InfoBar = (props: Props) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider> */}
-          <div className='flex gap-4'>
-            <div className='h-10  items-center cursor-pointer flex justify-center w-10 border bg-purple-500 rounded-full '>
-              {/* <User className='h-5 w-5' />
-               */}
-              <img src='/icons/avatar.png' />
-
-            </div>
-            <div>
-              <h1 className='text-[#fd8829] text-sm '>
-                {firstName}
-              </h1>
-              {role === "orgAdmin" ? <h1 className='absolute text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
-            </div>
-          </div>
-
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-
+            <div className='flex gap-4'>
+              <div className='h-10  items-center cursor-pointer flex justify-center w-10 border bg-[#75517B] -500 rounded-full '>
+                {/* <User className='h-5 w-5' />
+               */}
+              
+              {`${firstName}`.slice(0,1)}
+              </div>
+              <div>
+                <h1 className='text-[#fd8829] text-sm '>
+                  {firstName}
+                </h1>
+                {role === "orgAdmin" ? <h1 className='absolute text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
+              </div>
+            </div>
             </DropdownMenuTrigger>
+           
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>{firstName} {lastName}
                 <p className='text-xs text-gray-400 capitalize'>Team {role}</p>

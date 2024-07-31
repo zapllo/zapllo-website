@@ -13,7 +13,6 @@ enum Status {
     Reopen = 'Reopen',
 }
 
-
 // Define an interface for the Task document
 export interface ITask extends Document {
     title: string;
@@ -22,7 +21,7 @@ export interface ITask extends Document {
     assignedUser: mongoose.Types.ObjectId;
     category?: mongoose.Types.ObjectId;
     priority: 'High' | 'Medium' | 'Low';
-    repeatType: RepeatType;
+    repeatType?: RepeatType;
     repeat: boolean;
     days?: Array<'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'>;
     dates?: number[]; // Assuming dates are numbers 1-31 for monthly
@@ -132,6 +131,14 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
     }],
 }, {
     timestamps: true,
+});
+
+// Pre-save middleware to remove repeatType if repeat is false
+taskSchema.pre<ITask>('save', function (next) {
+    if (!this.repeat) {
+        this.repeatType = undefined;
+    }
+    next();
 });
 
 // Define and export the Task model

@@ -21,8 +21,8 @@ const Categories: React.FC = () => {
     const [editCategoryName, setEditCategoryName] = useState<string>('');
     const [role, setRole] = useState("role");
     const [isTrialExpired, setIsTrialExpired] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    
 
     useEffect(() => {
         // Fetch categories from the server
@@ -42,9 +42,12 @@ const Categories: React.FC = () => {
         fetchCategories();
     }, []);
 
-    console.log(categories, 'categories??????')
+    console.log(categories, 'categories??????');
+
     const handleCreateCategory = async () => {
         if (!newCategory) return;
+
+        setLoading(true);
 
         try {
             const response = await axios.post('/api/category/create', { name: newCategory });
@@ -54,6 +57,8 @@ const Categories: React.FC = () => {
                 setCategories([...categories, response.data.data]);
                 // Clear the new category input
                 setNewCategory('');
+                setLoading(false);
+
             } else {
                 console.error('Error creating category:', response.data.error);
             }
@@ -141,7 +146,7 @@ const Categories: React.FC = () => {
                                 onClick={handleCreateCategory}
                                 className="ml-2   px-3 py-2 bg-primary text-white rounded"
                             >
-                                Create
+                                {loading ? 'Creating...' : 'Create'}
                             </button>
                         </div>
 
