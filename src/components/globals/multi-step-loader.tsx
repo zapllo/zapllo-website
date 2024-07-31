@@ -2,7 +2,7 @@
 
 // Layout.tsx
 import { useEffect, useState } from "react";
-import { MultiStepLoader as Loader } from "../ui/loader";
+// import { MultiStepLoader as Loader } from "../ui/loader";
 import { usePathname, useSearchParams } from "next/navigation";
 
 interface LoadingState {
@@ -38,7 +38,7 @@ const LoaderLayout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <div>
-            <Loader loadingStates={loadingStates} loading={loading} />
+            {/* <Loader loadingStates={loadingStates} loading={loading} /> */}
             {children}
         </div>
     );
