@@ -65,7 +65,7 @@ const MenuOptions = (props: Props) => {
                       className={clsx(
                         'group h-8 w-8 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer',
                         {
-                          'dark:bg-transparent border-[#6b6276] border bg-[#EEE0FF] ':
+                          ' bg-[#74517A]   ':
                             pathName === menuItem.href,
                         }
                       )}

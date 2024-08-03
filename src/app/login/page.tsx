@@ -14,6 +14,7 @@ import { Toaster, toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Home from "@/components/icons/home";
 import Loader from "@/components/ui/loader"; // Import the Loader component
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();

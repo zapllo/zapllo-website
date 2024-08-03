@@ -1,6 +1,7 @@
 import connectDB from "@/lib/db";
 import Task from "@/models/taskModal";
 import User from "@/models/userModel";
+import Category from "@/models/categoryModel"; // Ensure this import is correct
 import { NextRequest, NextResponse } from "next/server";
 import { getDataFromToken } from "@/helper/getDataFromToken";
 
@@ -20,7 +21,10 @@ export async function GET(request: NextRequest) {
         // Fetch tasks where the user's organization field matches the authenticated user's organization field
         const tasks = await Task.find({
             organization: authenticatedUser.organization
-        }).populate('user assignedUser');
+        }).populate('user assignedUser').populate({
+            path: 'category',
+            select: 'name', // Only include the category name
+        });
 
         return NextResponse.json({
             message: "Tasks fetched successfully",

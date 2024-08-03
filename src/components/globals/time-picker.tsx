@@ -49,10 +49,10 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ selectedTime, onTim
   };
 
   return (
-    <div className="flex flex-col bg-white p-4 rounded-md items-center space-y-4">
-      <div className={`bg-white p-4 flex rounded-lg shadow-md w-full max-w-full ${isClockVisible ? 'justify-between' : 'justify-center'}`}>
-        <div className={`${isClockVisible ? 'mt-6' : 'mt-0'}`}>
-          <label className="block text-gray-700 font-bold mb-2">Select Time</label>
+    <div className="flex flex-col  p-4 rounded-md items-center space-y-2">
+      <div className={` p-4 flex rounded-lg shadow-md w-full max-w-full justify-center`}>
+        <div className={`mt-2`}>
+          <label className="block text-white -700 font-bold mb-2">Select Time</label>
           <input
             type="time"
             value={selectedTime || '12:00'}
@@ -66,23 +66,10 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ selectedTime, onTim
           animate={{ opacity: isClockVisible ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Clock
-            value={clockTime}
-            // onChange={handleClockChange}
-            // renderHour={() => <div className="text-gray-700 text-xl">H</div>}
-            // renderMinute={() => <div className="text-gray-700 text-xl">M</div>}
-          />
+
         </motion.div>
       </div>
-      <div>
-        <button
-          type="button"
-          onClick={toggleClockVisibility}
-          className="text-black rounded-lg px-4 py-2 transition-colors focus:outline-none hover:shadow-lg shadow-black"
-        >
-          {isClockVisible ? 'Hide Clock' : <KeyboardIcon />}
-        </button>
-      </div>
+
     </div>
   );
 };

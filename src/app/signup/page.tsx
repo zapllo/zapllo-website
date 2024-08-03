@@ -14,6 +14,7 @@ import { Toaster, toast } from "sonner";
 import Home from "@/components/icons/home";
 import { Textarea } from "@/components/ui/textarea";
 import { businessCategories } from "@/lib/constants";
+import { ArrowLeft } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -87,6 +88,11 @@ export default function SignupPage() {
         <Toaster />
 
         <div className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+          {showOrganizationForm ? (
+            <ArrowLeft onClick={() => setShowOrganizationForm(false)} className="cursor-pointer" />
+          ) : (
+            <h1></h1>
+          )}
           <div className="flex justify-center">
             <img src="/logo.png" className="h-7 " />
           </div>
@@ -152,11 +158,12 @@ export default function SignupPage() {
                   <option value="" disabled>
                     Select Team Size
                   </option>
-                  <option value="1-50">1-50</option>
-                  <option value="51-100">51-100</option>
-                  <option value="101-500">101-500</option>
-                  <option value="501-1000">501-1000</option>
-                  <option value="1000+">1000+</option>
+                  <option value="1-5">1-5</option>
+                  <option value="5-10">5-10</option>
+                  <option value="10-15">10-15</option>
+                  <option value="15-20">15-20</option>
+                  <option value="20-25">20-25</option>
+                  <option value="25+">25+</option>
                 </select>
               </LabelInputContainer>
               <LabelInputContainer className="mb-8">
@@ -182,11 +189,10 @@ export default function SignupPage() {
                     <span
                       onClick={() => handlenOnCategorySelect(category)}
                       key={category}
-                      className={`px-1 text-sm py-1 text-center font-medium cursor-pointer rounded-xl bg-gray-300 ${
-                        organization.categories.includes(category)
-                          ? "bg-green-500 text-white"
-                          : "text-gray-600"
-                      }`}
+                      className={`px-1 text-sm py-1 text-center text-white font-medium cursor-pointer rounded-xl bg-[#28152E] -300 ${organization.categories.includes(category)
+                        ? "bg-[#7C3987] text-white"
+                        : "text-gray-600"
+                        }`}
                     >
                       {category}
                     </span>
@@ -205,8 +211,8 @@ export default function SignupPage() {
                 {loading
                   ? "Signing up..."
                   : showOrganizationForm
-                  ? "Sign up →"
-                  : "Next →"}
+                    ? "Sign up →"
+                    : "Next →"}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">
@@ -315,8 +321,8 @@ export default function SignupPage() {
                 {loading
                   ? "Signing up..."
                   : showOrganizationForm
-                  ? "Sign up →"
-                  : "Next →"}
+                    ? "Sign up →"
+                    : "Next →"}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">

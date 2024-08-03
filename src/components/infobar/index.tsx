@@ -103,7 +103,7 @@ const InfoBar = (props: Props) => {
 
   return (
     <>
-      <div className="flex flex-row justify-between gap-6 items-center px-4 py-4 w-full z-[20]   bg-[#211025] ">
+      <div className="flex flex-row justify-between gap-6 border-b items-center px-4 py-4 w-full z-[20]   bg-[#211025] ">
         {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
         <div className='flex ml-4'>
           <h1 className='text-xl  mt-1  text-white font-bold'>{getPageTitle()} </h1>
@@ -146,7 +146,7 @@ const InfoBar = (props: Props) => {
                 <h1 className='text-[#fd8829] text-sm '>
                   {firstName}
                 </h1>
-                {role === "orgAdmin" ? <h1 className='absolute text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
+                {role === "orgAdmin" ? <h1 className=' text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
               </div>
             </div>
             </DropdownMenuTrigger>

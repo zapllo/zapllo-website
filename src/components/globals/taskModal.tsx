@@ -27,7 +27,7 @@ import {
 } from "@radix-ui/react-icons";
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mic, Paperclip, Repeat } from 'lucide-react';
+import { CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { format } from 'date-fns';
 import CustomDatePicker from './date-picker';
@@ -36,6 +36,10 @@ import { Separator } from '../ui/separator';
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
 import Loader from '../ui/loader';
+import { Toggle } from '../ui/toggle';
+import Select, { StylesConfig } from 'react-select';
+import { Switch } from '../ui/switch';
+
 
 
 interface TaskModalProps {
@@ -92,6 +96,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const audioURLRef = useRef<string | null>(null);
     const [role, setRole] = useState("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [audioURL, setAudioURL] = useState('');
 
     const handleSwitchChange = (event: any) => {
         setAssignMoreTasks(event.target.checked);
@@ -216,6 +221,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             }
         });
     };
+
+    console.log(days, 'days!!')
 
     useEffect(() => {
         // Fetch categories from the server
@@ -352,64 +359,123 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setCategoryOpen(false);
     };
 
-    const handleCheckboxChange = (event: any) => {
-        const checked = event.target.checked;
+    const handleCheckboxChange = (checked: any) => {
         setAssignMoreTasks(checked);
     };
 
-
+    const canvasRef = useRef(null);
+    const analyserRef = useRef(null);
+  
+    useEffect(() => {
+      if (audioBlob) {
+        const audioURL = URL.createObjectURL(audioBlob);
+        setAudioURL(audioURL);
+      }
+    }, [audioBlob]);
+  
     const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start();
-            setRecording(true);
-
-            mediaRecorder.ondataavailable = (event: BlobEvent) => {
-                if (event.data.size > 0) {
-                    const blob = new Blob([event.data], { type: 'audio/wav' });
-                    setAudioBlob(blob);
-                    const audioURL = URL.createObjectURL(blob);
-                    audioURLRef.current = audioURL; // Assign audioURL to audioURLRef.current
-                }
-            };
-
-            mediaRecorder.onstop = () => {
-                setRecording(false);
-            };
-
-            mediaRecorderRef.current = mediaRecorder; // Correctly assign the MediaRecorder instance to the ref
-        } catch (error) {
-            console.error('Error accessing microphone:', error);
-        }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+        analyser.fftSize = 2048;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        analyserRef.current = analyser;
+  
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            const blob = new Blob([event.data], { type: 'audio/wav' });
+            setAudioBlob(blob);
+            const audioURL = URL.createObjectURL(blob);
+            audioURLRef.current = audioURL;
+          }
+        };
+  
+        mediaRecorder.onstop = () => {
+          setRecording(false);
+        };
+  
+        mediaRecorder.start();
+        setRecording(true);
+  
+        // Real-time waveform visualization
+        const canvas = canvasRef.current;
+        const canvasCtx = canvas.getContext('2d');
+  
+        const drawWaveform = () => {
+          if (analyserRef.current) {
+            requestAnimationFrame(drawWaveform);
+            analyserRef.current.getByteTimeDomainData(dataArray);
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = 'green';
+            canvasCtx.beginPath();
+  
+            const sliceWidth = canvas.width * 1.0 / bufferLength;
+            let x = 0;
+  
+            for (let i = 0; i < bufferLength; i++) {
+              const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
+              const y = v * canvas.height / 2; // Convert to canvas height
+  
+              if (i === 0) {
+                canvasCtx.moveTo(x, y);
+              } else {
+                canvasCtx.lineTo(x, y);
+              }
+  
+              x += sliceWidth;
+            }
+  
+            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+            canvasCtx.stroke();
+          }
+        };
+  
+        drawWaveform();
+  
+        mediaRecorderRef.current = mediaRecorder;
+      } catch (error) {
+        console.error('Error accessing microphone:', error);
+      }
     };
-
+  
     const stopRecording = () => {
-        mediaRecorderRef.current?.stop();
+      mediaRecorderRef.current?.stop();
     };
+  
 
 
     return (
-        <div className="fixed inset-0 bg-black -900 bg-opacity-50 rounded-xl flex justify-center items-center">
+        <div className="absolute   inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
             <Toaster />
-            <div className="bg-[#1A1D21] text-[#D0D3D3] w-[40%] rounded-lg p-8">
-                <h2 className="text-lg font-bold mb-4">Create New Task</h2>
-                <form className="text-sm">
+
+            <div className="bg-[#1A1C20] z-[100] text-[#D0D3D3] w-[40%] rounded-lg p-8">
+                <div className='flex justify-between'>
+                    <h2 className="text-xl font-bold mb-6 -mt-4  ">Assign New Task</h2>
+                    <img className='cursor-pointer -mt-2 h-fit' src='/icons/x.png' onClick={closeModal} />
+                </div>
+
+                <form className="text-sm space-y-4 overflow-y-scroll scrollbar-hide h-full max-h-xl">
                     <div className='grid grid-cols-1 gap-4'>
                         <div className="">
                             <Label htmlFor="title" className="block text-[#D0D3D3] font-semibold">Title</Label>
-                            <input type="text" placeholder='Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#755178] bg-transparent border border-[#505356]  mt-1 rounded-md px-3 py-2" />
+                            <input type="text" placeholder='Task Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#755178] bg-[#292d33] border border-[#505356]  mt-1 rounded-md px-3 py-2" />
                         </div>
                         <div className="mb-4">
                             <Label htmlFor="description" className="block font-semibold">Description</Label>
-                            <Textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-transparent border border-[#505356]  mt-1 rounded-md px-3 py-3"></Textarea>
+                            <Textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-[#292d33] border border-[#505356]   mt-1 rounded-md px-3 py-3"></Textarea>
                         </div>
                     </div>
                     <div className='grid-cols-2 gap-4 grid'>
                         <div>
                             <button
                                 type="button"
-                                className="p-2 flex justify-between w-full text-start border rounded"
+                                className="p-2 flex justify-between border border-[#505356]  bg-[#292d33] w-full text-start  rounded"
                                 onClick={handleOpen}
                             >
                                 {popoverInputValue ? popoverInputValue : "Select User"}
@@ -463,7 +529,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             <div>
                                 <button
                                     type="button"
-                                    className="p-2 flex justify-between w-full text-start border rounded"
+                                    className="p-2 flex border border-[#505356]  bg-[#292d33] justify-between w-full text-start  rounded"
                                     onClick={handleCategoryOpen}
                                 >
                                     {popoverCategoryInputValue ? popoverCategoryInputValue : "Select Category"}
@@ -488,76 +554,77 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
                         </div>
                     </div>
-                    <div className="">
-                        <div className="mb-4   rounded-md p-2 flex gap-4 mta">
-                            <label className=" items-center mt-auto  font-semibold mb-4">
-                                <div className='flex gap-2'>
-                                    <FlagIcon className='h-5' />
+                    <div className=" flex justify-between">
+                        <div className="mb-4   rounded-md  flex gap-4 mta">
+
+
+
+                            <div className=' gap-2 '>
+                                <div className='flex gap-2 text-white font-bold'>
+                                    {/* <FlagIcon className='h-5' /> */}
                                     Priority
                                 </div>
-
-                            </label>
-                            <div className="flex ">
-                                {['High', 'Medium', 'Low'].map((level) => (
-                                    <label
-                                        key={level}
-                                        className={`px-4 py-2 rounded--xl font-semibold cursor-pointer ${priority === level
-                                            ? 'bg-[#017A5B]  text-white'
-                                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                            }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="priority"
-                                            value={level}
-                                            checked={priority === level}
-                                            onChange={() => setPriority(level)}
-                                            className="hidden"
-                                        />
-                                        {level}
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mb-4 flex justify-between">
-                        <div className="flex gap-2 items-center mb-2">
-                            <Repeat className='h-4' />
-                            <Label htmlFor="repeat" className="font-semibold">Repeat</Label>
-                            <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-5" />
-                        </div>
-
-                        {repeat && (
-                            <div>
-                                <div className="mb-4">
-                                    {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
-                                    <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full border rounded px-3 py-2">
-                                        <option value="">Select Repeat Type</option>
-                                        <option value="Daily">Daily</option>
-                                        <option value="Weekly">Weekly</option>
-                                        <option value="Monthly">Monthly</option>
-                                    </select>
+                                <div className=" mt-4 rounded-lg">
+                                    {['High', 'Medium', 'Low'].map((level) => (
+                                        <label
+                                            key={level}
+                                            className={`px-4 py-2   border border-[#505356]   font-semibold cursor-pointer ${priority === level
+                                                ? 'bg-[#017A5B]  text-white'
+                                                : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
+                                                }`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="priority"
+                                                value={level}
+                                                checked={priority === level}
+                                                onChange={() => setPriority(level)}
+                                                className="hidden"
+                                            />
+                                            {level}
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
-                        )}
+                        </div>
+                        <div className="-mt-2  justify-between">
+                            <div className="flex gap-2 items-center ">
+                                <Repeat className='h-4' />
+                                <Label htmlFor="repeat" className="font-semibold ">Repeat</Label>
+                                <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 scale-125 h-10" />
+                            </div>
+                            <div>
+                                {repeat && (
+                                    <div>
+                                        <div className="bg-[#282d32]">
+                                            {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
+                                            <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full bg-[#292d33] border rounded px-3 py-2">
+                                                <option value="bg-[#292D33]">Select Repeat Type</option>
+                                                <option value="Daily">Daily</option>
+                                                <option value="Weekly">Weekly</option>
+                                                <option value="Monthly">Monthly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
 
                     </div>
-                    {repeatType === 'Weekly' && (
+                    {repeatType === 'Weekly' && repeat && (
                         <div className="mb-4 ">
                             <Label className="block font-semibold mb-2">Select Days</Label>
-                            <div className="grid grid-cols-7 bg-gray-800 p-2 rounded ">
+                            <div className="grid grid-cols-7  p-2 rounded ">
                                 {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                                    <div key={day} className="flex  items-center">
-                                        <input
-                                            type="checkbox"
-                                            id={day}
-                                            value={day}
-                                            checked={days.includes(day)}
-                                            onChange={() => handleDaysChange(day)}
-                                            className="mr-2"
-                                        />
-                                        <Label htmlFor={day} className="font-semibold">{day.slice(0, 3)}</Label>
+                                    <div key={day} className="flex gap-2 cursor-pointer items-center">
+                                        <Toggle
+                                            variant="outline"
+                                            aria-label={`${day}`}
+                                            onClick={() => handleDaysChange(day)}
+                                            className={days.includes(day) ? " text-white cursor-pointer" : "text-black cursor-pointer"}>
+                                            <Label htmlFor={day} className="font-semibold cursor-pointer ">{day.slice(0, 1)}</Label>
+                                        </Toggle>
                                     </div>
                                 ))}
                             </div>
@@ -604,22 +671,21 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Button
                             type="button"
                             onClick={() => setIsDateTimeModalOpen(true)}
-                            className=" border rounded bg-[#017A5B]  px-3 py-2"
+                            className=" border rounded bg-[#282D32] hover:bg-transparent px-3  py-2"
                         >
                             {dueDate && dueTime
                                 ? `${format(dueDate, "PPP")} ${dueTime}`
                                 : "Select Date & Time"
                             }
+
                         </Button>
                         <div className="flex items-center space-x-2">
-                            <input
-                                type="checkbox"
+                            <Switch
                                 id="assign-more-tasks"
                                 checked={assignMoreTasks}
-                                onChange={handleCheckboxChange}
-                                className="form-checkbox"
+                                onCheckedChange={handleCheckboxChange}
                             />
-                            <Label htmlFor="airplane-mode">Assign More Tasks</Label>
+                            <Label htmlFor="assign-more-tasks">Assign More Tasks</Label>
                         </div>
 
                         {isDateTimeModalOpen && (
@@ -632,10 +698,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                                 {isDatePickerVisible ? (
                                                     <motion.div
                                                         key="date-picker"
-                                                        initial={{ opacity: 0, x: 20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        exit={{ opacity: 0, x: 20 }}
-                                                        transition={{ duration: 0.5 }}
+                                                        initial={{ opacity: 0, scale: 1 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 1 }}
+                                                        transition={{ duration: 0.3, ease: 'linear' }}
+                                                        className="transition-container"
                                                     >
                                                         <CustomDatePicker
                                                             selectedDate={dueDate ?? new Date()}
@@ -648,41 +715,45 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                                 ) : (
                                                     <motion.div
                                                         key="time-picker"
-                                                        initial={{ opacity: 0, x: 20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        exit={{ opacity: 0, x: -20 }}
-                                                        transition={{ duration: 0.3 }}
+                                                        initial={{ opacity: 0, scale: 1 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 1 }}
+                                                        transition={{ duration: 0.3, ease: 'linear' }}
+                                                        className="transition-container"
                                                     >
                                                         <CustomTimePicker
                                                             selectedTime={dueTime}
                                                             onTimeChange={setDueTime}
                                                         />
-                                                        <Button
-                                                            type="button"
-                                                            onClick={() => setIsDatePickerVisible(true)}
-                                                            className="w-full bg-gray-500 text-white rounded px-4 py-2 mt-2"
-                                                        >
-                                                            Back to Date Picker
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (dueDate && dueTime) {
-                                                                    const [hours, minutes] = dueTime.split(':').map(Number);
-                                                                    const updatedDate = new Date(dueDate);
-                                                                    updatedDate.setHours(hours, minutes);
-                                                                    setDueDate(updatedDate);
-                                                                    setIsDateTimeModalOpen(false);
-                                                                }
-                                                            }}
-                                                            className="w-full bg-green-500 text-white rounded px-4 py-2 mt-2"
-                                                        >
-                                                            Update Time & Date
-                                                        </Button>
+                                                        <div className='flex gap-2'>
+                                                            <Button
+                                                                type="button"
+                                                                onClick={() => setIsDatePickerVisible(true)}
+                                                                className=" bg-gray-600  hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
+                                                            >
+                                                                Back to Date Picker
+                                                            </Button>
+                                                            <Button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if (dueDate && dueTime) {
+                                                                        const [hours, minutes] = dueTime.split(':').map(Number);
+                                                                        const updatedDate = new Date(dueDate);
+                                                                        updatedDate.setHours(hours, minutes);
+                                                                        setDueDate(updatedDate);
+                                                                        setIsDateTimeModalOpen(false);
+                                                                    }
+                                                                }}
+                                                                className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
+                                                            >
+                                                                Update Time & Date
+                                                            </Button>
+
+                                                        </div>
+
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
-
                                         </div>
                                     </DialogDescription>
                                 </DialogContent>
@@ -695,17 +766,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Label htmlFor="attachment" className="block font-semibold">Attachment</Label>
                         <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
                     </div> */}
-                    <div className='flex gap-4'>
-                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
+                    <div className='flex   gap-4'>
+                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Link className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsAttachmentModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
+                        <div onClick={() => { setIsAttachmentModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Paperclip className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
+                        <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Clock className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#017A5B] '>
+                        <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div>
                     </div>
@@ -720,10 +791,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 {links.map((link, index) => (
                                     <div key={index} className="flex gap-2 items-center mb-2">
                                         <Input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full border rounded px-3 py-2 mr-2" />
-                                        <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 text-white px-2 py-1 rounded">Remove</Button>
+                                        <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 hover:bg-red-500 text-white rounded">Remove</Button>
                                     </div>
                                 ))}
-                                <Button type="button" onClick={addLinkField} className="bg-blue-500 text-white px-4 py-2 rounded">Add Link</Button>
+                                <Button type="button" onClick={addLinkField} className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded">Add Link</Button>
                             </div>
                         </DialogContent>
                     </Dialog>
@@ -736,7 +807,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             <div className="mb-4">
                                 <Label className="block font-semibold mb-2">Attachments</Label>
                                 <Input type='file' />
-                                <Button type="button" className="bg-blue-500 mt-2 text-white px-4 py-2 rounded">Add Link</Button>
+                                <Button type="button" className="bg-[#017A5B] mt-2 text-white hover:bg-[#017A5B]">Add Attachment</Button>
                             </div>
                         </DialogContent>
                     </Dialog>
@@ -760,31 +831,26 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             <DialogDescription>
                                 Add Recordings to the Task.
                             </DialogDescription>
-                            <div className="mb-4">
-                                <Label className="block font-semibold mb-2">Audio Recorder</Label>
+                            <div className="flex mt-2">
+                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
                                 {recording ? (
-                                    <Button
-                                        type="button"
-                                        onClick={stopRecording}
-                                        className="bg-red-500 text-white px-4 py-2 rounded"
-                                    >
-                                        Stop Recording
-                                    </Button>
+                                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                        <Mic className='h-5 text-center m-auto mt-1' />
+                                    </div>
                                 ) : (
-                                    <Button
-                                        type="button"
-                                        onClick={startRecording}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                                    >
-                                        Start Recording
-                                    </Button>
-                                )}
-                                {audioBlob && (
-                                    <div className="mt-4">
-                                        {audioURLRef.current && <audio controls src={audioURLRef.current || ''} />}
+                                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                        <Mic className='h-5 text-center m-auto mt-1' />
                                     </div>
                                 )}
+
+
                             </div>
+                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                            {audioBlob && (
+                                <div className="mt-4">
+                                    <audio controls src={audioURL} />
+                                </div>
+                            )}
                             {/* <div className="mb-4">
                                 <Label className="block font-semibold mb-2">Attachments</Label>
                                 <Input type='file' />
@@ -793,8 +859,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </DialogContent>
                     </Dialog>
                     <div className="flex justify-end">
-                        <Button type="button" onClick={handleAssignTask} className="bg-[#7C3886] selection:-500 text-white px-4 py-2 rounded">   {loading ? <Loader /> : "Assign Task →"}</Button>
-                        <Button type="button" onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</Button>
+                        <Button type="button" onClick={handleAssignTask} className="bg-[#017A5B] hover:bg-[#017A5B]  selection:-500 text-white px-4 py-2 w-full mt-2 rounded">   {loading ? <Loader /> : "Assign Task →"}</Button>
+                        {/* <Button type="button" onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</Button> */}
                     </div>
                 </form>
             </div >
@@ -807,66 +873,79 @@ export default TaskModal;
 interface CustomDaysSelectProps {
     options: number[];
     selectedOptions: number[];
-    setSelectedOptions: Dispatch<SetStateAction<number[]>>;
+    setSelectedOptions: (selectedOptions: number[]) => void;
 }
-
 const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({ options, selectedOptions, setSelectedOptions }) => {
-    const [isDaysOpen, setIsDaysOpen] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const handleOptionToggle = (option: number) => {
-        if (selectedOptions.includes(option)) {
-            setSelectedOptions(selectedOptions.filter(o => o !== option));
-        } else {
-            setSelectedOptions([...selectedOptions, option]);
-        }
+    const handleChange = (selected: any) => {
+        setSelectedOptions(selected ? selected.map((option: any) => option.value) : []);
     };
 
-    const handleOutsideClick = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            setIsDaysOpen(false);
-        }
+    const formattedOptions = options.map(option => ({ value: option, label: option }));
+
+    const customStyles: StylesConfig = {
+        control: (provided) => ({
+            ...provided,
+            backgroundColor: '#282D32', // Custom background color for the control
+            color: 'white', // Custom text color
+            border: 0,
+            boxShadow: 'none', // Remove focus outline
+            ':hover': {
+                borderColor: '#017A5B', // Custom border color on hover
+            },
+        }),
+        menu: (provided) => ({
+            ...provided,
+            backgroundColor: '#282D32', // Custom background color for the menu
+            color: 'white', // Custom text color
+            border: 0,
+            outline: 'none',
+            boxShadow: 'none', // Remove focus outline
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#FC8929' : state.isFocused ? '#017A5B' : '#282D32', // Custom background color for options
+            color: 'white', // Custom text color
+        }),
+        multiValue: (provided) => ({
+            ...provided,
+            backgroundColor: '#017A5B', // Custom background color for selected values
+            color: 'white', // Custom text color
+        }),
+        multiValueLabel: (provided) => ({
+            ...provided,
+            color: 'white', // Custom text color for selected values
+        }),
+        multiValueRemove: (provided) => ({
+            ...provided,
+            color: 'white', // Custom text color for remove icon
+            ':hover': {
+                backgroundColor: '#7C3886', // Custom background color for remove icon hover state
+                color: 'white',
+            },
+        }),
+        placeholder: (provided) => ({
+            ...provided,
+            color: 'white', // Custom text color for placeholder
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: 'white', // Custom text color for single value
+        }),
     };
-
-    useEffect(() => {
-        if (isDaysOpen) {
-            document.addEventListener('mousedown', handleOutsideClick);
-        } else {
-            document.removeEventListener('mousedown', handleOutsideClick);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-        };
-    }, [isDaysOpen]);
 
     return (
-        <div className="relative" ref={containerRef}>
-            <button
-                type="button"
-                className="w-full p-2 border rounded text-left"
-                onClick={() => setIsDaysOpen(!isDaysOpen)}
-            >
-                {selectedOptions.length > 0 ? selectedOptions.join(', ') : 'Select Days'}
-            </button>
-            {isDaysOpen && (
-                <div className="absolute max-h-40 scrollbar-hide overflow-y-scroll -mt-48 text-black w-full bg-white border border-gray-300 rounded shadow-md z-50">
-                    {options.map(option => (
-                        <div key={option} className="flex items-center p-2 hover:bg-gray-100">
-                            <input
-                                type="checkbox"
-                                checked={selectedOptions.includes(option)}
-                                onChange={() => handleOptionToggle(option)}
-                                className="mr-2"
-                            />
-                            <label>{option}</label>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+        <Select
+            isMulti
+            options={formattedOptions}
+            value={formattedOptions.filter(option => selectedOptions.includes(option.value))}
+            onChange={handleChange}
+            placeholder="Select Days"
+            className="w-full border rounded"
+            styles={customStyles} // Apply custom styles
+        />
     );
 };
+
 
 
 interface User {
@@ -899,10 +978,10 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
     );
 
     return (
-        <div className="absolute bg-[#fefefe] text-black border mt-7 rounded shadow-md p-4 w-[20%] z-50">
+        <div className="absolute bg-[#1A1C20]  text-white border mt-12 border-gray-700 rounded shadow-md p-4 w-[20%] z-50">
             <input
-                placeholder="🔎 Search user..."
-                className="h-9 text-xs px-4 text-white w-full bg-gray-600 border rounded outline-none mb-2"
+                placeholder="Search user..."
+                className="h-9 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -929,6 +1008,36 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
         </div>
     );
 };
+
+
+const FallbackImage = ({ name }) => {
+    const initial = name.charAt(0).toUpperCase(); // Get the first letter of the category name
+    return (
+        <div className="bg-[#282D32] rounded-full h-10 w-10 flex items-center justify-center">
+            <span className="text-white font-bold text-lg">{initial}</span>
+        </div>
+    );
+};
+
+const getCategoryIcon = (categoryName: String) => {
+    switch (categoryName) {
+        case 'Automation':
+            return '/icons/intranet.png';
+        case 'Customer Support':
+            return '/icons/support.png';
+        case 'Marketing':
+            return '/icons/marketing.png';
+        case 'Operations':
+            return '/icons/operations.png';
+        case 'Sales':
+            return '/icons/sales.png';
+        case 'HR':
+            return '/icons/attendance.png';
+        default:
+            return null; // Or a default icon if you prefer
+    }
+};
+
 
 interface Category {
     _id: string;
@@ -960,15 +1069,14 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
 
     const handleCreateCategory = async () => {
         if (!newCategory) return;
-
         try {
             const response = await axios.post('/api/category/create', { name: newCategory });
-
             if (response.status === 200) {
                 // Add the new category to the categories list
                 setCategories([...categories, response.data.data]);
                 // Clear the new category input
                 setNewCategory('');
+                toast.success("Category Created Successfully!")
             } else {
                 console.error('Error creating category:', response.data.error);
             }
@@ -982,10 +1090,10 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
     );
 
     return (
-        <div className="absolute bg-[#fefefe] text-black border mt-2 rounded shadow-md p-4 w-[20%] z-50">
+        <div className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[20%] z-50">
             <input
-                placeholder="🔎 Search Categories..."
-                className="h-9 text-xs px-4 text-white w-full bg-gray-800 border rounded outline-none mb-2"
+                placeholder=" Search Categories..."
+                className="h-9 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"
                 value={searchCategoryQuery}
                 onChange={(e) => setSearchCategoryQuery(e.target.value)}
             />
@@ -993,19 +1101,30 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                 {categories.length === 0 ? (
                     <div>No categories found.</div>
                 ) : (
-                    <div className="w-full text-sm max-h-40 overflow-y-scroll scrollbar-hide">
+                    <div className="w-full text-sm text-white max-h-40 overflow-y-scroll scrollbar-hide">
                         {filteredCategories.map(categorys => (
-                            <div key={categorys._id} className="cursor-pointer p-2 flex items-center justify-between mb-1" onClick={() => handleSelectCategory(categorys._id)}>
+                            <div key={categorys._id} className="cursor-pointer p-2 flex items-center justify-start  mb-1" onClick={() => handleSelectCategory(categorys._id)}>
+                                <div className='bg-[#282D32] rounded-full h-10 w-10'>
+                                    {getCategoryIcon(categorys.name) ? (
+                                        <img
+                                            src={getCategoryIcon(categorys.name)}
+                                            alt={categorys.name}
+                                            className="w-6 h-6 ml-2 mt-2"
+                                        />
+                                    ) : (
+                                        <FallbackImage name={categorys.name} />
+                                    )}
+                                </div>
                                 <span className='px-4'>{categorys.name}</span>
-                                <input
-                                    type="radio"
-                                    name="category"
-                                    className='bg-primary'
-                                    checked={category === categorys._id}
-                                    onChange={() => handleSelectCategory(categorys._id)}
-                                />
+
                                 {category === categorys._id && (
-                                    <CheckIcon className="ml-auto h-4 w-4" />
+                                    <input
+                                        type="radio"
+                                        name="category"
+                                        className='bg-primary'
+                                        checked={category === categorys._id}
+                                        onChange={() => handleSelectCategory(categorys._id)}
+                                    />
                                 )}
                             </div>
                         ))}
@@ -1013,20 +1132,22 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                 )}
                 {role === 'orgAdmin' && (
                     <div className="flex justify-center mt-4">
-                        <div>
-                            <Label>Add a New Category</Label>
-                            <Input
+
+                        {/* <Label>Add a New Category</Label> */}
+                        {/* <Input
                                 type="text"
                                 placeholder="New Category"
                                 value={newCategory}
                                 onChange={(e) => setNewCategory(e.target.value)}
                                 className="w-full text-black border rounded px-3 py-2"
-                            />
-                        </div>
-                        <div className="mt-4 flex justify-center">
-                            <Button onClick={handleCreateCategory} className="px-4 py-2 bg-primary text-white rounded">
-                                Create Category
-                            </Button>
+                            /> */}
+
+                        <div className="mt-4 flex justify-between">
+                            <input placeholder='Create Category' value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="px-4 outline-none py-2 border text-white rounded w-full" />
+
+                            <div onClick={handleCreateCategory} className='bg-[#007A5A] p-2  cursor-pointer rounded-full ml-4'>
+                                <Plus className='text-white' />
+                            </div>
                         </div>
                     </div>
                 )}

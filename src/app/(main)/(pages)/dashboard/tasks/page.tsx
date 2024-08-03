@@ -2,7 +2,7 @@
 import TasksTab from '@/components/globals/taskstab'
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlusCircleIcon } from 'lucide-react';
+import { Plus, PlusCircleIcon } from 'lucide-react';
 import TaskModal from '@/components/globals/taskModal';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
@@ -121,8 +121,8 @@ export default function TaskManagement() {
         <div className='p-4'>
             {/* <h1 className='text-center text-xl font-bold under'>Task Management</h1> */}
             <div className="fixed bottom-8 right-8 z-50">
-                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" onClick={openModal}>
-                    <PlusCircleIcon size={24} />
+                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-[#007A5A] text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" onClick={openModal}>
+                    <Plus size={24} />
                 </button>
             </div>
             <AnimatePresence>
