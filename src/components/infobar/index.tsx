@@ -90,14 +90,17 @@ const InfoBar = (props: Props) => {
     } else if (pathName === '/dashboard/tasks') {
       return 'Task Management';
     } else if (pathName === '/dashboard/teams') {
-      return 'Teams';
+      return 'My Team';
     }
     else if (pathName === '/dashboard/settings') {
       return 'Settings';
     } else if (pathName === '/dashboard/settings/categories') {
       return 'Categories';
     } else if (pathName === '/dashboard/billing') {
-      return 'Billing';
+      return 'Billing & Wallet';
+    }
+    else if (pathName === '/dashboard/billing/wallet-logs') {
+      return 'Wallet Logs';
     }
   };
 
@@ -135,22 +138,22 @@ const InfoBar = (props: Props) => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <div className='flex gap-4'>
-              <div className='h-10  items-center cursor-pointer flex justify-center w-10 border bg-[#75517B] -500 rounded-full '>
-                {/* <User className='h-5 w-5' />
+              <div className='flex gap-4'>
+                <div className='h-10  items-center cursor-pointer flex justify-center w-10 border bg-[#75517B] -500 rounded-full '>
+                  {/* <User className='h-5 w-5' />
                */}
-              
-              {`${firstName}`.slice(0,1)}
+
+                  {`${firstName}`.slice(0, 1)}
+                </div>
+                <div>
+                  <h1 className='text-[#fd8829] text-sm '>
+                    {firstName}
+                  </h1>
+                  {role === "orgAdmin" ? <h1 className=' text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
+                </div>
               </div>
-              <div>
-                <h1 className='text-[#fd8829] text-sm '>
-                  {firstName}
-                </h1>
-                {role === "orgAdmin" ? <h1 className=' text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
-              </div>
-            </div>
             </DropdownMenuTrigger>
-           
+
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>{firstName} {lastName}
                 <p className='text-xs text-gray-400 capitalize'>Team {role}</p>

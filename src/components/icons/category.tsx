@@ -5,7 +5,7 @@ type Props = { selected: boolean }
 
 function Category({ selected }: Props) {
   return (
-    <img src='/icons/users.png' className='h-4'/>
+    <img src='/icons/users.png' className='h-3'/>
 
   )
 }

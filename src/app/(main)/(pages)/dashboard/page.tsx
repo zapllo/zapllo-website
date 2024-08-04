@@ -57,7 +57,7 @@ const DashboardPage = () => {
                 <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
               <h1>Automate Tasks</h1>
-              <p className='text-xs'>Delegate one time and recurring task to your team</p>
+              <p className='text-xs font-thin'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
                   <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>

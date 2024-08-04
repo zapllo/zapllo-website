@@ -21,7 +21,9 @@ export async function PATCH(request: NextRequest) {
             task.status = 'In Progress'
         } else {
             task.status = status;
-
+            if (status === 'Completed') {
+                task.completionDate = new Date();
+            }
         }
         task.comments.push({ userName, comment, createdAt: new Date() }); // Assuming 'status' is already in task schema
         await task.save();

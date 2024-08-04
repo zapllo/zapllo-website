@@ -3,6 +3,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
+import Script from "next/script";
 
 const inter = Space_Grotesk({ subsets: ["latin"] });
 
@@ -18,6 +19,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="afterInteractive" // Ensures the script loads before your app's JavaScript
+          async
+        />
+      </head>
       <ThemeProvider
         attribute="class"
         defaultTheme="dark"

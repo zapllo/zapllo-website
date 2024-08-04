@@ -26,6 +26,9 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { toast, Toaster } from "sonner";
 import WaveSurfer from 'wavesurfer.js';
+import { TaskSummary } from "./taskSummary";
+import { MyTasksSummary } from "./myTasksSummary";
+import { DelegatedTasksSummary } from "./delegatedTasksSummary";
 
 // Define the User interface
 interface User {
@@ -158,7 +161,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
     // Filter based on active tab
     if (activeTab === "myTasks") {
-      isFiltered = task.assignedUser._id === currentUser._id || task.user._id === currentUser._id;
+      isFiltered = task.assignedUser._id === currentUser._id;
     } else if (activeTab === "delegatedTasks") {
       isFiltered = (task.user._id === currentUser._id && task.assignedUser._id !== currentUser._id) || task.assignedUser._id === currentUser._id;
     } else if (activeTab === "allTasks") {
@@ -215,6 +218,139 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
     return isFiltered;
   });
+
+  const filterTasks = (tasks, activeTab) => {
+    return tasks?.filter(task => {
+      let isFiltered = true;
+
+      // Filter based on active tab
+      if (activeTab === "myTasks") {
+        isFiltered = task.assignedUser._id === currentUser._id;
+      } else if (activeTab === "delegatedTasks") {
+        isFiltered = (task.user._id === currentUser._id && task.assignedUser._id !== currentUser._id) || task.assignedUser._id === currentUser._id;
+      } else if (activeTab === "allTasks") {
+        isFiltered = task.user.organization === currentUser.organization;
+      }
+
+      // Apply other filters
+      if (isFiltered && priorityFilter) {
+        isFiltered = task.priority === priorityFilter;
+      }
+
+      if (isFiltered && repeatFilter !== null) {
+        isFiltered = task.repeat === repeatFilter;
+      }
+
+      if (isFiltered && assignedUserFilter) {
+        isFiltered = task.assignedUser._id === assignedUserFilter;
+      }
+
+      if (isFiltered && dueDateFilter) {
+        isFiltered = task.dueDate === dueDateFilter;
+      }
+
+      // Apply filters from modal
+      if (isFiltered && categoryFilter.length > 0) {
+        isFiltered = categoryFilter.includes(task.category.name);
+      }
+
+      if (isFiltered && assignedByFilter.length > 0) {
+        isFiltered = assignedByFilter.includes(task.user._id);
+      }
+
+      if (isFiltered && frequencyFilter.length > 0) {
+        isFiltered = frequencyFilter.includes(task.repeatType);
+      }
+
+      if (isFiltered && priorityFilterModal.length > 0) {
+        isFiltered = priorityFilterModal.includes(task.priority);
+      }
+
+      // Apply search query filter globally
+      if (searchQuery) {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        isFiltered = (
+          task.title.toLowerCase().includes(lowerCaseQuery) ||
+          task.description.toLowerCase().includes(lowerCaseQuery) ||
+          task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
+          task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
+          task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
+          task.assignedUser.lastName.toLowerCase().includes(lowerCaseQuery) ||
+          task.status.toLowerCase().includes(lowerCaseQuery)
+        );
+      }
+
+      return isFiltered;
+    });
+  };
+
+  const countStatuses = (tasks) => {
+    return tasks.reduce((counts, task) => {
+      const dueDate = new Date(task.dueDate);
+      const completionDate = task.completionDate ? new Date(task.completionDate) : null;
+      const now = new Date();
+
+      // Count overdue tasks
+      if (dueDate < now && task.status !== "Completed") {
+        counts["Overdue"] = (counts["Overdue"] || 0) + 1;
+      }
+
+      // Count completed tasks as either "In Time" or "Delayed"
+      if (task.status === "Completed" && completionDate) {
+        if (completionDate <= dueDate) {
+          counts["In Time"] = (counts["In Time"] || 0) + 1;
+        } else 
+          if (completionDate <= dueDate) {
+            counts["Delayed"] = (counts["Delayed"] || 0) + 1;
+          }
+        }
+
+        // Count task status
+        counts[task.status] = (counts[task.status] || 0) + 1;
+
+        return counts;
+      }, { });
+  };
+
+  // Example usage
+  const taskStats = countStatuses(tasks);
+  console.log("Task Stats:", taskStats);
+
+
+  // Filter tasks for each tab
+  const myTasks = filterTasks(tasks, "myTasks");
+  const delegatedTasks = filterTasks(tasks, "delegatedTasks");
+  const allTasks = filterTasks(tasks, "allTasks");
+
+  // Count statuses for each filtered set
+  const myTasksCounts = countStatuses(myTasks);
+  const delegatedTasksCounts = countStatuses(delegatedTasks);
+  const allTasksCounts = countStatuses(allTasks);
+
+  const myTasksPendingCount = myTasksCounts["Pending"] || 0;
+  const myTasksInProgressCount = myTasksCounts["In Progress"] || 0;
+  const myTasksCompletedCount = myTasksCounts["Completed"] || 0;
+  const myTasksOverdueCount = myTasksCounts["Overdue"] || 0;
+  const myTasksInTimeCount = myTasksCounts["In Time"] || 0;
+  const myTasksDelayedCount = myTasksCounts["Delayed"] || 0;
+
+  const delegatedTasksPendingCount = delegatedTasksCounts["Pending"] || 0;
+  const delegatedTasksInProgressCount = delegatedTasksCounts["In Progress"] || 0;
+  const delegatedTasksCompletedCount = delegatedTasksCounts["Completed"] || 0;
+  const delegatedTasksOverdueCount = delegatedTasksCounts["Overdue"] || 0;
+  const delegatedTasksInTimeCount = delegatedTasksCounts["In Time"] || 0;
+  const delegatedTasksDelayedCount = delegatedTasksCounts["Delayed"] || 0;
+
+  const allTasksPendingCount = allTasksCounts["Pending"] || 0;
+  const allTasksInProgressCount = allTasksCounts["In Progress"] || 0;
+  const allTasksCompletedCount = allTasksCounts["Completed"] || 0;
+  const allTasksOverdueCount = allTasksCounts["Overdue"] || 0;
+  const allTasksInTimeCount = allTasksCounts["In Time"] || 0;
+  const allTasksDelayedCount = allTasksCounts["Delayed"] || 0;
+
+  console.log("My Tasks - Pending:", myTasksPendingCount, "In Progress:", myTasksInProgressCount, "Completed:", myTasksCompletedCount, "Overdue:", myTasksOverdueCount, "In Time:", myTasksInTimeCount, "Delayed:", myTasksDelayedCount);
+  console.log("Delegated Tasks - Pending:", delegatedTasksPendingCount, "In Progress:", delegatedTasksInProgressCount, "Completed:", delegatedTasksCompletedCount, "Overdue:", delegatedTasksOverdueCount, "In Time:", delegatedTasksInTimeCount, "Delayed:", delegatedTasksDelayedCount);
+  console.log("All Tasks - Pending:", allTasksPendingCount, "In Progress:", allTasksInProgressCount, "Completed:", allTasksCompletedCount, "Overdue:", allTasksOverdueCount, "In Time:", allTasksInTimeCount, "Delayed:", allTasksDelayedCount);
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -395,6 +531,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
   };
 
+
+
+
+
   const getCategoryTaskStats = (categoryId: any) => {
     const categoryTasks = tasks.filter(task => task.category === categoryId);
     const overdueTasks = categoryTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
@@ -410,63 +550,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     const completedTasks = tasks.filter(task => task.status === 'Completed').length;
     const inProgressTasks = tasks.filter(task => task.status === 'In Progress').length;
     const pendingTasks = tasks.filter(task => task.status === 'Pending').length;
+    const delayedTasks = tasks.filter(task => task.status === 'Completed' && new Date(task.completionDate) > new Date(task.dueDate)).length;
+    const inTimeTasks = tasks.filter(task => task.status === 'Completed' && new Date(task.completionDate) <= new Date(task.dueDate)).length;
 
-    return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
+    return { overdueTasks, completedTasks, inProgressTasks, pendingTasks, delayedTasks, inTimeTasks };
   };
 
   {/**Task Summary */ }
-  const TaskSummary = () => {
-    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getTotalTaskStats();
 
-    return (
-      <div className=" flex  gap-4 mb-8 rounded-lg shadow-md">
-        {/* <h2 className="text-lg font-medium mb-4">Task Summary</h2> */}
-
-        <div className="border px-4 py-3  flex gap-4 rounded-xl">
-          <CircleAlert className="text-red-500 h-10 scale-125" />
-          <div>
-            <p className="text-sm">Overdue </p>
-            <h1 className="font-bold text-xl">{overdueTasks}</h1>
-          </div>
-        </div>
-        <div className="border px-4 py-3  flex gap-4 rounded-xl">
-          <Circle className="text-red-400 h-10 scale-125" />
-          <div>
-            <p className="text-sm">Pending </p>
-            <h1 className="font-bold  text-xl">{pendingTasks}</h1>
-          </div>
-        </div>
-        <div className="border px-4 py-3  flex gap-4 rounded-xl">
-          <IconProgress className="text-orange-500 h-10 scale-125" />
-          <div>
-            <p className="text-sm">In Progress </p>
-            <h1 className="font-bold  text-xl">{inProgressTasks}</h1>
-          </div>
-        </div>
-        <div className="border px-4 py-3  flex gap-4 rounded-xl">
-          <CheckCircle className="text-green-500 h-10 scale-125" />
-          <div>
-            <p className="text-sm">Completed </p>
-            <h1 className="font-bold  text-xl">{completedTasks}</h1>
-          </div>
-        </div>
-        <div className="border px-4 py-3  flex gap-4 rounded-xl">
-          <Clock className="text-green-500 h-10 scale-125" />
-          <div>
-            <p className="text-sm">In Time </p>
-            <h1 className="font-bold  text-xl">{completedTasks}</h1>
-          </div>
-        </div>
-        <div className="border px-4 py-3  flex gap-4 rounded-xl">
-          <CheckCircle className="text-red-500 h-10 scale-125" />
-          <div>
-            <p className="text-sm">Delayed </p>
-            <h1 className="font-bold  text-xl">{completedTasks}</h1>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const { overdueTasks, completedTasks, inProgressTasks, pendingTasks, delayedTasks, inTimeTasks } = getTotalTaskStats();
 
 
   const getCategoryReportTaskStats = (categoryId: any) => {
@@ -702,43 +794,32 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           {activeTab === "all" ? (
             <div className="flex mt-12  flex-col ">
               <div className="grid  w-full text-xs gap-4">
-                <TaskSummary />
+                <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
               </div>
               {/* <DashboardAnalytics /> */}
-              <div className="flex ">
-                <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="full ">
-                  <TabsList2 className="">
+              <div className="flex gap-4 justify-center">
+                <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="gap-4">
+                  <TabsList2 className="flex gap-4">
                     <TabsTrigger2 className="flex gap-2 tabs-trigger" value="employee-wise"><PersonIcon className="h-4" />Employee Wise</TabsTrigger2>
                     <TabsTrigger2 value="category-wise" className="flex gap-2"><TagIcon className="h-4" /> Category Wise</TabsTrigger2>
                     <TabsTrigger2 value="my-report">My Report </TabsTrigger2>
-                    <TabsTrigger2 value="delegatedTasks">Delegated</TabsTrigger2>
+                    <TabsTrigger2 value="delegatedTasks" className="tabs-trigger">Delegated</TabsTrigger2>
                   </TabsList2>
                 </Tabs2>
               </div>
               {activeDashboardTab === "employee-wise" && (
-                <div>
-                  <div className="relative flex px-4 mt-4 space-x-2 justify-between mb-2">
-                    <input
-                      type="text"
-                      placeholder="Search Employees..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="px-3 py-1 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
-                    />
-                    <svg
-                      className="absolute left-[93.5%] top-1/2 transform -translate-y-1/2 w-5 h-5 text-white -400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M11 4a7 7 0 11-7 7 7 7 0 017-7zM20 20l-4.35-4.35"
+                <div className="">
+                  <div className="flex p-2 justify-center">
+                    <div className="relative flex px-4 mt-4 space-x-2  mb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Employees..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-3 py-1 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                       />
-                    </svg>
+
+                    </div>
                   </div>
                   <div className="grid gap-4">
                     {users.filter(user => {
@@ -814,15 +895,17 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               )}
               {activeDashboardTab === "my-report" && userDetails && (
                 <div>
-                  <div className="flex px-4 mt-4 space-x-2 justify-center mb-2">
-                    <input
-                      type="text"
-                      placeholder="Search Categories..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="px-3 py-2 border rounded-md w- ml-auto"
-                    />
-                    {/* <Button onClick={() => setIsModalOpen(true)} className="bg-green-700">Filter</Button> */}
+                  <div className="flex p-2 justify-center">
+                    <div className="relative flex px-4 mt-4 space-x-2  mb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Employees..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-3 py-1 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                      />
+
+                    </div>
                   </div>
                   <div className="grid gap-4">
                     {categories.filter(category => {
@@ -902,16 +985,1031 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                 </div>
               )}
             </div>
+          ) : activeTab === "myTasks" ? (
+            <div>
+              <div className="grid mt-12 w-full text-sm gap-4">
+                <div className="grid  w-full text-xs  gap-4">
+                  <MyTasksSummary myTasksCompletedCount={myTasksCompletedCount} myTasksInProgressCount={myTasksInProgressCount} myTasksOverdueCount={myTasksOverdueCount} myTasksPendingCount={myTasksPendingCount} myTasksDelayedCount={myTasksDelayedCount} myTasksInTimeCount={myTasksInTimeCount} />
+                </div>
+
+                <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                  <div className="space-x-2 flex">
+                    <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Tasks..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-3 py-2 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                      />
+
+                    </div>
+                    <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
+                  </div>
+                </div>
+                {filteredTasks?.length > 0 ? (
+                  filteredTasks?.map((task) => (
+                    <div key={task._id} className="">
+                      <Card
+                        className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                        onClick={() => setSelectedTask(task)}
+                      >
+                        <div className=" items-center gap-4">
+                          <div>
+                            <p className="font-medium text-sm text-white">{task.title}</p>
+                            <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
+                              {task.user.firstName}
+                            </span></p>
+                          </div>
+                          <div className="flex gap-2">
+
+                            <div className="flex -ml-1  text-xs mt-2">
+                              <IconClock className="h-5" />
+                              <h1 className="mt-[1.5px]">
+                                {formatTaskDate(task.dueDate)}
+                              </h1>
+                            </div>
+                            <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                            <div className="flex text-xs mt-[10px]">
+                              <UserIcon className="h-4" />
+                              {task.assignedUser.firstName}
+                            </div>
+                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                            <div className="flex text-xs mt-[11px]">
+                              <TagIcon className="h-4" />
+                              {task.category.name}
+                            </div>
+
+                            {task.repeat ? (
+                              <div className="flex items-center">
+                                <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+
+                                {task.repeatType && (
+                                  <h1 className="flex mt-[11px] text-xs">
+                                    <Repeat className="h-4 " />  {task.repeatType}
+                                  </h1>
+                                )}
+                              </div>
+                            ) : null}
+
+                            {/* <div className="flex mt-auto">
+                        <TagIcon className="h-5" />
+                      </div> */}
+                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                            <div className="flex text-xs">
+                              <div className="mt-[11px]">
+                                <IconProgressBolt className="h-4  " />
+
+                              </div>
+                              <h1 className="mt-auto">
+                                {task.status}
+                              </h1>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div className="">
+                          <div className="flex ">
+                            <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                              <Button
+                                onClick={() => {
+                                  setStatusToUpdate("In Progress");
+                                  setIsDialogOpen(true);
+                                }}
+                                className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                              >
+                                <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
+                                In Progress
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setStatusToUpdate("Completed");
+                                  setIsCompleteDialogOpen(true);
+                                }}
+                                className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                              >
+                                <CheckCheck className="h-4 rounded-full text-green-400" />
+                                Completed
+                              </Button>
+
+
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end mt-4">
+
+                          </div>
+                        </div>
+                      </Card>
+
+                      {selectedTask && selectedTask._id === task._id && (
+                        <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
+                          <SheetContent className="max-w-4xl w-full ">
+                            <SheetHeader>
+                              <div className="flex gap-2">
+                                <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
+                                <SheetTitle className="text-white mb-4">
+                                  Task details
+                                </SheetTitle>
+                              </div>
+
+
+                            </SheetHeader>
+                            <div className="border overflow-y-scroll scrollbar-hide  h-10/11 p-4 rounded-lg">
+                              <h1 className="font-bold text-xl">{selectedTask.title}</h1>
+
+                              <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
+                                <div className="flex items-center gap-4">
+                                  <Label htmlFor="user" className="text-right">
+                                    Assigned To
+                                  </Label>
+                                  {selectedTask?.assignedUser?.firstName ? (
+                                    <div className="flex gap-2 justify-start">
+                                      <div className="h-6 w-6 rounded-full bg-primary -400">
+                                        <h1 className="text-center uppercase">
+                                          {`${selectedTask?.assignedUser?.firstName?.slice(0, 1)}`}
+                                        </h1>
+                                      </div>
+                                      <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
+
+                                    </div>
+                                  ) : null}
+                                </div>
+                                <div className=" flex items-center gap-4">
+                                  <Label htmlFor="user" className="text-right">
+                                    Assigned By
+                                  </Label>
+                                  {selectedTask?.user?.firstName ? (
+                                    <div className="flex gap-2 justify-start">
+                                      <div className="h-6 w-6 rounded-full bg-[#4F2A2B]">
+                                        <h1 className="text-center uppercase">
+                                          {selectedTask.user.firstName.slice(0, 1)}
+                                        </h1>
+                                      </div>
+                                      <h1 id="assignedUser" className="col-span-3">
+                                        {`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}
+                                      </h1>
+                                    </div>
+                                  ) : null}
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                {/* <Clock className="h-5 text-[#E94C4C]" />
+                           */}
+                                <Calendar className="h-5 text-[#E94C4C]" />
+
+                                <Label htmlFor="user" className="text-right">
+                                  Created At
+                                </Label>
+                                <div className="flex gap-2 ml-2  justify-start">
+                                  {/* <Calendar className="h-5" /> */}
+
+                                  <h1 id="assignedUser" className="col-span-3 font-">
+                                    {formatTaskDate(selectedTask.createdAt)}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <Clock className="h-5 text-[#E94C4C]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Due Date
+                                </Label>
+                                <div className="flex gap-2 ml-4 justify-start">
+                                  <h1 id="assignedUser" className="col-span-3   ">
+                                    {formatTaskDate(selectedTask.dueDate)}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <RepeatIcon className="h-5 text-[#0D751C]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Frequency
+                                </Label>
+                                <div className="flex gap-2 ml-2  justify-start">
+                                  <Repeat className="h-5" />
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {`${selectedTask.repeatType}`}
+                                  </h1>
+                                  <div className="ml-2">
+                                    {selectedTask?.dates?.length && selectedTask.dates.length > 0 ? (
+                                      <h1 className="">
+                                        ({selectedTask?.dates?.join(', ')})
+                                      </h1>
+                                    ) : (
+                                      <p>No specific dates selected.</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className=" flex items-center gap-1 mt-4">
+                                {selectedTask.status === 'Pending' && <Circle className="h-5 text-red-500" />}
+                                {selectedTask.status === 'Completed' && <CheckCircle className="h-5 text-green-500" />}
+                                {selectedTask.status === 'In Progress' && <Loader className="h-5 text-orange-500" />}
+                                <Label htmlFor="user" className="text-right">
+                                  Status
+                                </Label>
+                                <div className="flex gap-2 ml-8  justify-start">
+
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {`${selectedTask.status}`}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <Tag className="h-5 text-[#C3AB1E]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Category
+                                </Label>
+                                <div className="flex  ml-3  justify-start">
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {selectedTask.category.name}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                {selectedTask.priority === 'High' && <Flag className="h-5 text-red-500" />}
+                                {selectedTask.priority === 'Medium' && <Flag className="h-5 text-orange-500" />}
+                                {selectedTask.priority === 'Low' && <Flag className="h-5 text-green-500" />}
+                                <Label htmlFor="user" className="text-right">
+                                  Priority
+                                </Label>
+                                <div className="flex gap-2 ml-6  justify-start">
+
+                                  <h1 id="assignedUser" className={`col-span-3 font-bold ${selectedTask.priority === 'High'
+                                    ? 'text-red-500'
+                                    : selectedTask.priority === 'Medium'
+                                      ? 'text-orange-500'
+                                      : selectedTask.priority === 'Low'
+                                        ? 'text-green-500'
+                                        : ''
+                                    }`}>
+                                    {`${selectedTask.priority}`}
+                                  </h1>
+                                </div>
+
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <FileTextIcon className="h-5 text-[#4662D2]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Description
+                                </Label>
+                                <div className="flex gap-2 ml-2  justify-start">
+
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {`${selectedTask.description}`}
+                                  </h1>
+                                </div>
+                              </div>
+                              <Separator className="mt-4   " />
+                              <div className="flex p-4 gap-2">
+                                <h1 className="  ">Links</h1>
+                                <div className="bg-blue-500 h-6 w-6 rounded-full">
+                                  <Link className="h-4 mt-1" />
+                                </div>
+
+                              </div>
+                              <div className="px-4">
+                                {task.links?.map((link, index) => (
+                                  <div key={index} className="flex justify-between w-full space-x-2 my-2">
+                                    <div className="flex justify-between w-full">
+                                      <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
+                                        {link}
+                                      </a>
+                                      <div>
+                                        <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
+                                          <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
+                                        </CopyToClipboard>
+                                        <a href={link} target="_blank" rel="noopener noreferrer">
+                                          <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
+                                        </a>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                ))}
+                              </div>
+                              <Separator className="mt-4   " />
+                              <div className="flex p-4 gap-2">
+                                <h1 className="  ">Files</h1>
+                                <div className="bg-green-600 h-6 w-6 rounded-full">
+                                  <File className="h-4 mt-1" />
+                                </div>
+
+                              </div>
+                              <div className="px-4">
+                                {/* {task.links?.map((link, index) => (
+                              <div key={index} className="flex justify-between w-full space-x-2 my-2">
+                                <div className="flex justify-between w-full">
+                                  <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
+                                    {link}
+                                  </a>
+                                  <div>
+                                    <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
+                                      <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
+                                    </CopyToClipboard>
+                                    <a href={link} target="_blank" rel="noopener noreferrer">
+                                      <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
+                                    </a>
+                                  </div>
+                                </div>
+
+                              </div>
+                            ))} */}
+                              </div>
+                              <Separator className="mt-4  " />
+                              <div className="flex p-4 gap-2">
+                                <h1 className="  ">Reminders</h1>
+                                <div className="bg-red-600 h-6 w-6 rounded-full">
+                                  <Bell className="h-4 mt-1" />
+                                </div>
+
+                              </div>
+                              <div className="px-4">
+
+                              </div>
+                              <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                <Button
+                                  onClick={() => {
+                                    setStatusToUpdate("In Progress");
+                                    setIsDialogOpen(true);
+                                  }}
+                                  className="gap-2 border bg-transparent  border-gray-600 w-full"
+                                >
+                                  <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
+                                  In Progress
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    setStatusToUpdate("Completed");
+                                    setIsCompleteDialogOpen(true);
+                                  }}
+                                  className=" border bg-transparent  border-gray-600 w-full "
+                                >
+                                  <CheckCheck className="h-4 rounded-full text-green-400" />
+                                  Completed
+                                </Button>
+                                <Button
+                                  onClick={handleEditClick}
+                                  className=" border bg-transparent  border-gray-600 w-full"
+                                >
+                                  <Edit className="h-4 rounded-full  text-blue-400" />
+                                  Edit
+                                </Button>
+                                <EditTaskDialog
+                                  open={isEditDialogOpen}
+                                  onClose={() => setIsEditDialogOpen(false)}
+                                  task={selectedTask}
+                                  users={users}
+                                  categories={categories}
+                                  onTaskUpdate={handleTaskUpdate}
+                                />
+                                <Button
+                                  onClick={() => handleDelete(selectedTask._id)}
+                                  className=" border bg-transparent  border-gray-600 w-full"
+                                >
+                                  <Trash className="h-4 rounded-full text-red-400" />
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+
+                            <Separator />
+                            <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
+                              <div className="mb-4 gap-2 flex justify-start ">
+                                <UpdateIcon className="h-5" />
+                                <Label className=" text-md mt-auto">Task Updates</Label>
+
+                              </div>
+                              <div className="space-y-2    h-full">
+                                {sortedComments.map((commentObj, index) => (
+                                  <div key={index} className="relative rounded-lg p-2">
+                                    <div className="flex gap-2 items-center">
+                                      <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
+                                        {`${commentObj.userName}`.slice(0, 1)}
+                                      </div>
+                                      <strong>{commentObj.userName}</strong>
+                                    </div>
+                                    <p className="px-2 ml-6 text-xs"> {formatDate(commentObj.createdAt)}</p>
+
+                                    <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
+                                    {commentObj.status && (
+                                      <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded-lg">
+                                        {commentObj.status}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <SheetFooter>
+
+                            </SheetFooter>
+                          </SheetContent>
+                        </Sheet>
+                      )}
+
+                      {isDialogOpen && (
+                        <Dialog
+                          open={isDialogOpen}
+                        >
+                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+                            <DialogTitle>Task Update</DialogTitle>
+                            <p>Please add a note before marking the task as in progress</p>
+                            <div className="mt-4">
+                              <Label>Comment</Label>
+                              <div
+                                ref={editorRef}
+                                contentEditable
+                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                onInput={(e) => setComment(e.target.innerHTML)}
+                              ></div>
+                              <div className="flex mt-2">
+                                <input type="file" onChange={handleFileChange} className="mt-2" />
+                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                {recording ? (
+                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                ) : (
+                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                )}
+
+
+                              </div>
+                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                              {audioBlob && (
+                                <div className="mt-4">
+                                  <audio controls src={audioURL} />
+                                </div>
+                              )}
+
+                              {/* <img src="/icons/image.png" alt="image icon" /> */}
+                            </div>
+                            <div className="mt-4 flex justify-end space-x-2">
+                              <Button
+                                onClick={() => setIsDialogOpen(false)}
+                                className="w- text-white bg-gray-500 "
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full text-white bg-[#007A5A]"
+                              >
+                                Update Task
+                              </Button>
+
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <Card
+                    className="flex  w-[108%] border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
+
+                  >
+                    <h1 className="text-center font-bold text-xl">
+                      No Tasks Found
+                    </h1>
+                    <img src="/logo.png" className="w-[52.5%] h-[100%] opacity-0" />
+
+                  </Card>
+                )}
+                <FilterModal
+                  isOpen={isModalOpen}
+                  closeModal={() => setIsModalOpen(false)}
+                  categories={categories}
+                  users={users}
+                  applyFilters={applyFilters}
+                />
+              </div>
+            </div>
+          ) : activeTab === "delegatedTasks" ? (
+            <div>
+              <div className="grid mt-12 w-full text-sm gap-4">
+                <div className="grid  w-full text-xs  gap-4">
+                  <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} />
+                </div>
+
+                <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                  <div className="space-x-2 flex">
+                    <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Tasks..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-3 py-2 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                      />
+
+                    </div>
+                    <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
+                  </div>
+                </div>
+                {filteredTasks?.length > 0 ? (
+                  filteredTasks?.map((task) => (
+                    <div key={task._id} className="">
+                      <Card
+                        className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                        onClick={() => setSelectedTask(task)}
+                      >
+                        <div className=" items-center gap-4">
+                          <div>
+                            <p className="font-medium text-sm text-white">{task.title}</p>
+                            <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
+                              {task.user.firstName}
+                            </span></p>
+                          </div>
+                          <div className="flex gap-2">
+
+                            <div className="flex -ml-1  text-xs mt-2">
+                              <IconClock className="h-5" />
+                              <h1 className="mt-[1.5px]">
+                                {formatTaskDate(task.dueDate)}
+                              </h1>
+                            </div>
+                            <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                            <div className="flex text-xs mt-[10px]">
+                              <UserIcon className="h-4" />
+                              {task.assignedUser.firstName}
+                            </div>
+                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                            <div className="flex text-xs mt-[11px]">
+                              <TagIcon className="h-4" />
+                              {task.category.name}
+                            </div>
+
+                            {task.repeat ? (
+                              <div className="flex items-center">
+                                <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+
+                                {task.repeatType && (
+                                  <h1 className="flex mt-[11px] text-xs">
+                                    <Repeat className="h-4 " />  {task.repeatType}
+                                  </h1>
+                                )}
+                              </div>
+                            ) : null}
+
+                            {/* <div className="flex mt-auto">
+                      <TagIcon className="h-5" />
+                    </div> */}
+                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                            <div className="flex text-xs">
+                              <div className="mt-[11px]">
+                                <IconProgressBolt className="h-4  " />
+
+                              </div>
+                              <h1 className="mt-auto">
+                                {task.status}
+                              </h1>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div className="">
+                          <div className="flex ">
+                            <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                              <Button
+                                onClick={() => {
+                                  setStatusToUpdate("In Progress");
+                                  setIsDialogOpen(true);
+                                }}
+                                className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                              >
+                                <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
+                                In Progress
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setStatusToUpdate("Completed");
+                                  setIsCompleteDialogOpen(true);
+                                }}
+                                className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                              >
+                                <CheckCheck className="h-4 rounded-full text-green-400" />
+                                Completed
+                              </Button>
+
+
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end mt-4">
+
+                          </div>
+                        </div>
+                      </Card>
+
+                      {selectedTask && selectedTask._id === task._id && (
+                        <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
+                          <SheetContent className="max-w-4xl w-full ">
+                            <SheetHeader>
+                              <div className="flex gap-2">
+                                <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
+                                <SheetTitle className="text-white mb-4">
+                                  Task details
+                                </SheetTitle>
+                              </div>
+
+
+                            </SheetHeader>
+                            <div className="border overflow-y-scroll scrollbar-hide  h-10/11 p-4 rounded-lg">
+                              <h1 className="font-bold text-xl">{selectedTask.title}</h1>
+
+                              <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
+                                <div className="flex items-center gap-4">
+                                  <Label htmlFor="user" className="text-right">
+                                    Assigned To
+                                  </Label>
+                                  {selectedTask?.assignedUser?.firstName ? (
+                                    <div className="flex gap-2 justify-start">
+                                      <div className="h-6 w-6 rounded-full bg-primary -400">
+                                        <h1 className="text-center uppercase">
+                                          {`${selectedTask?.assignedUser?.firstName?.slice(0, 1)}`}
+                                        </h1>
+                                      </div>
+                                      <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
+
+                                    </div>
+                                  ) : null}
+                                </div>
+                                <div className=" flex items-center gap-4">
+                                  <Label htmlFor="user" className="text-right">
+                                    Assigned By
+                                  </Label>
+                                  {selectedTask?.user?.firstName ? (
+                                    <div className="flex gap-2 justify-start">
+                                      <div className="h-6 w-6 rounded-full bg-[#4F2A2B]">
+                                        <h1 className="text-center uppercase">
+                                          {selectedTask.user.firstName.slice(0, 1)}
+                                        </h1>
+                                      </div>
+                                      <h1 id="assignedUser" className="col-span-3">
+                                        {`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}
+                                      </h1>
+                                    </div>
+                                  ) : null}
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                {/* <Clock className="h-5 text-[#E94C4C]" />
+                         */}
+                                <Calendar className="h-5 text-[#E94C4C]" />
+
+                                <Label htmlFor="user" className="text-right">
+                                  Created At
+                                </Label>
+                                <div className="flex gap-2 ml-2  justify-start">
+                                  {/* <Calendar className="h-5" /> */}
+
+                                  <h1 id="assignedUser" className="col-span-3 font-">
+                                    {formatTaskDate(selectedTask.createdAt)}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <Clock className="h-5 text-[#E94C4C]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Due Date
+                                </Label>
+                                <div className="flex gap-2 ml-4 justify-start">
+                                  <h1 id="assignedUser" className="col-span-3   ">
+                                    {formatTaskDate(selectedTask.dueDate)}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <RepeatIcon className="h-5 text-[#0D751C]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Frequency
+                                </Label>
+                                <div className="flex gap-2 ml-2  justify-start">
+                                  <Repeat className="h-5" />
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {`${selectedTask.repeatType}`}
+                                  </h1>
+                                  <div className="ml-2">
+                                    {selectedTask?.dates?.length && selectedTask.dates.length > 0 ? (
+                                      <h1 className="">
+                                        ({selectedTask?.dates?.join(', ')})
+                                      </h1>
+                                    ) : (
+                                      <p>No specific dates selected.</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className=" flex items-center gap-1 mt-4">
+                                {selectedTask.status === 'Pending' && <Circle className="h-5 text-red-500" />}
+                                {selectedTask.status === 'Completed' && <CheckCircle className="h-5 text-green-500" />}
+                                {selectedTask.status === 'In Progress' && <Loader className="h-5 text-orange-500" />}
+                                <Label htmlFor="user" className="text-right">
+                                  Status
+                                </Label>
+                                <div className="flex gap-2 ml-8  justify-start">
+
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {`${selectedTask.status}`}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <Tag className="h-5 text-[#C3AB1E]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Category
+                                </Label>
+                                <div className="flex  ml-3  justify-start">
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {selectedTask.category.name}
+                                  </h1>
+                                </div>
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                {selectedTask.priority === 'High' && <Flag className="h-5 text-red-500" />}
+                                {selectedTask.priority === 'Medium' && <Flag className="h-5 text-orange-500" />}
+                                {selectedTask.priority === 'Low' && <Flag className="h-5 text-green-500" />}
+                                <Label htmlFor="user" className="text-right">
+                                  Priority
+                                </Label>
+                                <div className="flex gap-2 ml-6  justify-start">
+
+                                  <h1 id="assignedUser" className={`col-span-3 font-bold ${selectedTask.priority === 'High'
+                                    ? 'text-red-500'
+                                    : selectedTask.priority === 'Medium'
+                                      ? 'text-orange-500'
+                                      : selectedTask.priority === 'Low'
+                                        ? 'text-green-500'
+                                        : ''
+                                    }`}>
+                                    {`${selectedTask.priority}`}
+                                  </h1>
+                                </div>
+
+                              </div>
+                              <div className=" flex items-center gap-1 mt-4">
+                                <FileTextIcon className="h-5 text-[#4662D2]" />
+                                <Label htmlFor="user" className="text-right">
+                                  Description
+                                </Label>
+                                <div className="flex gap-2 ml-2  justify-start">
+
+                                  <h1 id="assignedUser" className="col-span-3 ">
+                                    {`${selectedTask.description}`}
+                                  </h1>
+                                </div>
+                              </div>
+                              <Separator className="mt-4   " />
+                              <div className="flex p-4 gap-2">
+                                <h1 className="  ">Links</h1>
+                                <div className="bg-blue-500 h-6 w-6 rounded-full">
+                                  <Link className="h-4 mt-1" />
+                                </div>
+
+                              </div>
+                              <div className="px-4">
+                                {task.links?.map((link, index) => (
+                                  <div key={index} className="flex justify-between w-full space-x-2 my-2">
+                                    <div className="flex justify-between w-full">
+                                      <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
+                                        {link}
+                                      </a>
+                                      <div>
+                                        <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
+                                          <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
+                                        </CopyToClipboard>
+                                        <a href={link} target="_blank" rel="noopener noreferrer">
+                                          <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
+                                        </a>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                ))}
+                              </div>
+                              <Separator className="mt-4   " />
+                              <div className="flex p-4 gap-2">
+                                <h1 className="  ">Files</h1>
+                                <div className="bg-green-600 h-6 w-6 rounded-full">
+                                  <File className="h-4 mt-1" />
+                                </div>
+
+                              </div>
+                              <div className="px-4">
+                                {/* {task.links?.map((link, index) => (
+                            <div key={index} className="flex justify-between w-full space-x-2 my-2">
+                              <div className="flex justify-between w-full">
+                                <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
+                                  {link}
+                                </a>
+                                <div>
+                                  <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
+                                    <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
+                                  </CopyToClipboard>
+                                  <a href={link} target="_blank" rel="noopener noreferrer">
+                                    <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
+                                  </a>
+                                </div>
+                              </div>
+
+                            </div>
+                          ))} */}
+                              </div>
+                              <Separator className="mt-4  " />
+                              <div className="flex p-4 gap-2">
+                                <h1 className="  ">Reminders</h1>
+                                <div className="bg-red-600 h-6 w-6 rounded-full">
+                                  <Bell className="h-4 mt-1" />
+                                </div>
+
+                              </div>
+                              <div className="px-4">
+
+                              </div>
+                              <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                <Button
+                                  onClick={() => {
+                                    setStatusToUpdate("In Progress");
+                                    setIsDialogOpen(true);
+                                  }}
+                                  className="gap-2 border bg-transparent  border-gray-600 w-full"
+                                >
+                                  <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
+                                  In Progress
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    setStatusToUpdate("Completed");
+                                    setIsCompleteDialogOpen(true);
+                                  }}
+                                  className=" border bg-transparent  border-gray-600 w-full "
+                                >
+                                  <CheckCheck className="h-4 rounded-full text-green-400" />
+                                  Completed
+                                </Button>
+                                <Button
+                                  onClick={handleEditClick}
+                                  className=" border bg-transparent  border-gray-600 w-full"
+                                >
+                                  <Edit className="h-4 rounded-full  text-blue-400" />
+                                  Edit
+                                </Button>
+                                <EditTaskDialog
+                                  open={isEditDialogOpen}
+                                  onClose={() => setIsEditDialogOpen(false)}
+                                  task={selectedTask}
+                                  users={users}
+                                  categories={categories}
+                                  onTaskUpdate={handleTaskUpdate}
+                                />
+                                <Button
+                                  onClick={() => handleDelete(selectedTask._id)}
+                                  className=" border bg-transparent  border-gray-600 w-full"
+                                >
+                                  <Trash className="h-4 rounded-full text-red-400" />
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+
+                            <Separator />
+                            <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
+                              <div className="mb-4 gap-2 flex justify-start ">
+                                <UpdateIcon className="h-5" />
+                                <Label className=" text-md mt-auto">Task Updates</Label>
+
+                              </div>
+                              <div className="space-y-2    h-full">
+                                {sortedComments.map((commentObj, index) => (
+                                  <div key={index} className="relative rounded-lg p-2">
+                                    <div className="flex gap-2 items-center">
+                                      <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
+                                        {`${commentObj.userName}`.slice(0, 1)}
+                                      </div>
+                                      <strong>{commentObj.userName}</strong>
+                                    </div>
+                                    <p className="px-2 ml-6 text-xs"> {formatDate(commentObj.createdAt)}</p>
+
+                                    <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
+                                    {commentObj.status && (
+                                      <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded-lg">
+                                        {commentObj.status}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <SheetFooter>
+
+                            </SheetFooter>
+                          </SheetContent>
+                        </Sheet>
+                      )}
+
+                      {isDialogOpen && (
+                        <Dialog
+                          open={isDialogOpen}
+                        >
+                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+                            <DialogTitle>Task Update</DialogTitle>
+                            <p>Please add a note before marking the task as in progress</p>
+                            <div className="mt-4">
+                              <Label>Comment</Label>
+                              <div
+                                ref={editorRef}
+                                contentEditable
+                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                onInput={(e) => setComment(e.target.innerHTML)}
+                              ></div>
+                              <div className="flex mt-2">
+                                <input type="file" onChange={handleFileChange} className="mt-2" />
+                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                {recording ? (
+                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                ) : (
+                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                )}
+
+
+                              </div>
+                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                              {audioBlob && (
+                                <div className="mt-4">
+                                  <audio controls src={audioURL} />
+                                </div>
+                              )}
+
+                              {/* <img src="/icons/image.png" alt="image icon" /> */}
+                            </div>
+                            <div className="mt-4 flex justify-end space-x-2">
+                              <Button
+                                onClick={() => setIsDialogOpen(false)}
+                                className="w- text-white bg-gray-500 "
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full text-white bg-[#007A5A]"
+                              >
+                                Update Task
+                              </Button>
+
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <Card
+                    className="flex  w-[108%] border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
+
+                  >
+                    <h1 className="text-center font-bold text-xl">
+                      No Tasks Found
+                    </h1>
+                    <img src="/logo.png" className="w-[52.5%] h-[100%] opacity-0" />
+
+                  </Card>
+                )}
+                <FilterModal
+                  isOpen={isModalOpen}
+                  closeModal={() => setIsModalOpen(false)}
+                  categories={categories}
+                  users={users}
+                  applyFilters={applyFilters}
+                />
+              </div>
+            </div>
           ) : (
             <div className="grid mt-12 w-full text-sm gap-4">
               <div className="grid  w-full text-xs  gap-4">
-                <TaskSummary />
+                <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
               </div>
 
-              <div className="flex px-4 -mt-4 w-[100%]  space-x-2 justify-between ">
-                <h1 className="text-lg font-bold mt-2">My Tasks</h1>
+              <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
                 <div className="space-x-2 flex">
-                  <div className="relative flex px-4 mt-4 space-x-2 justify-between mb-2">
+                  <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
                     <input
                       type="text"
                       placeholder="Search Tasks..."
@@ -919,20 +2017,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="px-3 py-2 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                     />
-                    <svg
-                      className="absolute left-[79.5%] top-4 to transform -translate-y-1/2 w-5 h-5 text-white -400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M11 4a7 7 0 11-7 7 7 7 0 017-7zM20 20l-4.35-4.35"
-                      />
-                    </svg>
+
                   </div>
                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
                 </div>
@@ -941,46 +2026,56 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                 filteredTasks?.map((task) => (
                   <div key={task._id} className="">
                     <Card
-                      className="flex  w-[100%] border-[0.5px] hover:border-[#007A5A] shadow-sm items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
+                      className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                       onClick={() => setSelectedTask(task)}
                     >
                       <div className=" items-center gap-4">
                         <div>
-                          <p className="font-medium text-white">{task.title}</p>
-                          <p className="text-[#E0E0E0]">Assigned by <span className="text-[#007A5A] font-bold">
+                          <p className="font-medium text-sm text-white">{task.title}</p>
+                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
                             {task.user.firstName}
                           </span></p>
                         </div>
                         <div className="flex gap-2">
 
-                          <div className="flex gap-1 mt-2">
-                            <IconClock className="h-5" /> {formatTaskDate(task.dueDate)}
-
+                          <div className="flex -ml-1  text-xs mt-2">
+                            <IconClock className="h-5" />
+                            <h1 className="mt-[1.5px]">
+                              {formatTaskDate(task.dueDate)}
+                            </h1>
                           </div>
-                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-                          <div className="flex mt-auto">
-                            <UserIcon className="h-5" />
+                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                          <div className="flex text-xs mt-[10px]">
+                            <UserIcon className="h-4" />
                             {task.assignedUser.firstName}
                           </div>
                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
-                          <div className="flex mt-auto">
-                            <TagIcon className="h-5" />
+                          <div className="flex text-xs mt-[11px]">
+                            <TagIcon className="h-4" />
                             {task.category.name}
                           </div>
-                          {task.repeat ? task.repeatType &&
 
-                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-                            : <h1 className=""></h1>}
+                          {task.repeat ? (
+                            <div className="flex items-center">
+                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+
+                              {task.repeatType && (
+                                <h1 className="flex mt-[11px] text-xs">
+                                  <Repeat className="h-4 " />  {task.repeatType}
+                                </h1>
+                              )}
+                            </div>
+                          ) : null}
 
                           {/* <div className="flex mt-auto">
                           <TagIcon className="h-5" />
                         </div> */}
                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
-                          <div className="flex">
-                            <div>
-                              <IconProgressBolt className="h-5 mt-2 " />
+                          <div className="flex text-xs">
+                            <div className="mt-[11px]">
+                              <IconProgressBolt className="h-4  " />
 
                             </div>
                             <h1 className="mt-auto">
@@ -998,9 +2093,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 setStatusToUpdate("In Progress");
                                 setIsDialogOpen(true);
                               }}
-                              className="gap-2 border bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                              className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
                             >
-                              <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
+                              <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
                               In Progress
                             </Button>
                             <Button
@@ -1008,7 +2103,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 setStatusToUpdate("Completed");
                                 setIsCompleteDialogOpen(true);
                               }}
-                              className=" border bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full "
+                              className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
                             >
                               <CheckCheck className="h-4 rounded-full text-green-400" />
                               Completed

@@ -7,7 +7,7 @@ type Props = {
 
 const Payment = ({ selected }: Props) => {
   return (
-    <img src='/icons/billing.png' className='h-4'/>
+    <img src='/icons/billing.png' className='h-3'/>
 
   )
 }

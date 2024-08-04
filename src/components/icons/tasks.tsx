@@ -5,7 +5,7 @@ type Props = { selected: boolean }
 
 const Tasks = ({ selected }: Props) => {
   return (
-    <img src='/icons/task.png' className='h-4'/>
+    <img src='/icons/task.png' className='h-3'/>
   )
 }
 

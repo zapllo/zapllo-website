@@ -21,7 +21,7 @@ const organizationSchema = new mongoose.Schema({
   teamSize: {
     type: String,
     required: true,
-    enum: ["1-50", "51-100", "10-20", "101-500", "501-1000", "1000+"], // Adjust ranges as needed
+    enum: ["1-5", "5-10", "10-15", "15-20", "20-25", "25+"], // Adjust ranges as needed
   },
   description: {
     type: String,

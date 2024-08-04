@@ -5,7 +5,7 @@ import React from 'react'
 
 const TasksIcon = ({  }) => {
   return (
-    <img src='/icons/task.png' className='h-4'/>
+    <img src='/icons/task.png' className='h-3'/>
   )
 }
 

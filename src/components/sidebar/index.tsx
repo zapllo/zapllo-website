@@ -46,11 +46,11 @@ const MenuOptions = (props: Props) => {
   });
 
   return (
-    <nav className="dark:bg-[#380E3D] h-screen border-r border-[#4F2F51] overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-20">
+    <nav className="dark:bg-[#380E3D] h-screen border-r border-[#4F2F51] overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-14">
 
       <div className="flex items-center justify-center flex-col gap-8">
-        <Link className="flex font-bold p-4 w-full flex-row" href="/">
-          <img src='/icons/zapllo.png' className='h-full scale-125 ' />
+        <Link className="" href="/">
+          <img src='/icons/zapllo.png' className='h-full w-full ' />
         </Link>
         {/* <img src='/icons/ellipse.png' className='absolute h-[80%] z-[100] -mt-80 opacity-40 ' /> */}
 
@@ -63,7 +63,7 @@ const MenuOptions = (props: Props) => {
                     <Link
                       href={menuItem.href}
                       className={clsx(
-                        'group h-8 w-8 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer',
+                        'group h-6 w-6 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer',
                         {
                           ' bg-[#74517A]   ':
                             pathName === menuItem.href,

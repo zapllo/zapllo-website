@@ -23,6 +23,11 @@ html {
   border-bottom-left-radius: 0.5rem;
 }
 
+.tabs-trigger:last-of-type {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
 /* Ensure this class is applied to the first tab trigger */
 
 

@@ -1,10 +1,12 @@
+// pages/billing.tsx
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogOverlay, DialogContent } from "@/components/ui/dialog";
-import { CheckIcon, IndianRupee, WalletCards } from "lucide-react";
+import BillingSidebar from '../sidebar/billingSidebar';
+import { Wallet } from "lucide-react";
+import axios from 'axios';
 
 export default function Billing() {
     const [activeTab, setActiveTab] = useState('Active');
@@ -13,8 +15,31 @@ export default function Billing() {
     const [userCount, setUserCount] = useState(5);
     const [rechargeAmount, setRechargeAmount] = useState(5000);
     const [isRechargeDialogOpen, setIsRechargeDialogOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState<any>();
+    const [displayedPlan, setDisplayedPlan] = useState('');
+
+    useEffect(() => {
+        if (currentUser?.subscribedPlan) {
+            setDisplayedPlan(currentUser?.subscribedPlan);
+        } else {
+            setDisplayedPlan('No Plan');
+        }
+    }, [currentUser?.subscribedPlan]);
 
 
+    useEffect(() => {
+        const getUserDetails = async () => {
+            const res = await axios.get('/api/users/me')
+            setCurrentUser(res.data.data);
+        }
+        getUserDetails();
+    }, [])
+
+
+    const plans = {
+        'Task Pro': 1999,
+        'Money Saver Bundle': 3000,
+    };
 
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
@@ -33,217 +58,304 @@ export default function Billing() {
     const handleRecharge = () => {
         if (rechargeAmount >= 5000) {
             // Redirect to checkout page
-            window.location.href = `/checkout?amount=${rechargeAmount}`;
+            window.location.href = `/checkout?amount=${rechargeAmount}&plan=Recharge`;
         } else {
             alert('Recharge amount must be at least ₹5000.');
         }
     };
 
-    const totalCost = userCount * 1000;
-
     const handleSubscribeClick = (plan: any) => {
         setSelectedPlan(plan);
         setIsDialogOpen(true);
-        // Redirect to checkout page with the selected plan's price
     };
+
     const handleCheckoutClick = () => {
-        window.location.href = `/checkout?amount=${totalCost}`;
+        const totalCost = userCount * plans[selectedPlan];
+        window.location.href = `/checkout?amount=${totalCost}&plan=${encodeURIComponent(selectedPlan)}`
     };
 
     return (
-        <div className=" gap-8 p-4 sm:p-6 md:p-8 lg:p-10">
-            <div className='mb-8 grid grid-cols-2 w-full gap-2'>
-                <div className=''>
-                    <Card className="grd gap-6">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle>Wallet</CardTitle>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="bg-green-600"
-                                        onClick={handleRechargeClick}
+        <div className="flex">
+            <BillingSidebar />
+            <div className="flex-1 p-4">
+                <div className="w-full -ml-2 max-w-2xl mx-auto">
+                    <div className="gap-2 flex mb-6 w-full">
+                        <div className="-mt-2">
+                            <div className="p-4">
+                                <Card className="gap-6 border py-4 border-[#E0E0E066] w-full">
+                                    <CardHeader>
+                                        <div className="flex justify-between w-[420px]">
+                                            <div className="flex gap-2">
+                                                <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
+                                                    <Wallet />
+                                                </div>
+                                                <div>
+                                                    <CardTitle className="text-lg font-medium">Current Balance</CardTitle>
+                                                    <h1>₹{currentUser?.credits}</h1>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="bg-[#7C3886] hover:bg-[#7C3886]"
+                                                    onClick={handleRechargeClick}
+                                                >
+                                                    Recharge Now
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                </Card>
+                            </div>
+                        </div>
+                        <div className="-mt-2">
+                            <div className="p-4">
+                                <Card className="gap-6 border py-4 border-[#E0E0E066] w-full">
+                                    <CardHeader>
+                                        <div className="flex justify-between w-[320px]">
+                                            <div className="flex gap-2">
+                                                <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
+                                                    <img src='/icons/whatsapp.png' className='h-6' />
+                                                </div>
+                                                <div>
+                                                    <CardTitle className="text-lg">Sales</CardTitle>
+                                                    <CardDescription>Connect with team</CardDescription>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="bg-[#7C3886] hover:bg-[#7C3886]"
+                                                    onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
+                                                >
+                                                    Connect Now
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                </Card>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="w-full ml-32">
+                        <div className="flex space-x-4 mb-8  justify-center">
+                            <Button variant={activeTab === 'Active' ? 'default' : 'outline'}
+                                className={activeTab === 'Active' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
+                                onClick={() => setActiveTab('Active')}>Active</Button>
+                            <Button variant={activeTab === 'Plans' ? 'default' : 'outline'}
+                                className={activeTab === 'Plans' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
+                                onClick={() => setActiveTab('Plans')}>Plans</Button>
+                        </div>
+                    </div>
+
+                    {activeTab === 'Active' ? (
+                        <div className="flex justify-center w-full ml-28 mt-12">
+                            {displayedPlan === 'Money Saver Bundle' ? (
+                                <Card key="Money Saver Bundle" className="w-[400px] border rounded bg-transparent">
+                                    <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                        <CardTitle className="text-2xl">Money Saver Bundle</CardTitle>
+                                        <CardDescription className="text-center text-white text-sm px-2">
+                                            <span className="text-[#007A5A]">INR </span>
+                                            {plans['Money Saver Bundle']}
+                                            <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                        </CardDescription>
+                                        <div className="flex justify-center py-2 w-full">
+                                            <Button className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribed</Button>
+                                        </div>
+                                    </CardHeader>
+                                    <div className='p-4'>
+                                        <CardContent className=" bg-transparent">
+                                            <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                            <ul className="list-disc text-sm">
+                                                <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                                <li>Team Performance report</li>
+                                                <li>Links Management for your Team</li>
+                                                <li>Email Notification</li>
+                                                <li>WhatsApp Notification</li>
+                                                <li>Repeated Tasks</li>
+                                                <li>File Uploads</li>
+                                                <li>Delegate Tasks with Voice Notes</li>
+                                                <li>Task Wise Reminders</li>
+                                                <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                                <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
+                                                <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
+                                                <li>Easy leave application</li>
+                                                <li>Attendance & leave Tracking</li>
+                                                <li>WhatsApp & Email notification</li>
+                                                <li>Approval Process</li>
+                                                <li>Regularization Process (Apply for past date attendance)</li>
+                                                <li>Define your own leave types</li>
+                                                <li>Reports/Dashboards</li>
+                                            </ul>
+                                        </CardContent>
+                                    </div>
+                                    <CardFooter />
+                                </Card>
+                            ) : displayedPlan === 'Task Pro' ? (
+                                <Card key="Task Pro" className="w-[400px] rounded border bg-transparent">
+                                    <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                        <CardTitle className="text-2xl">Task Pro</CardTitle>
+                                        <CardDescription className="text-center text-white text-sm px-2">
+                                            <span className="text-[#007A5A]">INR </span>
+                                            {plans['Task Pro']}
+                                            <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                        </CardDescription>
+                                        <div className="flex justify-center py-2 w-full">
+                                            <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
+                                        </div>
+                                    </CardHeader>
+                                    <div className='p-4'>
+                                        <CardContent className=" bg-transparent">
+                                            <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                            <ul className="list-disc text-sm">
+                                                <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                                <li>Team Performance report</li>
+                                                <li>Links Management for your Team</li>
+                                                <li>Email Notification</li>
+                                                <li>WhatsApp Notification</li>
+                                                <li>Repeated Tasks</li>
+                                                <li>File Uploads</li>
+                                                <li>Delegate Tasks with Voice Notes</li>
+                                                <li>Task Wise Reminders</li>
+                                                <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                            </ul>
+                                        </CardContent>
+                                    </div>
+                                    <CardFooter />
+                                </Card>
+                            ) : (
+                                <h1 className="text-center rounded-lg bg-transparent border text-muted-foreground p-4 w-fit">
+                                    <span className="text-lg font-bold text-white">
+                                        No Current Active Plan
+                                    </span>
+                                    <br />Subscribe to avail all the Task Delegation Features
+                                </h1>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="w-full ml-10">
+                            <div className="grid gap-x-56 md:grid-cols-2 lg:grid-cols-2">
+                                {Object.keys(plans).map((plan, index) => (
+                                    <Card key={index} className="w-[400px] rounded border bg-transparent">
+                                        <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                            <CardTitle className="text-2xl">{plan}</CardTitle>
+                                            <CardDescription className="text-center text-white text-sm px-2">
+                                                <span className="text-[#007A5A]">INR </span>
+                                                {plans[plan]}
+                                                <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                            </CardDescription>
+                                            <div className="flex justify-center py-2 w-full">
+                                                <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                            </div>
+                                        </CardHeader>
+                                        <div className='p-4'>
+                                            <CardContent className=" bg-transparent">
+                                                <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                                <ul className="list-disc text-sm">
+                                                    <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                                    <li>Team Performance report</li>
+                                                    <li>Links Management for your Team</li>
+                                                    <li>Email Notification</li>
+                                                    <li>WhatsApp Notification</li>
+                                                    <li>Repeated Tasks</li>
+                                                    <li>File Uploads</li>
+                                                    <li>Delegate Tasks with Voice Notes</li>
+                                                    <li>Task Wise Reminders</li>
+                                                    <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                                    {plan === 'Money Saver Bundle' && (
+                                                        <>
+                                                            <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
+                                                            <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
+                                                            <li>Easy leave application</li>
+                                                            <li>Attendance & leave Tracking</li>
+                                                            <li>WhatsApp & Email notification</li>
+                                                            <li>Approval Process</li>
+                                                            <li>Regularization Process (Apply for past date attendance)</li>
+                                                            <li>Define your own leave types</li>
+                                                            <li>Reports/Dashboards</li>
+                                                        </>
+                                                    )}
+                                                </ul>
+                                            </CardContent>
+                                        </div>
+                                        <CardFooter />
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {isDialogOpen && (
+                        <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
+                            <DialogOverlay />
+                            <DialogContent>
+                                <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                <p className="mt-2">This plan costs ₹{plans[selectedPlan]} per user per year.</p>
+                                <div className="mt-4 flex gap-4">
+                                    <label htmlFor="userCount" className="block mb-2">Select Number of Users To Add:</label>
+                                    <select
+                                        id="userCount"
+                                        className="border outline-none bg-[#282D32] px-2 py-1 -mt-1 rounded "
+                                        value={userCount}
+                                        onChange={(e) => setUserCount(parseInt(e.target.value))}
                                     >
-                                        <IndianRupee className='h-5' /> Recharge Now
-                                    </Button>
-                                    <Button className='gap-2' variant="outline" size="sm">
-                                        <WalletCards className='h-5 ' /> Wallet Logs
+                                        {[...Array(20)].map((_, i) => {
+                                            const count = (i + 1) * 5;
+                                            return (
+                                                <option key={count} value={count}>
+                                                    {count}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                </div>
+                                <div className='flex gap-4'>
+                                    <h1>Total Subscribed Users = </h1>
+                                    {userCount} (Adding {userCount} users)
+                                </div>
+                                <div className='flex gap-4'>
+                                    <h1>Total Price  = </h1>
+                                    INR {plans[selectedPlan]} X  {userCount}
+                                </div>
+                                <div className='flex gap-4'>
+                                    <h1>Amount To Recharge = </h1>
+                                    INR {userCount * plans[selectedPlan]} (excluding GST)
+                                </div>
+                                <div className="mt-4">
+                                    <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handleCheckoutClick}>
+                                        Proceed to Checkout
                                     </Button>
                                 </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="flex items-center justify-between">
-                                <div className="text-muted-foreground">Current Balance</div>
-                                <div className="text-2xl font-bold">₹ 5000.00</div>
-                            </div>
-                            <Separator />
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className=' mt-8'>
-                    <Card className="gri gap-6">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle>Connect with Sales Team</CardTitle>
-                                <div className="flex items-center gap-2">
-                                    <img src='/whatsapp.png' className='h-7' />
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="bg-green-600"
-                                        onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
-                                    >
-                                        Connect Now
+                            </DialogContent>
+                        </Dialog>
+                    )}
+
+                    {isRechargeDialogOpen && (
+                        <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
+                            <DialogOverlay />
+                            <DialogContent>
+                                <h2 className="text-xl font-bold">Recharge Wallet</h2>
+                                <div className="mt-4">
+                                    <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount:</label>
+                                    <input
+                                        id="rechargeAmount"
+                                        type="number"
+                                        className="border p-2 rounded w-full"
+                                        value={rechargeAmount}
+                                        onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
+                                    />
+                                </div>
+                                <div className="mt-4">
+                                    <Button className="bg-[#7C3886] hover:bg-[#7C3886]" onClick={handleRecharge}>
+                                        Recharge Now
                                     </Button>
                                 </div>
-                            </div>
-                        </CardHeader>
-                    </Card>
+                            </DialogContent>
+                        </Dialog>
+                    )}
                 </div>
             </div>
-            <div className="flex space-x-4 mb-8 justify-center">
-                <Button variant={activeTab === 'Active' ? 'default' : 'outline'} className='w-1/4' onClick={() => setActiveTab('Active')}>Active</Button>
-                <Button variant={activeTab === 'Plans' ? 'default' : 'outline'} className='w-1/4' onClick={() => setActiveTab('Plans')}>Plans</Button>
-            </div>
-
-            {activeTab === 'Active' ? (
-                <div className='flex justify-center mt-24 '><h1 className='text-center rounded-lg bg-secondary px-4 py-2 w-fit '>No Active Plans <br />Subscribe for more task management features!</h1></div>
-            ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Task Pro</CardTitle>
-                            <CardDescription>Ideal for task management</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="flex items-center justify-between">
-                                <div className="text-4xl font-bold flex"><IndianRupee className='h-10' />1000</div>
-                                <div className="text-muted-foreground">/user/month</div>
-                            </div>
-                            <ul className="grid gap-2 text-muted-foreground">
-                                <li className="flex items-center gap-2">
-                                    <CheckIcon className="h-4 w-4 fill-primary" />
-                                    Unlimited tasks
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckIcon className="h-4 w-4 fill-primary" />
-                                    Priority support
-                                </li>
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
-                        </CardFooter>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Money Saver Bundle</CardTitle>
-                            <CardDescription>Best value for your money</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="flex items-center justify-between">
-                                <div className="text-4xl font-bold flex"><IndianRupee className='h-10' />1000</div>
-                                <div className="text-muted-foreground">/month</div>
-                            </div>
-                            <ul className="grid gap-2 text-muted-foreground">
-                                <li className="flex items-center gap-2">
-                                    <CheckIcon className="h-4 w-4 fill-primary" />
-                                    All features included
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckIcon className="h-4 w-4 fill-primary" />
-                                    Unlimited users
-                                </li>
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribe</Button>
-                        </CardFooter>
-                    </Card>
-                </div>
-            )}
-
-            {isDialogOpen && (
-                <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog} >
-                    <DialogOverlay />
-                    <DialogContent>
-                        <h2 className="text-xl font-bold">{selectedPlan}</h2>
-                        <div className='flex justify-between'>
-                            <h2 className="text-xs font-bold">Subscribed Users: 0</h2>
-                            <h2 className="text-xs font-bold">Balance: ₹0.00</h2>
-                        </div>
-                        <div className='flex justify-start gap-2'>
-                            <div>
-                                <label className="block my-4">
-                                    <span className="text-">Select number of Users:</span>
-                                </label>
-                            </div>
-                            <div>
-                                <select
-                                    value={userCount}
-                                    onChange={(e) => setUserCount(Number(e.target.value))}
-                                    className="block w-full p-2 rounded mt-2"
-                                >
-                                    {[...Array(21).keys()].slice(5).map(num => (
-                                        <option key={num} value={num}>{num} users</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                        </div>
-                        <div className=''>
-                            <h2 className="text-sm font-bold">Total Subscribed Users = {userCount} (Adding {userCount} Users)</h2>
-                            <h2 className="text-sm font-bold">Total Price = ₹ 1000 x {userCount} Users</h2>
-
-                        </div>
-
-                        <div className="my-4">
-                            <span className="">Total Price:</span>
-                            <span className="ml-2 text-2xl font-bold">₹ {totalCost}</span>
-                        </div>
-                        <div className="">
-
-                            <Button className='w-full bg-green-600 hover:bg-primary' onClick={() => { handleCheckoutClick() }}>Subscribe</Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            )}
-
-            {isRechargeDialogOpen && (
-                <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
-                    <DialogOverlay />
-                    <DialogContent>
-                        <h2 className="text-xl font-bold">Recharge Wallet</h2>
-                        <div className="mt-4">
-                            <label className="block my-4">
-                                <span className="text-">Enter amount to recharge:</span>
-                            </label>
-                            <div className='flex'>
-                                <IndianRupee className='mt-3' />
-
-                                <input
-                                    type="number"
-                                    value={rechargeAmount}
-                                    onChange={(e) => setRechargeAmount(Number(e.target.value))}
-                                    className="block w-full p-2 outline-none rounded-lg mt-2"
-                                    min={5000}
-                                />
-                            </div>
-
-                        </div>
-                        <div className="my-4">
-                            <Button
-                                className='w-full bg-green-600 hover:bg-primary'
-                                onClick={handleRecharge}
-                            >
-                                Recharge
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            )}
-        </div >
+        </div>
     );
 }

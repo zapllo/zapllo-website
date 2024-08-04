@@ -47,14 +47,23 @@ const userSchema = new mongoose.Schema({
         email: { type: Boolean, default: true },
         whatsapp: { type: Boolean, default: true },
     },
-    isPro:{
+    isPro: {
         type: Boolean,
         default: false,
+    },
+    subscribedPlan: {
+        type: String,
+        default: '', // This will store the name of the subscribed plan
     },
     promotionNotification: {
         type: Boolean,
         default: false,
     },
+    credits: {
+        type: Number,
+        default: 0, // Set default value to 0 or any other initial amount
+    },
+
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
