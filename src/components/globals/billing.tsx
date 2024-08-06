@@ -8,6 +8,8 @@ import BillingSidebar from '../sidebar/billingSidebar';
 import { Wallet } from "lucide-react";
 import axios from 'axios';
 
+type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
+
 export default function Billing() {
     const [activeTab, setActiveTab] = useState('Active');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -70,8 +72,25 @@ export default function Billing() {
     };
 
     const handleCheckoutClick = () => {
-        const totalCost = userCount * plans[selectedPlan];
-        window.location.href = `/checkout?amount=${totalCost}&plan=${encodeURIComponent(selectedPlan)}`
+        if (!selectedPlan || !(selectedPlan in plans)) {
+            console.error("Selected plan is invalid.");
+            return;
+        }
+
+        const plan = selectedPlan as PlanKeys;
+        const planCost = plans[plan];
+
+        if (planCost === undefined) {
+            console.error("Plan cost is not available.");
+            return;
+        }
+
+        const totalCost = userCount * planCost;
+        window.location.href = `/checkout?amount=${totalCost}&plan=${encodeURIComponent(plan)}`;
+    };
+
+    const isValidPlan = (plan: string | null): plan is keyof typeof plans => {
+        return plan !== null && Object.keys(plans).includes(plan);
     };
 
     return (
@@ -237,56 +256,59 @@ export default function Billing() {
                     ) : (
                         <div className="w-full ml-10">
                             <div className="grid gap-x-56 md:grid-cols-2 lg:grid-cols-2">
-                                {Object.keys(plans).map((plan, index) => (
-                                    <Card key={index} className="w-[400px] rounded border bg-transparent">
-                                        <CardHeader className="bg-[#2F0932] rounded border-b text-center">
-                                            <CardTitle className="text-2xl">{plan}</CardTitle>
-                                            <CardDescription className="text-center text-white text-sm px-2">
-                                                <span className="text-[#007A5A]">INR </span>
-                                                {plans[plan]}
-                                                <h1 className="text-xs italic">(Per User Per Year)</h1>
-                                            </CardDescription>
-                                            <div className="flex justify-center py-2 w-full">
-                                                <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                {Object.keys(plans).map((plan, index) => {
+                                    const planKey = plan as keyof typeof plans; // Type assertion
+                                    return (
+                                        <Card key={index} className="w-[400px] rounded border bg-transparent">
+                                            <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                                <CardTitle className="text-2xl">{plan}</CardTitle>
+                                                <CardDescription className="text-center text-white text-sm px-2">
+                                                    <span className="text-[#007A5A]">INR </span>
+                                                    {plans[planKey]}
+                                                    <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                                </CardDescription>
+                                                <div className="flex justify-center py-2 w-full">
+                                                    <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                                </div>
+                                            </CardHeader>
+                                            <div className='p-4'>
+                                                <CardContent className=" bg-transparent">
+                                                    <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                                    <ul className="list-disc text-sm">
+                                                        <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                                        <li>Team Performance report</li>
+                                                        <li>Links Management for your Team</li>
+                                                        <li>Email Notification</li>
+                                                        <li>WhatsApp Notification</li>
+                                                        <li>Repeated Tasks</li>
+                                                        <li>File Uploads</li>
+                                                        <li>Delegate Tasks with Voice Notes</li>
+                                                        <li>Task Wise Reminders</li>
+                                                        <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                                        {plan === 'Money Saver Bundle' && (
+                                                            <>
+                                                                <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
+                                                                <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
+                                                                <li>Easy leave application</li>
+                                                                <li>Attendance & leave Tracking</li>
+                                                                <li>WhatsApp & Email notification</li>
+                                                                <li>Approval Process</li>
+                                                                <li>Regularization Process (Apply for past date attendance)</li>
+                                                                <li>Define your own leave types</li>
+                                                                <li>Reports/Dashboards</li>
+                                                            </>
+                                                        )}
+                                                    </ul>
+                                                </CardContent>
                                             </div>
-                                        </CardHeader>
-                                        <div className='p-4'>
-                                            <CardContent className=" bg-transparent">
-                                                <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
-                                                <ul className="list-disc text-sm">
-                                                    <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
-                                                    <li>Team Performance report</li>
-                                                    <li>Links Management for your Team</li>
-                                                    <li>Email Notification</li>
-                                                    <li>WhatsApp Notification</li>
-                                                    <li>Repeated Tasks</li>
-                                                    <li>File Uploads</li>
-                                                    <li>Delegate Tasks with Voice Notes</li>
-                                                    <li>Task Wise Reminders</li>
-                                                    <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
-                                                    {plan === 'Money Saver Bundle' && (
-                                                        <>
-                                                            <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
-                                                            <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
-                                                            <li>Easy leave application</li>
-                                                            <li>Attendance & leave Tracking</li>
-                                                            <li>WhatsApp & Email notification</li>
-                                                            <li>Approval Process</li>
-                                                            <li>Regularization Process (Apply for past date attendance)</li>
-                                                            <li>Define your own leave types</li>
-                                                            <li>Reports/Dashboards</li>
-                                                        </>
-                                                    )}
-                                                </ul>
-                                            </CardContent>
-                                        </div>
-                                        <CardFooter />
-                                    </Card>
-                                ))}
+                                            <CardFooter />
+                                        </Card>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
-                    {isDialogOpen && (
+                    {isDialogOpen && isValidPlan(selectedPlan) && (
                         <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
                             <DialogOverlay />
                             <DialogContent>

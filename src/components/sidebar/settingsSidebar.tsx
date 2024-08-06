@@ -36,7 +36,7 @@ const SettingsOptions = (props: Props) => {
     });
 
     return (
-        <nav className=" dark:bg-[#05071E] w-fit  h-screen  overflow-scroll scrollbar-hide  justify-between flex items-center flex-col rounded-b-full rounded-r-xl  gap-10 py-4 px-4">
+        <nav className=" dark:bg-[#201124] border-r w-fit  h-screen  overflow-scroll scrollbar-hide  justify-between flex items-center flex-col rounded-b-full rounded-r-xl  gap-10 py-4 px-4">
             <div className="flex items-center justify-center flex-col gap-8">
                 {/* <Link
                     className="flex font-bold flex-row "
@@ -48,8 +48,8 @@ const SettingsOptions = (props: Props) => {
                     {filteredSettingsOptions.map((menuItem) => (
                         <ul key={menuItem.name}>
                             <div>
-                                <div className='flex space-y-4 mt-4 w-full'>
-                                    <li className='flex w-full'>
+                                <div className='flex justify-start space-y-4 mt-4 w-full'>
+                                    <li className='flex w-full justify-start'>
                                         {/* 
                                             className={clsx(
                                                 'group h-8 w-8 flex items-center justify-center  scale-[1.5] rounded-lg p-[3px]  cursor-pointer',
@@ -65,9 +65,9 @@ const SettingsOptions = (props: Props) => {
                                         href={menuItem.href}>
                                         <div
                                             className={clsx(
-                                                'bg-black/10 flex gap-4 px-12 py-2 cursor-pointer  backdrop-blur-xl',
+                                                'bg-black/10 flex gap-4  px-12 py-2 cursor-pointer  backdrop-blur-xl',
                                                 {
-                                                    'dark:bg-gradient-to-r from-[#A587FF] px-16 py-2 rounded-r-xl w-full   to-[#5E29FF]  bg-[#EEE0FF] ':
+                                                    'dark: px-16 py-2  w-full    dark:bg-[#75517B] ':
                                                         pathName === menuItem.href,
                                                 }
                                             )}

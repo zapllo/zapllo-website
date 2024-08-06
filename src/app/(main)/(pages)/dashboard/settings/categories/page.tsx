@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
-import { Edit, Edit2, Edit3, EditIcon, Trash, Trash2 } from 'lucide-react';
+import { Edit, Edit3, Trash } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -22,10 +22,9 @@ const Categories: React.FC = () => {
     const [role, setRole] = useState("role");
     const [isTrialExpired, setIsTrialExpired] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
-
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     useEffect(() => {
-        // Fetch categories from the server
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('/api/category/get');
@@ -53,9 +52,7 @@ const Categories: React.FC = () => {
             const response = await axios.post('/api/category/create', { name: newCategory });
 
             if (response.status === 200) {
-                // Add the new category to the categories list
                 setCategories([...categories, response.data.data]);
-                // Clear the new category input
                 setNewCategory('');
                 setLoading(false);
 
@@ -74,9 +71,7 @@ const Categories: React.FC = () => {
             const response = await axios.patch('/api/category/edit', { categoryId, name: editCategoryName });
 
             if (response.status === 200) {
-                // Update the category in the list
                 setCategories(categories.map(cat => cat._id === categoryId ? response.data.data : cat));
-                // Clear the editing state
                 setEditingCategoryId(null);
                 setEditCategoryName('');
             } else {
@@ -92,7 +87,6 @@ const Categories: React.FC = () => {
             const response = await axios.delete('/api/category/delete', { data: { categoryId } });
 
             if (response.status === 200) {
-                // Remove the category from the list
                 setCategories(categories.filter(cat => cat._id !== categoryId));
             } else {
                 console.error('Error deleting category:', response.data.error);
@@ -113,6 +107,10 @@ const Categories: React.FC = () => {
         getUserDetails();
     }, []);
 
+    const filteredCategories = categories.filter(cat =>
+        cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     if (isTrialExpired) {
         return (
             <div className='p-4 text-center mt-32'>
@@ -127,24 +125,24 @@ const Categories: React.FC = () => {
 
     return (
         <div className='p-4'>
-            <h1 className='text-center text-2xl font-bold mb-8 bg-secondary py-2'>Task Categories</h1>
-            <div className='flex justify-center bg- rounded '>
+            <h1 className='text- text-xl font-medium bg-[#2F0932]   py-2 rounded px-2'>Category</h1>
+            <div className='flex justify-start bg- rounded '>
                 {role === "orgAdmin" && (
-                    <div className="flex justify-center">
-                        <div className=''>
-                            <Label>Add a New Category</Label>
-                            <Input
+                    <div className="flex justify-center w-full">
+                        <div className='mt-4  flex justify-center '>
+                            {/* <Label>Add a New Category</Label> */}
+                            <input
                                 type="text"
-                                placeholder="New Category"
+                                placeholder="Add New Category"
                                 value={newCategory}
                                 onChange={(e) => setNewCategory(e.target.value)}
-                                className="w-full text-black border rounded px-3 py-2"
+                                className="w-full outline-none text-white bg-[#2F0932] border rounded px-3 py-1"
                             />
                         </div>
                         <div className='mt-auto'>
                             <button
                                 onClick={handleCreateCategory}
-                                className="ml-2   px-3 py-2 bg-primary text-white rounded"
+                                className="ml-2 px-3 py-1 bg-[#75517B] text-white rounded"
                             >
                                 {loading ? 'Creating...' : 'Create'}
                             </button>
@@ -153,9 +151,22 @@ const Categories: React.FC = () => {
                     </div>
                 )}
             </div>
+            <h1 className='text-center text-xl font-medium p-4'>Categories</h1>
+            <div className="flex justify-start">
+                {/* <Label>Search Categories</Label> */}
+                <input
+                    type="text"
+                    placeholder="Search Categories"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-1/4 outline-none text-white bg-[#1A1C20] border rounded px-3 py-2"
+                />
+            </div>
+
+
             <div className="mt-4 grid grid-cols-3 gap-4">
-                {categories.map((cat) => (
-                    <div key={cat._id} className="border px-2 py-2">
+                {filteredCategories.map((cat) => (
+                    <div key={cat._id} className="border px-2 py-1 text-sm">
                         {editingCategoryId === cat._id ? (
                             <div>
                                 <Input
@@ -179,6 +190,15 @@ const Categories: React.FC = () => {
                             </div>
                         ) : (
                             <div className="flex items-center justify-between">
+                                {getCategoryIcon(cat.name) ? (
+                                    <img
+                                        src={getCategoryIcon(cat?.name) as string} // Type assertion
+                                        alt={cat.name}
+                                        className="w-6 h-6 ml-2 mt-2"
+                                    />
+                                ) : (
+                                    <FallbackImage name={cat.name} />
+                                )}
                                 <span>{cat.name}</span>
                                 {role === "orgAdmin" && (
                                     <div>
@@ -189,13 +209,13 @@ const Categories: React.FC = () => {
                                             }}
                                             className="px-3 py-2 bg-warning text-white rounded"
                                         >
-                                            <Edit3 />
+                                            <Edit3 className='h-5' />
                                         </button>
                                         <button
                                             onClick={() => handleDeleteCategory(cat._id)}
                                             className="ml-2 px-3 py-2 bg-danger text-white rounded"
                                         >
-                                            <Trash />
+                                            <Trash className='h-5' />
                                         </button>
                                     </div>
                                 )}
@@ -209,3 +229,37 @@ const Categories: React.FC = () => {
 };
 
 export default Categories;
+
+
+interface FallbackImageProps {
+    name: string; // Define the type of 'name'
+}
+
+const FallbackImage: React.FC<FallbackImageProps> = ({ name }) => {
+    const initial = name.charAt(0).toUpperCase(); // Get the first letter of the category name
+    return (
+        <div className="bg-[#282D32] rounded-full h-8 w-8 flex items-center justify-center">
+            <span className="text-white font-bold text-lg">{initial}</span>
+        </div>
+    );
+};
+
+
+const getCategoryIcon = (categoryName: String) => {
+    switch (categoryName) {
+        case 'Automation':
+            return '/icons/intranet.png';
+        case 'Customer Support':
+            return '/icons/support.png';
+        case 'Marketing':
+            return '/icons/marketing.png';
+        case 'Operations':
+            return '/icons/operations.png';
+        case 'Sales':
+            return '/icons/sales.png';
+        case 'HR':
+            return '/icons/attendance.png';
+        default:
+            return null; // Or a default icon if you prefer
+    }
+};

@@ -50,7 +50,7 @@ const MenuOptions = (props: Props) => {
 
       <div className="flex items-center justify-center flex-col gap-8">
         <Link className="" href="/">
-          <img src='/icons/zapllo.png' className='h-full w-full ' />
+          <img src='/icons/zapllo.png' className='h-full w-full scale-75 ' />
         </Link>
         {/* <img src='/icons/ellipse.png' className='absolute h-[80%] z-[100] -mt-80 opacity-40 ' /> */}
 

@@ -1,24 +1,34 @@
 'use client'
-
-
 import React, { useState, useEffect } from 'react';
 import { getData } from 'country-list';
-import { Country, State } from 'country-state-city';
+import { Country, IState, State } from 'country-state-city';
 import Flag from 'react-world-flags';
 
-const CustomDropdown = ({ options, selectedValue, onSelect }) => {
+interface Option {
+    label: string;
+    name: string;
+    value: string;
+    code?: string;
+}
+
+interface CustomDropdownProps {
+    options: Option[];
+    selectedValue: Option | null;
+    onSelect: (value: string) => void;
+}
+
+const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue, onSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Filter options based on the search query
     const filteredOptions = options.filter(option =>
         option.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleSelect = (value) => {
-        onSelect(value);
-        setSearchQuery(''); // Clear search input
-        setIsOpen(false);   // Close dropdown
+    const handleSelect = (option: Option) => {
+        onSelect(option.value);
+        setSearchQuery('');
+        setIsOpen(false);
     };
 
     return (
@@ -29,7 +39,9 @@ const CustomDropdown = ({ options, selectedValue, onSelect }) => {
             >
                 {selectedValue ? (
                     <div className="flex items-center">
-                        <Flag code={selectedValue.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />
+                        {selectedValue.code && (
+                            <Flag code={selectedValue.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />
+                        )}
                         {selectedValue.name}
                     </div>
                 ) : (
@@ -38,7 +50,6 @@ const CustomDropdown = ({ options, selectedValue, onSelect }) => {
             </button>
             {isOpen && (
                 <div className="absolute bg-black border rounded mt-1 w-full max-h-60 scrollbar-hide overflow-auto">
-                    {/* Search input */}
                     <input
                         type="text"
                         placeholder="Search country.."
@@ -46,7 +57,6 @@ const CustomDropdown = ({ options, selectedValue, onSelect }) => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="block w-full p-2 outline-none border-b bg-[#2F0932] text-white"
                     />
-                    {/* List of options */}
                     {filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
                             <div
@@ -54,7 +64,9 @@ const CustomDropdown = ({ options, selectedValue, onSelect }) => {
                                 onClick={() => handleSelect(option)}
                                 className="cursor-pointer p-2 hover:bg-[#201024] flex items-center"
                             >
-                                <Flag code={option.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />
+                                {option.code && (
+                                    <Flag code={option.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />
+                                )}
                                 {option.name}
                             </div>
                         ))
@@ -67,34 +79,52 @@ const CustomDropdown = ({ options, selectedValue, onSelect }) => {
     );
 };
 
-
 const CountryDropdown = () => {
     const [formData, setFormData] = useState({ country: '', state: '' });
-    const [countries, setCountries] = useState([]);
-    const [states, setStates] = useState([]);
-    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [countries, setCountries] = useState<Option[]>([]);
+    const [states, setStates] = useState<IState[]>([]);
+    const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
 
     useEffect(() => {
-        // Fetch countries using country-list
         const countryData = getData();
-        setCountries(countryData);
+        const formattedCountries = countryData.map((country) => ({
+            label: country.name,
+            name: country.name,
+            value: country.code,
+            code: country.code
+        }));
+        setCountries(formattedCountries);
     }, []);
 
     useEffect(() => {
         if (formData.country) {
-            // Fetch states using country-state-city
-            const selectedCountry = Country.getCountryByCode(formData.country);
-            const stateData = State.getStatesOfCountry(selectedCountry.isoCode);
-            setStates(stateData);
-            setSelectedCountry({ code: formData.country, name: selectedCountry.name });
+            const selectedCountryData = Country.getCountryByCode(formData.country);
+            if (selectedCountryData) {
+                const stateData = State.getStatesOfCountry(selectedCountryData.isoCode);
+                setStates(stateData);
+                setSelectedCountry({
+                    label: selectedCountryData.name,
+                    name: selectedCountryData.name,
+                    value: selectedCountryData.isoCode,
+                    code: selectedCountryData.isoCode
+                });
+            } else {
+                // Handle the case where the country data is not found
+                setStates([]);
+                setSelectedCountry(null);
+            }
         }
     }, [formData.country]);
 
-    const handleCountrySelect = (country) => {
-        setFormData({ ...formData, country: country.code });
+    const handleCountrySelect = (value: string) => {
+        const country = countries.find(c => c.value === value);
+        if (country) {
+            setFormData({ ...formData, country: value });
+            setSelectedCountry(country);
+        }
     };
 
-    const handleStateSelect = (e) => {
+    const handleStateSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
         setFormData({ ...formData, state: value });
     };
@@ -102,7 +132,7 @@ const CountryDropdown = () => {
     return (
         <div>
             <label className="block my-4">
-                <span className="">Country:</span>
+                <span>Country:</span>
                 <CustomDropdown
                     options={countries}
                     selectedValue={selectedCountry}
@@ -110,7 +140,7 @@ const CountryDropdown = () => {
                 />
             </label>
             <label className="block my-4">
-                <span className="">State:</span>
+                <span>State:</span>
                 <select
                     name="state"
                     value={formData.state}
@@ -128,4 +158,5 @@ const CountryDropdown = () => {
         </div>
     );
 };
+
 export default CountryDropdown;

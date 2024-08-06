@@ -1,9 +1,23 @@
 import { IconProgress } from "@tabler/icons-react";
 import { CheckCircle, Circle, CircleAlert, Clock } from "lucide-react";
 
-export const TaskSummary = ({ overdueTasks, completedTasks, inProgressTasks, pendingTasks, delayedTasks, inTimeTasks }) => {
-    // const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getTotalTaskStats();
+interface TaskSummaryProps {
+    overdueTasks: number;
+    completedTasks: number;
+    inProgressTasks: number;
+    pendingTasks: number;
+    delayedTasks: number;
+    inTimeTasks: number;
+}
 
+export const TaskSummary: React.FC<TaskSummaryProps> = ({
+    overdueTasks,
+    completedTasks,
+    inProgressTasks,
+    pendingTasks,
+    delayedTasks,
+    inTimeTasks
+}) => {
     return (
         <div className=" grid grid-cols-6  gap-4 mb-8 rounded-lg shadow-md">
             {/* <h2 className="text-lg font-medium mb-4">Task Summary</h2> */}

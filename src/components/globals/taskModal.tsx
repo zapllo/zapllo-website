@@ -92,11 +92,104 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [assignMoreTasks, setAssignMoreTasks] = useState(false); // State for switch
     const [recording, setRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+    const editorRef = useRef<HTMLDivElement>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioURLRef = useRef<string | null>(null);
     const [role, setRole] = useState("");
     const [loading, setLoading] = useState<boolean>(false);
     const [audioURL, setAudioURL] = useState('');
+    const audioURLRef = useRef<string | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+    useEffect(() => {
+        if (audioBlob) {
+            const audioURL = URL.createObjectURL(audioBlob);
+            setAudioURL(audioURL);
+        }
+    }, [audioBlob]);
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Type assertion
+            const audioContext = new AudioContext();
+            const analyser = audioContext.createAnalyser();
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(analyser);
+            analyser.fftSize = 2048;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyserRef.current = analyser;
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    const blob = new Blob([event.data], { type: 'audio/wav' });
+                    setAudioBlob(blob);
+                    const audioURL = URL.createObjectURL(blob);
+                    audioURLRef.current = audioURL;
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                setRecording(false);
+            };
+
+            mediaRecorder.start();
+            setRecording(true);
+
+            // Real-time waveform visualization
+            const canvas = canvasRef.current;
+            if (canvas) {
+                const canvasCtx = canvas.getContext('2d');
+                if (canvasCtx) {
+                    const drawWaveform = () => {
+                        if (analyserRef.current) {
+                            requestAnimationFrame(drawWaveform);
+                            analyserRef.current.getByteTimeDomainData(dataArray);
+                            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                            canvasCtx.lineWidth = 2;
+                            canvasCtx.strokeStyle = 'green';
+                            canvasCtx.beginPath();
+
+                            const sliceWidth = canvas.width * 1.0 / bufferLength;
+                            let x = 0;
+
+                            for (let i = 0; i < bufferLength; i++) {
+                                const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
+                                const y = v * canvas.height / 2; // Convert to canvas height
+
+                                if (i === 0) {
+                                    canvasCtx.moveTo(x, y);
+                                } else {
+                                    canvasCtx.lineTo(x, y);
+                                }
+
+                                x += sliceWidth;
+                            }
+
+                            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+                            canvasCtx.stroke();
+                        }
+                    };
+
+                    drawWaveform();
+                }
+            }
+
+            mediaRecorderRef.current = mediaRecorder;
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+        }
+    };
+
+    const stopRecording = () => {
+        mediaRecorderRef.current?.stop();
+    };
+
+
+
+
 
     const handleSwitchChange = (event: any) => {
         setAssignMoreTasks(event.target.checked);
@@ -363,91 +456,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setAssignMoreTasks(checked);
     };
 
-    const canvasRef = useRef(null);
-    const analyserRef = useRef(null);
-  
-    useEffect(() => {
-      if (audioBlob) {
-        const audioURL = URL.createObjectURL(audioBlob);
-        setAudioURL(audioURL);
-      }
-    }, [audioBlob]);
-  
-    const startRecording = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream);
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const analyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaStreamSource(stream);
-        source.connect(analyser);
-        analyser.fftSize = 2048;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        analyserRef.current = analyser;
-  
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            const blob = new Blob([event.data], { type: 'audio/wav' });
-            setAudioBlob(blob);
-            const audioURL = URL.createObjectURL(blob);
-            audioURLRef.current = audioURL;
-          }
-        };
-  
-        mediaRecorder.onstop = () => {
-          setRecording(false);
-        };
-  
-        mediaRecorder.start();
-        setRecording(true);
-  
-        // Real-time waveform visualization
-        const canvas = canvasRef.current;
-        const canvasCtx = canvas.getContext('2d');
-  
-        const drawWaveform = () => {
-          if (analyserRef.current) {
-            requestAnimationFrame(drawWaveform);
-            analyserRef.current.getByteTimeDomainData(dataArray);
-            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-            canvasCtx.lineWidth = 2;
-            canvasCtx.strokeStyle = 'green';
-            canvasCtx.beginPath();
-  
-            const sliceWidth = canvas.width * 1.0 / bufferLength;
-            let x = 0;
-  
-            for (let i = 0; i < bufferLength; i++) {
-              const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
-              const y = v * canvas.height / 2; // Convert to canvas height
-  
-              if (i === 0) {
-                canvasCtx.moveTo(x, y);
-              } else {
-                canvasCtx.lineTo(x, y);
-              }
-  
-              x += sliceWidth;
-            }
-  
-            canvasCtx.lineTo(canvas.width, canvas.height / 2);
-            canvasCtx.stroke();
-          }
-        };
-  
-        drawWaveform();
-  
-        mediaRecorderRef.current = mediaRecorder;
-      } catch (error) {
-        console.error('Error accessing microphone:', error);
-      }
-    };
-  
-    const stopRecording = () => {
-      mediaRecorderRef.current?.stop();
-    };
-  
+
+
 
 
     return (
@@ -1009,8 +1019,12 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
     );
 };
 
+interface FallbackImageProps {
+    name: string; // Define the type of 'name'
+}
 
-const FallbackImage = ({ name }) => {
+
+const FallbackImage: React.FC<FallbackImageProps> = ({ name }) => {
     const initial = name.charAt(0).toUpperCase(); // Get the first letter of the category name
     return (
         <div className="bg-[#282D32] rounded-full h-10 w-10 flex items-center justify-center">
@@ -1107,7 +1121,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                                 <div className='bg-[#282D32] rounded-full h-10 w-10'>
                                     {getCategoryIcon(categorys.name) ? (
                                         <img
-                                            src={getCategoryIcon(categorys.name)}
+                                            src={getCategoryIcon(categorys?.name) as string} // Type assertion
                                             alt={categorys.name}
                                             className="w-6 h-6 ml-2 mt-2"
                                         />

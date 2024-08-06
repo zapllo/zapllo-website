@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Select from 'react-select';
+import Select, { StylesConfig } from 'react-select';
 import {
   format,
   addMonths,
@@ -34,6 +34,29 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDat
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
 
+  const customStyles: StylesConfig = {
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? '#6B7280' : state.isFocused ? '#4B5563' : 'black', // Adjust background for selected and focused options
+      color: 'white',
+    }),
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: '#017A5B',
+      border: 'none',
+      borderRadius: '0.375rem',
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: 'white',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: '#017A5B',
+      borderRadius: '0.375rem',
+    }),
+  };
+
   const handlePrevMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
   };
@@ -66,33 +89,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDat
           onChange={handleMonthChange}
           className="bg-[#017A5B] w-full text-white"
           classNamePrefix="custom-select"
-          styles={{
-            option: (provided) => ({
-              ...provided,
-              backgroundColor: 'black',
-              color: 'white'
-            }),
-            optionHovered: (provided) => ({
-              ...provided,
-              backgroundColor: '#6B7280', // gray-500
-              color: 'white'
-            }),
-            control: (provided) => ({
-              ...provided,
-              backgroundColor: '#017A5B',
-              border: 'none',
-              borderRadius: '0.375rem'
-            }),
-            singleValue: (provided) => ({
-              ...provided,
-              color: 'white'
-            }),
-            menu: (provided) => ({
-              ...provided,
-              backgroundColor: '#017A5B',
-              borderRadius: '0.375rem'
-            }),
-          }}
+          styles={customStyles}
         />
         <Select
           options={yearOptions}
@@ -100,33 +97,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDat
           onChange={handleYearChange}
           className="bg-[#017A5B] w-full text-white"
           classNamePrefix="custom-select"
-          styles={{
-            option: (provided) => ({
-              ...provided,
-              backgroundColor: 'black',
-              color: 'white'
-            }),
-            optionHovered: (provided) => ({
-              ...provided,
-              backgroundColor: '#6B7280', // gray-500
-              color: 'white'
-            }),
-            control: (provided) => ({
-              ...provided,
-              backgroundColor: '#017A5B',
-              border: 'none',
-              borderRadius: '0.375rem'
-            }),
-            singleValue: (provided) => ({
-              ...provided,
-              color: 'white'
-            }),
-            menu: (provided) => ({
-              ...provided,
-              backgroundColor: '#017A5B',
-              borderRadius: '0.375rem'
-            }),
-          }}
+          styles={customStyles}
         />
       </div>
       <button onClick={handleNextMonth}>

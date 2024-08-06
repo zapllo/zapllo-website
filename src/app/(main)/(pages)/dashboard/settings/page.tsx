@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
-import { Phone, PhoneCallIcon } from 'lucide-react';
+import { Mail, Phone, PhoneCallIcon, Plus, PlusCircle, Video } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -142,105 +142,150 @@ export default function Page() {
 
     return (
         <div className='p-4'>
-            <div className='flex justify-center bg- rounded p-2'>
-                <div className="flex cursor-pointer bg-secondary rounded text-sm px-4 py-2 items-center justify-between">
-                    <div className="flex items-center gap-4">
+            {/* <div className='flex justify-center bg- rounded p-2'>
+                <div className="flex cursor-pointer bg-transparent border border-lg  w-full rounded text-sm px-4 py-2 items-center justify-between">
+                    <div className="flex items-center text-[#E0E0E0] gap-4">
                         <Avatar>
                             <AvatarImage src="/placeholder-user.jpg" />
-                            <AvatarFallback className='bg-secondary-foreground text-black'>{firstName.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className='bg-[#75517B] text-white'>{firstName.charAt(0)}{lastName.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <p className="font-medium">{firstName}</p>
-                            <p className="text-muted-foreground">{email}</p>
+                            <p className="font-medium text-sm">{firstName} {lastName}</p>
                         </div>
                         <div>
-                            <p className="font-medium">Role: {role === "orgAdmin" ? "Admin" : role === "member" ? "Member" : role === "manager" ? "Manager" : role}</p>
-                            <p className="text-muted-foreground flex gap-2"><Phone className='h-5' />{whatsappNo}</p>
+                            <p className="font-medium text-xs">Role: {role === "orgAdmin" ? "Admin" : role === "member" ? "Member" : role === "manager" ? "Manager" : role}</p>
+                        </div>
+                        <h1>|</h1>
+                        <div className='flex text-xs gap-1'>
+                            <Mail className='h-4' />
+                            <p className="">{email}</p>
+                        </div>
+                        <h1>|</h1>
+
+                        <p className=" flex gap-2 text-xs"><Phone className='h-4' />{whatsappNo}</p>
+
+                    </div>
+                </div>
+            </div> */}
+
+            {
+                role === "orgAdmin" && (
+                    <div>
+                        <div className=' mt-4 bg- p-2 bg-[#380E3D] text-lg rounded '>
+                            <h1>Organization Details</h1>
+                        </div>
+                        <div className='  grid grid-cols-1 text- gap-2 py-2'>
+                            <div className='grid-cols-2 grid gap-2 p-2'>
+                                <div className=''>
+                                    <h1 className='mt-2'>Company Name</h1>
+                                    <h1 className='mt-6'>Industry</h1>
+                                    <h1 className='mt-8'>Team Size</h1>
+                                </div>
+                                <div className=''>
+                                    <div>
+                                        <input
+                                            type='text'
+                                            className='px-4 py-2  border rounded outline-none'
+                                            value={organizationName}
+                                            onChange={(e: any) => setOrganizationName(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <select
+                                            value={industry}
+                                            onChange={(e: any) => setIndustry(e.target.value)}
+                                            className="w- mt-2  border rounded px-3 py-2"
+                                        >
+                                            <option value="" disabled>Select Industry</option>
+                                            <option value="Retail">Retail</option>
+                                            <option value="Technology">Technology</option>
+                                            <option value="Healthcare">Healthcare</option>
+                                            <option value="Finance">Finance</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <select
+                                            value={teamSize}
+                                            onChange={(e: any) => setTeamSize(e.target.value)}
+                                            className="mt-2 border outline-none rounded px-3 py-2"
+                                        >
+                                            <option value="" disabled>Select Team Size</option>
+                                            <option value="1-50">1-50</option>
+                                            <option value="51-100">51-100</option>
+                                            <option value="101-500">101-500</option>
+                                            <option value="501-1000">501-1000</option>
+                                            <option value="1000+">1000+</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='mt-2'>
+                                    <button
+                                        onClick={handleUpdateOrganization}
+                                        className="mt-4 px-4 py-2 bg-[#007A5A] hover:bg-[#007A5A] text-white rounded"
+                                    >
+                                        Update Organization
+                                    </button>
+                                </div>
+                            </div>
+
+
+
+                            <div className='flex gap-2'>
+
+
+                            </div>
+                            <div className='flex gap-2'>
+
+
+                            </div>
+
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {role === "orgAdmin" && (
-                <div className='px-4 mt-4 grid grid-cols-4 gap-2 py-2'>
-                    <div>
-                        <h1 className='mt-2'>Company Name</h1>
-                        <Input
-                            type='text'
-                            value={organizationName}
-                            onChange={(e: any) => setOrganizationName(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <h1 className='mt-2'>Industry</h1>
-                        <select
-                            value={industry}
-                            onChange={(e: any) => setIndustry(e.target.value)}
-                            className="w-full  border rounded px-3 py-2"
-                        >
-                            <option value="" disabled>Select Industry</option>
-                            <option value="Retail">Retail</option>
-                            <option value="Technology">Technology</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Finance">Finance</option>
-                            <option value="Education">Education</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <h1 className='mt-2'>Team Size</h1>
-                        <select
-                            value={teamSize}
-                            onChange={(e: any) => setTeamSize(e.target.value)}
-                            className="w-full  border rounded px-3 py-2"
-                        >
-                            <option value="" disabled>Select Team Size</option>
-                            <option value="1-50">1-50</option>
-                            <option value="51-100">51-100</option>
-                            <option value="101-500">101-500</option>
-                            <option value="501-1000">501-1000</option>
-                            <option value="1000+">1000+</option>
-                        </select>
-                    </div>
-                    <div className='mt-4'>
-                        <button
-                            onClick={handleUpdateOrganization}
-                            className="mt-4 px-4 py-2 bg-primary text-white rounded"
-                        >
-                            Update Organization
-                        </button>
-                    </div>
-                </div>
-            )}
-            <Link href='/dashboard/settings/notifications'>
-                <div className='mb-2 mt-2 px-4 border rounded py-2'>
-                    <h1 className=''>Notification Toggle</h1>
-                </div>
-            </Link>
-            <div className='bg-secondary mt-2 px-4 rounded py-2'>
-                <h1 className=' '>Account Information</h1>
-            </div>
+                )
+            }
+            {/* <h1 className='p-4 text-xl font-medium'>My Account Information</h1>
             <Link href='/dashboard/settings/changePassword'>
-                <div className='px-4 cursor-pointer py-2 border mt-4 rounded'>
-                    <h1>Change Password</h1>
+                <div className='px-4 border py-2 flex -ml-4'>
+                    <img src='/icons/eyes.png' className='h-9 ml-3' />
+                    <h1 className='ml-4 mt-1'>Change Password</h1>
+                </div>
+            </Link>
+            <h1 className='p-4 text-xl font-medium'>Support</h1>
+            <Link href='/dashboard/settings/Tutorials'>
+                <div className='px-4 border py-2 flex -ml-4'>
+                    <img src='/icons/video.png' className='h-9 ml-3' />
+                    <h1 className='ml-4 mt-1'>Tutorials</h1>
+                </div>
+            </Link>
+            <Link href='/dashboard/settings/myTickets'>
+                <div className='px-4 border py-2 flex -ml-4'>
+                    <img src='/icons/ticket.png' className='h-9 ml-3' />
+                    <h1 className='ml-4 mt-1'>My Tickets</h1>
+                </div>
+            </Link>
+            <Link href='/dashboard/settings/RaiseTicket'>
+                <div className='px-4 border py-2 flex -ml-4'>
+                    <PlusCircle className='ml-4 '/>
+                    <h1 className='ml-4 mt-1'>Raise a Ticket</h1>
+                </div>
+            </Link> */}
+            <div className=' mt-4 bg-[#380E3D] p-2 border rounded '>
+                <h1>Task App Settings</h1>
+            </div>
+            <Link href='/dashboard/settings/notifications'>
+                <div className='mb-2  mt-2 px-4 border rounded py-2'>
+                    <h1 className=''>Notifications & Reminders</h1>
                 </div>
             </Link>
 
-            <div className='bg-secondary mt-2 px-4 rounded py-2'>
-                <h1 className=' '>Support</h1>
-            </div>
-            <div className='px-4 cursor-pointer py-2 border mt-4 rounded'>
-                <h1>Tutorials</h1>
-            </div>
-            <div className='px-4 cursor-pointer py-2 border mt-4 rounded'>
-                <h1>My Tickets</h1>
-            </div>
-            <div className='px-4 py-2 cursor-pointer border mt-4 rounded'>
-                <h1>Raise a Ticket</h1>
-            </div>
+
+
+            {/* 
             <div className='px-4 py-2 cursor-pointer border mt-4 rounded'>
                 <h1>Logout</h1>
-            </div>
-        </div>
+            </div> */}
+        </div >
     );
 }

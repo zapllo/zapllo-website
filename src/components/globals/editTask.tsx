@@ -9,7 +9,7 @@ interface Task {
     user: User;
     description: string;
     assignedUser: User;
-    category: string;
+    category: { _id: string; name: string; }; // Update category type here
     priority: string;
     repeatType: string;
     repeat: boolean;
@@ -17,12 +17,13 @@ interface Task {
     dates?: string[];
     categories?: string[];
     dueDate: string;
+    completionDate: string;
     attachment?: string;
     links?: string[];
     status: string;
     comments: Comment[];
     createdAt: string;
-}
+  }
 
 interface User {
     _id: string;
@@ -80,7 +81,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 title: task.title || '',
                 description: task.description || '',
                 priority: task.priority || 'Medium',
-                category: task.category || '',
+                category: task.category._id || '',
                 assignedUser: task.assignedUser._id || '',
                 repeat: task.repeat || false,
                 repeatType: task.repeatType || 'Daily',

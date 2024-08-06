@@ -440,7 +440,7 @@ export default function TeamTabs() {
                     }}>
                       <Pencil className="h-5 text-blue-500" />
                     </Button>
-                    <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser(user._id)}>
+                    <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser()}>
                       <Trash2 className="text-[#9C2121] h-5" />
                     </Button>
                   </div>
@@ -502,7 +502,7 @@ export default function TeamTabs() {
             <Button size="sm" className="bg-[#007A5A] hover:bg-[#007A5A] rounded" onClick={handleEditUser}>
               {loading ? (
                 <>
-                  <Loader className="inline-block mr-2" />
+                  <Loader />
                   Saving Changes
                 </>
               ) : (

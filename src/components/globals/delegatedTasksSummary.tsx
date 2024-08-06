@@ -1,10 +1,25 @@
 import { IconProgress } from "@tabler/icons-react";
 import { CheckCircle, Circle, CircleAlert, Clock } from "lucide-react";
 
-export const DelegatedTasksSummary = ({ delegatedTasksOverdueCount, delegatedTasksCompletedCount, delegatedTasksInProgressCount, delegatedTasksPendingCount, delegatedTasksDelayedCount, delegatedTasksInTimeCount }) => {
-    // const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getTotalTaskStats();
+interface DelegatedTasksSummaryProps {
+    delegatedTasksOverdueCount: number;
+    delegatedTasksCompletedCount: number;
+    delegatedTasksInProgressCount: number;
+    delegatedTasksPendingCount: number;
+    delegatedTasksDelayedCount: number;
+    delegatedTasksInTimeCount: number;
+}
+
+export const DelegatedTasksSummary: React.FC<DelegatedTasksSummaryProps> = ({
+    delegatedTasksOverdueCount,
+    delegatedTasksCompletedCount,
+    delegatedTasksInProgressCount,
+    delegatedTasksPendingCount,
+    delegatedTasksDelayedCount,
+    delegatedTasksInTimeCount
+}) => {
     return (
-        <div className=" grid grid-cols-6  gap-4 mb-8 rounded-lg shadow-md">
+        <div className=" grid grid-cols-6 gap-4 mb-8 rounded-lg shadow-md">
             {/* <h2 className="text-lg font-medium mb-4">Task Summary</h2> */}
 
             <div className="border px-4 py-1 h-fit flex gap-4 rounded-xl">
@@ -21,7 +36,7 @@ export const DelegatedTasksSummary = ({ delegatedTasksOverdueCount, delegatedTas
                     <h1 className="font-bold text-lg">{delegatedTasksPendingCount}</h1>
                 </div>
             </div>
-            <div className="border px-4  py-1 h-fit flex gap-4 rounded-xl">
+            <div className="border px-4 py-1 h-fit flex gap-4 rounded-xl">
                 <IconProgress className="text-orange-500 h-8 " />
                 <div>
                     <p className="text-sm">Progress </p>

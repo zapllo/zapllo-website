@@ -36,6 +36,7 @@ interface User {
   firstName: string;
   lastName: string;
   organization: string;
+  email: string;
   role: string;
 }
 
@@ -46,7 +47,7 @@ interface Task {
   user: User;
   description: string;
   assignedUser: User;
-  category: string;
+  category: { _id: string; name: string; }; // Update category type here
   priority: string;
   repeatType: string;
   repeat: boolean;
@@ -54,6 +55,7 @@ interface Task {
   dates?: string[];
   categories?: string[];
   dueDate: string;
+  completionDate: string;
   attachment?: string;
   links?: string[];
   status: string;
@@ -75,6 +77,7 @@ interface Category {
   _id: string;
   name: string; // Assuming a user ID for the commenter
   organization: string; // Name of the commenter
+  imgSrc: string;
 }
 
 type TaskUpdateCallback = (updatedTask: Task) => void;
@@ -84,6 +87,10 @@ interface TasksTabProps {
   currentUser: User;
   onTaskUpdate: TaskUpdateCallback;
   onTaskDelete: (taskId: string) => void;
+}
+
+interface TaskStatusCounts {
+  [key: string]: number;
 }
 
 export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
@@ -116,10 +123,103 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [copied, setCopied] = useState(false);
   const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioURLRef = useRef<string | null>(null);
   const [audioURL, setAudioURL] = useState('');
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioURLRef = useRef<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (audioBlob) {
+      const audioURL = URL.createObjectURL(audioBlob);
+      setAudioURL(audioURL);
+    }
+  }, [audioBlob]);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Type assertion
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      analyserRef.current = analyser;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          const blob = new Blob([event.data], { type: 'audio/wav' });
+          setAudioBlob(blob);
+          const audioURL = URL.createObjectURL(blob);
+          audioURLRef.current = audioURL;
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        setRecording(false);
+      };
+
+      mediaRecorder.start();
+      setRecording(true);
+
+      // Real-time waveform visualization
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const canvasCtx = canvas.getContext('2d');
+        if (canvasCtx) {
+          const drawWaveform = () => {
+            if (analyserRef.current) {
+              requestAnimationFrame(drawWaveform);
+              analyserRef.current.getByteTimeDomainData(dataArray);
+              canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+              canvasCtx.lineWidth = 2;
+              canvasCtx.strokeStyle = 'green';
+              canvasCtx.beginPath();
+
+              const sliceWidth = canvas.width * 1.0 / bufferLength;
+              let x = 0;
+
+              for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
+                const y = v * canvas.height / 2; // Convert to canvas height
+
+                if (i === 0) {
+                  canvasCtx.moveTo(x, y);
+                } else {
+                  canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+              }
+
+              canvasCtx.lineTo(canvas.width, canvas.height / 2);
+              canvasCtx.stroke();
+            }
+          };
+
+          drawWaveform();
+        }
+      }
+
+      mediaRecorderRef.current = mediaRecorder;
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+  };
+
+
+
+
 
 
   const applyFilters = (filters: any) => {
@@ -219,17 +319,17 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     return isFiltered;
   });
 
-  const filterTasks = (tasks, activeTab) => {
+  const filterTasks = (tasks: Task[], activeTab: string): Task[] => {
     return tasks?.filter(task => {
       let isFiltered = true;
 
       // Filter based on active tab
       if (activeTab === "myTasks") {
-        isFiltered = task.assignedUser._id === currentUser._id;
+        isFiltered = task?.assignedUser._id === currentUser?._id;
       } else if (activeTab === "delegatedTasks") {
-        isFiltered = (task.user._id === currentUser._id && task.assignedUser._id !== currentUser._id) || task.assignedUser._id === currentUser._id;
+        isFiltered = (task.user._id === currentUser?._id && task.assignedUser._id !== currentUser._id) || task.assignedUser._id === currentUser?._id;
       } else if (activeTab === "allTasks") {
-        isFiltered = task.user.organization === currentUser.organization;
+        isFiltered = task.user.organization === currentUser?.organization;
       }
 
       // Apply other filters
@@ -284,8 +384,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     });
   };
 
-  const countStatuses = (tasks) => {
-    return tasks.reduce((counts, task) => {
+  const countStatuses = (tasks: Task[]): TaskStatusCounts => {
+    return tasks.reduce<TaskStatusCounts>((counts, task) => {
       const dueDate = new Date(task.dueDate);
       const completionDate = task.completionDate ? new Date(task.completionDate) : null;
       const now = new Date();
@@ -299,28 +399,26 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       if (task.status === "Completed" && completionDate) {
         if (completionDate <= dueDate) {
           counts["In Time"] = (counts["In Time"] || 0) + 1;
-        } else 
-          if (completionDate <= dueDate) {
-            counts["Delayed"] = (counts["Delayed"] || 0) + 1;
-          }
+        } else {
+          counts["Delayed"] = (counts["Delayed"] || 0) + 1;
         }
+      }
 
-        // Count task status
-        counts[task.status] = (counts[task.status] || 0) + 1;
+      // Count task status
+      counts[task.status] = (counts[task.status] || 0) + 1;
 
-        return counts;
-      }, { });
+      return counts;
+    }, {} as TaskStatusCounts);
   };
 
-  // Example usage
-  const taskStats = countStatuses(tasks);
-  console.log("Task Stats:", taskStats);
+
 
 
   // Filter tasks for each tab
-  const myTasks = filterTasks(tasks, "myTasks");
-  const delegatedTasks = filterTasks(tasks, "delegatedTasks");
-  const allTasks = filterTasks(tasks, "allTasks");
+  const myTasks = filterTasks(tasks || [], "myTasks");
+  const delegatedTasks = filterTasks(tasks || [], "delegatedTasks");
+  const allTasks = filterTasks(tasks || [], "allTasks");
+
 
   // Count statuses for each filtered set
   const myTasksCounts = countStatuses(myTasks);
@@ -639,110 +737,26 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
 
-  const sortedComments = selectedTask?.comments?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const sortedComments = selectedTask?.comments?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  const editorRef = useRef(null);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const img = document.createElement("img");
-        img.src = event.target.result;
-        img.style.maxWidth = "100%";
-        if (editorRef.current) {
-          editorRef.current.appendChild(img);
+        const result = event.target?.result;
+        if (typeof result === 'string') {
+          const img = document.createElement("img");
+          img.src = result;
+          img.style.maxWidth = "100%";
+          if (editorRef.current) {
+            editorRef.current.appendChild(img);
+          }
         }
       };
       reader.readAsDataURL(file);
     }
-  };
-
-
-  const canvasRef = useRef(null);
-  const analyserRef = useRef(null);
-
-  useEffect(() => {
-    if (audioBlob) {
-      const audioURL = URL.createObjectURL(audioBlob);
-      setAudioURL(audioURL);
-    }
-  }, [audioBlob]);
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-      analyser.fftSize = 2048;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      analyserRef.current = analyser;
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          const blob = new Blob([event.data], { type: 'audio/wav' });
-          setAudioBlob(blob);
-          const audioURL = URL.createObjectURL(blob);
-          audioURLRef.current = audioURL;
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        setRecording(false);
-      };
-
-      mediaRecorder.start();
-      setRecording(true);
-
-      // Real-time waveform visualization
-      const canvas = canvasRef.current;
-      const canvasCtx = canvas.getContext('2d');
-
-      const drawWaveform = () => {
-        if (analyserRef.current) {
-          requestAnimationFrame(drawWaveform);
-          analyserRef.current.getByteTimeDomainData(dataArray);
-          canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-          canvasCtx.lineWidth = 2;
-          canvasCtx.strokeStyle = 'green';
-          canvasCtx.beginPath();
-
-          const sliceWidth = canvas.width * 1.0 / bufferLength;
-          let x = 0;
-
-          for (let i = 0; i < bufferLength; i++) {
-            const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
-            const y = v * canvas.height / 2; // Convert to canvas height
-
-            if (i === 0) {
-              canvasCtx.moveTo(x, y);
-            } else {
-              canvasCtx.lineTo(x, y);
-            }
-
-            x += sliceWidth;
-          }
-
-          canvasCtx.lineTo(canvas.width, canvas.height / 2);
-          canvasCtx.stroke();
-        }
-      };
-
-      drawWaveform();
-
-      mediaRecorderRef.current = mediaRecorder;
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-    }
-  };
-
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
   };
 
 
@@ -1007,7 +1021,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                     <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
                   </div>
                 </div>
-                {filteredTasks?.length > 0 ? (
+                {filteredTasks && filteredTasks.length > 0 ? (
                   filteredTasks?.map((task) => (
                     <div key={task._id} className="">
                       <Card
@@ -1361,7 +1375,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 <EditTaskDialog
                                   open={isEditDialogOpen}
                                   onClose={() => setIsEditDialogOpen(false)}
-                                  task={selectedTask}
+                                  task={selectedTask as Task}
                                   users={users}
                                   categories={categories}
                                   onTaskUpdate={handleTaskUpdate}
@@ -1384,7 +1398,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                               </div>
                               <div className="space-y-2    h-full">
-                                {sortedComments.map((commentObj, index) => (
+                                {sortedComments?.map((commentObj, index) => (
                                   <div key={index} className="relative rounded-lg p-2">
                                     <div className="flex gap-2 items-center">
                                       <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
@@ -1426,7 +1440,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 ref={editorRef}
                                 contentEditable
                                 className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                onInput={(e) => setComment(e.target.innerHTML)}
+                                onInput={(e) => {
+                                  const target = e.target as HTMLDivElement; // Cast to HTMLDivElement
+                                  setComment(target.innerHTML);
+                                }}
                               ></div>
                               <div className="flex mt-2">
                                 <input type="file" onChange={handleFileChange} className="mt-2" />
@@ -1515,8 +1532,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                     <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
                   </div>
                 </div>
-                {filteredTasks?.length > 0 ? (
-                  filteredTasks?.map((task) => (
+                {filteredTasks!.length > 0 ? (
+                  filteredTasks!.map((task) => (
                     <div key={task._id} className="">
                       <Card
                         className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
@@ -1892,7 +1909,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                               </div>
                               <div className="space-y-2    h-full">
-                                {sortedComments.map((commentObj, index) => (
+                                {sortedComments?.map((commentObj, index) => (
                                   <div key={index} className="relative rounded-lg p-2">
                                     <div className="flex gap-2 items-center">
                                       <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
@@ -1934,8 +1951,12 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 ref={editorRef}
                                 contentEditable
                                 className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                onInput={(e) => setComment(e.target.innerHTML)}
+                                onInput={(e) => {
+                                  const target = e.target as HTMLDivElement;
+                                  setComment(target.innerHTML);
+                                }}
                               ></div>
+
                               <div className="flex mt-2">
                                 <input type="file" onChange={handleFileChange} className="mt-2" />
                                 <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
@@ -2022,8 +2043,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
                 </div>
               </div>
-              {filteredTasks?.length > 0 ? (
-                filteredTasks?.map((task) => (
+              {filteredTasks!.length > 0 ? (
+                filteredTasks!.map((task) => (
                   <div key={task._id} className="">
                     <Card
                       className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
@@ -2399,7 +2420,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                             </div>
                             <div className="space-y-2    h-full">
-                              {sortedComments.map((commentObj, index) => (
+                              {sortedComments?.map((commentObj, index) => (
                                 <div key={index} className="relative rounded-lg p-2">
                                   <div className="flex gap-2 items-center">
                                     <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
@@ -2441,8 +2462,12 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               ref={editorRef}
                               contentEditable
                               className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                              onInput={(e) => setComment(e.target.innerHTML)}
+                              onInput={(e) => {
+                                const target = e.target as HTMLDivElement;
+                                setComment(target.innerHTML);
+                              }}
                             ></div>
+
                             <div className="flex mt-2">
                               <input type="file" onChange={handleFileChange} className="mt-2" />
                               <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
@@ -2513,7 +2538,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               open={isCompleteDialogOpen}
             >
               <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-              <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto mt-20 max-w-lg -mt-1">
+              <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-lg -mt-1">
                 <DialogTitle>Task Update</DialogTitle>
                 <p>Please add a note before marking the task completed</p>
                 <div className="mt-4">

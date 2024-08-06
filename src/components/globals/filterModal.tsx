@@ -6,7 +6,7 @@ interface FilterModalProps {
     isOpen: boolean;
     closeModal: () => void;
     categories: { _id: string; name: string; imgSrc: string }[];
-    users: { _id: string; firstName: string; lastName: string }[];
+    users: { _id: string; firstName: string; lastName: string; email: string; }[];
     applyFilters: (filters: any) => void;
 }
 
@@ -88,7 +88,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         />
                         <div className="grid grid-cols-1 gap-2">
                             {users.filter(user => (`${user.firstName} ${user.lastName}`).toLowerCase().includes(lowercasedSearchTerm)).map(user => (
-                                <label className='flex justify-between cursor-pointer'>
+                                <label key={user._id} className='flex justify-between cursor-pointer'>
                                     <div className='flex items-center'>
                                         <div className='h-8 w-8 bg-red-700 text-center text-lg rounded-full'>
                                             <h1 className='mt-1'>
