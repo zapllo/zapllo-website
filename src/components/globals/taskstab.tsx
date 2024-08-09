@@ -261,11 +261,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
     // Filter based on active tab
     if (activeTab === "myTasks") {
-      isFiltered = task.assignedUser._id === currentUser._id;
+      isFiltered = task.assignedUser?._id === currentUser?._id;
     } else if (activeTab === "delegatedTasks") {
-      isFiltered = (task.user._id === currentUser._id && task.assignedUser._id !== currentUser._id) || task.assignedUser._id === currentUser._id;
+      isFiltered = (task.user._id === currentUser?._id && task.assignedUser._id !== currentUser?._id) || task.assignedUser._id === currentUser?._id;
     } else if (activeTab === "allTasks") {
-      isFiltered = task.user.organization === currentUser.organization;
+      isFiltered = task.user.organization === currentUser?.organization;
     }
 
     // Apply other filters
@@ -325,11 +325,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
       // Filter based on active tab
       if (activeTab === "myTasks") {
-        isFiltered = task?.assignedUser._id === currentUser?._id;
+        isFiltered = task?.assignedUser?._id === currentUser?._id;
       } else if (activeTab === "delegatedTasks") {
-        isFiltered = (task.user._id === currentUser?._id && task.assignedUser._id !== currentUser._id) || task.assignedUser._id === currentUser?._id;
+        isFiltered = (task.user?._id === currentUser?._id && task.assignedUser?._id !== currentUser?._id) || task.assignedUser?._id === currentUser?._id;
       } else if (activeTab === "allTasks") {
-        isFiltered = task.user.organization === currentUser?.organization;
+        isFiltered = task.user?.organization === currentUser?.organization;
       }
 
       // Apply other filters
@@ -620,7 +620,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
 
   const getUserTaskStats = (userId: any) => {
-    const userTasks = tasks.filter(task => task.assignedUser._id === userId);
+    const userTasks = tasks.filter(task => task.assignedUser?._id === userId);
     const overdueTasks = userTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
     const completedTasks = userTasks.filter(task => task.status === 'Completed').length;
     const inProgressTasks = userTasks.filter(task => task.status === 'In Progress').length;
@@ -1032,7 +1032,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           <div>
                             <p className="font-medium text-sm text-white">{task.title}</p>
                             <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                              {task.user.firstName}
+                              {task?.user?.firstName}
                             </span></p>
                           </div>
                           <div className="flex gap-2">

@@ -36,6 +36,10 @@ export interface ITask extends Document {
         comment: string;
         createdAt?: Date;
     }[];
+    reminder: {
+        type: 'minutes' | 'hours' | 'days'; // Type of reminder
+        value: number; // Value for reminder
+    } | null; // Make reminder optional
 }
 
 // Define the schema
@@ -118,6 +122,17 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Organization', // Assuming referencing the Organization model
         required: true,
+    },
+    reminder: {
+        type: {
+            type: String,
+            enum: ['minutes', 'hours', 'days'],
+            required: false
+        },
+        value: {
+            type: Number,
+            required: false
+        }
     },
     comments: [{
         userName: {

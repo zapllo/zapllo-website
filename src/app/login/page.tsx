@@ -24,6 +24,15 @@ export default function LoginPage() {
         password: "",
     });
 
+    useEffect(() => {
+        // Check if the user is already logged in
+        const token = Cookies.get("token");
+        if (token) {
+            router.replace("/dashboard");
+        }
+    }, [router]);
+
+
     const onLogin = async () => {
         try {
             setLoading(true);

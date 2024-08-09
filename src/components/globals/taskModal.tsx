@@ -52,6 +52,11 @@ interface Category {
     organization: string;
 }
 
+interface Reminder {
+    type: 'minutes' | 'hours' | 'days';
+    value: number;
+    notificationType: 'email' | 'whatsapp';
+}
 
 const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     // State variables for form inputs
@@ -100,6 +105,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [audioURL, setAudioURL] = useState('');
     const audioURLRef = useRef<string | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [reminderType, setReminderType] = useState<string>('minutes'); // e.g., minutes, hours, days, or specific date
+    const [reminderValue, setReminderValue] = useState<number>(0); // e.g., 10 minutes, 2 hours, etc.
+    const [reminderDate, setReminderDate] = useState<Date | null>(null); // For specific date reminders
+
 
     useEffect(() => {
         if (audioBlob) {
@@ -386,6 +395,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             dueDate,
             attachment,
             links,
+            reminder: {
+                type: reminderType,
+                value: reminderType !== 'specific' ? reminderValue : reminderDate,
+            },
         };
 
         try {
@@ -417,6 +430,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     setDueTime("");
                     setAttachment("");
                     setLinks([]);
+                    setReminderType('minutes');
+                    setReminderValue(0);
+                    setReminderDate(null);
                 } else {
                     closeModal();
                 }
@@ -821,17 +837,48 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             </div>
                         </DialogContent>
                     </Dialog>
-                    <Dialog open={isReminderModalOpen} onOpenChange={setIsReminderModalOpen}>
+                    <Dialog  open={isReminderModalOpen} onOpenChange={setIsReminderModalOpen}>
                         <DialogContent>
                             <DialogTitle>Set a Reminder</DialogTitle>
                             <DialogDescription>
                                 Set a Reminder to the Task.
                             </DialogDescription>
-                            {/* <div className="mb-4">
-                                <Label className="block font-semibold mb-2">Attachments</Label>
-                                <Input type='file' />
-                                <Button type="button" className="bg-blue-500 mt-2 text-white px-4 py-2 rounded">Add Link</Button>
-                            </div> */}
+                            <div className="reminder-section flex gap-4">
+                                <img src='/whatsapp.png' className='h-8' />
+                                <div className="reminder-type-select ">
+
+                                    <select value={reminderType} className='p-2' onChange={(e) => setReminderType(e.target.value)}>
+                                        <option value="minutes">Minutes</option>
+                                        <option value="hours">Hours</option>
+                                        <option value="days">Days </option>
+                                        <option value="specific">Specific Date & Time</option>
+                                    </select>
+                                </div>
+
+                                {reminderType !== 'specific' ? (
+                                    <div className="reminder-value-input">
+
+                                        <input
+                                            type="number"
+                                            className='p-2'
+                                            value={reminderValue}
+                                            onChange={(e) => setReminderValue(parseInt(e.target.value))}
+                                            placeholder={`Enter number of ${reminderType}`}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="reminder-date-input">
+
+                                        <input
+                                            type="datetime-local"
+                                            className='p-2'
+                                            value={reminderDate ? reminderDate.toISOString().slice(0, 16) : ''}
+                                            onChange={(e) => setReminderDate(e.target.value ? new Date(e.target.value) : null)}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
                         </DialogContent>
                     </Dialog>
 

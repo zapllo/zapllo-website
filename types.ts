@@ -1,45 +1,20 @@
 // types.ts
+import { Document } from 'mongoose';
 
 export interface User {
-    _id: string;
     firstName: string;
-    lastName: string;
-    organization: string;
-  }
-  
-  export interface Comment {
-    _id: string;
-    userId: string;
-    userName: string;
-    comment: string;
-    createdAt: string;
-    status: string;
-  }
-  
-  export interface Category {
-    _id: string;
-    name: string;
-    organization: string;
-  }
-  
-  export interface Task {
-    _id: string;
+    whatsappNo: string;
+}
+
+export interface Task {
+    dueDate: Date;
+    reminder: {
+        type: 'minutes' | 'hours' | 'days';
+        value: number;
+    } | null;
     title: string;
-    user: User;
-    description: string;
-    assignedUser: User;
-    category: Category;
     priority: string;
-    repeatType: string;
-    repeat: boolean;
-    days?: string[];
-    dates?: string[];
-    categories?: string[];
-    dueDate: string;
-    attachment?: string;
-    links?: string[];
-    status: string;
-    comments: Comment[];
-    createdAt: string;
-  }
-  
+    user: User;
+}
+
+export interface TaskDocument extends Document, Task {}
