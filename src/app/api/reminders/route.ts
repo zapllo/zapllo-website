@@ -8,6 +8,8 @@ import Category from '@/models/categoryModel';
 connectDB();
 
 const sendReminderNotification = async (task: any, assignedUser: any) => {
+    console.log('Started sendReminderNotification!');
+
     const payload = {
         phoneNumber: assignedUser.whatsappNo,
         templateName: 'reminder_template',
@@ -30,7 +32,6 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
         console.log('Webhook response status:', response.status);
         console.log('Webhook response data:', response);
 
-
         if (!response.ok) {
             const responseData = await response.json();
             console.error('Webhook API error:', responseData.message);
@@ -47,13 +48,15 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
 export async function GET(req: NextRequest) {
     try {
         const now = new Date();
-        console.log('Registered Models:', mongoose.models);
-        const users = User.find({});
-        const category = Category.find({});
+        console.log('Current Time:', now);
+        console.log('Fetching tasks...');
+
         const tasks = await Task.find().populate<{ assignedUser: IUser }>('assignedUser').populate('category').exec();
+        console.log('Tasks fetched:', tasks.length);
 
         for (const task of tasks) {
-            // Check if task.reminder is not null before accessing its properties
+            console.log('Processing task:', task._id);
+
             if (task.reminder) {
                 let reminderDate = new Date(task.dueDate);
 
@@ -65,17 +68,20 @@ export async function GET(req: NextRequest) {
                     reminderDate.setDate(reminderDate.getDate() - task.reminder.value);
                 }
 
-                // Send the reminder if the reminderDate is in the future or if the reminder hasn't been sent yet
+                console.log('Reminder Date:', reminderDate);
+                console.log('Current Time:', now);
+
                 if ((reminderDate > now || reminderDate <= now) && !task.reminder.sent) {
+                    console.log('Sending reminder for task:', task._id);
+
                     const assignedUser = task.assignedUser;
                     if (!assignedUser || !assignedUser.whatsappNo) {
-                        console.error('User or whatsappNo is missing');
+                        console.error('User or whatsappNo is missing for task:', task._id);
                         continue;
                     }
 
                     await sendReminderNotification(task, assignedUser);
 
-                    // Mark the reminder as sent
                     task.reminder.sent = true;
                     await task.save();
                 }
