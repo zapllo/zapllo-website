@@ -27,9 +27,8 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
             body: JSON.stringify(payload),
         });
 
-        const responseData = await response.json();
         console.log('Webhook response status:', response.status);
-        console.log('Webhook response data:', responseData);
+        console.log('Webhook response data:', response);
 
 
         if (!response.ok) {
