@@ -39,8 +39,10 @@ export interface ITask extends Document {
     reminder: {
         type: 'minutes' | 'hours' | 'days'; // Type of reminder
         value: number; // Value for reminder
+        sent: boolean; // Flag indicating whether the reminder has been sent
     } | null; // Make reminder optional
 }
+
 
 // Define the schema
 const taskSchema: Schema<ITask> = new mongoose.Schema({
@@ -127,12 +129,16 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
         type: {
             type: String,
             enum: ['minutes', 'hours', 'days'],
-            required: false
+            required: false,
         },
         value: {
             type: Number,
-            required: false
-        }
+            required: false,
+        },
+        sent: {
+            type: Boolean,
+            default: false, // Default to false since a reminder is not sent when a task is created
+        },
     },
     comments: [{
         userName: {
