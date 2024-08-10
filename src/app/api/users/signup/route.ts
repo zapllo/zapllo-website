@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (authenticatedUser) {
       if (authenticatedUser.role === "orgAdmin") {
         newUserRole = role || "member";
-        newOrganizationId = authenticatedUser.organization;
+        newOrganizationId = authenticatedUser.organization ? authenticatedUser.organization.toString() : null;
       }
     } else {
       newUserRole = "orgAdmin"; // Default role for new users signing up
