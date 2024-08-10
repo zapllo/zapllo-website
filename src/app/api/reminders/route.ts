@@ -3,7 +3,6 @@ import Task from '../../../models/taskModal'; // Adjust the path based on your p
 import User, { IUser } from '../../../models/userModel'; // Adjust the path based on your project structure
 import connectDB from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
-import { use } from 'react';
 import Category from '@/models/categoryModel';
 
 connectDB();
@@ -15,6 +14,10 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
         bodyVariables: [assignedUser.firstName, task.reminder?.value ?? 'N/A', task.category.name, task.title, task.dueDate, task.priority],
     };
 
+    console.log('Sending webhook with payload:', payload);
+
+
+
     try {
         const response = await fetch('https://zapllo.com/api/webhook', {
             method: 'POST',
@@ -24,8 +27,14 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
             body: JSON.stringify(payload),
         });
 
+        const responseData = await response.json();
+        console.log('Webhook response status:', response.status);
+        console.log('Webhook response data:', responseData);
+
+
         if (!response.ok) {
             const responseData = await response.json();
+            console.error('Webhook API error:', responseData.message);
             throw new Error(`Webhook API error: ${responseData.message}`);
         }
         console.log('Webhook notification sent successfully:', payload);
