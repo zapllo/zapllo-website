@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
+import { IUser } from './userModel';
 
 enum RepeatType {
     Weekly = 'Weekly',
@@ -18,7 +19,7 @@ export interface ITask extends Document {
     title: string;
     user: mongoose.Types.ObjectId;
     description: string;
-    assignedUser: mongoose.Types.ObjectId;
+    assignedUser: IUser | mongoose.Types.ObjectId; // Adjusted for type assertion
     category?: mongoose.Types.ObjectId;
     priority: 'High' | 'Medium' | 'Low';
     repeatType?: RepeatType;

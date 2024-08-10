@@ -8,11 +8,11 @@ import Category from '@/models/categoryModel';
 
 connectDB();
 
-const sendReminderNotification = async (task: any, user: any) => {
+const sendReminderNotification = async (task: any, assignedUser: any) => {
     const payload = {
-        phoneNumber: user.whatsappNo,
+        phoneNumber: assignedUser.whatsappNo,
         templateName: 'reminder_template',
-        bodyVariables: [user.firstName, task.reminder?.value ?? 'N/A', task.category.name, task.title, task.dueDate, task.priority],
+        bodyVariables: [assignedUser.firstName, task.reminder?.value ?? 'N/A', task.category.name, task.title, task.dueDate, task.priority],
     };
 
     try {
@@ -40,7 +40,9 @@ export async function GET(req: NextRequest) {
     try {
         const now = new Date();
         console.log('Registered Models:', mongoose.models);
-        const tasks = await Task.find().populate<{ user: IUser }>('user').populate('category').exec();
+        const users = User.find({});
+        const category = Category.find({});
+        const tasks = await Task.find().populate<{ assignedUser: IUser }>('assignedUser').populate('category').exec();
 
         for (const task of tasks) {
             // Check if task.reminder is not null before accessing its properties
@@ -57,13 +59,13 @@ export async function GET(req: NextRequest) {
 
                 // Send the reminder if the reminderDate is in the future or if the reminder hasn't been sent yet
                 if ((reminderDate > now || reminderDate <= now) && !task.reminder.sent) {
-                    const user = task.user;
-                    if (!user || !user.whatsappNo) {
+                    const assignedUser = task.assignedUser;
+                    if (!assignedUser || !assignedUser.whatsappNo) {
                         console.error('User or whatsappNo is missing');
                         continue;
                     }
 
-                    await sendReminderNotification(task, user);
+                    await sendReminderNotification(task, assignedUser);
 
                     // Mark the reminder as sent
                     task.reminder.sent = true;
