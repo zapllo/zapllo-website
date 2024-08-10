@@ -8,8 +8,6 @@ import Category from '@/models/categoryModel';
 connectDB();
 
 const sendReminderNotification = async (task: any, assignedUser: any) => {
-    console.log('Started sendReminderNotification!');
-
     const payload = {
         phoneNumber: assignedUser.whatsappNo,
         templateName: 'reminder_template',
@@ -17,8 +15,6 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
     };
 
     console.log('Sending webhook with payload:', payload);
-
-
 
     try {
         const response = await fetch('https://zapllo.com/api/webhook', {
@@ -44,22 +40,22 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
     }
 };
 
-
 export async function GET(req: NextRequest) {
     try {
         const now = new Date();
-        console.log('Current Time:', now);
-        console.log('Fetching tasks...');
+        // Convert current local time to UTC
+        const nowUTC = new Date(now.toISOString());
 
+        console.log('Registered Models:', mongoose.models);
+        const users = User.find({});
+        const category = Category.find({});
         const tasks = await Task.find().populate<{ assignedUser: IUser }>('assignedUser').populate('category').exec();
-        console.log('Tasks fetched:', tasks.length);
 
         for (const task of tasks) {
-            console.log('Processing task:', task._id);
-
+            // Check if task.reminder is not null before accessing its properties
             if (task.reminder) {
                 let reminderDate = new Date(task.dueDate);
-
+                
                 if (task.reminder.type === 'minutes') {
                     reminderDate.setMinutes(reminderDate.getMinutes() - task.reminder.value);
                 } else if (task.reminder.type === 'hours') {
@@ -68,20 +64,17 @@ export async function GET(req: NextRequest) {
                     reminderDate.setDate(reminderDate.getDate() - task.reminder.value);
                 }
 
-                console.log('Reminder Date:', reminderDate);
-                console.log('Current Time:', now);
-
-                if ((reminderDate > now || reminderDate <= now) && !task.reminder.sent) {
-                    console.log('Sending reminder for task:', task._id);
-
+                // Compare reminderDate with UTC now
+                if (reminderDate <= nowUTC && !task.reminder.sent) {
                     const assignedUser = task.assignedUser;
                     if (!assignedUser || !assignedUser.whatsappNo) {
-                        console.error('User or whatsappNo is missing for task:', task._id);
+                        console.error('User or whatsappNo is missing');
                         continue;
                     }
 
                     await sendReminderNotification(task, assignedUser);
 
+                    // Mark the reminder as sent
                     task.reminder.sent = true;
                     await task.save();
                 }
