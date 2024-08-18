@@ -10,10 +10,10 @@ import { getDataFromToken } from "@/helper/getDataFromToken";
 connectDB();
 
 
-const sendWebhookNotification = async (phoneNumber: string, templateName: string, mediaUrl: string, firstName: string, organizationName: string) => {
+const sendWebhookNotification = async (phoneNumber: string, templateName: string, mediaUrl: string, bodyVariables: string[]) => {
   const payload = {
     phoneNumber,
-    bodyVariables: [firstName, organizationName],
+    bodyVariables,
     templateName,
     mediaUrl,
   };
@@ -86,6 +86,12 @@ export async function POST(request: NextRequest) {
     const trialExpires = new Date();
     trialExpires.setDate(trialExpires.getDate() + trialDays);
 
+    const formatDate = (date: Date): string => {
+      const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: '2-digit' };
+      return date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+    };
+
+
     // Determine the role of the new user
     let newUserRole = "member";
     let newOrganizationId: string | null = null;
@@ -157,19 +163,95 @@ export async function POST(request: NextRequest) {
     const savedUser = await newUser.save();
     const organization = await Organization.findById(savedUser.organization);
 
+    const formattedTrialExpires = formatDate(trialExpires);
 
+    // Determine the template based on the user creation context
+    let templateName;
+    let bodyVariables: string[];
+
+    if (authenticatedUser) {
+      templateName = 'loginsuccessmember'; // Template for new member
+      bodyVariables = [savedUser.firstName, authenticatedUser.firstName, organization.companyName, email, password];
+    } else {
+      templateName = 'loginsuccessadmin'; // Template for new orgAdmin
+      bodyVariables = [savedUser.firstName, organization.companyName]; // Different body variables
+    }
+
+    let emailSubject;
+    let emailText;
+    let emailHtml;
+
+    if (authenticatedUser) {
+      templateName = 'loginsuccessmember'; // Template for new member
+      emailSubject = `Business Workspace Invitation to Team - ${organization.companyName}!`;
+      emailText = `Dear ${reqBody.firstName},\n\nYou've been added to ${organization.companyName} on Zapllo! ...`;
+      emailHtml = `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+    <div style="background-color: #f0f4f8; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>
+            <div style="background-color: #74517A; color: #ffffff; padding: 20px; text-align: center;">
+                <h1 style="margin: 0;">Welcome to Team - ${organization.companyName}!</h1>
+            </div>
+            <div style="padding: 20px;">
+                <p>We are excited to have you on board. Here are your account details:</p>
+                <p><strong>First Name:</strong> ${reqBody.firstName}</p>
+                <p><strong>Last Name:</strong>${reqBody.lastName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #1a73e8;">${email}</a></p>
+                <p><strong>Password:</strong> ${password}</p>
+                <p><strong>WhatsApp Number:</strong> ${whatsappNo}</p>
+                <p><strong>Role:</strong> ${newUserRole}</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="https://zapllo.com/login" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
+                </div>
+                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
+            </div>
+        </div>
+    </div>
+</body>`;
+    } else {
+      templateName = 'loginsuccessadmin'; // Template for new orgAdmin
+      emailSubject = `Business Workspace Creation for Team - ${organization.companyName}!`;
+      emailText = `Dear ${reqBody.firstName},\n\nThank you for signing up at Zapllo! ...`;
+      emailHtml = `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+      <div style="background-color: #f0f4f8; padding: 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+          <div style="text-align: center; padding: 20px;">
+                  <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+              </div>
+              <div style="background-color: #74517A; color: #ffffff; padding: 20px; text-align: center;">
+                  <h1 style="margin: 0;">New Workspace Created</h1>
+              </div>
+              <div style="padding: 20px;">
+                  <p><strong>Dear ${reqBody.firstName},</strong></p>
+                  <p>You have created your Workspace - ${organization.companyName}</p>
+                  <p>We have started a FREE Trial for your account which is valid till ${formattedTrialExpires}</p>
+                  <p>In the trial period you can invite upto 5 team members to try out how the app works.</p>
+                  <p>Login to the app now and start Delegating Now!</p>
+                  <div style="text-align: center;  margin-top: 20px;">
+                      <a href="https://zapllo.com/login" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
+                  </div>
+                  <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
+              </div>
+          </div>
+      </div>
+  </body>`;
+    }
+    // Send the email
     const emailOptions: SendEmailOptions = {
       to: email,
-      subject: "Thanks for registering at Zapllo!",
-      text: `Dear ${reqBody.firstName},\n\nThank you for reaching out to Zapllo! ...`,
-      html: `<h1>Thank You!</h1>`,
+      subject: emailSubject,
+      text: emailText,
+      html: emailHtml,
     };
 
     await sendEmail(emailOptions);
+
+    // Send the WhatsApp notification
     const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/w4B2cSkUyaf3/logo-02%204.png?se=2029-07-07T15%3A30%3A43Z&sp=rt&sv=2019-12-12&sr=b&sig=EtEFkVbZXLeBLJ%2B9pkZitby/%2BwJ4HzJkGgeT2%2BapgoQ%3D";
-    const templateName = 'loginsuccessadmin'
-    console.log(mediaUrl, templateName, 'media url & template name');
-    await sendWebhookNotification(whatsappNo, templateName, mediaUrl, savedUser.firstName, organization.companyName);
+    await sendWebhookNotification(whatsappNo, templateName, mediaUrl, bodyVariables);
+
 
     return NextResponse.json({
       message: "User created successfully",

@@ -8,6 +8,24 @@ import { sendEmail, SendEmailOptions } from "@/lib/sendEmail";
 
 connectDB();
 
+const formatDate = (dateInput: string | Date): string => {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+
+    // Options for formatting
+    const optionsDate: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: '2-digit' };
+    const optionsTime: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+
+    const formattedDate = new Intl.DateTimeFormat('en-GB', optionsDate).format(date);
+    const formattedTime = new Intl.DateTimeFormat('en-GB', optionsTime).format(date);
+
+    // Convert AM/PM to uppercase
+    const timeParts = formattedTime.match(/(\d{1,2}:\d{2})\s*(AM|PM)/);
+    const formattedTimeUppercase = timeParts ? `${timeParts[1]} ${timeParts[2].toUpperCase()}` : formattedTime;
+
+    return `${formattedDate} ${formattedTimeUppercase}`;
+};
+
+
 const sendWebhookNotification = async (taskData: any, phoneNumber: any, assignedUserFirstName: any, userFirstName: any, categoryName: any) => {
     const payload = {
         phoneNumber: phoneNumber,
@@ -19,7 +37,7 @@ const sendWebhookNotification = async (taskData: any, phoneNumber: any, assigned
             taskData.title,
             taskData.description,
             taskData.priority,
-            taskData.dueDate,
+            formatDate(taskData.dueDate), // Use formatted date
             "zapllo.com"
         ]
     };
@@ -86,22 +104,32 @@ export async function POST(request: NextRequest) {
                 to: `${assignedUser.email}`,
                 subject: "New Task Assigned",
                 text: `Zapllo`,
-                html: `<div style="font-family: Arial, sans-serif; background-color: #13173F; color: #FFFFFF; padding: 20px; border-radius: 10px;">
-                <img src='https://www.zapllo.com/logo.png'  style="height:40px; " />
-                <p>Dear ${assignedUser.firstName},</p>
-            <p>A new task has been assigned to you. Below are the task details:</p>
-            <div>
-                <h1><strong>Title:</strong> ${savedTask.title}</h1>
-                <h1><strong>Description:</strong> ${savedTask.description}</h1>
-                <h1><strong>Due Date:</strong> ${savedTask.dueDate}</h1>
-                <h1><strong>Assigned By:</strong> ${authenticatedUser.firstName}</h1>
-                <h1><strong>Category:</strong> ${category.name}</h1>
-                <h1><strong>Priority:</strong> ${savedTask.priority}</h1>
+                html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+    <div style="background-color: #f0f4f8; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
-            <p><a href="https://zapllo.com/dashboard/tasks" style="display: inline-block; padding: 10px 20px; color: white; background: linear-gradient(to right, #815BF5, #FC8929); text-decoration: none; border-radius: 5px;">Open Task App</a></p>
-            <p>This is an automated notification. Please do not reply.</p>
+            <div style="background-color: #74517A; color: #ffffff; padding: 20px; text-align: center;">
+                <h1 style="margin: 0;">New Task Assigned</h1>
             </div>
-        `,
+            <div style="padding: 20px;">
+                <p><strong> Dear ${assignedUser.firstName} </strong></p>
+                <p>A new task has been assigned to you, given below are the task details:</p>
+                <p><strong>Title:</strong> ${savedTask.title}</p>
+                <p><strong>Description:</strong> ${savedTask.description}</p>
+                <p><strong>Due Date:</strong> ${formatDate(savedTask.dueDate)}</p>
+                <p><strong>Assigned By:</strong> ${authenticatedUser.firstName}</p>
+                <p><strong>Category:</strong> ${category.name}</p>
+                <p><strong>Priority:</strong> ${savedTask.priority}</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
+                </div>
+                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
+            </div>
+        </div>
+    </div>
+</body>`,
             };
             await sendEmail(emailOptions);
         }
