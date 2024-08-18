@@ -30,7 +30,8 @@ export default function Page() {
     const [industry, setIndustry] = useState("");
     const [teamSize, setTeamSize] = useState("");
     const [isTrialExpired, setIsTrialExpired] = useState(false);
-
+    const [emailNotifications, setEmailNotifications] = useState(true);
+    const [whatsappNotifications, setWhatsappNotifications] = useState(true);
 
     useEffect(() => {
         // Fetch categories from the server
@@ -140,8 +141,6 @@ export default function Page() {
         );
     }
 
-    const [emailNotifications, setEmailNotifications] = useState(true);
-    const [whatsappNotifications, setWhatsappNotifications] = useState(true);
 
     useEffect(() => {
         // Fetch the current settings
@@ -300,9 +299,9 @@ export default function Page() {
             </div>
             <Dialog>
                 <DialogTrigger>
-                        <div className='mb-2  mt-2 px-4 border rounded py-2'>
-                            <h1 className=''>Notifications & Reminders</h1>
-                        </div>
+                    <div className='mb-2  mt-2 px-4 border rounded py-2'>
+                        <h1 className=''>Notifications & Reminders</h1>
+                    </div>
                 </DialogTrigger>
                 <DialogContent>
                     <div className="settings-container p-6  shadow-md rounded-md">

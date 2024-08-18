@@ -1,12 +1,26 @@
+'use client'
+
 import { ShiningButton } from '@/components/globals/shiningbutton'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Home } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
+import Cookies from "js-cookie";
+import { useRouter } from 'next/navigation'
 
 const DashboardPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is already logged in
+    const token = Cookies.get("token");
+    if (!token) {
+      router.replace("/login");
+    }
+  }, [router]);
+
   return (
     <div className=' dark:bg-[#211025] pt-4 gap-4 relative overflow-x-hidden scrollbar-hide'>
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
@@ -71,7 +85,7 @@ const DashboardPage = () => {
       </div>
 
       <div className='grid grid-cols-3'>
-      <div className='flex  gap-4 ml-6'>
+        <div className='flex  gap-4 ml-6'>
           <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>

@@ -7,6 +7,8 @@ import TaskModal from '@/components/globals/taskModal';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
 
 
 // Define the Task interface
@@ -44,6 +46,16 @@ export default function TaskManagement() {
     const [tasks, setTasks] = useState([]);
     const [currentUser, setCurrentUser] = useState<any>();
     const [isTrialExpired, setIsTrialExpired] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        // Check if the user is already logged in
+        const token = Cookies.get("token");
+        if (!token) {
+            router.replace("/login");
+        }
+    }, [router]);
+
 
     useEffect(() => {
         const getUserDetails = async () => {
