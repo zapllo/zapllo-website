@@ -52,6 +52,14 @@ export default function Page() {
         fetchCategories();
     }, []);
 
+    useEffect(() => {
+        // Fetch the current settings
+        axios.get('/api/users/me').then(response => {
+            setEmailNotifications(response.data.notifications.email);
+            setWhatsappNotifications(response.data.notifications.whatsapp);
+        });
+    }, []);
+
     const handleCreateCategory = async () => {
         if (!newCategory) return;
         try {
@@ -142,13 +150,7 @@ export default function Page() {
     }
 
 
-    useEffect(() => {
-        // Fetch the current settings
-        axios.get('/api/users/me').then(response => {
-            setEmailNotifications(response.data.notifications.email);
-            setWhatsappNotifications(response.data.notifications.whatsapp);
-        });
-    }, []);
+
 
     const updateSettings = async () => {
         try {
