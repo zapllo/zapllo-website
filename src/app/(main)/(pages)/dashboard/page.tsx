@@ -7,19 +7,8 @@ import { Progress } from '@/components/ui/progress'
 import { Home } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect } from 'react'
-import Cookies from "js-cookie";
-import { useRouter } from 'next/navigation'
 
 const DashboardPage = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Check if the user is already logged in
-    const token = Cookies.get("token");
-    if (!token) {
-      router.replace("/login");
-    }
-  }, [router]);
 
   return (
     <div className=' dark:bg-[#211025] pt-4 gap-4 relative overflow-x-hidden scrollbar-hide'>
