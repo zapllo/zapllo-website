@@ -125,7 +125,7 @@ const Categories: React.FC = () => {
 
     return (
         <div className='p-4'>
-            <h1 className='text- text-xl font-medium bg-[#2F0932]   py-2 rounded px-2'>Category</h1>
+            {/* <h1 className='text- text-xl font-medium bg-[#2F0932]   py-2 rounded px-2'>Category</h1> */}
             <div className='flex justify-start bg- rounded '>
                 {role === "orgAdmin" && (
                     <div className="flex justify-center w-full">
@@ -151,16 +151,18 @@ const Categories: React.FC = () => {
                     </div>
                 )}
             </div>
-            <h1 className='text-center text-xl font-medium p-4'>Categories</h1>
-            <div className="flex justify-start">
+            <div className="flex justify-start bg-[#2F0932] w-full mt-12">
                 {/* <Label>Search Categories</Label> */}
-                <input
-                    type="text"
-                    placeholder="Search Categories"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-1/4 outline-none text-white bg-[#1A1C20] border rounded px-3 py-2"
-                />
+                <h1 className='text-start text-xl font-medium  p-4'>Categories</h1>
+                <div className='mt-2 ml-auto'>
+                    <input
+                        type="text"
+                        placeholder="Search Categories"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className=" outline-none text-white bg-[#1A1C20] border rounded px-3 py-2"
+                    />
+                </div>
             </div>
 
 

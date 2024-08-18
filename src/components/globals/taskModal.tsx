@@ -705,13 +705,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             }
 
                         </Button>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-4">
                             <Switch
-                                id="assign-more-tasks"
+                                id="assign-more-tasks" className='scale-125'
                                 checked={assignMoreTasks}
                                 onCheckedChange={handleCheckboxChange}
                             />
-                            <Label htmlFor="assign-more-tasks">Assign More Tasks</Label>
+                            <Label htmlFor="assign-more-tasks ">Assign More Tasks</Label>
                         </div>
 
                         {isDateTimeModalOpen && (

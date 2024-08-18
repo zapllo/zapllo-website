@@ -80,7 +80,6 @@ export async function GET(req: NextRequest) {
                 }
             }
         }
-
         return new Response(JSON.stringify({ message: 'Reminders processed successfully.' }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },

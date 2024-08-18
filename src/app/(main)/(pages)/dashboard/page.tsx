@@ -15,16 +15,16 @@ const DashboardPage = () => {
 
       <div className='grid grid-cols-3'>
         <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#616072] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
-            <div className=' font-bold text-xl space-y-2'>
-              <div className='rounded-full h-12 border-white border w-12'>
+          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
-              <h1>Automate Tasks</h1>
-              <p className='text-xs'>Delegate one time and recurring task to your team</p>
+              <h1 className='text-lg font-medium'>Automate Tasks</h1>
+              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs' >Go To Task Management</Button>
                 </Link>
 
               </div>
@@ -33,16 +33,16 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#616072] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
-            <div className=' font-bold text-xl space-y-2'>
-              <div className='rounded-full h-12 border-white border w-12'>
-                <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
+          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/intranet.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
-              <h1>Automate Tasks</h1>
-              <p className='text-xs'>Delegate one time and recurring task to your team</p>
+              <h1 className='text-lg font-medium'>Automate Intranet</h1>
+              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Go To Intranet</Button>
                 </Link>
 
               </div>
@@ -51,16 +51,16 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#616072] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
-            <div className=' font-bold text-xl space-y-2'>
-              <div className='rounded-full h-12 border-white border w-12'>
-                <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
+          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
-              <h1>Automate Tasks</h1>
-              <p className='text-xs font-thin'>Delegate one time and recurring task to your team</p>
+              <h1 className='text-lg font-medium'>Automate Leaves</h1>
+              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Go To Leaves</Button>
                 </Link>
 
               </div>
@@ -71,17 +71,17 @@ const DashboardPage = () => {
       </div>
 
       <div className='grid grid-cols-3'>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#616072] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
-            <div className=' font-bold text-xl space-y-2'>
-              <div className='rounded-full h-12 border-white border w-12'>
-                <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
+      <div className='flex  gap-4 ml-6'>
+          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
-              <h1>Automate Tasks</h1>
-              <p className='text-xs'>Delegate one time and recurring task to your team</p>
+              <h1 className='text-lg font-medium'>Automate Attendance</h1>
+              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Go To Attendance</Button>
                 </Link>
 
               </div>
@@ -90,16 +90,16 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#616072] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
-            <div className=' font-bold text-xl space-y-2'>
-              <div className='rounded-full h-12 border-white border w-12'>
-                <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
+          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/whatsapp.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
-              <h1>Automate Tasks</h1>
-              <p className='text-xs'>Delegate one time and recurring task to your team</p>
+              <h1 className='text-lg font-medium'>Automate WA</h1>
+              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Go To WhatsApp API</Button>
                 </Link>
 
               </div>
@@ -108,16 +108,16 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#616072] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
-            <div className=' font-bold text-xl space-y-2'>
-              <div className='rounded-full h-12 border-white border w-12'>
-                <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
+          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/crm.png' className=' ml-3 mt-3 h-6  invert-[100]    object-cover' />
               </div>
-              <h1>Automate Tasks</h1>
-              <p className='text-xs'>Delegate one time and recurring task to your team</p>
+              <h1 className='text-lg font-medium'>Automate CRM</h1>
+              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] hover:bg-[#7C3886]' >Go To Task Management</Button>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Coming Soon</Button>
                 </Link>
 
               </div>

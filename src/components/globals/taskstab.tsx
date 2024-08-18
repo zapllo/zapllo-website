@@ -30,6 +30,10 @@ import { TaskSummary } from "./taskSummary";
 import { MyTasksSummary } from "./myTasksSummary";
 import { DelegatedTasksSummary } from "./delegatedTasksSummary";
 
+
+type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
+
+
 // Define the User interface
 interface User {
   _id: string;
@@ -63,6 +67,12 @@ interface Task {
   createdAt: string;
 }
 
+interface DateRange {
+  startDate?: Date;
+  endDate?: Date;
+}
+
+
 
 interface Comment {
   _id: string;
@@ -95,10 +105,14 @@ interface TaskStatusCounts {
 
 export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>("today");
   const [activeDashboardTab, setActiveDashboardTab] = useState<string>("employee-wise");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customStartDate, setCustomStartDate] = useState<string>("");
+  const [customEndDate, setCustomEndDate] = useState<string>("");
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchEmployeeQuery, setSearchEmployeeQuery] = useState<string>("");
   // State variables for filters
@@ -256,6 +270,86 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     }
   }, [selectedTask]);
 
+  const getDateRange = (filter: DateFilter) => {
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    let startDate, endDate;
+
+    switch (filter) {
+      case "today":
+        startDate = startOfToday;
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 1);
+        break;
+      case "yesterday":
+        startDate = new Date(startOfToday);
+        startDate.setDate(startOfToday.getDate() - 1);
+        endDate = startOfToday;
+        break;
+      case "thisWeek":
+        startDate = new Date(startOfToday);
+        startDate.setDate(startOfToday.getDate() - startOfToday.getDay());
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 7);
+        break;
+      case "lastWeek":
+        startDate = new Date(startOfToday);
+        startDate.setDate(startOfToday.getDate() - startOfToday.getDay() - 7);
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 7);
+        break;
+      case "thisMonth":
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        break;
+      case "lastMonth":
+        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        endDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        break;
+      case "thisYear":
+        startDate = new Date(today.getFullYear(), 0, 1);
+        endDate = new Date(today.getFullYear() + 1, 0, 1);
+        break;
+      case "allTime":
+        startDate = new Date(0);
+        endDate = new Date();
+        break;
+      case "custom":
+        if (customStartDate && customEndDate) {
+          startDate = new Date(customStartDate);
+          endDate = new Date(customEndDate);
+        } else {
+          // Handle the case where dates are not provided
+          console.error("Custom dates are not defined");
+          // You can set default values or handle the error accordingly
+          startDate = new Date();
+          endDate = new Date();
+        }
+        break;
+      default:
+        startDate = new Date(0);
+        endDate = new Date();
+    }
+
+    return { startDate, endDate };
+  };
+
+
+  const filterTasksByDate = (tasks: Task[], dateRange: DateRange) => {
+    const { startDate, endDate } = dateRange;
+    if (!startDate || !endDate) {
+      // Handle cases where dates are undefined
+      return [];
+    }
+
+
+    return tasks.filter((task) => {
+      const taskDueDate = new Date(task.dueDate);
+      return taskDueDate >= startDate && taskDueDate < endDate;
+    });
+  };
+
   const filteredTasks = tasks?.filter(task => {
     let isFiltered = true;
 
@@ -315,6 +409,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         task.status.toLowerCase().includes(lowerCaseQuery)
       );
     }
+    const dateRange = getDateRange(activeDateFilter as DateFilter);
+    isFiltered = isFiltered && filterTasksByDate([task], dateRange).length > 0;
 
     return isFiltered;
   });
@@ -410,9 +506,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       return counts;
     }, {} as TaskStatusCounts);
   };
-
-
-
 
   // Filter tasks for each tab
   const myTasks = filterTasks(tasks || [], "myTasks");
@@ -630,9 +723,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
 
-
-
-
   const getCategoryTaskStats = (categoryId: any) => {
     const categoryTasks = tasks.filter(task => task.category === categoryId);
     const overdueTasks = categoryTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
@@ -673,8 +763,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     if (userDetails?.role === 'member') {
       return (
         <>
-          <TabsTrigger value="all" className="gap-2">
-            <HomeIcon />Dashboard
+          <TabsTrigger value="all" className="gap-2 ">
+            <div className="flex ">
+              <HomeIcon />
+              Dashboard
+            </div>
           </TabsTrigger>
           <TabsTrigger value="myTasks" className="gap-2"><TasksIcon /> Tasks</TabsTrigger>
           <TabsTrigger value="delegatedTasks" className="gap-2">Delegated Tasks</TabsTrigger>
@@ -761,10 +854,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
 
 
+
+
+
+
+
+
   return (
-    <div className="w-full    max-w-8xl mx-auto">
+    <div className="w-full     max-w-8xl ">
       <Toaster />
-      <div className="flex">
+      <div className=" w-full justify-center">
         {/* <div className="flex px-4 mt-1 space-x-2 items-center mb-2">
         <Search />
         <input
@@ -775,8 +874,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           className="px-3 py-2 border rounded-md w-1/4"
         />
       </div> */}
-
-        <div className="flex flex-col justify-start border-r  -mt-6 mb-6 ">
+        <div className="flex flex-col justify-start absolute left-0 ml-20 border-r  -mt-6 mb-6 ">   {/***SIDEBAR for tasks */}
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="flex gap-y-6 mt-12 text-center">
               {/* <TabsTrigger value="all">Dashboard</TabsTrigger>
@@ -787,35 +885,80 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
             </TabsList>
           </Tabs>
         </div>
-        <div className="flex ml-12 w-full">
-          <Tabs3 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="-mt-1 ">
-            <TabsList3 className="flex gap-4">
-              <TabsTrigger3 className="flex gap-2" value="employee-wise">Today</TabsTrigger3>
-              <TabsTrigger3 value="category-wise" className="flex gap-2">Yesterday</TabsTrigger3>
-              <TabsTrigger3 value="my-report">This Week </TabsTrigger3>
-              <TabsTrigger3 value="my-report">Last Week </TabsTrigger3>
-              <TabsTrigger3 value="delegatedTasks">This Month</TabsTrigger3>
-              <TabsTrigger3 value="delegatedTasks">Last Month</TabsTrigger3>
-              <TabsTrigger3 value="delegatedTasks">This Year</TabsTrigger3>
-              <TabsTrigger3 value="delegatedTasks">All Time</TabsTrigger3>
-              <TabsTrigger3 value="delegatedTasks">Custom</TabsTrigger3>
-            </TabsList3>
-          </Tabs3>
+
+
+
+
+        <div className="flex ml-16  w-full justify-center ">
+          <div className="justify-center   w-full flex ">
+            <Tabs3 defaultValue={activeDateFilter} onValueChange={setActiveDateFilter} className="-mt-1">
+              <TabsList3 className="flex gap-4">
+                <TabsTrigger3 className="flex gap-2 text-xs" value="today">Today</TabsTrigger3>
+                <TabsTrigger3 value="yesterday" className="flex gap-2 text-xs">Yesterday</TabsTrigger3>
+                <TabsTrigger3 value="thisWeek" className="text-xs">This Week</TabsTrigger3>
+                <TabsTrigger3 value="lastWeek" className="text-xs">Last Week</TabsTrigger3>
+                <TabsTrigger3 value="thisMonth" className="text-xs">This Month</TabsTrigger3>
+                <TabsTrigger3 value="lastMonth" className="text-xs">Last Month</TabsTrigger3>
+                <TabsTrigger3 value="thisYear" className="text-xs">This Year</TabsTrigger3>
+                <TabsTrigger3 value="allTime" className="text-xs">All Time</TabsTrigger3>
+                <TabsTrigger3 value="custom" className="text-xs">Custom</TabsTrigger3>
+                {activeDateFilter === "custom" && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div className="bg-black p-6 rounded-lg shadow-lg w-96">
+                      <h3 className="text-lg font-semibold mb-4">Select Date Range</h3>
+                      <div className="flex gap-2">
+                        <div>
+                          <label>Start Date</label>
+                          <input
+                            type="date"
+                            value={customStartDate}
+                            onChange={(e) => setCustomStartDate(e.target.value)}
+                            className="border px-2 py-1"
+                          />
+                        </div>
+                        <div>
+                          <label>End Date</label>
+
+                          <input
+                            type="date"
+                            value={customEndDate}
+                            onChange={(e) => setCustomEndDate(e.target.value)}
+                            className="border px-2 py-1"
+                          />
+                        </div>
+
+                      </div>
+                      <div className="flex justify-end gap-4 mt-4">
+
+                        <button
+                          onClick={() => setActiveDateFilter(undefined)} // This will close the modal
+                          className="px-4 py-2 bg-secondary text-white rounded "
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+              </TabsList3>
+            </Tabs3>
+          </div>
 
         </div>
         {/*  */}
-        <div className="-ml-[100%] ">
+        <div>
           {activeTab === "all" ? (
-            <div className="flex mt-12  flex-col ">
-              <div className="grid  w-full text-xs gap-4">
+            <div className="flex mt-6  flex-col ">
+              <div className="  ml-28 w-full flex justify-center text-xs gap-4">
                 <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
               </div>
               {/* <DashboardAnalytics /> */}
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 ml-20 w-full justify-center">
                 <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="gap-4">
                   <TabsList2 className="flex gap-4">
-                    <TabsTrigger2 className="flex gap-2 tabs-trigger" value="employee-wise"><PersonIcon className="h-4" />Employee Wise</TabsTrigger2>
-                    <TabsTrigger2 value="category-wise" className="flex gap-2"><TagIcon className="h-4" /> Category Wise</TabsTrigger2>
+                    <TabsTrigger2 className="flex gap-2 tabs-trigger" value="employee-wise">Employee Wise</TabsTrigger2>
+                    <TabsTrigger2 value="category-wise" className="flex gap-2"> Category Wise</TabsTrigger2>
                     <TabsTrigger2 value="my-report">My Report </TabsTrigger2>
                     <TabsTrigger2 value="delegatedTasks" className="tabs-trigger">Delegated</TabsTrigger2>
                   </TabsList2>
@@ -824,7 +967,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               {activeDashboardTab === "employee-wise" && (
                 <div className="">
                   <div className="flex p-2 justify-center">
-                    <div className="relative flex px-4 mt-4 space-x-2  mb-2">
+                    <div className=" flex px-4 mt-4 space-x-2  mb-2">
                       <input
                         type="text"
                         placeholder="Search Employees..."
@@ -835,7 +978,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                     </div>
                   </div>
-                  <div className="grid gap-4">
+                  <div className="grid w-[80%] ml-56 gap-4">
                     {users.filter(user => {
                       const query = searchQuery.toLowerCase();
                       return (
@@ -849,38 +992,49 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
                       };
                       const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
+
+                      // Determine the color based on the traffic light logic
+                      let pathColor;
+                      if (completionPercentage < 50) {
+                        pathColor = '#FF0000'; // Red for less than 50%
+                      } else if (completionPercentage >= 50 && completionPercentage < 80) {
+                        pathColor = '#FFA500'; // Orange for 50%-79%
+                      } else {
+                        pathColor = '#008000'; // Green for 80% and above
+                      }
+
                       return (
                         <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
                           <div className="flex gap-2 justify-start">
-                            <div className="h-10 w-10 rounded-full bg-primary -400">
-                              <h1 className="text-center text-2xl mt-1 uppercase">
-                                {`${user?.firstName?.slice(0, 1)}`}
+                            <div className="h-7 w-7 rounded-full bg-primary -400">
+                              <h1 className="text-center text-sm mt-1 uppercase">
+                                {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
                               </h1>
                             </div>
-                            <h2 className="text-lg mt-1 font-medium">{user.firstName} </h2>
+                            <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
                           </div>
 
                           {/* <p className="text-xs"> {user.email}</p> */}
-                          <div className="flex gap-4 ] mt-5">
-                            <div className="flex gap-1 font-bold">
+                          <div className="flex gap-4 ] text-sm mt-2">
+                            <div className="flex gap-1 font-medium ">
                               <CircleAlert className="text-red-500 h-5" />
                               <p className="text-sm">Overdue: {overdueTasks}</p>
                             </div>
                             <h1 className="text-[#6C636E]">|</h1>
 
-                            <div className="flex gap-1 font-bold">
+                            <div className="flex gap-1 font-medium">
                               <Circle className="text-red-400 h-5" />
                               <p className="text-sm">Pending: {pendingTasks}</p>
                             </div>
                             <h1 className="text-[#6C636E]">|</h1>
 
-                            <div className="flex gap-1 font-bold">
+                            <div className="flex gap-1 font-medium">
                               <IconProgress className="text-orange-600 h-5" />
                               <p className="text-sm">In Progress: {inProgressTasks}</p>
                             </div>
                             <h1 className="text-[#6C636E]">|</h1>
 
-                            <div className="flex gap-1 font-bold">
+                            <div className="flex gap-1 font-medium">
                               <CheckCircle className="text-green-600 h-5" />
                               <p className="text-sm">Completed: {completedTasks}</p>
                             </div>
@@ -892,7 +1046,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 text={`${Math.round(completionPercentage)}%`}
                                 styles={buildStyles({
                                   textSize: '24px',
-                                  pathColor: `#d6d6d6`, // Fixed path color
+                                  pathColor: pathColor, // Dynamic path color
                                   textColor: '#ffffff',
                                   trailColor: '#6C636E', // Trail color should be lighter for better contrast
                                   backgroundColor: '#3e98c7',
@@ -1000,32 +1154,34 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               )}
             </div>
           ) : activeTab === "myTasks" ? (
-            <div>
-              <div className="grid mt-12 w-full text-sm gap-4">
-                <div className="grid  w-full text-xs  gap-4">
+            <div className="">
+              <div className="flex mt-6   flex-col ">
+                <div className="  ml-28 w-full flex justify-center text-xs gap-4">
                   <MyTasksSummary myTasksCompletedCount={myTasksCompletedCount} myTasksInProgressCount={myTasksInProgressCount} myTasksOverdueCount={myTasksOverdueCount} myTasksPendingCount={myTasksPendingCount} myTasksDelayedCount={myTasksDelayedCount} myTasksInTimeCount={myTasksInTimeCount} />
                 </div>
 
-                <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                <div className="flex px-4  -mt-6 w-[100%]  space-x-2 justify-center ">
                   <div className="space-x-2 flex">
-                    <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
+                    <div className=" flex px-4 mt-4  space-x-2 justify-center mb-2">
                       <input
                         type="text"
                         placeholder="Search Tasks..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                        className="px-3 py-1 border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                       />
 
                     </div>
-                    <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4"><FilterIcon className="h-4" /> Filter</Button>
+                    <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] h-8 mt-4"><FilterIcon className="h-4" /> Filter</Button>
                   </div>
                 </div>
+
                 {filteredTasks && filteredTasks.length > 0 ? (
+
                   filteredTasks?.map((task) => (
                     <div key={task._id} className="">
                       <Card
-                        className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                        className="flex  w-[80%] ml-56   border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                         onClick={() => setSelectedTask(task)}
                       >
                         <div className=" items-center gap-4">
@@ -1491,7 +1647,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                   ))
                 ) : (
                   <Card
-                    className="flex  w-[108%] border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
+                    className="flex w-[80%] ml-56 justify-center border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#]  cursor-pointer p-6"
 
                   >
                     <h1 className="text-center font-bold text-xl">
@@ -1512,8 +1668,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
             </div>
           ) : activeTab === "delegatedTasks" ? (
             <div>
-              <div className="grid mt-12 w-full text-sm gap-4">
-                <div className="grid  w-full text-xs  gap-4">
+              <div className="flex mt-6   flex-col ">
+                <div className="  ml-28 w-full flex justify-center text-xs gap-4">
                   <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} />
                 </div>
 
@@ -1536,7 +1692,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                   filteredTasks!.map((task) => (
                     <div key={task._id} className="">
                       <Card
-                        className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                        className="flex  w-[80%] ml-56 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                         onClick={() => setSelectedTask(task)}
                       >
                         <div className=" items-center gap-4">
@@ -2023,8 +2179,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               </div>
             </div>
           ) : (
-            <div className="grid mt-12 w-full text-sm gap-4">
-              <div className="grid  w-full text-xs  gap-4">
+            <div className="flex mt-6  flex-col ">
+              <div className="  ml-28 w-full flex justify-center text-xs gap-4">
                 <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
               </div>
 
@@ -2047,7 +2203,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                 filteredTasks!.map((task) => (
                   <div key={task._id} className="">
                     <Card
-                      className="flex  w-[100%] border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                      className="flex  w-[80%] ml-56 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                       onClick={() => setSelectedTask(task)}
                     >
                       <div className=" items-center gap-4">
@@ -2533,6 +2689,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               />
             </div>
           )}
+        </div>
+        <div className=" ">
+
           {isCompleteDialogOpen && (
             <Dialog
               open={isCompleteDialogOpen}
