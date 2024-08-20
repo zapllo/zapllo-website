@@ -29,6 +29,7 @@ import WaveSurfer from 'wavesurfer.js';
 import { TaskSummary } from "./taskSummary";
 import { MyTasksSummary } from "./myTasksSummary";
 import { DelegatedTasksSummary } from "./delegatedTasksSummary";
+import TaskDetails from "./taskDetails";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -123,6 +124,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   // State variables for modal
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
+  const [isReopenDialogOpen, setIsReopenDialogOpen] = useState(false);
   const [statusToUpdate, setStatusToUpdate] = useState<string | null>(null);
   const [comment, setComment] = useState<string>("");
   const router = useRouter();
@@ -864,16 +866,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     <div className="w-full     max-w-8xl ">
       <Toaster />
       <div className=" w-full justify-center">
-        {/* <div className="flex px-4 mt-1 space-x-2 items-center mb-2">
-        <Search />
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-3 py-2 border rounded-md w-1/4"
-        />
-      </div> */}
         <div className="flex flex-col justify-start absolute left-0 ml-20 border-r  -mt-6 mb-6 ">   {/***SIDEBAR for tasks */}
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="flex gap-y-6 mt-12 text-center">
@@ -885,10 +877,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
             </TabsList>
           </Tabs>
         </div>
-
-
-
-
         <div className="flex ml-16  w-full justify-center ">
           <div className="justify-center   w-full flex ">
             <Tabs3 defaultValue={activeDateFilter} onValueChange={setActiveDateFilter} className="-mt-1">
@@ -946,7 +934,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           </div>
 
         </div>
-        {/*  */}
         <div>
           {activeTab === "all" ? (
             <div className="flex mt-6  flex-col ">
@@ -1275,311 +1262,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       </Card>
 
                       {selectedTask && selectedTask._id === task._id && (
-                        <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-                          <SheetContent className="max-w-4xl w-full ">
-                            <SheetHeader>
-                              <div className="flex gap-2">
-                                <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
-                                <SheetTitle className="text-white mb-4">
-                                  Task details
-                                </SheetTitle>
-                              </div>
-
-
-                            </SheetHeader>
-                            <div className="border overflow-y-scroll scrollbar-hide  h-10/11 p-4 rounded-lg">
-                              <h1 className="font-bold text-xl">{selectedTask.title}</h1>
-
-                              <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
-                                <div className="flex items-center gap-4">
-                                  <Label htmlFor="user" className="text-right">
-                                    Assigned To
-                                  </Label>
-                                  {selectedTask?.assignedUser?.firstName ? (
-                                    <div className="flex gap-2 justify-start">
-                                      <div className="h-6 w-6 rounded-full bg-primary -400">
-                                        <h1 className="text-center uppercase">
-                                          {`${selectedTask?.assignedUser?.firstName?.slice(0, 1)}`}
-                                        </h1>
-                                      </div>
-                                      <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
-
-                                    </div>
-                                  ) : null}
-                                </div>
-                                <div className=" flex items-center gap-4">
-                                  <Label htmlFor="user" className="text-right">
-                                    Assigned By
-                                  </Label>
-                                  {selectedTask?.user?.firstName ? (
-                                    <div className="flex gap-2 justify-start">
-                                      <div className="h-6 w-6 rounded-full bg-[#4F2A2B]">
-                                        <h1 className="text-center uppercase">
-                                          {selectedTask.user.firstName.slice(0, 1)}
-                                        </h1>
-                                      </div>
-                                      <h1 id="assignedUser" className="col-span-3">
-                                        {`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}
-                                      </h1>
-                                    </div>
-                                  ) : null}
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                {/* <Clock className="h-5 text-[#E94C4C]" />
-                           */}
-                                <Calendar className="h-5 text-[#E94C4C]" />
-
-                                <Label htmlFor="user" className="text-right">
-                                  Created At
-                                </Label>
-                                <div className="flex gap-2 ml-2  justify-start">
-                                  {/* <Calendar className="h-5" /> */}
-
-                                  <h1 id="assignedUser" className="col-span-3 font-">
-                                    {formatTaskDate(selectedTask.createdAt)}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <Clock className="h-5 text-[#E94C4C]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Due Date
-                                </Label>
-                                <div className="flex gap-2 ml-4 justify-start">
-                                  <h1 id="assignedUser" className="col-span-3   ">
-                                    {formatTaskDate(selectedTask.dueDate)}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <RepeatIcon className="h-5 text-[#0D751C]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Frequency
-                                </Label>
-                                <div className="flex gap-2 ml-2  justify-start">
-                                  <Repeat className="h-5" />
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {`${selectedTask.repeatType}`}
-                                  </h1>
-                                  <div className="ml-2">
-                                    {selectedTask?.dates?.length && selectedTask.dates.length > 0 ? (
-                                      <h1 className="">
-                                        ({selectedTask?.dates?.join(', ')})
-                                      </h1>
-                                    ) : (
-                                      <p>No specific dates selected.</p>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className=" flex items-center gap-1 mt-4">
-                                {selectedTask.status === 'Pending' && <Circle className="h-5 text-red-500" />}
-                                {selectedTask.status === 'Completed' && <CheckCircle className="h-5 text-green-500" />}
-                                {selectedTask.status === 'In Progress' && <Loader className="h-5 text-orange-500" />}
-                                <Label htmlFor="user" className="text-right">
-                                  Status
-                                </Label>
-                                <div className="flex gap-2 ml-8  justify-start">
-
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {`${selectedTask.status}`}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <Tag className="h-5 text-[#C3AB1E]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Category
-                                </Label>
-                                <div className="flex  ml-3  justify-start">
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {selectedTask.category.name}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                {selectedTask.priority === 'High' && <Flag className="h-5 text-red-500" />}
-                                {selectedTask.priority === 'Medium' && <Flag className="h-5 text-orange-500" />}
-                                {selectedTask.priority === 'Low' && <Flag className="h-5 text-green-500" />}
-                                <Label htmlFor="user" className="text-right">
-                                  Priority
-                                </Label>
-                                <div className="flex gap-2 ml-6  justify-start">
-
-                                  <h1 id="assignedUser" className={`col-span-3 font-bold ${selectedTask.priority === 'High'
-                                    ? 'text-red-500'
-                                    : selectedTask.priority === 'Medium'
-                                      ? 'text-orange-500'
-                                      : selectedTask.priority === 'Low'
-                                        ? 'text-green-500'
-                                        : ''
-                                    }`}>
-                                    {`${selectedTask.priority}`}
-                                  </h1>
-                                </div>
-
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <FileTextIcon className="h-5 text-[#4662D2]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Description
-                                </Label>
-                                <div className="flex gap-2 ml-2  justify-start">
-
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {`${selectedTask.description}`}
-                                  </h1>
-                                </div>
-                              </div>
-                              <Separator className="mt-4   " />
-                              <div className="flex p-4 gap-2">
-                                <h1 className="  ">Links</h1>
-                                <div className="bg-blue-500 h-6 w-6 rounded-full">
-                                  <Link className="h-4 mt-1" />
-                                </div>
-
-                              </div>
-                              <div className="px-4">
-                                {task.links?.map((link, index) => (
-                                  <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                                    <div className="flex justify-between w-full">
-                                      <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                        {link}
-                                      </a>
-                                      <div>
-                                        <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                          <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
-                                        </CopyToClipboard>
-                                        <a href={link} target="_blank" rel="noopener noreferrer">
-                                          <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
-                                        </a>
-                                      </div>
-                                    </div>
-
-                                  </div>
-                                ))}
-                              </div>
-                              <Separator className="mt-4   " />
-                              <div className="flex p-4 gap-2">
-                                <h1 className="  ">Files</h1>
-                                <div className="bg-green-600 h-6 w-6 rounded-full">
-                                  <File className="h-4 mt-1" />
-                                </div>
-
-                              </div>
-                              <div className="px-4">
-                                {/* {task.links?.map((link, index) => (
-                              <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                                <div className="flex justify-between w-full">
-                                  <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                    {link}
-                                  </a>
-                                  <div>
-                                    <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                      <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
-                                    </CopyToClipboard>
-                                    <a href={link} target="_blank" rel="noopener noreferrer">
-                                      <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
-                                    </a>
-                                  </div>
-                                </div>
-
-                              </div>
-                            ))} */}
-                              </div>
-                              <Separator className="mt-4  " />
-                              <div className="flex p-4 gap-2">
-                                <h1 className="  ">Reminders</h1>
-                                <div className="bg-red-600 h-6 w-6 rounded-full">
-                                  <Bell className="h-4 mt-1" />
-                                </div>
-
-                              </div>
-                              <div className="px-4">
-
-                              </div>
-                              <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("In Progress");
-                                    setIsDialogOpen(true);
-                                  }}
-                                  className="gap-2 border bg-transparent  border-gray-600 w-full"
-                                >
-                                  <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
-                                  In Progress
-                                </Button>
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("Completed");
-                                    setIsCompleteDialogOpen(true);
-                                  }}
-                                  className=" border bg-transparent  border-gray-600 w-full "
-                                >
-                                  <CheckCheck className="h-4 rounded-full text-green-400" />
-                                  Completed
-                                </Button>
-                                <Button
-                                  onClick={handleEditClick}
-                                  className=" border bg-transparent  border-gray-600 w-full"
-                                >
-                                  <Edit className="h-4 rounded-full  text-blue-400" />
-                                  Edit
-                                </Button>
-                                <EditTaskDialog
-                                  open={isEditDialogOpen}
-                                  onClose={() => setIsEditDialogOpen(false)}
-                                  task={selectedTask as Task}
-                                  users={users}
-                                  categories={categories}
-                                  onTaskUpdate={handleTaskUpdate}
-                                />
-                                <Button
-                                  onClick={() => handleDelete(selectedTask._id)}
-                                  className=" border bg-transparent  border-gray-600 w-full"
-                                >
-                                  <Trash className="h-4 rounded-full text-red-400" />
-                                  Delete
-                                </Button>
-                              </div>
-                            </div>
-
-                            <Separator />
-                            <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
-                              <div className="mb-4 gap-2 flex justify-start ">
-                                <UpdateIcon className="h-5" />
-                                <Label className=" text-md mt-auto">Task Updates</Label>
-
-                              </div>
-                              <div className="space-y-2    h-full">
-                                {sortedComments?.map((commentObj, index) => (
-                                  <div key={index} className="relative rounded-lg p-2">
-                                    <div className="flex gap-2 items-center">
-                                      <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
-                                        {`${commentObj.userName}`.slice(0, 1)}
-                                      </div>
-                                      <strong>{commentObj.userName}</strong>
-                                    </div>
-                                    <p className="px-2 ml-6 text-xs"> {formatDate(commentObj.createdAt)}</p>
-
-                                    <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
-                                    {commentObj.status && (
-                                      <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded-lg">
-                                        {commentObj.status}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            <SheetFooter>
-
-                            </SheetFooter>
-                          </SheetContent>
-                        </Sheet>
+                        <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                          setIsDialogOpen={setIsDialogOpen}
+                          setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                          formatDate={formatDate}
+                          sortedComments={sortedComments}
+                          users={users}
+                          categories={categories}
+                          setIsEditDialogOpen={setIsEditDialogOpen}
+                          isEditDialogOpen={isEditDialogOpen}
+                          onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                       )}
 
                       {isDialogOpen && (
@@ -1786,311 +1478,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       </Card>
 
                       {selectedTask && selectedTask._id === task._id && (
-                        <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-                          <SheetContent className="max-w-4xl w-full ">
-                            <SheetHeader>
-                              <div className="flex gap-2">
-                                <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
-                                <SheetTitle className="text-white mb-4">
-                                  Task details
-                                </SheetTitle>
-                              </div>
-
-
-                            </SheetHeader>
-                            <div className="border overflow-y-scroll scrollbar-hide  h-10/11 p-4 rounded-lg">
-                              <h1 className="font-bold text-xl">{selectedTask.title}</h1>
-
-                              <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
-                                <div className="flex items-center gap-4">
-                                  <Label htmlFor="user" className="text-right">
-                                    Assigned To
-                                  </Label>
-                                  {selectedTask?.assignedUser?.firstName ? (
-                                    <div className="flex gap-2 justify-start">
-                                      <div className="h-6 w-6 rounded-full bg-primary -400">
-                                        <h1 className="text-center uppercase">
-                                          {`${selectedTask?.assignedUser?.firstName?.slice(0, 1)}`}
-                                        </h1>
-                                      </div>
-                                      <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
-
-                                    </div>
-                                  ) : null}
-                                </div>
-                                <div className=" flex items-center gap-4">
-                                  <Label htmlFor="user" className="text-right">
-                                    Assigned By
-                                  </Label>
-                                  {selectedTask?.user?.firstName ? (
-                                    <div className="flex gap-2 justify-start">
-                                      <div className="h-6 w-6 rounded-full bg-[#4F2A2B]">
-                                        <h1 className="text-center uppercase">
-                                          {selectedTask.user.firstName.slice(0, 1)}
-                                        </h1>
-                                      </div>
-                                      <h1 id="assignedUser" className="col-span-3">
-                                        {`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}
-                                      </h1>
-                                    </div>
-                                  ) : null}
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                {/* <Clock className="h-5 text-[#E94C4C]" />
-                         */}
-                                <Calendar className="h-5 text-[#E94C4C]" />
-
-                                <Label htmlFor="user" className="text-right">
-                                  Created At
-                                </Label>
-                                <div className="flex gap-2 ml-2  justify-start">
-                                  {/* <Calendar className="h-5" /> */}
-
-                                  <h1 id="assignedUser" className="col-span-3 font-">
-                                    {formatTaskDate(selectedTask.createdAt)}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <Clock className="h-5 text-[#E94C4C]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Due Date
-                                </Label>
-                                <div className="flex gap-2 ml-4 justify-start">
-                                  <h1 id="assignedUser" className="col-span-3   ">
-                                    {formatTaskDate(selectedTask.dueDate)}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <RepeatIcon className="h-5 text-[#0D751C]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Frequency
-                                </Label>
-                                <div className="flex gap-2 ml-2  justify-start">
-                                  <Repeat className="h-5" />
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {`${selectedTask.repeatType}`}
-                                  </h1>
-                                  <div className="ml-2">
-                                    {selectedTask?.dates?.length && selectedTask.dates.length > 0 ? (
-                                      <h1 className="">
-                                        ({selectedTask?.dates?.join(', ')})
-                                      </h1>
-                                    ) : (
-                                      <p>No specific dates selected.</p>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className=" flex items-center gap-1 mt-4">
-                                {selectedTask.status === 'Pending' && <Circle className="h-5 text-red-500" />}
-                                {selectedTask.status === 'Completed' && <CheckCircle className="h-5 text-green-500" />}
-                                {selectedTask.status === 'In Progress' && <Loader className="h-5 text-orange-500" />}
-                                <Label htmlFor="user" className="text-right">
-                                  Status
-                                </Label>
-                                <div className="flex gap-2 ml-8  justify-start">
-
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {`${selectedTask.status}`}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <Tag className="h-5 text-[#C3AB1E]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Category
-                                </Label>
-                                <div className="flex  ml-3  justify-start">
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {selectedTask.category.name}
-                                  </h1>
-                                </div>
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                {selectedTask.priority === 'High' && <Flag className="h-5 text-red-500" />}
-                                {selectedTask.priority === 'Medium' && <Flag className="h-5 text-orange-500" />}
-                                {selectedTask.priority === 'Low' && <Flag className="h-5 text-green-500" />}
-                                <Label htmlFor="user" className="text-right">
-                                  Priority
-                                </Label>
-                                <div className="flex gap-2 ml-6  justify-start">
-
-                                  <h1 id="assignedUser" className={`col-span-3 font-bold ${selectedTask.priority === 'High'
-                                    ? 'text-red-500'
-                                    : selectedTask.priority === 'Medium'
-                                      ? 'text-orange-500'
-                                      : selectedTask.priority === 'Low'
-                                        ? 'text-green-500'
-                                        : ''
-                                    }`}>
-                                    {`${selectedTask.priority}`}
-                                  </h1>
-                                </div>
-
-                              </div>
-                              <div className=" flex items-center gap-1 mt-4">
-                                <FileTextIcon className="h-5 text-[#4662D2]" />
-                                <Label htmlFor="user" className="text-right">
-                                  Description
-                                </Label>
-                                <div className="flex gap-2 ml-2  justify-start">
-
-                                  <h1 id="assignedUser" className="col-span-3 ">
-                                    {`${selectedTask.description}`}
-                                  </h1>
-                                </div>
-                              </div>
-                              <Separator className="mt-4   " />
-                              <div className="flex p-4 gap-2">
-                                <h1 className="  ">Links</h1>
-                                <div className="bg-blue-500 h-6 w-6 rounded-full">
-                                  <Link className="h-4 mt-1" />
-                                </div>
-
-                              </div>
-                              <div className="px-4">
-                                {task.links?.map((link, index) => (
-                                  <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                                    <div className="flex justify-between w-full">
-                                      <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                        {link}
-                                      </a>
-                                      <div>
-                                        <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                          <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
-                                        </CopyToClipboard>
-                                        <a href={link} target="_blank" rel="noopener noreferrer">
-                                          <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
-                                        </a>
-                                      </div>
-                                    </div>
-
-                                  </div>
-                                ))}
-                              </div>
-                              <Separator className="mt-4   " />
-                              <div className="flex p-4 gap-2">
-                                <h1 className="  ">Files</h1>
-                                <div className="bg-green-600 h-6 w-6 rounded-full">
-                                  <File className="h-4 mt-1" />
-                                </div>
-
-                              </div>
-                              <div className="px-4">
-                                {/* {task.links?.map((link, index) => (
-                            <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                              <div className="flex justify-between w-full">
-                                <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                  {link}
-                                </a>
-                                <div>
-                                  <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                    <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
-                                  </CopyToClipboard>
-                                  <a href={link} target="_blank" rel="noopener noreferrer">
-                                    <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
-                                  </a>
-                                </div>
-                              </div>
-
-                            </div>
-                          ))} */}
-                              </div>
-                              <Separator className="mt-4  " />
-                              <div className="flex p-4 gap-2">
-                                <h1 className="  ">Reminders</h1>
-                                <div className="bg-red-600 h-6 w-6 rounded-full">
-                                  <Bell className="h-4 mt-1" />
-                                </div>
-
-                              </div>
-                              <div className="px-4">
-
-                              </div>
-                              <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("In Progress");
-                                    setIsDialogOpen(true);
-                                  }}
-                                  className="gap-2 border bg-transparent  border-gray-600 w-full"
-                                >
-                                  <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
-                                  In Progress
-                                </Button>
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("Completed");
-                                    setIsCompleteDialogOpen(true);
-                                  }}
-                                  className=" border bg-transparent  border-gray-600 w-full "
-                                >
-                                  <CheckCheck className="h-4 rounded-full text-green-400" />
-                                  Completed
-                                </Button>
-                                <Button
-                                  onClick={handleEditClick}
-                                  className=" border bg-transparent  border-gray-600 w-full"
-                                >
-                                  <Edit className="h-4 rounded-full  text-blue-400" />
-                                  Edit
-                                </Button>
-                                <EditTaskDialog
-                                  open={isEditDialogOpen}
-                                  onClose={() => setIsEditDialogOpen(false)}
-                                  task={selectedTask}
-                                  users={users}
-                                  categories={categories}
-                                  onTaskUpdate={handleTaskUpdate}
-                                />
-                                <Button
-                                  onClick={() => handleDelete(selectedTask._id)}
-                                  className=" border bg-transparent  border-gray-600 w-full"
-                                >
-                                  <Trash className="h-4 rounded-full text-red-400" />
-                                  Delete
-                                </Button>
-                              </div>
-                            </div>
-
-                            <Separator />
-                            <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
-                              <div className="mb-4 gap-2 flex justify-start ">
-                                <UpdateIcon className="h-5" />
-                                <Label className=" text-md mt-auto">Task Updates</Label>
-
-                              </div>
-                              <div className="space-y-2    h-full">
-                                {sortedComments?.map((commentObj, index) => (
-                                  <div key={index} className="relative rounded-lg p-2">
-                                    <div className="flex gap-2 items-center">
-                                      <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
-                                        {`${commentObj.userName}`.slice(0, 1)}
-                                      </div>
-                                      <strong>{commentObj.userName}</strong>
-                                    </div>
-                                    <p className="px-2 ml-6 text-xs"> {formatDate(commentObj.createdAt)}</p>
-
-                                    <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
-                                    {commentObj.status && (
-                                      <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded-lg">
-                                        {commentObj.status}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            <SheetFooter>
-
-                            </SheetFooter>
-                          </SheetContent>
-                        </Sheet>
+                        <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                          setIsDialogOpen={setIsDialogOpen}
+                          setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                          formatDate={formatDate}
+                          sortedComments={sortedComments}
+                          users={users}
+                          categories={categories}
+                          setIsEditDialogOpen={setIsEditDialogOpen}
+                          isEditDialogOpen={isEditDialogOpen}
+                          onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                       )}
 
                       {isDialogOpen && (
@@ -2159,7 +1556,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                   ))
                 ) : (
                   <Card
-                    className="flex  w-[108%] border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
+                    className="flex  w-[80%] ml-56 border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
 
                   >
                     <h1 className="text-center font-bold text-xl">
@@ -2232,11 +1629,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             <TagIcon className="h-4" />
                             {task.category.name}
                           </div>
-
                           {task.repeat ? (
                             <div className="flex items-center">
                               <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
-
                               {task.repeatType && (
                                 <h1 className="flex mt-[11px] text-xs">
                                   <Repeat className="h-4 " />  {task.repeatType}
@@ -2244,23 +1639,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               )}
                             </div>
                           ) : null}
-
-                          {/* <div className="flex mt-auto">
-                          <TagIcon className="h-5" />
-                        </div> */}
                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-
                           <div className="flex text-xs">
                             <div className="mt-[11px]">
                               <IconProgressBolt className="h-4  " />
-
                             </div>
                             <h1 className="mt-auto">
                               {task.status}
                             </h1>
                           </div>
                         </div>
-
                       </div>
                       <div className="">
                         <div className="flex ">
@@ -2285,392 +1673,27 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <CheckCheck className="h-4 rounded-full text-green-400" />
                               Completed
                             </Button>
-
-
                           </div>
-                        </div>
-
-                        <div className="flex justify-end mt-4">
-
                         </div>
                       </div>
                     </Card>
-
                     {selectedTask && selectedTask._id === task._id && (
-                      <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-                        <SheetContent className="max-w-4xl w-full ">
-                          <SheetHeader>
-                            <div className="flex gap-2">
-                              <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
-                              <SheetTitle className="text-white mb-4">
-                                Task details
-                              </SheetTitle>
-                            </div>
-
-
-                          </SheetHeader>
-                          <div className="border overflow-y-scroll scrollbar-hide  h-10/11 p-4 rounded-lg">
-                            <h1 className="font-bold text-xl">{selectedTask.title}</h1>
-
-                            <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
-                              <div className="flex items-center gap-4">
-                                <Label htmlFor="user" className="text-right">
-                                  Assigned To
-                                </Label>
-                                {selectedTask?.assignedUser?.firstName ? (
-                                  <div className="flex gap-2 justify-start">
-                                    <div className="h-6 w-6 rounded-full bg-primary -400">
-                                      <h1 className="text-center uppercase">
-                                        {`${selectedTask?.assignedUser?.firstName?.slice(0, 1)}`}
-                                      </h1>
-                                    </div>
-                                    <h1 id="assignedUser" className="col-span-3">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
-
-                                  </div>
-                                ) : null}
-                              </div>
-                              <div className=" flex items-center gap-4">
-                                <Label htmlFor="user" className="text-right">
-                                  Assigned By
-                                </Label>
-                                {selectedTask?.user?.firstName ? (
-                                  <div className="flex gap-2 justify-start">
-                                    <div className="h-6 w-6 rounded-full bg-[#4F2A2B]">
-                                      <h1 className="text-center uppercase">
-                                        {selectedTask.user.firstName.slice(0, 1)}
-                                      </h1>
-                                    </div>
-                                    <h1 id="assignedUser" className="col-span-3">
-                                      {`${selectedTask.user.firstName} ${selectedTask.user.lastName}`}
-                                    </h1>
-                                  </div>
-                                ) : null}
-                              </div>
-                            </div>
-                            <div className=" flex items-center gap-1 mt-4">
-                              {/* <Clock className="h-5 text-[#E94C4C]" />
-                             */}
-                              <Calendar className="h-5 text-[#E94C4C]" />
-
-                              <Label htmlFor="user" className="text-right">
-                                Created At
-                              </Label>
-                              <div className="flex gap-2 ml-2  justify-start">
-                                {/* <Calendar className="h-5" /> */}
-
-                                <h1 id="assignedUser" className="col-span-3 font-">
-                                  {formatTaskDate(selectedTask.createdAt)}
-                                </h1>
-                              </div>
-                            </div>
-                            <div className=" flex items-center gap-1 mt-4">
-                              <Clock className="h-5 text-[#E94C4C]" />
-                              <Label htmlFor="user" className="text-right">
-                                Due Date
-                              </Label>
-                              <div className="flex gap-2 ml-4 justify-start">
-                                <h1 id="assignedUser" className="col-span-3   ">
-                                  {formatTaskDate(selectedTask.dueDate)}
-                                </h1>
-                              </div>
-                            </div>
-                            <div className=" flex items-center gap-1 mt-4">
-                              <RepeatIcon className="h-5 text-[#0D751C]" />
-                              <Label htmlFor="user" className="text-right">
-                                Frequency
-                              </Label>
-                              <div className="flex gap-2 ml-2  justify-start">
-                                <Repeat className="h-5" />
-                                <h1 id="assignedUser" className="col-span-3 ">
-                                  {`${selectedTask.repeatType}`}
-                                </h1>
-                                <div className="ml-2">
-                                  {selectedTask?.dates?.length && selectedTask.dates.length > 0 ? (
-                                    <h1 className="">
-                                      ({selectedTask?.dates?.join(', ')})
-                                    </h1>
-                                  ) : (
-                                    <p>No specific dates selected.</p>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className=" flex items-center gap-1 mt-4">
-                              {selectedTask.status === 'Pending' && <Circle className="h-5 text-red-500" />}
-                              {selectedTask.status === 'Completed' && <CheckCircle className="h-5 text-green-500" />}
-                              {selectedTask.status === 'In Progress' && <Loader className="h-5 text-orange-500" />}
-                              <Label htmlFor="user" className="text-right">
-                                Status
-                              </Label>
-                              <div className="flex gap-2 ml-8  justify-start">
-
-                                <h1 id="assignedUser" className="col-span-3 ">
-                                  {`${selectedTask.status}`}
-                                </h1>
-                              </div>
-                            </div>
-                            <div className=" flex items-center gap-1 mt-4">
-                              <Tag className="h-5 text-[#C3AB1E]" />
-                              <Label htmlFor="user" className="text-right">
-                                Category
-                              </Label>
-                              <div className="flex  ml-3  justify-start">
-                                <h1 id="assignedUser" className="col-span-3 ">
-                                  {selectedTask.category.name}
-                                </h1>
-                              </div>
-                            </div>
-                            <div className=" flex items-center gap-1 mt-4">
-                              {selectedTask.priority === 'High' && <Flag className="h-5 text-red-500" />}
-                              {selectedTask.priority === 'Medium' && <Flag className="h-5 text-orange-500" />}
-                              {selectedTask.priority === 'Low' && <Flag className="h-5 text-green-500" />}
-                              <Label htmlFor="user" className="text-right">
-                                Priority
-                              </Label>
-                              <div className="flex gap-2 ml-6  justify-start">
-
-                                <h1 id="assignedUser" className={`col-span-3 font-bold ${selectedTask.priority === 'High'
-                                  ? 'text-red-500'
-                                  : selectedTask.priority === 'Medium'
-                                    ? 'text-orange-500'
-                                    : selectedTask.priority === 'Low'
-                                      ? 'text-green-500'
-                                      : ''
-                                  }`}>
-                                  {`${selectedTask.priority}`}
-                                </h1>
-                              </div>
-
-                            </div>
-                            <div className=" flex items-center gap-1 mt-4">
-                              <FileTextIcon className="h-5 text-[#4662D2]" />
-                              <Label htmlFor="user" className="text-right">
-                                Description
-                              </Label>
-                              <div className="flex gap-2 ml-2  justify-start">
-
-                                <h1 id="assignedUser" className="col-span-3 ">
-                                  {`${selectedTask.description}`}
-                                </h1>
-                              </div>
-                            </div>
-                            <Separator className="mt-4   " />
-                            <div className="flex p-4 gap-2">
-                              <h1 className="  ">Links</h1>
-                              <div className="bg-blue-500 h-6 w-6 rounded-full">
-                                <Link className="h-4 mt-1" />
-                              </div>
-
-                            </div>
-                            <div className="px-4">
-                              {task.links?.map((link, index) => (
-                                <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                                  <div className="flex justify-between w-full">
-                                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                      {link}
-                                    </a>
-                                    <div>
-                                      <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                        <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
-                                      </CopyToClipboard>
-                                      <a href={link} target="_blank" rel="noopener noreferrer">
-                                        <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
-                                      </a>
-                                    </div>
-                                  </div>
-
-                                </div>
-                              ))}
-                            </div>
-                            <Separator className="mt-4   " />
-                            <div className="flex p-4 gap-2">
-                              <h1 className="  ">Files</h1>
-                              <div className="bg-green-600 h-6 w-6 rounded-full">
-                                <File className="h-4 mt-1" />
-                              </div>
-
-                            </div>
-                            <div className="px-4">
-                              {/* {task.links?.map((link, index) => (
-                                <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                                  <div className="flex justify-between w-full">
-                                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                      {link}
-                                    </a>
-                                    <div>
-                                      <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                        <button className="px-2 py-2   "><IconCopy className="h-5 text-white" /></button>
-                                      </CopyToClipboard>
-                                      <a href={link} target="_blank" rel="noopener noreferrer">
-                                        <button className="px-2 py-1 "><GlobeIcon className="h-5 text-white" /></button>
-                                      </a>
-                                    </div>
-                                  </div>
-
-                                </div>
-                              ))} */}
-                            </div>
-                            <Separator className="mt-4  " />
-                            <div className="flex p-4 gap-2">
-                              <h1 className="  ">Reminders</h1>
-                              <div className="bg-red-600 h-6 w-6 rounded-full">
-                                <Bell className="h-4 mt-1" />
-                              </div>
-
-                            </div>
-                            <div className="px-4">
-
-                            </div>
-                            <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                              <Button
-                                onClick={() => {
-                                  setStatusToUpdate("In Progress");
-                                  setIsDialogOpen(true);
-                                }}
-                                className="gap-2 border bg-transparent  border-gray-600 w-full"
-                              >
-                                <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
-                                In Progress
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  setStatusToUpdate("Completed");
-                                  setIsCompleteDialogOpen(true);
-                                }}
-                                className=" border bg-transparent  border-gray-600 w-full "
-                              >
-                                <CheckCheck className="h-4 rounded-full text-green-400" />
-                                Completed
-                              </Button>
-                              <Button
-                                onClick={handleEditClick}
-                                className=" border bg-transparent  border-gray-600 w-full"
-                              >
-                                <Edit className="h-4 rounded-full  text-blue-400" />
-                                Edit
-                              </Button>
-                              <EditTaskDialog
-                                open={isEditDialogOpen}
-                                onClose={() => setIsEditDialogOpen(false)}
-                                task={selectedTask}
-                                users={users}
-                                categories={categories}
-                                onTaskUpdate={handleTaskUpdate}
-                              />
-                              <Button
-                                onClick={() => handleDelete(selectedTask._id)}
-                                className=" border bg-transparent  border-gray-600 w-full"
-                              >
-                                <Trash className="h-4 rounded-full text-red-400" />
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-
-                          <Separator />
-                          <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
-                            <div className="mb-4 gap-2 flex justify-start ">
-                              <UpdateIcon className="h-5" />
-                              <Label className=" text-md mt-auto">Task Updates</Label>
-
-                            </div>
-                            <div className="space-y-2    h-full">
-                              {sortedComments?.map((commentObj, index) => (
-                                <div key={index} className="relative rounded-lg p-2">
-                                  <div className="flex gap-2 items-center">
-                                    <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
-                                      {`${commentObj.userName}`.slice(0, 1)}
-                                    </div>
-                                    <strong>{commentObj.userName}</strong>
-                                  </div>
-                                  <p className="px-2 ml-6 text-xs"> {formatDate(commentObj.createdAt)}</p>
-
-                                  <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
-                                  {commentObj.status && (
-                                    <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded-lg">
-                                      {commentObj.status}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          <SheetFooter>
-
-                          </SheetFooter>
-                        </SheetContent>
-                      </Sheet>
-                    )}
-
-                    {isDialogOpen && (
-                      <Dialog
-                        open={isDialogOpen}
-                      >
-                        <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                        <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                          <DialogTitle>Task Update</DialogTitle>
-                          <p>Please add a note before marking the task as in progress</p>
-                          <div className="mt-4">
-                            <Label>Comment</Label>
-                            <div
-                              ref={editorRef}
-                              contentEditable
-                              className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                              onInput={(e) => {
-                                const target = e.target as HTMLDivElement;
-                                setComment(target.innerHTML);
-                              }}
-                            ></div>
-
-                            <div className="flex mt-2">
-                              <input type="file" onChange={handleFileChange} className="mt-2" />
-                              <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                              {recording ? (
-                                <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                  <Mic className='h-5 text-center m-auto mt-1' />
-                                </div>
-                              ) : (
-                                <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                  <Mic className='h-5 text-center m-auto mt-1' />
-                                </div>
-                              )}
-
-
-                            </div>
-                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                            {audioBlob && (
-                              <div className="mt-4">
-                                <audio controls src={audioURL} />
-                              </div>
-                            )}
-
-                            {/* <img src="/icons/image.png" alt="image icon" /> */}
-                          </div>
-                          <div className="mt-4 flex justify-end space-x-2">
-                            <Button
-                              onClick={() => setIsDialogOpen(false)}
-                              className="w- text-white bg-gray-500 "
-                            >
-                              Close
-                            </Button>
-                            <Button
-                              onClick={handleUpdateTaskStatus}
-                              className="w-full text-white bg-[#007A5A]"
-                            >
-                              Update Task
-                            </Button>
-
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                        setIsDialogOpen={setIsDialogOpen}
+                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                        formatDate={formatDate}
+                        sortedComments={sortedComments}
+                        users={users}
+                        categories={categories}
+                        setIsEditDialogOpen={setIsEditDialogOpen}
+                        isEditDialogOpen={isEditDialogOpen}
+                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                     )}
                   </div>
                 ))
               ) : (
                 <Card
-                  className="flex  w-[108%] border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
+                  className="flex  w-[80%] ml-56 border-[0.5px] border-[#007A5A]  items-center rounded-lg bg-[#] justify-between cursor-pointer p-6"
 
                 >
                   <h1 className="text-center font-bold text-xl">
@@ -2690,68 +1713,186 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
             </div>
           )}
         </div>
-        <div className=" ">
+        {isCompleteDialogOpen && (
+          <Dialog
+            open={isCompleteDialogOpen}
+          >
+            <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+            <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-lg -mt-1">
+              <DialogTitle>Task Update</DialogTitle>
+              <p>Please add a note before marking the task completed</p>
+              <div className="mt-4">
+                <Label>Comment</Label>
 
-          {isCompleteDialogOpen && (
-            <Dialog
-              open={isCompleteDialogOpen}
-            >
-              <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-              <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-lg -mt-1">
-                <DialogTitle>Task Update</DialogTitle>
-                <p>Please add a note before marking the task completed</p>
-                <div className="mt-4">
-                  <Label>Comment</Label>
-
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="border rounded-lg px-2 py-1 w-full mt-2"
-                  />
-                  <div className="flex mt-2">
-                    <input type="file" onChange={handleFileChange} className="mt-2" />
-                    <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                    {recording ? (
-                      <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    ) : (
-                      <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    )}
-
-
-                  </div>
-                  <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                  {audioBlob && (
-                    <div className="mt-4">
-                      <audio controls src={audioURL} />
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="border rounded-lg px-2 py-1 w-full mt-2"
+                />
+                <div className="flex mt-2">
+                  <input type="file" onChange={handleFileChange} className="mt-2" />
+                  <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                  {recording ? (
+                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                      <Mic className='h-5 text-center m-auto mt-1' />
+                    </div>
+                  ) : (
+                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                      <Mic className='h-5 text-center m-auto mt-1' />
                     </div>
                   )}
+
+
                 </div>
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button
-                    onClick={() => setIsCompleteDialogOpen(false)}
-                    className="w- text-white bg-gray-500 "
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={handleUpdateTaskStatus}
-                    className="w-full bg-[#007A5A] text-white"
-                  >
-                    Update Task
-                  </Button>
+                <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                {audioBlob && (
+                  <div className="mt-4">
+                    <audio controls src={audioURL} />
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button
+                  onClick={() => setIsCompleteDialogOpen(false)}
+                  className="w- text-white bg-gray-500 "
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={handleUpdateTaskStatus}
+                  className="w-full bg-[#007A5A] text-white"
+                >
+                  Update Task
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+        {isDialogOpen && (
+          <Dialog
+            open={isDialogOpen}
+          >
+            <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+            <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+              <DialogTitle>Task Update</DialogTitle>
+              <p>Please add a note before marking the task as in progress</p>
+              <div className="mt-4">
+                <Label>Comment</Label>
+                <div
+                  ref={editorRef}
+                  contentEditable
+                  className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                  onInput={(e) => {
+                    const target = e.target as HTMLDivElement;
+                    setComment(target.innerHTML);
+                  }}
+                ></div>
+
+                <div className="flex mt-2">
+                  <input type="file" onChange={handleFileChange} className="mt-2" />
+                  <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                  {recording ? (
+                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                      <Mic className='h-5 text-center m-auto mt-1' />
+                    </div>
+                  ) : (
+                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                      <Mic className='h-5 text-center m-auto mt-1' />
+                    </div>
+                  )}
+
+
                 </div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
+                <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                {audioBlob && (
+                  <div className="mt-4">
+                    <audio controls src={audioURL} />
+                  </div>
+                )}
+
+                {/* <img src="/icons/image.png" alt="image icon" /> */}
+              </div>
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button
+                  onClick={() => setIsDialogOpen(false)}
+                  className="w- text-white bg-gray-500 "
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={handleUpdateTaskStatus}
+                  className="w-full text-white bg-[#007A5A]"
+                >
+                  Update Task
+                </Button>
+
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+        {isReopenDialogOpen && (
+          <Dialog
+            open={isReopenDialogOpen}
+          >
+            <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+            <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+              <DialogTitle>Task Update</DialogTitle>
+              <p>Please add a note before marking the task as Reopen</p>
+              <div className="mt-4">
+                <Label>Comment</Label>
+                <div
+                  ref={editorRef}
+                  contentEditable
+                  className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                  onInput={(e) => {
+                    const target = e.target as HTMLDivElement;
+                    setComment(target.innerHTML);
+                  }}
+                ></div>
+
+                <div className="flex mt-2">
+                  <input type="file" onChange={handleFileChange} className="mt-2" />
+                  <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                  {recording ? (
+                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                      <Mic className='h-5 text-center m-auto mt-1' />
+                    </div>
+                  ) : (
+                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                      <Mic className='h-5 text-center m-auto mt-1' />
+                    </div>
+                  )}
+
+
+                </div>
+                <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                {audioBlob && (
+                  <div className="mt-4">
+                    <audio controls src={audioURL} />
+                  </div>
+                )}
+
+                {/* <img src="/icons/image.png" alt="image icon" /> */}
+              </div>
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button
+                  onClick={() => setIsDialogOpen(false)}
+                  className="w- text-white bg-gray-500 "
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={handleUpdateTaskStatus}
+                  className="w-full text-white bg-[#007A5A]"
+                >
+                  Update Task
+                </Button>
+
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
-
-
-
     </div >
   );
 }

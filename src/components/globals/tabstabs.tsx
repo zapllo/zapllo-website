@@ -375,6 +375,7 @@ export default function TeamTabs() {
             className="py-1 text-sm px-4 outline-none border rounded bg-[#292C32]"
           />
         </div>
+        <h1> {filteredUsers.length}</h1>
         <div className="grid text-sm w-full py-4 -ml-24 gap-4">
           {filteredUsers
             .filter((user) => {

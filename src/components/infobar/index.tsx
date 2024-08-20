@@ -102,6 +102,19 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/dashboard/billing/wallet-logs') {
       return 'Wallet Logs';
     }
+    else if (pathName === '/dashboard/checklist') {
+      return 'My Checklist';
+    }
+    else if (pathName === '/dashboard/tickets') {
+      return 'My Tickets';
+    }
+    else if (pathName === '/dashboard/tickets') {
+      return 'My Tickets';
+    }
+    // Handle the dynamic route for /dashboard/tickets/[id]
+    else if (pathName.startsWith('/dashboard/tickets/')) {
+      return 'Ticket Details';
+    }
   };
 
   return (
@@ -160,10 +173,12 @@ const InfoBar = (props: Props) => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  Profile
-                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                </DropdownMenuItem>
+                <Link href='/dashboard/profile'>
+                  <DropdownMenuItem>
+                    Profile
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem>
                   Billing
                   <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>

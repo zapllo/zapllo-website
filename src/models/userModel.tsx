@@ -24,6 +24,7 @@ export interface IUser extends Document {
     forgotPasswordTokenExpiry: Date | null;
     verifyToken: string | null;
     verifyTokenExpiry: Date | null;
+    checklistProgress: boolean[];
 }
 
 // Define the schema
@@ -107,6 +108,10 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     verifyTokenExpiry: {
         type: Date,
         default: null,
+    },
+    checklistProgress: {
+        type: [Boolean],
+        default: Array(9).fill(false), // 9 objectives, all false initially
     },
 }, { timestamps: true });
 

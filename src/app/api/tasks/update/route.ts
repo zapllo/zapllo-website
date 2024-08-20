@@ -19,8 +19,10 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Task not found' }, { status: 404 });
         }
 
-        // Update task properties
-        if (task.repeat === true) {
+        // Update task status
+        if (status === 'Reopen') {
+            task.status = 'Pending'; // Set status to Pending when reopened
+        } else if (task.repeat === true) {
             task.status = 'In Progress';
         } else {
             task.status = status;
@@ -28,6 +30,8 @@ export async function PATCH(request: NextRequest) {
                 task.completionDate = new Date();
             }
         }
+
+        // Add a comment to the task
         task.comments.push({ userName, comment, createdAt: new Date() });
         await task.save();
 
@@ -37,6 +41,7 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Task creator not found' }, { status: 404 });
         }
 
+        // Find the assigned user and task category
         const assignedUser = await User.findById(task.assignedUser);
         if (!assignedUser) {
             return NextResponse.json({ error: 'assigned user not found' }, { status: 404 });

@@ -86,8 +86,8 @@ const MenuOptions = (props: Props) => {
         </TooltipProvider>
 
       </div>
-      <div className="flex items-center justify-center  flex-col mt-8">
-        {/* Add logout icon here */}
+      {/* <div className="flex items-center justify-center  flex-col mt-8">
+
         <TooltipProvider>
           <ul>
             <Tooltip delayDuration={0}>
@@ -107,7 +107,7 @@ const MenuOptions = (props: Props) => {
             </Tooltip>
           </ul>
         </TooltipProvider>
-      </div>
+      </div> */}
     </nav>
   )
 }

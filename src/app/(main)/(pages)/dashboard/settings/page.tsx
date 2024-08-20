@@ -167,31 +167,7 @@ export default function Page() {
 
     return (
         <div className='p-4'>
-            {/* <div className='flex justify-center bg- rounded p-2'>
-                <div className="flex cursor-pointer bg-transparent border border-lg  w-full rounded text-sm px-4 py-2 items-center justify-between">
-                    <div className="flex items-center text-[#E0E0E0] gap-4">
-                        <Avatar>
-                            <AvatarImage src="/placeholder-user.jpg" />
-                            <AvatarFallback className='bg-[#75517B] text-white'>{firstName.charAt(0)}{lastName.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-medium text-sm">{firstName} {lastName}</p>
-                        </div>
-                        <div>
-                            <p className="font-medium text-xs">Role: {role === "orgAdmin" ? "Admin" : role === "member" ? "Member" : role === "manager" ? "Manager" : role}</p>
-                        </div>
-                        <h1>|</h1>
-                        <div className='flex text-xs gap-1'>
-                            <Mail className='h-4' />
-                            <p className="">{email}</p>
-                        </div>
-                        <h1>|</h1>
-
-                        <p className=" flex gap-2 text-xs"><Phone className='h-4' />{whatsappNo}</p>
-
-                    </div>
-                </div>
-            </div> */}
+          
 
             {
                 role === "orgAdmin" && (

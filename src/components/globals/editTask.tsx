@@ -23,15 +23,18 @@ interface Task {
     status: string;
     comments: Comment[];
     createdAt: string;
-  }
+}
 
 interface User {
     _id: string;
     firstName: string;
     lastName: string;
     organization: string;
+    email: string;
     role: string;
 }
+
+
 
 
 

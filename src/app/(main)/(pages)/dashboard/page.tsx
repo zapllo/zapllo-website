@@ -3,6 +3,7 @@
 import { ShiningButton } from '@/components/globals/shiningbutton'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import Loader from '@/components/ui/loader'
 import { Progress } from '@/components/ui/progress'
 import { Home } from 'lucide-react'
 import Link from 'next/link'
@@ -11,14 +12,29 @@ import React, { useEffect } from 'react'
 const DashboardPage = () => {
 
   return (
-    <div className=' dark:bg-[#211025] pt-4 gap-4 relative overflow-x-hidden scrollbar-hide'>
+    <div className=' dark:bg-[#211025] pt-2 scale-95 gap- relative overflow-x-hidden scrollbar-hide'>
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
+      <div className='w-full mb-2  flex justify-center '>
+        <div className='flex w-[30%] gap-4'>
+          <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
+            <div className='w-full m'>
+              <h1>App Usage Progress: </h1>
+              <Progress value={13} className='' />
+            </div>
+            <div className='flex justify-start mt-3'>
+              <Button className='bg-[#7C3886]  hover:bg-[#7C3886]'>
+                Checklist
+              </Button>
+            </div>
 
+          </div>
 
-      <div className='grid grid-cols-3'>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+        </div>
+      </div>
+      <div className='grid grid-cols-3 '>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -35,8 +51,8 @@ const DashboardPage = () => {
           </div>
 
         </div>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/intranet.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -53,8 +69,8 @@ const DashboardPage = () => {
           </div>
 
         </div>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -74,8 +90,8 @@ const DashboardPage = () => {
       </div>
 
       <div className='grid grid-cols-3'>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -92,8 +108,8 @@ const DashboardPage = () => {
           </div>
 
         </div>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/whatsapp.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -110,8 +126,8 @@ const DashboardPage = () => {
           </div>
 
         </div>
-        <div className='flex  gap-4 ml-6'>
-          <div className='p-4 border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/crm.png' className=' ml-3 mt-3 h-6  invert-[100]    object-cover' />

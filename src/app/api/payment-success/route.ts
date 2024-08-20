@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import User from '@/models/userModel'; // Adjust the path as necessary
+import Order from '@/models/orderModel'; // Adjust the path as necessary
 import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 
@@ -39,6 +40,18 @@ export async function POST(request: NextRequest) {
                 $set: { isPro: true, subscribedPlan: planName }
             }
         );
+
+        // Create a new order document
+        const newOrder = new Order({
+            userId: new mongoose.Types.ObjectId(userId),
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id,
+            amount: amount,
+            planName: planName,
+            creditedAmount: creditedAmount,
+        });
+        
+        await newOrder.save();
 
         return NextResponse.json({ success: true });
     } catch (error) {
