@@ -5,10 +5,7 @@ import axios from 'axios';
 import { Progress } from '@/components/ui/progress';
 import ChecklistSidebar from '@/components/sidebar/checklistSidebar';
 
-interface ChecklistPageProps {
-    userId: string;
-    initialProgress: boolean[];
-}
+
 
 const objectives = [
     '1. Complete the task description here',
@@ -22,8 +19,8 @@ const objectives = [
     '9. Complete the task description here',
 ];
 
-export default function ChecklistPage({ initialProgress }: ChecklistPageProps) {
-    const [progress, setProgress] = useState<boolean[]>(initialProgress || []);
+export default function ChecklistPage({ }) {
+    const [progress, setProgress] = useState<boolean[]>([]);
     const [userId, setUserId] = useState("");
 
     useEffect(() => {
