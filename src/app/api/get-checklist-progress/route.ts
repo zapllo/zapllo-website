@@ -6,13 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
 connectDB();
 
 export async function GET(request: NextRequest) {
-    const userId = await getDataFromToken(request);
 
-    if (!userId) {
-        return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-    }
 
     try {
+        const userId = await getDataFromToken(request);
+
+        if (!userId) {
+            return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+        }
         const user = await User.findById(userId);
 
         if (!user) {

@@ -8,8 +8,9 @@ export async function GET(request: NextRequest) {
     await connectDB(); // Ensure that the database is connected
 
     // Get the current user's session
-    const userId = await getDataFromToken(request);
     try {
+    const userId = await getDataFromToken(request);
+
         const orders = await Order.find({ userId }).sort({ createdAt: -1 }).exec();
 
         return NextResponse.json({ orders });
