@@ -27,7 +27,7 @@ import {
 } from "@radix-ui/react-icons";
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
+import { CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mail, MailIcon, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { format } from 'date-fns';
 import CustomDatePicker from './date-picker';
@@ -105,9 +105,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [audioURL, setAudioURL] = useState('');
     const audioURLRef = useRef<string | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [reminderType, setReminderType] = useState<string>('minutes'); // e.g., minutes, hours, days, or specific date
-    const [reminderValue, setReminderValue] = useState<number>(0); // e.g., 10 minutes, 2 hours, etc.
-    const [reminderDate, setReminderDate] = useState<Date | null>(null); // For specific date reminders
+
+
+
+    // States for reminder settings
+    const [emailReminderType, setEmailReminderType] = useState('minutes');
+    const [emailReminderValue, setEmailReminderValue] = useState(0);
+    const [whatsappReminderType, setWhatsappReminderType] = useState('minutes');
+    const [whatsappReminderValue, setWhatsappReminderValue] = useState(0);
+    const [reminderDate, setReminderDate] = useState<Date | null>(null); // Explicitly typed as Date or null
 
 
     useEffect(() => {
@@ -396,8 +402,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             attachment,
             links,
             reminder: {
-                type: reminderType,
-                value: reminderType !== 'specific' ? reminderValue : reminderDate,
+                email: emailReminderType === 'specific' ? null : {
+                    type: emailReminderType,
+                    value: emailReminderValue,
+                },
+                whatsapp: whatsappReminderType === 'specific' ? null : {
+                    type: whatsappReminderType,
+                    value: whatsappReminderValue,
+                },
+                specific: reminderDate ? {
+                    date: reminderDate.toISOString(),
+                } : null,
             },
         };
 
@@ -430,8 +445,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     setDueTime("");
                     setAttachment("");
                     setLinks([]);
-                    setReminderType('minutes');
-                    setReminderValue(0);
+                    setEmailReminderType('minutes');
+                    setEmailReminderValue(0);
+                    setWhatsappReminderType('minutes');
+                    setWhatsappReminderValue(0);
                     setReminderDate(null);
                 } else {
                     closeModal();
@@ -837,48 +854,89 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             </div>
                         </DialogContent>
                     </Dialog>
-                    <Dialog  open={isReminderModalOpen} onOpenChange={setIsReminderModalOpen}>
+                    <Dialog open={isReminderModalOpen} onOpenChange={setIsReminderModalOpen}>
                         <DialogContent>
-                            <DialogTitle>Set a Reminder</DialogTitle>
-                            <DialogDescription>
-                                Set a Reminder to the Task.
-                            </DialogDescription>
-                            <div className="reminder-section flex gap-4">
-                                <img src='/whatsapp.png' className='h-8' />
-                                <div className="reminder-type-select ">
-
-                                    <select value={reminderType} className='p-2' onChange={(e) => setReminderType(e.target.value)}>
-                                        <option value="minutes">Minutes</option>
-                                        <option value="hours">Hours</option>
-                                        <option value="days">Days </option>
-                                        <option value="specific">Specific Date & Time</option>
-                                    </select>
-                                </div>
-
-                                {reminderType !== 'specific' ? (
-                                    <div className="reminder-value-input">
-
-                                        <input
-                                            type="number"
-                                            className='p-2'
-                                            value={reminderValue}
-                                            onChange={(e) => setReminderValue(parseInt(e.target.value))}
-                                            placeholder={`Enter number of ${reminderType}`}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="reminder-date-input">
-
-                                        <input
-                                            type="datetime-local"
-                                            className='p-2'
-                                            value={reminderDate ? reminderDate.toISOString().slice(0, 16) : ''}
-                                            onChange={(e) => setReminderDate(e.target.value ? new Date(e.target.value) : null)}
-                                        />
-                                    </div>
-                                )}
+                            <div className='flex justify-between'>
+                                <DialogTitle>Set a Reminder</DialogTitle>
+                                <img className='cursor-pointer  h-fit' src='/icons/x.png' onClick={() => setIsReminderModalOpen(false)} />
                             </div>
 
+                            <DialogDescription>
+                                Set a reminder for the task.
+                            </DialogDescription>
+                            <div className="reminder-section grid grid-cols-1 gap-4">
+                                {/* WhatsApp Reminder Row */}
+
+                                <div className="email-reminder flex items-center gap-4">
+                                    <img src='/whatsapp.png' className='h-6 w-6' />
+                                    <div className="reminder-type-select grid grid-cols-2 gap-2">
+                                        <select
+                                            value={whatsappReminderType}
+                                            className='p-2 outline-none'
+                                            onChange={(e) => setWhatsappReminderType(e.target.value)}
+                                        >
+                                            <option value="minutes">Minutes</option>
+                                            <option value="hours">Hours</option>
+                                            <option value="days">Days</option>
+                                            <option value="specific">Specific Date & Time</option>
+                                        </select>
+                                        {whatsappReminderType !== 'specific' && (
+                                            <input
+                                                type="number"
+                                                className='p-2 outline-none'
+                                                value={whatsappReminderValue}
+                                                onChange={(e) => setWhatsappReminderValue(parseInt(e.target.value))}
+                                                placeholder={`Enter number of ${whatsappReminderType}`}
+                                            />
+                                        )}
+                                        {whatsappReminderType === 'specific' && (
+                                            <input
+                                                type="datetime-local"
+                                                className='p-2 outline-none'
+                                                value={reminderDate ? reminderDate.toISOString().slice(0, 16) : ''}
+                                                onChange={(e) => setReminderDate(e.target.value ? new Date(e.target.value) : null)}
+                                            />
+                                        )}
+                                    </div>
+
+                                </div>
+                                {/* Email Reminder Row */}
+                                <div className="email-reminder flex items-center gap-4">
+                                    <MailIcon className='h-8' />
+                                    <div className="reminder-type-select grid grid-cols-2 gap-2">
+                                        <select
+                                            value={emailReminderType}
+                                            className='p-2 outline-none'
+                                            onChange={(e) => setEmailReminderType(e.target.value)}
+                                        >
+                                            <option value="minutes">Minutes</option>
+                                            <option value="hours">Hours</option>
+                                            <option value="days">Days</option>
+                                            <option value="specific">Specific Date & Time</option>
+                                        </select>
+                                        {emailReminderType !== 'specific' && (
+                                            <input
+                                                type="number"
+                                                className='p-2 outline-none'
+                                                value={emailReminderValue}
+                                                onChange={(e) => setEmailReminderValue(parseInt(e.target.value))}
+                                                placeholder={`Enter number of ${emailReminderType}`}
+                                            />
+                                        )}
+                                        {emailReminderType === 'specific' && (
+                                            <input
+                                                type="datetime-local"
+                                                className='p-2 outline-none'
+                                                value={reminderDate ? reminderDate.toISOString().slice(0, 16) : ''}
+                                                onChange={(e) => setReminderDate(e.target.value ? new Date(e.target.value) : null)}
+                                            />
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                <Button className='hover:bg-[#007A5A] bg-[#007A5A]' onClick={() => setIsReminderModalOpen(false)} >Save Reminders</Button>
+                            </div>
                         </DialogContent>
                     </Dialog>
 

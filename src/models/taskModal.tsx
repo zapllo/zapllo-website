@@ -38,10 +38,20 @@ export interface ITask extends Document {
         createdAt?: Date;
     }[];
     reminder: {
-        type: 'minutes' | 'hours' | 'days'; // Type of reminder
-        value: number; // Value for reminder
-        sent: boolean; // Flag indicating whether the reminder has been sent
-    } | null; // Make reminder optional
+        email?: {
+            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+            value?: number;
+            date?: Date; // Added for specific reminders
+            sent: boolean;
+        } | null;
+        whatsapp?: {
+            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+            value?: number;
+            date?: Date; // Added for specific reminders
+            sent: boolean;
+        } | null;
+    } | null;
+
 }
 
 
@@ -127,18 +137,49 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
         required: true,
     },
     reminder: {
-        type: {
-            type: String,
-            enum: ['minutes', 'hours', 'days'],
-            required: false,
+        email: {
+            type: {
+                type: String,
+                enum: ['minutes', 'hours', 'days', 'specific'],
+            },
+            value: {
+                type: Number,
+                required: function (this: any) {
+                    return this.email?.type !== 'specific';
+                },
+            },
+            date: {
+                type: Date,
+                required: function (this: any) {
+                    return this.email?.type === 'specific';
+                },
+            },
+            sent: {
+                type: Boolean,
+                default: false,
+            },
         },
-        value: {
-            type: Number,
-            required: false,
-        },
-        sent: {
-            type: Boolean,
-            default: false, // Default to false since a reminder is not sent when a task is created
+        whatsapp: {
+            type: {
+                type: String,
+                enum: ['minutes', 'hours', 'days', 'specific'],
+            },
+            value: {
+                type: Number,
+                required: function (this: any) {
+                    return this.whatsapp?.type !== 'specific';
+                },
+            },
+            date: {
+                type: Date,
+                required: function (this: any) {
+                    return this.whatsapp?.type === 'specific';
+                },
+            },
+            sent: {
+                type: Boolean,
+                default: false,
+            },
         },
     },
     comments: [{

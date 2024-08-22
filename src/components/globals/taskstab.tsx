@@ -1580,7 +1580,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               <div className="  ml-28 w-full flex justify-center text-xs gap-4">
                 <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
               </div>
-
               <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
                 <div className="space-x-2 flex">
                   <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
