@@ -11,17 +11,13 @@ import React, { useState } from 'react'
 type Props = { children: React.ReactNode }
 
 const Layout = (props: Props) => {
-    
+
     return (
-        <div className='flex overflow-hidden scrollbar-hide  h-full '>
-            {/* <MenuOptions /> */}
-            {/* <TaskOptions /> */}
-            <div className='w-full'>
-                {/* <InfoBar /> */}
-                {props.children}
-            </div>
-          
+        <div className='w-full overflow-hidden okay bg-  h-screen '>
+            {/* <InfoBar /> */}
+            {props.children}
         </div>
+
     )
 }
 

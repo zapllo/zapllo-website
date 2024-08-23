@@ -494,31 +494,31 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
 
     return (
-        <div className="absolute   inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
+        <div className="absolute    inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
             <Toaster />
 
-            <div className="bg-[#1A1C20] z-[100] text-[#D0D3D3] w-[40%] rounded-lg p-8">
+            <div className="bg-[#1A1C20] z-[100] text-[#D0D3D3] w-[50%] rounded-lg p-8">
                 <div className='flex justify-between'>
-                    <h2 className="text-xl font-bold mb-6 -mt-4  ">Assign New Task</h2>
-                    <img className='cursor-pointer -mt-2 h-fit' src='/icons/x.png' onClick={closeModal} />
+                    <h2 className="text-lg font-bold mb-6 -mt-4  ">Assign New Task</h2>
+                    <img className='cursor-pointer -mt-4 h-4' src='/icons/x.png' onClick={closeModal} />
                 </div>
 
                 <form className="text-sm space-y-4 overflow-y-scroll scrollbar-hide h-full max-h-xl">
                     <div className='grid grid-cols-1 gap-4'>
                         <div className="">
-                            <Label htmlFor="title" className="block text-[#D0D3D3] font-semibold">Title</Label>
-                            <input type="text" placeholder='Task Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#755178] bg-[#292d33] border border-[#505356]  mt-1 rounded-md px-3 py-2" />
+                            {/* <Label htmlFor="title" className="block text-[#D0D3D3] text-xs font-semibold">Title</Label> */}
+                            <input type="text" placeholder='Task Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full text-xs  outline-none bg-transparent border border-[#505356]  mt-1 rounded px-3 py-2" />
                         </div>
-                        <div className="mb-4">
-                            <Label htmlFor="description" className="block font-semibold">Description</Label>
-                            <Textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-[#292d33] border border-[#505356]   mt-1 rounded-md px-3 py-3"></Textarea>
+                        <div className="mb-2">
+                            {/* <Label htmlFor="description" className="block text-xs font-semibold">Description</Label> */}
+                            <textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="text-xs w-full  outline-none  bg-transparent border border-[#505356]   mt-1 rounded px-3 py-3"></textarea>
                         </div>
                     </div>
                     <div className='grid-cols-2 gap-4 grid'>
                         <div>
                             <button
                                 type="button"
-                                className="p-2 flex justify-between border border-[#505356]  bg-[#292d33] w-full text-start  rounded"
+                                className="p-2 flex text-xs justify-between border border-[#505356]  bg-transparent w-full text-start  rounded"
                                 onClick={handleOpen}
                             >
                                 {popoverInputValue ? popoverInputValue : "Select User"}
@@ -572,7 +572,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             <div>
                                 <button
                                     type="button"
-                                    className="p-2 flex border border-[#505356]  bg-[#292d33] justify-between w-full text-start  rounded"
+                                    className="p-2 text-xs flex border border-[#505356]  bg-transparent justify-between w-full text-start  rounded"
                                     onClick={handleCategoryOpen}
                                 >
                                     {popoverCategoryInputValue ? popoverCategoryInputValue : "Select Category"}
@@ -598,20 +598,20 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </div>
                     </div>
                     <div className=" flex justify-between">
-                        <div className="mb-4   rounded-md  flex gap-4 mta">
+                        <div className="mb-4  justify-between  rounded-md  flex gap-4 mta">
 
 
 
-                            <div className=' gap-2 '>
-                                <div className='flex gap-2 text-white font-bold'>
+                            <div className=' gap-2 flex justify-between bg-[#282d32] p-3 w-full '>
+                                <div className='flex gap-2  text-xs text-white font-bold'>
                                     {/* <FlagIcon className='h-5' /> */}
                                     Priority
                                 </div>
-                                <div className=" mt-4 rounded-lg">
+                                <div className=" rounded-lg ">
                                     {['High', 'Medium', 'Low'].map((level) => (
                                         <label
                                             key={level}
-                                            className={`px-4 py-2   border border-[#505356]   font-semibold cursor-pointer ${priority === level
+                                            className={`px-4 py-2 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
                                                 ? 'bg-[#017A5B]  text-white'
                                                 : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
                                                 }`}
@@ -629,32 +629,36 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                     ))}
                                 </div>
                             </div>
+                         
                         </div>
-                        <div className="-mt-2  justify-between">
-                            <div className="flex gap-2 items-center ">
-                                <Repeat className='h-4' />
-                                <Label htmlFor="repeat" className="font-semibold ">Repeat</Label>
-                                <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 scale-125 h-10" />
-                            </div>
-                            <div>
-                                {repeat && (
-                                    <div>
-                                        <div className="bg-[#282d32]">
-                                            {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
-                                            <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full bg-[#292d33] border rounded px-3 py-2">
-                                                <option value="bg-[#292D33]">Select Repeat Type</option>
-                                                <option value="Daily">Daily</option>
-                                                <option value="Weekly">Weekly</option>
-                                                <option value="Monthly">Monthly</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                )}
 
+                        <div className="- px-2  ml-auto justify-between">
+                                <div className="flex gap-2 items-center ">
+                                    <Repeat className='h-4' />
+                                    <Label htmlFor="repeat" className="font-semibold text-xs ">Repeat</Label>
+                                    <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-10" />
+                                </div>
+                                <div>
+                                    {repeat && (
+                                        <div>
+                                            <div className="bg-transparent">
+                                                {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
+                                                <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full bg-[#292d33] border rounded px-3 py-2">
+                                                    <option value="bg-[#292D33]">Select Repeat Type</option>
+                                                    <option value="Daily">Daily</option>
+                                                    <option value="Weekly">Weekly</option>
+                                                    <option value="Monthly">Monthly</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                </div>
                             </div>
-                        </div>
+
 
                     </div>
+
                     {repeatType === 'Weekly' && repeat && (
                         <div className="mb-4 ">
                             <Label className="block font-semibold mb-2">Select Days</Label>
@@ -690,7 +694,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             />
                         </div>
                     )}
-                    <Label htmlFor="dueDate" className="block font-semibold mb-2">Due Date</Label>
+                    <Label htmlFor="dueDate" className="block font-semibold text-xs mb-2">Due Date</Label>
 
                     <div className="mb-4 flex justify-between">
                         {/* <Popover >
@@ -1095,8 +1099,8 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
     return (
         <div className="absolute bg-[#1A1C20]  text-white border mt-12 border-gray-700 rounded shadow-md p-4 w-[20%] z-50">
             <input
-                placeholder="Search user..."
-                className="h-9 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
+                placeholder="Search user"
+                className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -1212,7 +1216,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
         <div className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[20%] z-50">
             <input
                 placeholder=" Search Categories..."
-                className="h-9 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"
+                className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"
                 value={searchCategoryQuery}
                 onChange={(e) => setSearchCategoryQuery(e.target.value)}
             />
@@ -1223,12 +1227,12 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                     <div className="w-full text-sm text-white max-h-40 overflow-y-scroll scrollbar-hide">
                         {filteredCategories.map(categorys => (
                             <div key={categorys._id} className="cursor-pointer p-2 flex items-center justify-start  mb-1" onClick={() => handleSelectCategory(categorys._id)}>
-                                <div className='bg-[#282D32] rounded-full h-10 w-10'>
+                                <div className='bg-[#282D32] rounded-full h-8 w-8'>
                                     {getCategoryIcon(categorys.name) ? (
                                         <img
                                             src={getCategoryIcon(categorys?.name) as string} // Type assertion
                                             alt={categorys.name}
-                                            className="w-6 h-6 ml-2 mt-2"
+                                            className="w-4 h-4 ml-2 mt-2"
                                         />
                                     ) : (
                                         <FallbackImage name={categorys.name} />
@@ -1240,7 +1244,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                                     <input
                                         type="radio"
                                         name="category"
-                                        className='bg-primary'
+                                        className='bg-primary ml-auto'
                                         checked={category === categorys._id}
                                         onChange={() => handleSelectCategory(categorys._id)}
                                     />

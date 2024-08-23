@@ -41,7 +41,24 @@ export default function WalletLogs({ }: Props) {
   }
 
   if (!orderLogs.length) {
-    return <div className='text-center p-10'>No order logs found.</div>;
+    return (
+      <div className="flex">
+        <BillingSidebar />
+        <div className="flex-1 p-4">
+          <div className="w-full -ml-2 max-w-8xl mx-auto">
+            <div className="gap-2 flex mb-6 w-full">
+              <div className="-mt-2">
+                <div className="p-4">
+                  <div className="overflow-x-auto  ">
+                    <h1>No Wallet Logs Foundd</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

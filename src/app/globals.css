@@ -4,7 +4,20 @@
 
 html {
   background-color: #05071E;
+  @apply scrollbar-hide;
+}
+
+.please {
+  height: '100%';
+  overflow:hidden;
   @apply scrollbar-hide
+}
+
+.okay {
+  height: '100%';
+  overflow-y: hidden;
+  @apply !h-screen !overflow-hidden
+
 }
 
 /* global.css */

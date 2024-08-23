@@ -6,11 +6,15 @@ type Props = { children: React.ReactNode }
 
 const Layout = (props: Props) => {
     return (
-        <div className='flex overflow-hidden  dark:bg-[#201124] scrollbar-hide h-full '>
+        <div className='flex overflow-hidden   dark:bg-[#201124] scrollbar-hide h-full w-full '>
             <MenuOptions />
-            <div className='w-full overflow-x-hidden '>
+            <div className='w-full overflow-hidden please h-screen '>
                 <InfoBar />
+                <div className='mt-[69px] '>
                 {props.children}
+
+                </div>
+            
             </div>
         </div>
     )

@@ -47,7 +47,7 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
                 <p><strong>Category:</strong> ${task.category.name}</p>
                 <p><strong>Task:</strong> ${task.title}</p>
                 <p><strong>Due Date:</strong> ${formattedDueDate}</p>
-                <p><strong>Priority:</strong> ${task.priority}</p>
+                <p><strong>Priority:</strong> ${task.priority}</p>  
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
                 </div>

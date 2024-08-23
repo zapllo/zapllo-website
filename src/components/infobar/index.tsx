@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Bell, BellDot, Book, Headphones, LogOutIcon, Search, User } from 'lucide-react'
+import { Bell, BellDot, Book, Headphones, LogOutIcon, Search, User, XIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
@@ -45,17 +45,26 @@ const InfoBar = (props: Props) => {
         setFirstName(userRes.data.data.firstName);
         setLastName(userRes.data.data.lastName);
         setRole(userRes.data.data.role);
-
         // Fetch trial status
-        const trialStatusRes = await axios.get('/api/organization/trial-status');
-        const isExpired = trialStatusRes.data.isExpired;
-        setTrialExpires(isExpired ? null : trialStatusRes.data.trialExpires);
+        const response = await axios.get('/api/organization/getById');
+        console.log(response.data.data); // Log the organization data
+
+        const organization = response.data.data;
+
+        const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
+        console.log('isExpired:', isExpired);
+        console.log('trialExpires:', organization.trialExpires);
+
+        setTrialExpires(isExpired ? null : organization.trialExpires);
       } catch (error) {
         console.error('Error fetching user details or trial status:', error);
       }
     }
     getUserDetails();
-  }, [])
+  }, []);
+
+
+  console.log(trialExpires, 'trial')
 
   useEffect(() => {
     if (trialExpires) {
@@ -117,28 +126,58 @@ const InfoBar = (props: Props) => {
     }
   };
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  const handleClose = () => {
+    setIsVisible(false);
+  };
+
+  useEffect(() => {
+    // Reset visibility on route change
+    setIsVisible(true);
+  }, [pathName]);
+
   return (
     <>
-      <div className="flex flex-row justify-between gap-6 border-b items-center px-4 py-4 w-full z-[20]   bg-[#211025] ">
-        {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
-        <div className='flex ml-4'>
-          <h1 className='text-xl  mt-1  text-white font-bold'>{getPageTitle()} </h1>
-        </div>
-        <div className="flex items-center gap-4 font-bold">
-          <h1 className='text-sm mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1>
-          <Link href='/dashboard/billing'>
-            <Button className='h-8 dark:bg-[#007A5A] text-xs text-white'>Upgrade Now</Button>
-          </Link>
-          <ModeToggle />
-          <Button
 
-            className='relative rounded-full bg-[#75517B] p-2 h-10 w-10'
-            size="icon"
-          >
-            <img src='/icons/bell.png' className='' alt="Notification Bell" />
-            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border-2 border-red-500 "></span>
-          </Button>
-          {/* <TooltipProvider>
+
+      <div className="  fixed  w-[98%]   ">
+        {isVisible && (
+          <div className='p-2 flex  top-0  justify-center gap-2 bg-[rgb(56,14,61)]'>
+            <div className='flex gap-2 justify-center w-full'>
+              <h1 className='text-center mt-1 text-white text-xs'>
+                Your Trial Period will expire <strong className='text-yellow-500'>{remainingTime}</strong>, upgrade now for uninterrupted access
+              </h1>
+              <Link href='/dashboard/billing'>
+                <Button className='h-5 rounded dark:bg-[#007A5A] text-xs text-white'>
+                  Upgrade Now
+                </Button>
+              </Link>
+            </div>
+
+            {/* <button onClick={handleClose} className='-ml-24 text-white'>
+              <XIcon className='h-4 w-4' />
+            </button> */}
+          </div>
+        )}
+        <div className='gap-6 border-b items-center px-4 py-2 w-[98%] z-[20] flex flex-row  bg-[#211025]'>
+          {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
+          <div className='flex ml-4'>
+            <h1 className='text-md mt-1  text-white font-bold'>{getPageTitle()} </h1>
+          </div>
+          <div className="flex items-center gap-4 ml-auto font-bold">
+            {/* <h1 className='text-xs mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1> */}
+
+            {/* <ModeToggle /> */}
+            <Button
+
+              className='relative rounded-full bg-[#75517B] p-2 h-9 w-9'
+              size="icon"
+            >
+              <img src='/icons/bell.png' className='h' alt="Notification Bell" />
+              <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border-2 border-red-500 "></span>
+            </Button>
+            {/* <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger>
                 <Headphones />
@@ -149,49 +188,50 @@ const InfoBar = (props: Props) => {
             </Tooltip>
           </TooltipProvider> */}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className='flex gap-4'>
-                <div className='h-10  items-center cursor-pointer flex justify-center w-10 border bg-[#75517B] -500 rounded-full '>
-                  {/* <User className='h-5 w-5' />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className='flex gap-2'>
+                  <div className='h-9 text-xs  items-center cursor-pointer flex justify-center w-9 border bg-[#75517B] -500 rounded-full '>
+                    {/* <User className='h-5 w-5' />
                */}
-
-                  {`${firstName}`.slice(0, 1)}
+                    {`${firstName}`.slice(0, 1)}
+                    {`${lastName}`.slice(0, 1)}
+                  </div>
+                  <div>
+                    <h1 className='text-[#fd8829] text-sm '>
+                      {firstName}
+                    </h1>
+                    {role === "orgAdmin" ? <h1 className=' text-[10px] '>Admin</h1> : role === "manager" ? <h1 className='text-[10px]'>Manager</h1> : <h1 className='text-[10px]'>Member</h1>}
+                  </div>
                 </div>
-                <div>
-                  <h1 className='text-[#fd8829] text-sm '>
-                    {firstName}
-                  </h1>
-                  {role === "orgAdmin" ? <h1 className=' text-xs '>Admin</h1> : role === "manager" ? <h1>Manager</h1> : <h1>Member</h1>}
-                </div>
-              </div>
-            </DropdownMenuTrigger>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>{firstName} {lastName}
-                <p className='text-xs text-gray-400 capitalize'>Team {role}</p>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <Link href='/dashboard/profile'>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>{firstName} {lastName}
+                  <p className='text-xs text-gray-400 capitalize'>Team {role}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <Link href='/dashboard/profile'>
+                    <DropdownMenuItem>
+                      Profile
+                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>
-                    Profile
-                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    Billing
+                    <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
                   </DropdownMenuItem>
-                </Link>
-                <DropdownMenuItem>
-                  Billing
-                  <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-                </DropdownMenuItem>
 
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>
-                Log out
-                <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout}>
+                  Log out
+                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </>

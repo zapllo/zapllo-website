@@ -45,7 +45,9 @@ export default function TaskManagement() {
     const [tasks, setTasks] = useState([]);
     const [currentUser, setCurrentUser] = useState<any>();
     const [isTrialExpired, setIsTrialExpired] = useState(false);
-  
+    const [userId, setUserId] = useState("");
+    const [progress, setProgress] = useState<boolean[]>([]);
+
     useEffect(() => {
         const getUserDetails = async () => {
             const res = await axios.get('/api/users/me')
@@ -55,6 +57,9 @@ export default function TaskManagement() {
         }
         getUserDetails();
     }, [])
+
+   
+
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -119,7 +124,7 @@ export default function TaskManagement() {
 
 
     return (
-        <div className='p-4'>
+        <div className='p-4 '>
             {/* <h1 className='text-center text-xl font-bold under'>Task Management</h1> */}
             <div className="fixed bottom-8 right-8 z-50">
                 <button className="flex items-center justify-center w-12 h-12 rounded-full bg-[#007A5A] text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" onClick={openModal}>

@@ -5,11 +5,50 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import Loader from '@/components/ui/loader'
 import { Progress } from '@/components/ui/progress'
+import axios from 'axios'
 import { Home } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const DashboardPage = () => {
+  const [progress, setProgress] = useState<boolean[]>([]);
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const userRes = await axios.get('/api/users/me');
+        setUserId(userRes.data.data._id);
+      } catch (error) {
+        console.error('Error fetching user details or trial status:', error);
+      }
+    }
+    getUserDetails();
+  }, []);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const res = await fetch(`/api/get-checklist-progress?userId=${userId}`);
+        const data = await res.json();
+        setProgress(data.progress);
+      } catch (error) {
+        console.error('Error fetching checklist progress:', error);
+      }
+    };
+
+    if (userId) {
+      fetchProgress();
+    }
+  }, [userId]);
+
+  const calculateProgress = () => {
+    if (!progress || progress.length === 0) return 0;
+    const completedCount = progress.filter(Boolean).length;
+    const progressPercentage = (completedCount / progress.length) * 100;
+    return Math.round(progressPercentage); // Round to the nearest integer
+  };
+
 
   return (
     <div className=' dark:bg-[#211025] pt-2 scale-95 gap- relative overflow-x-hidden scrollbar-hide'>
@@ -20,12 +59,14 @@ const DashboardPage = () => {
           <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
             <div className='w-full m'>
               <h1>App Usage Progress: </h1>
-              <Progress value={13} className='' />
+              <Progress value={calculateProgress()} className='' />
             </div>
             <div className='flex justify-start mt-3'>
-              <Button className='bg-[#7C3886]  hover:bg-[#7C3886]'>
-                Checklist
-              </Button>
+              <Link href='/dashboard/checklist' >
+                <Button className='bg-[#7C3886]  hover:bg-[#7C3886]'>
+                  Checklist
+                </Button>
+              </Link>
             </div>
 
           </div>
