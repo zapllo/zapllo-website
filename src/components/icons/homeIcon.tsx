@@ -4,7 +4,7 @@ import React from 'react'
 
 const HomeIcon = ({ }) => {
     return (
-        <img src='/icons/home.png' className='h-4 invert-[100]' />
+        <img src='/icons/homeicon.png' className='h-4' />
 
     )
 }

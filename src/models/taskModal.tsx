@@ -28,7 +28,7 @@ export interface ITask extends Document {
     dates?: number[]; // Assuming dates are numbers 1-31 for monthly
     dueDate: Date;
     completionDate: Date;
-    attachment?: string;
+    attachment?: string[];
     links?: string[];
     status: 'Pending' | 'In Progress' | 'Completed' | 'Reopen';
     organization: mongoose.Types.ObjectId;
@@ -121,7 +121,7 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
         type: Date,
     },
     attachment: {
-        type: String,
+        type: [String],
     },
     links: {
         type: [String],
@@ -196,6 +196,7 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
             default: Date.now,
         },
     }],
+
 }, {
     timestamps: true,
 });

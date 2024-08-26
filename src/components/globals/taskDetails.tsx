@@ -226,7 +226,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             </Label>
                             <div className="flex  ml-3  justify-start">
                                 <h1 id="assignedUser" className="col-span-3 ">
-                                    {selectedTask.category.name}
+                                    {selectedTask.category?.name}
                                 </h1>
                             </div>
                         </div>

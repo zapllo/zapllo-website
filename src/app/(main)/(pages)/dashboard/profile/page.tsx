@@ -135,9 +135,9 @@ export default function Profile({ }: Props) {
 
 
     return (
-        <div className=''>
+        <div className='mt-16'>
             <div className='flex justify-center w-full bg- rounded p-2'>
-                <div className="flex  cursor-pointer bg-transparent border border-lg  w-fit rounded text-sm px-4 py-2 items-center justify-center">
+                <div className="flex  cursor-pointer bg-transparent border border-lg  w-fit rounded text-xs px-4 py-2 items-center justify-center">
                     <div className="flex items-center text-[#E0E0E0] gap-4">
                         <Avatar>
                             <AvatarImage src="/placeholder-user.jpg" />
@@ -165,37 +165,37 @@ export default function Profile({ }: Props) {
             </div>
             <div className='p-4 '>
                 <div>
-                <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-12 '>
-                        <h1>My Account Information</h1>
+                <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
+                        <h1 className='text-sm'>My Account Information</h1>
                     </div>
                     <Link href='/dashboard/settings/changePassword'>
-                        <div className='border-b p-2 mt-2 h-12 '>
-                            <h1>Change Password</h1>
+                        <div className='border-b p-2 mt-2 h-10 '>
+                            <h1 className='text-sm'>Change Password</h1>
                         </div>
                     </Link>
                 </div>
                 <div className='py-4'>
-                    <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-12 '>
-                        <h1>Support</h1>
+                    <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
+                        <h1 className='text-sm'>Support</h1>
                     </div>
                     <Link href='/dashboard/tutorials'>
-                        <div className='border-b p-2 mt-2 h-12 '>
-                            <h1>Tutorials</h1>
+                        <div className='border-b p-2 mt-2 h-10 '>
+                            <h1 className='text-sm'>Tutorials</h1>
                         </div>
                     </Link>
                     <Link href='/dashboard/tickets'>
-                        <div className='border-b p-2 mt-2 h-12 rounded-lg'>
-                            <h1>My Tickets</h1>
+                        <div className='border-b p-2 mt-2 h-10 rounded-lg'>
+                            <h1 className='text-sm'>My Tickets</h1>
                         </div>
                     </Link>
                     <Link href='/dashboard/tickets'>
-                        <div className=' p-2 mt-2 h-12 '>
-                            <h1>Raise a Ticket</h1>
+                        <div className=' p-2 mt-2 h-10 '>
+                            <h1 className='text-sm'>Raise a Ticket</h1>
                         </div>
                     </Link>
                     <div className='flex justify-center '>
                         <div onClick={logout} className='border cursor-pointer w-fit  px-8 mt-4 py-2  rounded-lg'>
-                            <h1>Logout</h1>
+                            <h1 className='text-sm'>Logout</h1>
                         </div>
                     </div>
 

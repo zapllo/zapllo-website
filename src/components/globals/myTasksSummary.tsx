@@ -19,7 +19,7 @@ export const MyTasksSummary: React.FC<MyTasksSummaryProps> = ({
     myTasksInTimeCount
 }) => {
     return (
-        <div className=" grid grid-cols-6 w-[80%]  gap-4 mb-8 rounded-lg shadow-md">
+        <div className=" grid grid-cols-6 w-[80%]   gap-4 mb-8 rounded-lg shadow-md">
             {/* <h2 className="text-lg font-medium mb-4">Task Summary</h2> */}
 
             <div className="border px-4 py-1 h-fit flex gap-4 rounded-xl">

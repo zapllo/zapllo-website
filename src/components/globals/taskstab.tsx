@@ -30,6 +30,8 @@ import { TaskSummary } from "./taskSummary";
 import { MyTasksSummary } from "./myTasksSummary";
 import { DelegatedTasksSummary } from "./delegatedTasksSummary";
 import TaskDetails from "./taskDetails";
+import TaskSidebar from "../sidebar/taskSidebar";
+import TaskTabs from "../sidebar/taskSidebar";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -104,6 +106,8 @@ interface TaskStatusCounts {
   [key: string]: number;
 }
 
+
+
 export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
   const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>("today");
@@ -119,6 +123,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   // State variables for filters
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [repeatFilter, setRepeatFilter] = useState<boolean | null>(null);
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(null);
   const [dueDateFilter, setDueDateFilter] = useState<string | null>(null);
   // State variables for modal
@@ -761,59 +766,59 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     };
   };
 
-  const renderTabs = () => {
-    if (userDetails?.role === 'member') {
-      return (
-        <>
-          <TabsTrigger value="all" className="gap-2 ">
-            <div className="flex ">
-              <HomeIcon />
-              Dashboard
-            </div>
-          </TabsTrigger>
-          <TabsTrigger value="myTasks" className="gap-2"><TasksIcon /> Tasks</TabsTrigger>
-          <TabsTrigger value="delegatedTasks" className="gap-2">Delegated Tasks</TabsTrigger>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <TabsTrigger value="all" className=" flex justify-start w- gap-2">
-            <div className="flex justify-start ml-4 w-full gap-2">
-              <HomeIcon />
-              <h1 className="mt-auto text-xs">
-                Dashboard
-              </h1>
-            </div>
-          </TabsTrigger>
-          <TabsTrigger value="myTasks" className=" flex justify-start w-">
-            <div className="flex justify-start ml-4 w-full gap-2">
-              <TasksIcon />
-              <h1 className="mt-auto text-xs">
-                My Tasks
-              </h1>
-            </div>
-          </TabsTrigger>
-          <TabsTrigger value="delegatedTasks" className=" flex justify-start w-">
-            <div className="flex justify-start w-full ml-4 gap-2">
-              <img src='/icons/delegated.png' className='h-[15px]' />
-              <h1 className="text-xs">
-                Delegated Tasks
-              </h1>
-            </div>
-          </TabsTrigger>
-          <TabsTrigger value="allTasks" className=" flex justify-start w-">
-            <div className="flex justify-start w-full gap-2 ml-4">
-              <img src='/icons/all.png' className='h-4' />
-              <h1 className="text-xs">
-                All Tasks
-              </h1>
-            </div>
-          </TabsTrigger>
-        </>
-      );
-    }
-  };
+  // const renderTabs = () => {
+  //   if (userDetails?.role === 'member') {
+  //     return (
+  //       <>
+  //         <TabsTrigger value="all" className="gap-2 ">
+  //           <div className="flex ">
+  //             <HomeIcon />
+  //             Dashboard
+  //           </div>
+  //         </TabsTrigger>
+  //         <TabsTrigger value="myTasks" className="gap-2"><TasksIcon /> Tasks</TabsTrigger>
+  //         <TabsTrigger value="delegatedTasks" className="gap-2">Delegated Tasks</TabsTrigger>
+  //       </>
+  //     );
+  //   } else {
+  //     return (
+  //       <>
+  //         <TabsTrigger value="all" className=" flex justify-start w- gap-2">
+  //           <div className="flex justify-start ml-4 w-full gap-2">
+  //             <HomeIcon />
+  //             <h1 className="mt-auto text-xs">
+  //               Dashboard
+  //             </h1>
+  //           </div>
+  //         </TabsTrigger>
+  //         <TabsTrigger value="myTasks" className=" flex justify-start w-">
+  //           <div className="flex justify-start ml-4 w-full gap-2">
+  //             <TasksIcon />
+  //             <h1 className="mt-auto text-xs">
+  //               My Tasks
+  //             </h1>
+  //           </div>
+  //         </TabsTrigger>
+  //         <TabsTrigger value="delegatedTasks" className=" flex justify-start w-">
+  //           <div className="flex justify-start w-full ml-4 gap-2">
+  //             <img src='/icons/delegated.png' className='h-[15px]' />
+  //             <h1 className="text-xs">
+  //               Delegated Tasks
+  //             </h1>
+  //           </div>
+  //         </TabsTrigger>
+  //         <TabsTrigger value="allTasks" className=" flex justify-start w-">
+  //           <div className="flex justify-start w-full gap-2 ml-4">
+  //             <img src='/icons/all.png' className='h-4' />
+  //             <h1 className="text-xs">
+  //               All Tasks
+  //             </h1>
+  //           </div>
+  //         </TabsTrigger>
+  //       </>
+  //     );
+  //   }
+  // };
 
   const formatTaskDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -855,1147 +860,1192 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
 
+
+
   return (
-    <div className="w-full please    max-w-8xl ">
-      <Toaster />
-      <div className=" w-full -ml-6 justify-center">
-        <div className={`flex flex-col justify-start absolute left-0 ml-20   border-r border-b -mt-6 h-[500px] `}>   {/***SIDEBAR for tasks */}
-          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
-              {/* <TabsTrigger value="all">Dashboard</TabsTrigger>
-            <TabsTrigger value="myTasks">My Tasks</TabsTrigger>
-            <TabsTrigger value="delegatedTasks">Delegated Tasks</TabsTrigger>
-            <TabsTrigger value="allTasks">All Tasks</TabsTrigger> */}
-              {renderTabs()}
-            </TabsList>
-          </Tabs>
-        </div>
-        <div className="overflow-x-hidden scrollbar-hide overflow-y-scroll mt-6 h-screen">
-          <div className="flex ml-20   w-full justify-center ">
-            <div className="justify-center   w-full flex ">
-              <Tabs3 defaultValue={activeDateFilter} onValueChange={setActiveDateFilter} className="-mt-1">
-                <TabsList3 className="flex gap-4">
-                  <TabsTrigger3 className="flex gap-2 text-xs" value="today">Today</TabsTrigger3>
-                  <TabsTrigger3 value="yesterday" className="flex gap-2 text-xs">Yesterday</TabsTrigger3>
-                  <TabsTrigger3 value="thisWeek" className="text-xs">This Week</TabsTrigger3>
-                  <TabsTrigger3 value="lastWeek" className="text-xs">Last Week</TabsTrigger3>
-                  <TabsTrigger3 value="thisMonth" className="text-xs">This Month</TabsTrigger3>
-                  <TabsTrigger3 value="lastMonth" className="text-xs">Last Month</TabsTrigger3>
-                  <TabsTrigger3 value="thisYear" className="text-xs">This Year</TabsTrigger3>
-                  <TabsTrigger3 value="allTime" className="text-xs">All Time</TabsTrigger3>
-                  <TabsTrigger3 value="custom" className="text-xs">Custom</TabsTrigger3>
-                  {activeDateFilter === "custom" && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                      <div className="bg-black p-6 rounded-lg shadow-lg w-96">
-                        <h3 className="text-lg font-semibold mb-4">Select Date Range</h3>
-                        <div className="flex gap-2">
-                          <div>
-                            <label>Start Date</label>
-                            <input
-                              type="date"
-                              value={customStartDate}
-                              onChange={(e) => setCustomStartDate(e.target.value)}
-                              className="border px-2 py-1"
-                            />
-                          </div>
-                          <div>
-                            <label>End Date</label>
-
-                            <input
-                              type="date"
-                              value={customEndDate}
-                              onChange={(e) => setCustomEndDate(e.target.value)}
-                              className="border px-2 py-1"
-                            />
-                          </div>
-
-                        </div>
-                        <div className="flex justify-end gap-4 mt-4">
-
-                          <button
-                            onClick={() => setActiveDateFilter(undefined)} // This will close the modal
-                            className="px-4 py-2 bg-secondary text-white rounded "
-                          >
-                            Done
-                          </button>
-                        </div>
-                      </div>
-
-                    </div>
-                  )}
-                </TabsList3>
-              </Tabs3>
-            </div>
-
-          </div>
-          <div>
-            {activeTab === "all" ? (
-              <div className="flex mt-6  flex-col ">
-                <div className="  ml-24 w-full flex justify-center text-xs gap-4">
-                  <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
-                </div>
-                {/* <DashboardAnalytics /> */}
-                <div className="flex gap-4 ml-20 w-full justify-center">
-                  <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="gap-4">
-                    <TabsList2 className="flex gap-4">
-                      <TabsTrigger2 className="flex gap-2 text-xs tabs-trigger" value="employee-wise">Employee Wise</TabsTrigger2>
-                      <TabsTrigger2 value="category-wise" className="flex gap-2 text-xs"> Category Wise</TabsTrigger2>
-                      <TabsTrigger2 value="my-report" className="text-xs">My Report </TabsTrigger2>
-                      <TabsTrigger2 value="delegatedTasks" className="tabs-trigger text-xs">Delegated</TabsTrigger2>
-                    </TabsList2>
-                  </Tabs2>
-                </div>
-                {activeDashboardTab === "employee-wise" && (
-                  <div className="">
-                    <div className="flex p-2 m-2 justify-center">
-
-                      {/* <h1 className="font-medium ">Employee-wise </h1> */}
-                      <input
-                        type="text"
-                        placeholder="Search Employee"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
-                      />
-
-
-                    </div>
-                    <div className="grid w-[80%] ml-56 gap-4">
-                      {users.filter(user => {
-                        const query = searchQuery.toLowerCase();
-                        return (
-                          user.firstName.toLowerCase().includes(query) ||
-                          user.lastName.toLowerCase().includes(query)
-                        );
-                      }).map(user => {
-                        const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
-                        const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
-                        const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
-                          return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
-                        };
-                        const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
-
-                        // Determine the color based on the traffic light logic
-                        let pathColor;
-                        if (completionPercentage < 50) {
-                          pathColor = '#FF0000'; // Red for less than 50%
-                        } else if (completionPercentage >= 50 && completionPercentage < 80) {
-                          pathColor = '#FFA500'; // Orange for 50%-79%
-                        } else {
-                          pathColor = '#008000'; // Green for 80% and above
-                        }
-
-                        return (
-                          <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
-                            <div className="flex gap-2 justify-start">
-                              <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
-                                <h1 className="text-center text-sm mt-1 uppercase">
-                                  {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
-                                </h1>
-                              </div>
-                              <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
-                            </div>
-
-                            {/* <p className="text-xs"> {user.email}</p> */}
-                            <div className="flex gap-2 ] text-xs mt-1">
-                              <div className="flex font-medium ">
-                                <CircleAlert className="text-red-500 h-4" />
-                                <p className="text-xs">Overdue: {overdueTasks}</p>
-                              </div>
-                              <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                              <div className="flex gap-2  font-medium">
-                                <Circle className="text-red-400 h-4" />
-                                <p className="text-xs">Pending: {pendingTasks}</p>
-                              </div>
-                              <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                              <div className="flex gap-2 font-medium">
-                                <IconProgress className="text-orange-600 h-4" />
-                                <p className="text-xs">In Progress: {inProgressTasks}</p>
-                              </div>
-                              <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                              <div className="flex gap-2 font-medium">
-                                <CheckCircle className="text-green-600 h-4" />
-                                <p className="text-xs">Completed: {completedTasks}</p>
-                              </div>
-                            </div>
-                            <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
-                              <div className="">
-                                <CircularProgressbar
-                                  value={completionPercentage}
-                                  text={`${Math.round(completionPercentage)}%`}
-                                  styles={buildStyles({
-                                    textSize: '24px',
-                                    pathColor: pathColor, // Dynamic path color
-                                    textColor: '#ffffff',
-                                    trailColor: '#6C636E', // Trail color should be lighter for better contrast
-                                    backgroundColor: '#3e98c7',
-                                  })}
-                                />
-                              </div>
-
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-                {activeDashboardTab === "category-wise" && (
-                  <div className="">
-                    <div className="flex p-2 m-2 justify-center">
-                      <input
-                        type="text"
-                        placeholder="Search Category"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A]  bg-transparent rounded-md "
-                      />
-
-                    </div>
-                    <div className="grid gap-4 ml-56 w-[80%]">
-                      {categories.filter(category => {
-                        const query = searchQuery.toLowerCase();
-                        return category.name.toLowerCase().includes(query);
-                      }).map(category => {
-                        const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
-
-                        return (
-                          <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
-                            <div className="flex gap-2">
-                              <TagsIcon className="h-5" />
-                              <h2 className="text-sm font-medium">{category.name}</h2>
-                            </div>
-                            <div className="flex gap-4 mt-2">
-                              <div className="flex gap-1 font-bold">
-                                <CircleAlert className="text-red-500 h-4" />
-                                <p className="text-xs">Overdue: {overdueTasks}</p>
-                              </div>
-                              <div className="flex gap-1 font-bold">
-                                <Circle className="text-red-400 h-4" />
-                                <p className="text-xs">Pending: {pendingTasks}</p>
-                              </div>
-                              <div className="flex gap-1 font-bold">
-                                <IconProgress className="text-orange-600 h-4" />
-                                <p className="text-xs">In Progress: {inProgressTasks}</p>
-                              </div>
-                              <div className="flex gap-1 font-bold">
-                                <CheckCircle className="text-green-600 h-4" />
-                                <p className="text-xs">Completed: {completedTasks}</p>
-                              </div>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-                {activeDashboardTab === "my-report" && userDetails && (
-                  <div>
-                    <div className="flex p-2 m-2 justify-center">
-
-                      {/* <h1 className="font-medium ">My Report</h1> */}
-                      <input
-                        type="text"
-                        placeholder="Search Category"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
-                      />
-
-                    </div>
-                    <div className="grid gap-4 ml-56 w-[80%]">
-                      {categories.filter(category => {
-                        const query = searchQuery.toLowerCase();
-                        return (
-                          category.name.toLowerCase().includes(query)
-                        );
-                      }).map(category => {
-                        const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryReportTaskStats(category._id);
-
-                        return (
-                          <Card key={category._id} className="p-4 flex bg-[#]  flex-col gap-2">
-                            <div className="flex gap-2">
-                              <TagsIcon className="h-5" />
-                              <h2 className="text-sm font-medium">{category.name}</h2>
-                            </div>
-                            <div className="flex gap-4 mt-2">
-                              <div className="flex gap-1 font-bold">
-                                <div className="flex gap-1 font-bold">
-                                  <CircleAlert className="text-red-500 h-4" />
-                                  <p className="text-xs">Overdue: {overdueTasks}</p>
-                                </div>
-                              </div>
-                              <div className="flex gap-1 font-bold">
-                                <Circle className="text-red-400 h-4" />
-                                <p className="text-xs">Pending: {pendingTasks}</p>
-                              </div>
-                              <div className="flex gap-1 font-bold">
-                                <IconProgress className="text-orange-600 h-4" />
-                                <p className="text-xs">In Progress: {inProgressTasks}</p>
-                              </div>
-                              <div className="flex gap-1 font-bold">
-                                <CheckCircle className="text-green-600 h-4" />
-                                <p className="text-xs">Completed: {completedTasks}</p>
-                              </div>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {activeDashboardTab === "delegatedTasks" && (
-                  <div className="">
-                    <div className="flex p-2 m-2 justify-center">
-
-                      {/* <h1 className="font-medium ">Employee-wise </h1> */}
-                      <input
-                        type="text"
-                        placeholder="Search Employee"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
-                      />
-
-
-                    </div>
-                    <div className="grid w-[80%] ml-56 gap-4">
-                      {users.filter(user => {
-                        const query = searchQuery.toLowerCase();
-                        return (
-                          user.firstName.toLowerCase().includes(query) ||
-                          user.lastName.toLowerCase().includes(query)
-                        );
-                      }).map(user => {
-                        const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
-                        const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
-                        const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
-                          return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
-                        };
-                        const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
-
-                        // Determine the color based on the traffic light logic
-                        let pathColor;
-                        if (completionPercentage < 50) {
-                          pathColor = '#FF0000'; // Red for less than 50%
-                        } else if (completionPercentage >= 50 && completionPercentage < 80) {
-                          pathColor = '#FFA500'; // Orange for 50%-79%
-                        } else {
-                          pathColor = '#008000'; // Green for 80% and above
-                        }
-
-                        return (
-                          <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
-                            <div className="flex gap-2 justify-start">
-                              <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
-                                <h1 className="text-center text-sm mt-1 uppercase">
-                                  {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
-                                </h1>
-                              </div>
-                              <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
-                            </div>
-
-                            {/* <p className="text-xs"> {user.email}</p> */}
-                            <div className="flex gap-2 ] text-xs mt-1">
-                              <div className="flex font-medium ">
-                                <CircleAlert className="text-red-500 h-4" />
-                                <p className="text-xs">Overdue: {overdueTasks}</p>
-                              </div>
-                              <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                              <div className="flex gap-2  font-medium">
-                                <Circle className="text-red-400 h-4" />
-                                <p className="text-xs">Pending: {pendingTasks}</p>
-                              </div>
-                              <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                              <div className="flex gap-2 font-medium">
-                                <IconProgress className="text-orange-600 h-4" />
-                                <p className="text-xs">In Progress: {inProgressTasks}</p>
-                              </div>
-                              <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                              <div className="flex gap-2 font-medium">
-                                <CheckCircle className="text-green-600 h-4" />
-                                <p className="text-xs">Completed: {completedTasks}</p>
-                              </div>
-                            </div>
-                            <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
-                              <div className="">
-                                <CircularProgressbar
-                                  value={completionPercentage}
-                                  text={`${Math.round(completionPercentage)}%`}
-                                  styles={buildStyles({
-                                    textSize: '24px',
-                                    pathColor: pathColor, // Dynamic path color
-                                    textColor: '#ffffff',
-                                    trailColor: '#6C636E', // Trail color should be lighter for better contrast
-                                    backgroundColor: '#3e98c7',
-                                  })}
-                                />
-                              </div>
-
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+    <div className="flex  overflow-x-hidden w-screen ">
+      <div className=" w-44    fixed   ">
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-[180px] mt-12 ">
+          <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
+            <TabsTrigger value="all" className="flex justify-start gap-2">
+              <div className="flex justify-start ml-4 w-full gap-2">
+                <HomeIcon />
+                <h1 className="mt-auto text-xs">Dashboard</h1>
               </div>
-            ) : activeTab === "myTasks" ? (
-              <div className="">
-                <div className="flex mt-6   flex-col ">
-                  <div className="  ml-28 w-full flex justify-center text-xs gap-4">
-                    <MyTasksSummary myTasksCompletedCount={myTasksCompletedCount} myTasksInProgressCount={myTasksInProgressCount} myTasksOverdueCount={myTasksOverdueCount} myTasksPendingCount={myTasksPendingCount} myTasksDelayedCount={myTasksDelayedCount} myTasksInTimeCount={myTasksInTimeCount} />
-                  </div>
+            </TabsTrigger>
+            <TabsTrigger value="myTasks" className="flex justify-start w-full gap-2">
+              <div className="flex justify-start ml-4 w-full gap-2">
+                <TasksIcon />
+                <h1 className="mt-auto text-xs">My Tasks</h1>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="delegatedTasks" className="flex justify-start w-full gap-2">
+              <div className="flex justify-start w-full ml-4 gap-2">
+                <img src="/icons/delegated.png" className="h-[15px]" alt="Delegated Tasks Icon" />
+                <h1 className="text-xs">Delegated Tasks</h1>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="allTasks" className="flex justify-start w-full gap-2 ">
+              <div className="flex justify-start w-full gap-2 ml-4">
+                <img src="/icons/all.png" className="h-4" alt="All Tasks Icon" />
+                <h1 className="text-xs">All Tasks</h1>
+              </div>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      <div className="flex-1 h-screen overflow-y-scroll scrollbar-hide  border ml-44  p-4">
+        <div className="w-screen overflow-x-hidden max-w-6xl mx-auto">
+          <div className="gap-2 flex mb-6 w-full">
+            <div className="-mt-2">
+              <div className="p-4">
+                <div className="w-full     max-w-8xl ">
+                  <Toaster />
+                  <div className=" w-full ml-2  justify-start">
+                    <div className=" scrollbar-hide  mt-6">
+                      <div className="flex   w-full justify-center ">
+                        <div className="justify-center ml-12  w-full flex ">
+                          <Tabs3 defaultValue={activeDateFilter} onValueChange={setActiveDateFilter} className="-mt-1">
+                            <TabsList3 className="flex gap-4">
+                              <TabsTrigger3 className="flex gap-2 text-xs" value="today">Today</TabsTrigger3>
+                              <TabsTrigger3 value="yesterday" className="flex gap-2 text-xs">Yesterday</TabsTrigger3>
+                              <TabsTrigger3 value="thisWeek" className="text-xs">This Week</TabsTrigger3>
+                              <TabsTrigger3 value="lastWeek" className="text-xs">Last Week</TabsTrigger3>
+                              <TabsTrigger3 value="thisMonth" className="text-xs">This Month</TabsTrigger3>
+                              <TabsTrigger3 value="lastMonth" className="text-xs">Last Month</TabsTrigger3>
+                              <TabsTrigger3 value="thisYear" className="text-xs">This Year</TabsTrigger3>
+                              <TabsTrigger3 value="allTime" className="text-xs">All Time</TabsTrigger3>
+                              <TabsTrigger3 value="custom" className="text-xs">Custom</TabsTrigger3>
+                              {activeDateFilter === "custom" && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                  <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96">
+                                    <div className="w-full flex justify-between">
+                                    <h3 className="text-lg text-white font-semibold mb-4">Select Date Range</h3>
+                                    <h1 className="cursor-pointer"      onClick={() => setActiveDateFilter("today")}>X</h1>
+                                    </div>
+                
+                                    <div className="flex gap-2">
+                                      <div>
+                                        <label className="text-">Start Date</label>
+                                        <input
+                                          type="date"
+                                          value={customStartDate}
+                                          onChange={(e) => setCustomStartDate(e.target.value)}
+                                          className="border px-2 py-1"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label>End Date</label>
 
-                  <div className="flex px-4  -mt-6 w-[100%]  space-x-2 justify-center ">
-                    <div className="space-x-2 flex">
-                      <div className=" flex px-4 mt-4  space-x-2 justify-center mb-2">
-                        <input
-                          type="text"
-                          placeholder="Search Task"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
-                        />
+                                        <input
+                                          type="date"
+                                          value={customEndDate}
+                                          onChange={(e) => setCustomEndDate(e.target.value)}
+                                          className="border px-2 py-1"
+                                        />
+                                      </div>
+
+                                    </div>
+                                    <div className="flex justify-end gap-4 mt-4">
+
+                                      <button
+                                        onClick={() => setActiveDateFilter(undefined)} // This will close the modal
+                                        className="px-4 py-2 bg-[#007A5A] text-white rounded "
+                                      >
+                                        Done
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              )}
+                            </TabsList3>
+                          </Tabs3>
+                        </div>
 
                       </div>
-                      <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
-                    </div>
-                  </div>
-
-                  {filteredTasks && filteredTasks.length > 0 ? (
-
-                    filteredTasks?.map((task) => (
-                      <div key={task._id} className="">
-                        <Card
-                          className="flex  w-[80%] ml-56   border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
-                          onClick={() => setSelectedTask(task)}
-                        >
-                          <div className=" items-center gap-4">
-                            <div>
-                              <p className="font-medium text-sm text-white">{task.title}</p>
-                              <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                {task?.user?.firstName}
-                              </span></p>
+                      <div>
+                        {activeTab === "all" ? (
+                          <div className="flex mt-6 -ml-48 flex-col ">
+                            <div className=" ml-28  w-full flex justify-center text-xs gap-4">
+                              <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
                             </div>
-                            <div className="flex gap-2">
+                            {/* <DashboardAnalytics /> */}
+                            <div className="flex gap-4 ml-24  w-full justify-center">
+                              <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="gap-4">
+                                <TabsList2 className="flex gap-4">
+                                  <TabsTrigger2 className="flex gap-2 text-xs tabs-trigger" value="employee-wise">Employee Wise</TabsTrigger2>
+                                  <TabsTrigger2 value="category-wise" className="flex gap-2 text-xs"> Category Wise</TabsTrigger2>
+                                  <TabsTrigger2 value="my-report" className="text-xs">My Report </TabsTrigger2>
+                                  <TabsTrigger2 value="delegatedTasks" className="tabs-trigger text-xs">Delegated</TabsTrigger2>
+                                </TabsList2>
+                              </Tabs2>
+                            </div>
+                            {activeDashboardTab === "employee-wise" && (
+                              <div className="">
+                                <div className="flex p-2 m-2 justify-center">
 
-                              <div className="flex -ml-1  text-xs mt-2">
-                                <IconClock className="h-5" />
-                                <h1 className="mt-[1.5px]">
-                                  {formatTaskDate(task.dueDate)}
-                                </h1>
-                              </div>
-                              <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
-                              <div className="flex text-xs mt-[10px]">
-                                <UserIcon className="h-4" />
-                                {task.assignedUser.firstName}
-                              </div>
-                              <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                  {/* <h1 className="font-medium ">Employee-wise </h1> */}
+                                  <input
+                                    type="text"
+                                    placeholder="Search Employee"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
+                                  />
 
-                              <div className="flex text-xs mt-[11px]">
-                                <TagIcon className="h-4" />
-                                {task.category.name}
-                              </div>
 
-                              {task.repeat ? (
-                                <div className="flex items-center">
-                                  <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
-
-                                  {task.repeatType && (
-                                    <h1 className="flex mt-[11px] text-xs">
-                                      <Repeat className="h-4 " />  {task.repeatType}
-                                    </h1>
-                                  )}
                                 </div>
-                              ) : null}
+                                <div className="grid w-[80%] ml-56 gap-4">
+                                  {users.filter(user => {
+                                    const query = searchQuery.toLowerCase();
+                                    return (
+                                      user.firstName.toLowerCase().includes(query) ||
+                                      user.lastName.toLowerCase().includes(query)
+                                    );
+                                  }).map(user => {
+                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+                                    const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
+                                    const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
+                                      return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+                                    };
+                                    const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
 
-                              {/* <div className="flex mt-auto">
+                                    // Determine the color based on the traffic light logic
+                                    let pathColor;
+                                    if (completionPercentage < 50) {
+                                      pathColor = '#FF0000'; // Red for less than 50%
+                                    } else if (completionPercentage >= 50 && completionPercentage < 80) {
+                                      pathColor = '#FFA500'; // Orange for 50%-79%
+                                    } else {
+                                      pathColor = '#008000'; // Green for 80% and above
+                                    }
+
+                                    return (
+                                      <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
+                                        <div className="flex gap-2 justify-start">
+                                          <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
+                                            <h1 className="text-center text-sm mt-1 uppercase">
+                                              {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
+                                            </h1>
+                                          </div>
+                                          <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
+                                        </div>
+
+                                        {/* <p className="text-xs"> {user.email}</p> */}
+                                        <div className="flex gap-2 ] text-xs mt-1">
+                                          <div className="flex font-medium ">
+                                            <CircleAlert className="text-red-500 h-4" />
+                                            <p className="text-xs">Overdue: {overdueTasks}</p>
+                                          </div>
+                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                          <div className="flex gap-2  font-medium">
+                                            <Circle className="text-red-400 h-4" />
+                                            <p className="text-xs">Pending: {pendingTasks}</p>
+                                          </div>
+                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                          <div className="flex gap-2 font-medium">
+                                            <IconProgress className="text-orange-600 h-4" />
+                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                          </div>
+                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                          <div className="flex gap-2 font-medium">
+                                            <CheckCircle className="text-green-600 h-4" />
+                                            <p className="text-xs">Completed: {completedTasks}</p>
+                                          </div>
+                                        </div>
+                                        <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
+                                          <div className="">
+                                            <CircularProgressbar
+                                              value={completionPercentage}
+                                              text={`${Math.round(completionPercentage)}%`}
+                                              styles={buildStyles({
+                                                textSize: '24px',
+                                                pathColor: pathColor, // Dynamic path color
+                                                textColor: '#ffffff',
+                                                trailColor: '#6C636E', // Trail color should be lighter for better contrast
+                                                backgroundColor: '#3e98c7',
+                                              })}
+                                            />
+                                          </div>
+
+                                        </div>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                            {activeDashboardTab === "category-wise" && (
+                              <div className="">
+                                <div className="flex p-2 m-2 justify-center">
+                                  <input
+                                    type="text"
+                                    placeholder="Search Category"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A]  bg-transparent rounded-md "
+                                  />
+
+                                </div>
+                                <div className="grid gap-4 ml-56 w-[80%]">
+                                  {categories.filter(category => {
+                                    const query = searchQuery.toLowerCase();
+                                    return category.name.toLowerCase().includes(query);
+                                  }).map(category => {
+                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+
+                                    return (
+                                      <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
+                                        <div className="flex gap-2">
+                                          <TagsIcon className="h-5" />
+                                          <h2 className="text-sm font-medium">{category.name}</h2>
+                                        </div>
+                                        <div className="flex gap-4 mt-2">
+                                          <div className="flex gap-1 font-bold">
+                                            <CircleAlert className="text-red-500 h-4" />
+                                            <p className="text-xs">Overdue: {overdueTasks}</p>
+                                          </div>
+                                          <div className="flex gap-1 font-bold">
+                                            <Circle className="text-red-400 h-4" />
+                                            <p className="text-xs">Pending: {pendingTasks}</p>
+                                          </div>
+                                          <div className="flex gap-1 font-bold">
+                                            <IconProgress className="text-orange-600 h-4" />
+                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                          </div>
+                                          <div className="flex gap-1 font-bold">
+                                            <CheckCircle className="text-green-600 h-4" />
+                                            <p className="text-xs">Completed: {completedTasks}</p>
+                                          </div>
+                                        </div>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                            {activeDashboardTab === "my-report" && userDetails && (
+                              <div>
+                                <div className="flex p-2 m-2 justify-center">
+
+                                  {/* <h1 className="font-medium ">My Report</h1> */}
+                                  <input
+                                    type="text"
+                                    placeholder="Search Category"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
+                                  />
+
+                                </div>
+                                <div className="grid gap-4 ml-56 w-[80%]">
+                                  {categories.filter(category => {
+                                    const query = searchQuery.toLowerCase();
+                                    return (
+                                      category.name.toLowerCase().includes(query)
+                                    );
+                                  }).map(category => {
+                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryReportTaskStats(category._id);
+
+                                    return (
+                                      <Card key={category._id} className="p-4 flex bg-[#]  flex-col gap-2">
+                                        <div className="flex gap-2">
+                                          <TagsIcon className="h-5" />
+                                          <h2 className="text-sm font-medium">{category.name}</h2>
+                                        </div>
+                                        <div className="flex gap-4 mt-2">
+                                          <div className="flex gap-1 font-bold">
+                                            <div className="flex gap-1 font-bold">
+                                              <CircleAlert className="text-red-500 h-4" />
+                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                            </div>
+                                          </div>
+                                          <div className="flex gap-1 font-bold">
+                                            <Circle className="text-red-400 h-4" />
+                                            <p className="text-xs">Pending: {pendingTasks}</p>
+                                          </div>
+                                          <div className="flex gap-1 font-bold">
+                                            <IconProgress className="text-orange-600 h-4" />
+                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                          </div>
+                                          <div className="flex gap-1 font-bold">
+                                            <CheckCircle className="text-green-600 h-4" />
+                                            <p className="text-xs">Completed: {completedTasks}</p>
+                                          </div>
+                                        </div>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {activeDashboardTab === "delegatedTasks" && (
+                              <div className="">
+                                <div className="flex p-2 m-2 justify-center">
+
+                                  {/* <h1 className="font-medium ">Employee-wise </h1> */}
+                                  <input
+                                    type="text"
+                                    placeholder="Search Employee"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
+                                  />
+
+
+                                </div>
+                                <div className="grid w-[80%] ml-56 gap-4">
+                                  {users.filter(user => {
+                                    const query = searchQuery.toLowerCase();
+                                    return (
+                                      user.firstName.toLowerCase().includes(query) ||
+                                      user.lastName.toLowerCase().includes(query)
+                                    );
+                                  }).map(user => {
+                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+                                    const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
+                                    const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
+                                      return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+                                    };
+                                    const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
+
+                                    // Determine the color based on the traffic light logic
+                                    let pathColor;
+                                    if (completionPercentage < 50) {
+                                      pathColor = '#FF0000'; // Red for less than 50%
+                                    } else if (completionPercentage >= 50 && completionPercentage < 80) {
+                                      pathColor = '#FFA500'; // Orange for 50%-79%
+                                    } else {
+                                      pathColor = '#008000'; // Green for 80% and above
+                                    }
+
+                                    return (
+                                      <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
+                                        <div className="flex gap-2 justify-start">
+                                          <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
+                                            <h1 className="text-center text-sm mt-1 uppercase">
+                                              {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
+                                            </h1>
+                                          </div>
+                                          <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
+                                        </div>
+
+                                        {/* <p className="text-xs"> {user.email}</p> */}
+                                        <div className="flex gap-2 ] text-xs mt-1">
+                                          <div className="flex font-medium ">
+                                            <CircleAlert className="text-red-500 h-4" />
+                                            <p className="text-xs">Overdue: {overdueTasks}</p>
+                                          </div>
+                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                          <div className="flex gap-2  font-medium">
+                                            <Circle className="text-red-400 h-4" />
+                                            <p className="text-xs">Pending: {pendingTasks}</p>
+                                          </div>
+                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                          <div className="flex gap-2 font-medium">
+                                            <IconProgress className="text-orange-600 h-4" />
+                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                          </div>
+                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                          <div className="flex gap-2 font-medium">
+                                            <CheckCircle className="text-green-600 h-4" />
+                                            <p className="text-xs">Completed: {completedTasks}</p>
+                                          </div>
+                                        </div>
+                                        <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
+                                          <div className="">
+                                            <CircularProgressbar
+                                              value={completionPercentage}
+                                              text={`${Math.round(completionPercentage)}%`}
+                                              styles={buildStyles({
+                                                textSize: '24px',
+                                                pathColor: pathColor, // Dynamic path color
+                                                textColor: '#ffffff',
+                                                trailColor: '#6C636E', // Trail color should be lighter for better contrast
+                                                backgroundColor: '#3e98c7',
+                                              })}
+                                            />
+                                          </div>
+
+                                        </div>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ) : activeTab === "myTasks" ? (
+                          <div>
+                            <div>
+                              <div className="flex mt-6   flex-col ">
+                                <div className="flex -ml-52 flex-col ">
+                                  <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
+
+
+                                    <MyTasksSummary myTasksCompletedCount={myTasksCompletedCount} myTasksInProgressCount={myTasksInProgressCount} myTasksOverdueCount={myTasksOverdueCount} myTasksPendingCount={myTasksPendingCount} myTasksDelayedCount={myTasksDelayedCount} myTasksInTimeCount={myTasksInTimeCount} />
+
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex px-4  -mt-6 w-[100%]    space-x-2 justify-center ">
+                                <div className="space-x-2 flex">
+                                  <div className=" flex px-4 mt-4  space-x-2 justify-center mb-2">
+                                    <input
+                                      type="text"
+                                      placeholder="Search Task"
+                                      value={searchQuery}
+                                      onChange={(e) => setSearchQuery(e.target.value)}
+                                      className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                    />
+
+                                  </div>
+                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
+                                </div>
+                              </div>
+
+                              {filteredTasks && filteredTasks.length > 0 ? (
+
+                                filteredTasks?.map((task) => (
+                                  <div key={task._id} className="">
+                                    <Card
+                                      className="flex  w-[100%] ml- mb-2  border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      onClick={() => setSelectedTask(task)}
+                                    >
+                                      <div className=" items-center gap-4">
+                                        <div>
+                                          <p className="font-medium text-sm text-white">{task.title}</p>
+                                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
+                                            {task?.user?.firstName}
+                                          </span></p>
+                                        </div>
+                                        <div className="flex gap-2">
+
+                                          <div className="flex -ml-1  text-xs mt-2">
+                                            <IconClock className="h-5" />
+                                            <h1 className="mt-[1.5px]">
+                                              {formatTaskDate(task.dueDate)}
+                                            </h1>
+                                          </div>
+                                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                          <div className="flex text-xs mt-[10px]">
+                                            <UserIcon className="h-4" />
+                                            {task.assignedUser.firstName}
+                                          </div>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                                          <div className="flex text-xs mt-[11px]">
+                                            <TagIcon className="h-4" />
+                                            {task.category?.name}
+                                          </div>
+
+                                          {task.repeat ? (
+                                            <div className="flex items-center">
+                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+
+                                              {task.repeatType && (
+                                                <h1 className="flex mt-[11px] text-xs">
+                                                  <Repeat className="h-4 " />  {task.repeatType}
+                                                </h1>
+                                              )}
+                                            </div>
+                                          ) : null}
+
+                                          {/* <div className="flex mt-auto">
                         <TagIcon className="h-5" />
                       </div> */}
-                              <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
-                              <div className="flex text-xs">
-                                <div className="mt-[11px]">
-                                  <IconProgressBolt className="h-4  " />
+                                          <div className="flex text-xs">
+                                            <div className="mt-[11px]">
+                                              <IconProgressBolt className="h-4  " />
 
-                                </div>
-                                <h1 className="mt-auto">
-                                  {task.status}
-                                </h1>
-                              </div>
-                            </div>
+                                            </div>
+                                            <h1 className="mt-auto">
+                                              {task.status}
+                                            </h1>
+                                          </div>
+                                        </div>
 
-                          </div>
-                          <div className="">
-                            <div className="flex ">
-                              <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("In Progress");
-                                    setIsDialogOpen(true);
-                                  }}
-                                  className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
-                                >
-                                  <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
-                                  In Progress
-                                </Button>
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("Completed");
-                                    setIsCompleteDialogOpen(true);
-                                  }}
-                                  className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
-                                >
-                                  <CheckCheck className="h-4 rounded-full text-green-400" />
-                                  Completed
-                                </Button>
-
-
-                              </div>
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-
-                            </div>
-                          </div>
-                        </Card>
-
-                        {selectedTask && selectedTask._id === task._id && (
-                          <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                            setIsDialogOpen={setIsDialogOpen}
-                            setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                            formatDate={formatDate}
-                            sortedComments={sortedComments}
-                            users={users}
-                            categories={categories}
-                            setIsEditDialogOpen={setIsEditDialogOpen}
-
-                            isEditDialogOpen={isEditDialogOpen}
-                            onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
-                        )}
-
-                        {isDialogOpen && (
-                          <Dialog
-                            open={isDialogOpen}
-                          >
-                            <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                            <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                              <DialogTitle>Task Update</DialogTitle>
-                              <p>Please add a note before marking the task as in progress</p>
-                              <div className="mt-4">
-                                <Label>Comment</Label>
-                                <div
-                                  ref={editorRef}
-                                  contentEditable
-                                  className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                  onInput={(e) => {
-                                    const target = e.target as HTMLDivElement; // Cast to HTMLDivElement
-                                    setComment(target.innerHTML);
-                                  }}
-                                ></div>
-                                <div className="flex mt-2">
-                                  <input type="file" onChange={handleFileChange} className="mt-2" />
-                                  <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                  {recording ? (
-                                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                      <Mic className='h-5 text-center m-auto mt-1' />
-                                    </div>
-                                  ) : (
-                                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                      <Mic className='h-5 text-center m-auto mt-1' />
-                                    </div>
-                                  )}
+                                      </div>
+                                      <div className="">
+                                        <div className="flex ">
+                                          <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("In Progress");
+                                                setIsDialogOpen(true);
+                                              }}
+                                              className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                                            >
+                                              <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
+                                              In Progress
+                                            </Button>
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("Completed");
+                                                setIsCompleteDialogOpen(true);
+                                              }}
+                                              className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                                            >
+                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              Completed
+                                            </Button>
 
 
-                                </div>
-                                <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                                {audioBlob && (
-                                  <div className="mt-4">
-                                    <audio controls src={audioURL} />
+                                          </div>
+                                        </div>
+
+                                        <div className="flex justify-end mt-4">
+
+                                        </div>
+                                      </div>
+                                    </Card>
+
+                                    {selectedTask && selectedTask._id === task._id && (
+                                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                                        setIsDialogOpen={setIsDialogOpen}
+                                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                                        formatDate={formatDate}
+                                        sortedComments={sortedComments}
+                                        users={users}
+                                        categories={categories}
+                                        setIsEditDialogOpen={setIsEditDialogOpen}
+
+                                        isEditDialogOpen={isEditDialogOpen}
+                                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
+                                    )}
+
+                                    {isDialogOpen && (
+                                      <Dialog
+                                        open={isDialogOpen}
+                                      >
+                                        <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                                        <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+                                          <DialogTitle>Task Update</DialogTitle>
+                                          <p>Please add a note before marking the task as in progress</p>
+                                          <div className="mt-4">
+                                            <Label>Comment</Label>
+                                            <div
+                                              ref={editorRef}
+                                              contentEditable
+                                              className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                              onInput={(e) => {
+                                                const target = e.target as HTMLDivElement; // Cast to HTMLDivElement
+                                                setComment(target.innerHTML);
+                                              }}
+                                            ></div>
+                                            <div className="flex mt-2">
+                                              <input type="file" onChange={handleFileChange} className="mt-2" />
+                                              <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                              {recording ? (
+                                                <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                                  <Mic className='h-5 text-center m-auto mt-1' />
+                                                </div>
+                                              ) : (
+                                                <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                                  <Mic className='h-5 text-center m-auto mt-1' />
+                                                </div>
+                                              )}
+
+
+                                            </div>
+                                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                                            {audioBlob && (
+                                              <div className="mt-4">
+                                                <audio controls src={audioURL} />
+                                              </div>
+                                            )}
+
+                                            {/* <img src="/icons/image.png" alt="image icon" /> */}
+                                          </div>
+                                          <div className="mt-4 flex justify-end space-x-2">
+                                            <Button
+                                              onClick={() => setIsDialogOpen(false)}
+                                              className="w- text-white bg-gray-500 "
+                                            >
+                                              Close
+                                            </Button>
+                                            <Button
+                                              onClick={handleUpdateTaskStatus}
+                                              className="w-full text-white bg-[#007A5A]"
+                                            >
+                                              Update Task
+                                            </Button>
+
+                                          </div>
+                                        </DialogContent>
+                                      </Dialog>
+                                    )}
                                   </div>
-                                )}
+                                ))
+                              ) : (
+                                // <Card
+                                //   className="flex w-[80%] ml-56 justify-center   items-center rounded-lg bg-[#]  cursor-pointer p-6"
 
-                                {/* <img src="/icons/image.png" alt="image icon" /> */}
-                              </div>
-                              <div className="mt-4 flex justify-end space-x-2">
-                                <Button
-                                  onClick={() => setIsDialogOpen(false)}
-                                  className="w- text-white bg-gray-500 "
-                                >
-                                  Close
-                                </Button>
-                                <Button
-                                  onClick={handleUpdateTaskStatus}
-                                  className="w-full text-white bg-[#007A5A]"
-                                >
-                                  Update Task
-                                </Button>
-
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    // <Card
-                    //   className="flex w-[80%] ml-56 justify-center   items-center rounded-lg bg-[#]  cursor-pointer p-6"
-
-                    // >
-                    <div>
-                      <h1 className="text-center font-bold text-md mt-12">
-                        No Tasks Found
-                      </h1>
-                      <p className="text-center text-sm">The list is currently empty</p>
-                    </div>
-                    // {/* <img src="/logo.png" className="w-[52.5%] h-[100%] opacity-0" /> */}
-
-                    // </Card>
-                  )}
-                  <FilterModal
-                    isOpen={isModalOpen}
-                    closeModal={() => setIsModalOpen(false)}
-                    categories={categories}
-                    users={users}
-                    applyFilters={applyFilters}
-                  />
-                </div>
-              </div>
-            ) : activeTab === "delegatedTasks" ? (
-              <div>
-                <div className="flex mt-6   flex-col ">
-                  <div className="  ml-28 w-full flex justify-center text-xs gap-4">
-                    <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} />
-                  </div>
-
-                  <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
-                    <div className="space-x-2 flex">
-                      <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
-                        <input
-                          type="text"
-                          placeholder="Search Task"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
-                        />
-
-                      </div>
-                      <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
-                    </div>
-                  </div>
-                  {filteredTasks!.length > 0 ? (
-                    filteredTasks!.map((task) => (
-                      <div key={task._id} className="">
-                        <Card
-                          className="flex  w-[80%] ml-56 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
-                          onClick={() => setSelectedTask(task)}
-                        >
-                          <div className=" items-center gap-4">
-                            <div>
-                              <p className="font-medium text-sm text-white">{task.title}</p>
-                              <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                {task.user.firstName}
-                              </span></p>
-                            </div>
-                            <div className="flex gap-2">
-
-                              <div className="flex -ml-1  text-xs mt-2">
-                                <IconClock className="h-5" />
-                                <h1 className="mt-[1.5px]">
-                                  {formatTaskDate(task.dueDate)}
-                                </h1>
-                              </div>
-                              <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
-                              <div className="flex text-xs mt-[10px]">
-                                <UserIcon className="h-4" />
-                                {task.assignedUser.firstName}
-                              </div>
-                              <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-
-                              <div className="flex text-xs mt-[11px]">
-                                <TagIcon className="h-4" />
-                                {task.category.name}
-                              </div>
-
-                              {task.repeat ? (
-                                <div className="flex items-center">
-                                  <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
-
-                                  {task.repeatType && (
-                                    <h1 className="flex mt-[11px] text-xs">
-                                      <Repeat className="h-4 " />  {task.repeatType}
-                                    </h1>
-                                  )}
+                                // >
+                                <div>
+                                  <h1 className="text-center font-bold text-md mt-12">
+                                    No Tasks Found
+                                  </h1>
+                                  <p className="text-center text-sm">The list is currently empty</p>
                                 </div>
-                              ) : null}
+                                // {/* <img src="/logo.png" className="w-[52.5%] h-[100%] opacity-0" /> */}
 
-                              {/* <div className="flex mt-auto">
+                                // </Card>
+                              )}
+                              <FilterModal
+                                isOpen={isModalOpen}
+                                closeModal={() => setIsModalOpen(false)}
+                                categories={categories}
+                                users={users}
+                                applyFilters={applyFilters}
+                              />
+                            </div>
+                          </div>
+                        ) : activeTab === "delegatedTasks" ? (
+                          <div className="flex mt-6   flex-col ">
+                            <div className="flex -ml-52 flex-col ">
+                              <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
+                                <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} />
+                              </div>
+
+                              <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                                <div className="space-x-2 flex">
+                                  <div className=" flex px-4 mt-4 ml-52 space-x-2 justify-center mb-2">
+                                    <input
+                                      type="text"
+                                      placeholder="Search Task"
+                                      value={searchQuery}
+                                      onChange={(e) => setSearchQuery(e.target.value)}
+                                      className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                    />
+
+                                  </div>
+                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                </div>
+                              </div>
+                              {filteredTasks!.length > 0 ? (
+                                filteredTasks!.map((task) => (
+                                  <div key={task._id} className="">
+                                    <Card
+                                      className="flex  w-[81%] ml-52 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      onClick={() => setSelectedTask(task)}
+                                    >
+                                      <div className=" items-center gap-4">
+                                        <div>
+                                          <p className="font-medium text-sm text-white">{task.title}</p>
+                                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
+                                            {task.user.firstName}
+                                          </span></p>
+                                        </div>
+                                        <div className="flex gap-2">
+
+                                          <div className="flex -ml-1  text-xs mt-2">
+                                            <IconClock className="h-5" />
+                                            <h1 className="mt-[1.5px]">
+                                              {formatTaskDate(task.dueDate)}
+                                            </h1>
+                                          </div>
+                                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                          <div className="flex text-xs mt-[10px]">
+                                            <UserIcon className="h-4" />
+                                            {task.assignedUser.firstName}
+                                          </div>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                                          <div className="flex text-xs mt-[11px]">
+                                            <TagIcon className="h-4" />
+                                            {task.category.name}
+                                          </div>
+
+                                          {task.repeat ? (
+                                            <div className="flex items-center">
+                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+
+                                              {task.repeatType && (
+                                                <h1 className="flex mt-[11px] text-xs">
+                                                  <Repeat className="h-4 " />  {task.repeatType}
+                                                </h1>
+                                              )}
+                                            </div>
+                                          ) : null}
+
+                                          {/* <div className="flex mt-auto">
                       <TagIcon className="h-5" />
                     </div> */}
-                              <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
-                              <div className="flex text-xs">
-                                <div className="mt-[11px]">
-                                  <IconProgressBolt className="h-4  " />
+                                          <div className="flex text-xs">
+                                            <div className="mt-[11px]">
+                                              <IconProgressBolt className="h-4  " />
+
+                                            </div>
+                                            <h1 className="mt-auto">
+                                              {task.status}
+                                            </h1>
+                                          </div>
+                                        </div>
+
+                                      </div>
+                                      <div className="">
+                                        <div className="flex ">
+                                          <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("In Progress");
+                                                setIsDialogOpen(true);
+                                              }}
+                                              className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                                            >
+                                              <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
+                                              In Progress
+                                            </Button>
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("Completed");
+                                                setIsCompleteDialogOpen(true);
+                                              }}
+                                              className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                                            >
+                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              Completed
+                                            </Button>
+
+
+                                          </div>
+                                        </div>
+
+                                        <div className="flex justify-end mt-4">
+
+                                        </div>
+                                      </div>
+                                    </Card>
+
+                                    {selectedTask && selectedTask._id === task._id && (
+                                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                                        setIsDialogOpen={setIsDialogOpen}
+                                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                                        formatDate={formatDate}
+                                        sortedComments={sortedComments}
+                                        users={users}
+                                        categories={categories}
+                                        setIsEditDialogOpen={setIsEditDialogOpen}
+                                        isEditDialogOpen={isEditDialogOpen}
+                                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
+                                    )}
+
+                                    {isDialogOpen && (
+                                      <Dialog
+                                        open={isDialogOpen}
+                                      >
+                                        <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                                        <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+                                          <DialogTitle>Task Update</DialogTitle>
+                                          <p>Please add a note before marking the task as in progress</p>
+                                          <div className="mt-4">
+                                            <Label>Comment</Label>
+                                            <div
+                                              ref={editorRef}
+                                              contentEditable
+                                              className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                              onInput={(e) => {
+                                                const target = e.target as HTMLDivElement;
+                                                setComment(target.innerHTML);
+                                              }}
+                                            ></div>
+
+                                            <div className="flex mt-2">
+                                              <input type="file" onChange={handleFileChange} className="mt-2" />
+                                              <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                              {recording ? (
+                                                <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                                  <Mic className='h-5 text-center m-auto mt-1' />
+                                                </div>
+                                              ) : (
+                                                <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                                  <Mic className='h-5 text-center m-auto mt-1' />
+                                                </div>
+                                              )}
+
+
+                                            </div>
+                                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                                            {audioBlob && (
+                                              <div className="mt-4">
+                                                <audio controls src={audioURL} />
+                                              </div>
+                                            )}
+
+                                            {/* <img src="/icons/image.png" alt="image icon" /> */}
+                                          </div>
+                                          <div className="mt-4 flex justify-end space-x-2">
+                                            <Button
+                                              onClick={() => setIsDialogOpen(false)}
+                                              className="w- text-white bg-gray-500 "
+                                            >
+                                              Close
+                                            </Button>
+                                            <Button
+                                              onClick={handleUpdateTaskStatus}
+                                              className="w-full text-white bg-[#007A5A]"
+                                            >
+                                              Update Task
+                                            </Button>
+
+                                          </div>
+                                        </DialogContent>
+                                      </Dialog>
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="ml-52"> {/**No Delegated Tasks found!! */}
+                                  <h1 className="text-center font-bold text-md  mt-12">
+                                    No Tasks Found
+                                  </h1>
+                                  <p className="text-center text-sm">The list is currently empty</p>
+                                </div>
+                              )}
+                              <FilterModal
+                                isOpen={isModalOpen}
+                                closeModal={() => setIsModalOpen(false)}
+                                categories={categories}
+                                users={users}
+                                applyFilters={applyFilters}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          //  <div className="flex mt-6   flex-col ">
+                            <div className="flex -ml-52 mt-6 flex-col ">
+                              <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
+                              <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
+                            </div>
+                            <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                              <div className="space-x-2 flex">
+                                <div className=" flex px-4 ml-52 mt-4 space-x-2 justify-center mb-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Search Task"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                  />
 
                                 </div>
-                                <h1 className="mt-auto">
-                                  {task.status}
-                                </h1>
+                                <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
                               </div>
                             </div>
+                            {filteredTasks!.length > 0 ? (
+                              filteredTasks!.map((task) => (
+                                <div key={task._id} className="">
+                                    <Card
+                                      className="flex  w-[81%] ml-52 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      onClick={() => setSelectedTask(task)}
+                                    >
+                                    <div className=" items-center gap-4">
+                                      <div>
+                                        <p className="font-medium text-sm text-white">{task.title}</p>
+                                        <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
+                                          {task.user.firstName}
+                                        </span></p>
+                                      </div>
+                                      <div className="flex gap-2">
 
-                          </div>
-                          <div className="">
-                            <div className="flex ">
-                              <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("In Progress");
-                                    setIsDialogOpen(true);
-                                  }}
-                                  className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
-                                >
-                                  <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
-                                  In Progress
-                                </Button>
-                                <Button
-                                  onClick={() => {
-                                    setStatusToUpdate("Completed");
-                                    setIsCompleteDialogOpen(true);
-                                  }}
-                                  className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
-                                >
-                                  <CheckCheck className="h-4 rounded-full text-green-400" />
-                                  Completed
-                                </Button>
+                                        <div className="flex -ml-1  text-xs mt-2">
+                                          <IconClock className="h-5" />
+                                          <h1 className="mt-[1.5px]">
+                                            {formatTaskDate(task.dueDate)}
+                                          </h1>
+                                        </div>
+                                        <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                        <div className="flex text-xs mt-[10px]">
+                                          <UserIcon className="h-4" />
+                                          {task.assignedUser.firstName}
+                                        </div>
+                                        <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
-
-                              </div>
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-
-                            </div>
-                          </div>
-                        </Card>
-
-                        {selectedTask && selectedTask._id === task._id && (
-                          <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                            setIsDialogOpen={setIsDialogOpen}
-                            setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                            formatDate={formatDate}
-                            sortedComments={sortedComments}
-                            users={users}
-                            categories={categories}
-                            setIsEditDialogOpen={setIsEditDialogOpen}
-                            isEditDialogOpen={isEditDialogOpen}
-                            onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
-                        )}
-
-                        {isDialogOpen && (
-                          <Dialog
-                            open={isDialogOpen}
-                          >
-                            <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                            <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                              <DialogTitle>Task Update</DialogTitle>
-                              <p>Please add a note before marking the task as in progress</p>
-                              <div className="mt-4">
-                                <Label>Comment</Label>
-                                <div
-                                  ref={editorRef}
-                                  contentEditable
-                                  className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                  onInput={(e) => {
-                                    const target = e.target as HTMLDivElement;
-                                    setComment(target.innerHTML);
-                                  }}
-                                ></div>
-
-                                <div className="flex mt-2">
-                                  <input type="file" onChange={handleFileChange} className="mt-2" />
-                                  <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                  {recording ? (
-                                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                      <Mic className='h-5 text-center m-auto mt-1' />
+                                        <div className="flex text-xs mt-[11px]">
+                                          <TagIcon className="h-4" />
+                                          {task.category.name}
+                                        </div>
+                                        {task.repeat ? (
+                                          <div className="flex items-center">
+                                            <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+                                            {task.repeatType && (
+                                              <h1 className="flex mt-[11px] text-xs">
+                                                <Repeat className="h-4 " />  {task.repeatType}
+                                              </h1>
+                                            )}
+                                          </div>
+                                        ) : null}
+                                        <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                        <div className="flex text-xs">
+                                          <div className="mt-[11px]">
+                                            <IconProgressBolt className="h-4  " />
+                                          </div>
+                                          <h1 className="mt-auto">
+                                            {task.status}
+                                          </h1>
+                                        </div>
+                                      </div>
                                     </div>
-                                  ) : (
-                                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                      <Mic className='h-5 text-center m-auto mt-1' />
+                                    <div className="">
+                                      <div className="flex ">
+                                        <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                          <Button
+                                            onClick={() => {
+                                              setStatusToUpdate("In Progress");
+                                              setIsDialogOpen(true);
+                                            }}
+                                            className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                                          >
+                                            <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
+                                            In Progress
+                                          </Button>
+                                          <Button
+                                            onClick={() => {
+                                              setStatusToUpdate("Completed");
+                                              setIsCompleteDialogOpen(true);
+                                            }}
+                                            className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                                          >
+                                            <CheckCheck className="h-4 rounded-full text-green-400" />
+                                            Completed
+                                          </Button>
+                                        </div>
+                                      </div>
                                     </div>
+                                  </Card>
+                                  {selectedTask && selectedTask._id === task._id && (
+                                    <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                                      setIsDialogOpen={setIsDialogOpen}
+                                      setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                                      formatDate={formatDate}
+                                      sortedComments={sortedComments}
+                                      users={users}
+                                      categories={categories}
+                                      setIsEditDialogOpen={setIsEditDialogOpen}
+                                      isEditDialogOpen={isEditDialogOpen}
+                                      onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                                   )}
-
-
                                 </div>
-                                <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                                {audioBlob && (
-                                  <div className="mt-4">
-                                    <audio controls src={audioURL} />
+                              ))
+                            ) : (
+                              <div className="ml-52">
+                                <h1 className="text-center font-bold text-md mt-12">
+                                  No Tasks Found 
+                                </h1>
+                                <p className="text-center text-sm">The list is currently empty</p>
+                              </div>
+                            )}
+                            <FilterModal
+                              isOpen={isModalOpen}
+                              closeModal={() => setIsModalOpen(false)}
+                              categories={categories}
+                              users={users}
+                              applyFilters={applyFilters}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      {isCompleteDialogOpen && (
+                        <Dialog
+                          open={isCompleteDialogOpen}
+                        >
+                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-lg -mt-1">
+                            <DialogTitle>Task Update</DialogTitle>
+                            <p>Please add a note before marking the task completed</p>
+                            <div className="mt-4">
+                              <Label>Comment</Label>
+
+                              <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className="border rounded-lg px-2 py-1 w-full mt-2"
+                              />
+                              <div className="flex mt-2">
+                                <input type="file" onChange={handleFileChange} className="mt-2" />
+                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                {recording ? (
+                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                ) : (
+                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
                                   </div>
                                 )}
 
-                                {/* <img src="/icons/image.png" alt="image icon" /> */}
-                              </div>
-                              <div className="mt-4 flex justify-end space-x-2">
-                                <Button
-                                  onClick={() => setIsDialogOpen(false)}
-                                  className="w- text-white bg-gray-500 "
-                                >
-                                  Close
-                                </Button>
-                                <Button
-                                  onClick={handleUpdateTaskStatus}
-                                  className="w-full text-white bg-[#007A5A]"
-                                >
-                                  Update Task
-                                </Button>
 
                               </div>
-                            </DialogContent>
-                          </Dialog>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div>
-                      <h1 className="text-center font-bold text-md mt-12">
-                        No Tasks Found
-                      </h1>
-                      <p className="text-center text-sm">The list is currently empty</p>
-                    </div>
-                  )}
-                  <FilterModal
-                    isOpen={isModalOpen}
-                    closeModal={() => setIsModalOpen(false)}
-                    categories={categories}
-                    users={users}
-                    applyFilters={applyFilters}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="flex mt-6  flex-col ">
-                <div className="  ml-28 w-full flex justify-center text-xs gap-4">
-                  <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
-                </div>
-                <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
-                  <div className="space-x-2 flex">
-                    <div className=" flex px-4 mt-4 space-x-2 justify-center mb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Task"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
-                      />
-
-                    </div>
-                    <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
-                  </div>
-                </div>
-                {filteredTasks!.length > 0 ? (
-                  filteredTasks!.map((task) => (
-                    <div key={task._id} className="">
-                      <Card
-                        className="flex  w-[80%] ml-56 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
-                        onClick={() => setSelectedTask(task)}
-                      >
-                        <div className=" items-center gap-4">
-                          <div>
-                            <p className="font-medium text-sm text-white">{task.title}</p>
-                            <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                              {task.user.firstName}
-                            </span></p>
-                          </div>
-                          <div className="flex gap-2">
-
-                            <div className="flex -ml-1  text-xs mt-2">
-                              <IconClock className="h-5" />
-                              <h1 className="mt-[1.5px]">
-                                {formatTaskDate(task.dueDate)}
-                              </h1>
+                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                              {audioBlob && (
+                                <div className="mt-4">
+                                  <audio controls src={audioURL} />
+                                </div>
+                              )}
                             </div>
-                            <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
-                            <div className="flex text-xs mt-[10px]">
-                              <UserIcon className="h-4" />
-                              {task.assignedUser.firstName}
+                            <div className="mt-4 flex justify-end space-x-2">
+                              <Button
+                                onClick={() => setIsCompleteDialogOpen(false)}
+                                className="w- text-white bg-gray-500 "
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full bg-[#007A5A] text-white"
+                              >
+                                Update Task
+                              </Button>
                             </div>
-                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                      {isDialogOpen && (
+                        <Dialog
+                          open={isDialogOpen}
+                        >
+                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+                            <DialogTitle>Task Update</DialogTitle>
+                            <p>Please add a note before marking the task as in progress</p>
+                            <div className="mt-4">
+                              <Label>Comment</Label>
+                              <div
+                                ref={editorRef}
+                                contentEditable
+                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                onInput={(e) => {
+                                  const target = e.target as HTMLDivElement;
+                                  setComment(target.innerHTML);
+                                }}
+                              ></div>
 
-                            <div className="flex text-xs mt-[11px]">
-                              <TagIcon className="h-4" />
-                              {task.category.name}
-                            </div>
-                            {task.repeat ? (
-                              <div className="flex items-center">
-                                <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
-                                {task.repeatType && (
-                                  <h1 className="flex mt-[11px] text-xs">
-                                    <Repeat className="h-4 " />  {task.repeatType}
-                                  </h1>
+                              <div className="flex mt-2">
+                                <input type="file" onChange={handleFileChange} className="mt-2" />
+                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                {recording ? (
+                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                ) : (
+                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
                                 )}
+
+
                               </div>
-                            ) : null}
-                            <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-                            <div className="flex text-xs">
-                              <div className="mt-[11px]">
-                                <IconProgressBolt className="h-4  " />
-                              </div>
-                              <h1 className="mt-auto">
-                                {task.status}
-                              </h1>
+                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                              {audioBlob && (
+                                <div className="mt-4">
+                                  <audio controls src={audioURL} />
+                                </div>
+                              )}
+
+                              {/* <img src="/icons/image.png" alt="image icon" /> */}
                             </div>
-                          </div>
-                        </div>
-                        <div className="">
-                          <div className="flex ">
-                            <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                            <div className="mt-4 flex justify-end space-x-2">
                               <Button
-                                onClick={() => {
-                                  setStatusToUpdate("In Progress");
-                                  setIsDialogOpen(true);
-                                }}
-                                className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                                onClick={() => setIsDialogOpen(false)}
+                                className="w- text-white bg-gray-500 "
                               >
-                                <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
-                                In Progress
+                                Close
                               </Button>
                               <Button
-                                onClick={() => {
-                                  setStatusToUpdate("Completed");
-                                  setIsCompleteDialogOpen(true);
-                                }}
-                                className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full text-white bg-[#007A5A]"
                               >
-                                <CheckCheck className="h-4 rounded-full text-green-400" />
-                                Completed
+                                Update Task
                               </Button>
+
                             </div>
-                          </div>
-                        </div>
-                      </Card>
-                      {selectedTask && selectedTask._id === task._id && (
-                        <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                          setIsDialogOpen={setIsDialogOpen}
-                          setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                          formatDate={formatDate}
-                          sortedComments={sortedComments}
-                          users={users}
-                          categories={categories}
-                          setIsEditDialogOpen={setIsEditDialogOpen}
-                          isEditDialogOpen={isEditDialogOpen}
-                          onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                      {isReopenDialogOpen && (
+                        <Dialog
+                          open={isReopenDialogOpen}
+                        >
+                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
+                            <DialogTitle>Task Update</DialogTitle>
+                            <p>Please add a note before marking the task as Reopen</p>
+                            <div className="mt-4">
+                              <Label>Comment</Label>
+                              <div
+                                ref={editorRef}
+                                contentEditable
+                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                onInput={(e) => {
+                                  const target = e.target as HTMLDivElement;
+                                  setComment(target.innerHTML);
+                                }}
+                              ></div>
+
+                              <div className="flex mt-2">
+                                <input type="file" onChange={handleFileChange} className="mt-2" />
+                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                                {recording ? (
+                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                ) : (
+                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                    <Mic className='h-5 text-center m-auto mt-1' />
+                                  </div>
+                                )}
+
+
+                              </div>
+                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
+                              {audioBlob && (
+                                <div className="mt-4">
+                                  <audio controls src={audioURL} />
+                                </div>
+                              )}
+
+                              {/* <img src="/icons/image.png" alt="image icon" /> */}
+                            </div>
+                            <div className="mt-4 flex justify-end space-x-2">
+                              <Button
+                                onClick={() => setIsDialogOpen(false)}
+                                className="w- text-white bg-gray-500 "
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full text-white bg-[#007A5A]"
+                              >
+                                Update Task
+                              </Button>
+
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       )}
                     </div>
-                  ))
-                ) : (
-                  <div>
-                    <h1 className="text-center font-bold text-md mt-12">
-                      No Tasks Found
-                    </h1>
-                    <p className="text-center text-sm">The list is currently empty</p>
                   </div>
-                )}
-                <FilterModal
-                  isOpen={isModalOpen}
-                  closeModal={() => setIsModalOpen(false)}
-                  categories={categories}
-                  users={users}
-                  applyFilters={applyFilters}
-                />
+                </div >
               </div>
-            )}
+            </div>
           </div>
-          {isCompleteDialogOpen && (
-            <Dialog
-              open={isCompleteDialogOpen}
-            >
-              <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-              <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-lg -mt-1">
-                <DialogTitle>Task Update</DialogTitle>
-                <p>Please add a note before marking the task completed</p>
-                <div className="mt-4">
-                  <Label>Comment</Label>
-
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="border rounded-lg px-2 py-1 w-full mt-2"
-                  />
-                  <div className="flex mt-2">
-                    <input type="file" onChange={handleFileChange} className="mt-2" />
-                    <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                    {recording ? (
-                      <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    ) : (
-                      <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    )}
-
-
-                  </div>
-                  <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                  {audioBlob && (
-                    <div className="mt-4">
-                      <audio controls src={audioURL} />
-                    </div>
-                  )}
-                </div>
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button
-                    onClick={() => setIsCompleteDialogOpen(false)}
-                    className="w- text-white bg-gray-500 "
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={handleUpdateTaskStatus}
-                    className="w-full bg-[#007A5A] text-white"
-                  >
-                    Update Task
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-          {isDialogOpen && (
-            <Dialog
-              open={isDialogOpen}
-            >
-              <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-              <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                <DialogTitle>Task Update</DialogTitle>
-                <p>Please add a note before marking the task as in progress</p>
-                <div className="mt-4">
-                  <Label>Comment</Label>
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                    onInput={(e) => {
-                      const target = e.target as HTMLDivElement;
-                      setComment(target.innerHTML);
-                    }}
-                  ></div>
-
-                  <div className="flex mt-2">
-                    <input type="file" onChange={handleFileChange} className="mt-2" />
-                    <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                    {recording ? (
-                      <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    ) : (
-                      <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    )}
-
-
-                  </div>
-                  <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                  {audioBlob && (
-                    <div className="mt-4">
-                      <audio controls src={audioURL} />
-                    </div>
-                  )}
-
-                  {/* <img src="/icons/image.png" alt="image icon" /> */}
-                </div>
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button
-                    onClick={() => setIsDialogOpen(false)}
-                    className="w- text-white bg-gray-500 "
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={handleUpdateTaskStatus}
-                    className="w-full text-white bg-[#007A5A]"
-                  >
-                    Update Task
-                  </Button>
-
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-          {isReopenDialogOpen && (
-            <Dialog
-              open={isReopenDialogOpen}
-            >
-              <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-              <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                <DialogTitle>Task Update</DialogTitle>
-                <p>Please add a note before marking the task as Reopen</p>
-                <div className="mt-4">
-                  <Label>Comment</Label>
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                    onInput={(e) => {
-                      const target = e.target as HTMLDivElement;
-                      setComment(target.innerHTML);
-                    }}
-                  ></div>
-
-                  <div className="flex mt-2">
-                    <input type="file" onChange={handleFileChange} className="mt-2" />
-                    <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                    {recording ? (
-                      <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    ) : (
-                      <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                        <Mic className='h-5 text-center m-auto mt-1' />
-                      </div>
-                    )}
-
-
-                  </div>
-                  <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                  {audioBlob && (
-                    <div className="mt-4">
-                      <audio controls src={audioURL} />
-                    </div>
-                  )}
-
-                  {/* <img src="/icons/image.png" alt="image icon" /> */}
-                </div>
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button
-                    onClick={() => setIsDialogOpen(false)}
-                    className="w- text-white bg-gray-500 "
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={handleUpdateTaskStatus}
-                    className="w-full text-white bg-[#007A5A]"
-                  >
-                    Update Task
-                  </Button>
-
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
         </div>
-      </div>
+      </div >
     </div >
   );
 }

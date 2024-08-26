@@ -51,7 +51,9 @@ const DashboardPage = () => {
 
 
   return (
-    <div className=' dark:bg-[#211025] pt-2 scale-95 gap- relative overflow-x-hidden scrollbar-hide'>
+    
+    <div className=' dark:bg-[#211025] pt-2 scale-95 mt-12 gap- relative overflow-x-hidden scrollbar-hide'>
+      
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
       <div className='w-full mb-2  flex justify-center '>

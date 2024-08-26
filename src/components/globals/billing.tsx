@@ -94,14 +94,14 @@ export default function Billing() {
     };
 
     return (
-        <div className="flex">
+        <div className="flex ">
             <BillingSidebar />
-            <div className="flex-1 p-4">
-                <div className="w-full -ml-2 max-w-2xl mx-auto">
-                    <div className="gap-2 flex mb-6 w-full">
+            <div className="flex-1  p-4">
+                <div className="w-full flex justify-center   max-w-5xl mx-auto">
+                    <div className="gap-2 flex  mb-6 w-full">
                         <div className="-mt-2">
                             <div className="p-4">
-                                <Card className="gap-6 border py-4 border-[#E0E0E066] w-full">
+                                <Card className="gap-6 bg-[#] border py-4 border-[#E0E0E066] w-full">
                                     <CardHeader>
                                         <div className="flex justify-between w-[420px]">
                                             <div className="flex gap-2">
@@ -130,9 +130,9 @@ export default function Billing() {
                         </div>
                         <div className="-mt-2">
                             <div className="p-4">
-                                <Card className="gap-6 border py-4 border-[#E0E0E066] w-full">
+                                <Card className="gap-6 bg-[#] border py-4 border-[#E0E0E066] w-full">
                                     <CardHeader>
-                                        <div className="flex justify-between w-[320px]">
+                                        <div className="flex justify-between w-[380px]">
                                             <div className="flex gap-2">
                                                 <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
                                                     <img src='/icons/whatsapp.png' className='h-6' />
@@ -158,156 +158,8 @@ export default function Billing() {
                             </div>
                         </div>
                     </div>
-                    <div className="w-full ml-32">
-                        <div className="flex space-x-4 mb-8  justify-center">
-                            <Button variant={activeTab === 'Active' ? 'default' : 'outline'}
-                                className={activeTab === 'Active' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
-                                onClick={() => setActiveTab('Active')}>Active</Button>
-                            <Button variant={activeTab === 'Plans' ? 'default' : 'outline'}
-                                className={activeTab === 'Plans' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
-                                onClick={() => setActiveTab('Plans')}>Plans</Button>
-                        </div>
-                    </div>
 
-                    {activeTab === 'Active' ? (
-                        <div className="flex justify-center w-full ml-28 mt-12">
-                            {displayedPlan === 'Money Saver Bundle' ? (
-                                <Card key="Money Saver Bundle" className="w-[400px] border rounded bg-transparent">
-                                    <CardHeader className="bg-[#2F0932] rounded border-b text-center">
-                                        <CardTitle className="text-2xl">Money Saver Bundle</CardTitle>
-                                        <CardDescription className="text-center text-white text-sm px-2">
-                                            <span className="text-[#007A5A]">INR </span>
-                                            {plans['Money Saver Bundle']}
-                                            <h1 className="text-xs italic">(Per User Per Year)</h1>
-                                        </CardDescription>
-                                        <div className="flex justify-center py-2 w-full">
-                                            <Button className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribed</Button>
-                                        </div>
-                                    </CardHeader>
-                                    <div className='p-4'>
-                                        <CardContent className=" bg-transparent">
-                                            <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
-                                            <ul className="list-disc text-sm">
-                                                <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
-                                                <li>Team Performance report</li>
-                                                <li>Links Management for your Team</li>
-                                                <li>Email Notification</li>
-                                                <li>WhatsApp Notification</li>
-                                                <li>Repeated Tasks</li>
-                                                <li>File Uploads</li>
-                                                <li>Delegate Tasks with Voice Notes</li>
-                                                <li>Task Wise Reminders</li>
-                                                <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
-                                                <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
-                                                <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
-                                                <li>Easy leave application</li>
-                                                <li>Attendance & leave Tracking</li>
-                                                <li>WhatsApp & Email notification</li>
-                                                <li>Approval Process</li>
-                                                <li>Regularization Process (Apply for past date attendance)</li>
-                                                <li>Define your own leave types</li>
-                                                <li>Reports/Dashboards</li>
-                                            </ul>
-                                        </CardContent>
-                                    </div>
-                                    <CardFooter />
-                                </Card>
-                            ) : displayedPlan === 'Task Pro' ? (
-                                <Card key="Task Pro" className="w-[400px] rounded border bg-transparent">
-                                    <CardHeader className="bg-[#2F0932] rounded border-b text-center">
-                                        <CardTitle className="text-2xl">Task Pro</CardTitle>
-                                        <CardDescription className="text-center text-white text-sm px-2">
-                                            <span className="text-[#007A5A]">INR </span>
-                                            {plans['Task Pro']}
-                                            <h1 className="text-xs italic">(Per User Per Year)</h1>
-                                        </CardDescription>
-                                        <div className="flex justify-center py-2 w-full">
-                                            <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
-                                        </div>
-                                    </CardHeader>
-                                    <div className='p-4'>
-                                        <CardContent className=" bg-transparent">
-                                            <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
-                                            <ul className="list-disc text-sm">
-                                                <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
-                                                <li>Team Performance report</li>
-                                                <li>Links Management for your Team</li>
-                                                <li>Email Notification</li>
-                                                <li>WhatsApp Notification</li>
-                                                <li>Repeated Tasks</li>
-                                                <li>File Uploads</li>
-                                                <li>Delegate Tasks with Voice Notes</li>
-                                                <li>Task Wise Reminders</li>
-                                                <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
-                                            </ul>
-                                        </CardContent>
-                                    </div>
-                                    <CardFooter />
-                                </Card>
-                            ) : (
-                                <h1 className="text-center rounded-lg bg-transparent border text-muted-foreground p-4 w-fit">
-                                    <span className="text-lg font-bold text-white">
-                                        No Current Active Plan
-                                    </span>
-                                    <br />Subscribe to avail all the Task Delegation Features
-                                </h1>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="w-full ml-10">
-                            <div className="grid gap-x-56 md:grid-cols-2 lg:grid-cols-2">
-                                {Object.keys(plans).map((plan, index) => {
-                                    const planKey = plan as keyof typeof plans; // Type assertion
-                                    return (
-                                        <Card key={index} className="w-[400px] rounded border bg-transparent">
-                                            <CardHeader className="bg-[#2F0932] rounded border-b text-center">
-                                                <CardTitle className="text-2xl">{plan}</CardTitle>
-                                                <CardDescription className="text-center text-white text-sm px-2">
-                                                    <span className="text-[#007A5A]">INR </span>
-                                                    {plans[planKey]}
-                                                    <h1 className="text-xs italic">(Per User Per Year)</h1>
-                                                </CardDescription>
-                                                <div className="flex justify-center py-2 w-full">
-                                                    <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
-                                                </div>
-                                            </CardHeader>
-                                            <div className='p-4'>
-                                                <CardContent className=" bg-transparent">
-                                                    <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
-                                                    <ul className="list-disc text-sm">
-                                                        <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
-                                                        <li>Team Performance report</li>
-                                                        <li>Links Management for your Team</li>
-                                                        <li>Email Notification</li>
-                                                        <li>WhatsApp Notification</li>
-                                                        <li>Repeated Tasks</li>
-                                                        <li>File Uploads</li>
-                                                        <li>Delegate Tasks with Voice Notes</li>
-                                                        <li>Task Wise Reminders</li>
-                                                        <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
-                                                        {plan === 'Money Saver Bundle' && (
-                                                            <>
-                                                                <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
-                                                                <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
-                                                                <li>Easy leave application</li>
-                                                                <li>Attendance & leave Tracking</li>
-                                                                <li>WhatsApp & Email notification</li>
-                                                                <li>Approval Process</li>
-                                                                <li>Regularization Process (Apply for past date attendance)</li>
-                                                                <li>Define your own leave types</li>
-                                                                <li>Reports/Dashboards</li>
-                                                            </>
-                                                        )}
-                                                    </ul>
-                                                </CardContent>
-                                            </div>
-                                            <CardFooter />
-                                        </Card>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
+
                     {isDialogOpen && isValidPlan(selectedPlan) && (
                         <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
                             <DialogOverlay />
@@ -377,6 +229,159 @@ export default function Billing() {
                         </Dialog>
                     )}
                 </div>
+                <div className='flex w-full justify-center max-w-8xl '>
+                    <div className="w-1/2  ">
+                        <div className="flex space-x-4 mb-8  justify-center">
+                            <Button variant={activeTab === 'Active' ? 'default' : 'outline'}
+                                className={activeTab === 'Active' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
+                                onClick={() => setActiveTab('Active')}>Active</Button>
+                            <Button variant={activeTab === 'Plans' ? 'default' : 'outline'}
+                                className={activeTab === 'Plans' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
+                                onClick={() => setActiveTab('Plans')}>Plans</Button>
+                        </div>
+                    </div>
+                </div>
+                {activeTab === 'Active' ? (
+                    <div className="flex justify-center w-full ml-28 mt-12">
+                        {displayedPlan === 'Money Saver Bundle' ? (
+                            <Card key="Money Saver Bundle" className="w-[400px] border rounded bg-transparent">
+                                <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                    <CardTitle className="text-2xl">Money Saver Bundle</CardTitle>
+                                    <CardDescription className="text-center text-white text-sm px-2">
+                                        <span className="text-[#007A5A]">INR </span>
+                                        {plans['Money Saver Bundle']}
+                                        <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                    </CardDescription>
+                                    <div className="flex justify-center py-2 w-full">
+                                        <Button className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribed</Button>
+                                    </div>
+                                </CardHeader>
+                                <div className='p-4'>
+                                    <CardContent className=" bg-transparent">
+                                        <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                        <ul className="list-disc text-sm">
+                                            <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                            <li>Team Performance report</li>
+                                            <li>Links Management for your Team</li>
+                                            <li>Email Notification</li>
+                                            <li>WhatsApp Notification</li>
+                                            <li>Repeated Tasks</li>
+                                            <li>File Uploads</li>
+                                            <li>Delegate Tasks with Voice Notes</li>
+                                            <li>Task Wise Reminders</li>
+                                            <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                            <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
+                                            <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
+                                            <li>Easy leave application</li>
+                                            <li>Attendance & leave Tracking</li>
+                                            <li>WhatsApp & Email notification</li>
+                                            <li>Approval Process</li>
+                                            <li>Regularization Process (Apply for past date attendance)</li>
+                                            <li>Define your own leave types</li>
+                                            <li>Reports/Dashboards</li>
+                                        </ul>
+                                    </CardContent>
+                                </div>
+                                <CardFooter />
+                            </Card>
+                        ) : displayedPlan === 'Task Pro' ? (
+                            <Card key="Task Pro" className="w-[400px] rounded border bg-transparent">
+                                <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                    <CardTitle className="text-2xl">Task Pro</CardTitle>
+                                    <CardDescription className="text-center text-white text-sm px-2">
+                                        <span className="text-[#007A5A]">INR </span>
+                                        {plans['Task Pro']}
+                                        <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                    </CardDescription>
+                                    <div className="flex justify-center py-2 w-full">
+                                        <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
+                                    </div>
+                                </CardHeader>
+                                <div className='p-4'>
+                                    <CardContent className=" bg-transparent">
+                                        <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                        <ul className="list-disc text-sm">
+                                            <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                            <li>Team Performance report</li>
+                                            <li>Links Management for your Team</li>
+                                            <li>Email Notification</li>
+                                            <li>WhatsApp Notification</li>
+                                            <li>Repeated Tasks</li>
+                                            <li>File Uploads</li>
+                                            <li>Delegate Tasks with Voice Notes</li>
+                                            <li>Task Wise Reminders</li>
+                                            <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                        </ul>
+                                    </CardContent>
+                                </div>
+                                <CardFooter />
+                            </Card>
+                        ) : (
+                            <div className='w-full flex justify-center max-w-5xl'>
+                                <h1 className="text- -ml-56 rounded-lg bg-transparent border text-muted-foreground p-4 w-fit">
+                                    <span className="text-lg font-bold text-white">
+                                        No Current Active Plan
+                                    </span>
+                                    <br />Subscribe to avail all the Task Delegation Features
+                                </h1>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="w-full ml-6 flex justify-center">
+                        <div className="grid gap-x-12 md:grid-cols-2 lg:grid-cols-2">
+                            {Object.keys(plans).map((plan, index) => {
+                                const planKey = plan as keyof typeof plans; // Type assertion
+                                return (
+                                    <Card key={index} className="w-[400px] rounded border bg-transparent">
+                                        <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                            <CardTitle className="text-2xl">{plan}</CardTitle>
+                                            <CardDescription className="text-center text-white text-sm px-2">
+                                                <span className="text-[#007A5A]">INR </span>
+                                                {plans[planKey]}
+                                                <h1 className="text-xs italic">(Per User Per Year)</h1>
+                                            </CardDescription>
+                                            <div className="flex justify-center py-2 w-full">
+                                                <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                            </div>
+                                        </CardHeader>
+                                        <div className='p-4'>
+                                            <CardContent className=" bg-transparent">
+                                                <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
+                                                <ul className="list-disc text-sm">
+                                                    <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
+                                                    <li>Team Performance report</li>
+                                                    <li>Links Management for your Team</li>
+                                                    <li>Email Notification</li>
+                                                    <li>WhatsApp Notification</li>
+                                                    <li>Repeated Tasks</li>
+                                                    <li>File Uploads</li>
+                                                    <li>Delegate Tasks with Voice Notes</li>
+                                                    <li>Task Wise Reminders</li>
+                                                    <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
+                                                    {plan === 'Money Saver Bundle' && (
+                                                        <>
+                                                            <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
+                                                            <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
+                                                            <li>Easy leave application</li>
+                                                            <li>Attendance & leave Tracking</li>
+                                                            <li>WhatsApp & Email notification</li>
+                                                            <li>Approval Process</li>
+                                                            <li>Regularization Process (Apply for past date attendance)</li>
+                                                            <li>Define your own leave types</li>
+                                                            <li>Reports/Dashboards</li>
+                                                        </>
+                                                    )}
+                                                </ul>
+                                            </CardContent>
+                                        </div>
+                                        <CardFooter />
+                                    </Card>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

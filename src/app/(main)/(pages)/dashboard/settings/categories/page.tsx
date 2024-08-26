@@ -3,10 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
-import { Edit, Edit3, Trash } from 'lucide-react';
+import { Edit, Edit3, Plus, Trash } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { businessCategories } from '@/lib/constants';
+import { toast, Toaster } from 'sonner';
+import Loader from '@/components/ui/loader';
 
 interface Category {
     _id: string;
@@ -123,9 +126,34 @@ const Categories: React.FC = () => {
         );
     }
 
+    const handleAddSuggestedCategories = async () => {
+        setLoading(true);
+
+        try {
+            // Create categories in parallel
+            const promises = businessCategories.map(category =>
+                axios.post('/api/category/create', { name: category })
+            );
+
+            // Wait for all promises to resolve
+            const responses = await Promise.all(promises);
+
+            // Update state with new categories
+            const newCategories = responses.map(response => response.data.data);
+            setCategories([...categories, ...newCategories]);
+            toast.success("Categories added successfully");
+            setLoading(false);
+        } catch (error) {
+            console.error('Error creating suggested categories:', error);
+            setLoading(false);
+        }
+    };
+
+
     return (
         <div className='p-4'>
             {/* <h1 className='text- text-xl font-medium bg-[#2F0932]   py-2 rounded px-2'>Category</h1> */}
+            <Toaster />
             <div className='flex justify-start bg- rounded '>
                 {role === "orgAdmin" && (
                     <div className="flex justify-center w-full">
@@ -136,13 +164,13 @@ const Categories: React.FC = () => {
                                 placeholder="Add New Category"
                                 value={newCategory}
                                 onChange={(e) => setNewCategory(e.target.value)}
-                                className="w-full outline-none text-white bg-[#2F0932] border rounded px-3 py-1"
+                                className="w-full outline-none text-xs text-white bg-[#2F0932] border rounded px-3 py-1"
                             />
                         </div>
-                        <div className='mt-auto'>
+                        <div className='mt-4'>
                             <button
                                 onClick={handleCreateCategory}
-                                className="ml-2 px-3 py-1 bg-[#75517B] text-white rounded"
+                                className="ml-2 px-3 py-1  bg-[#75517B] text-sm text-white rounded"
                             >
                                 {loading ? 'Creating...' : 'Create'}
                             </button>
@@ -150,17 +178,26 @@ const Categories: React.FC = () => {
 
                     </div>
                 )}
+
             </div>
+            <div className='flex gap-2 border rounded-lg w-56  mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
+                <h1 className='text-xs'>Add Suggested Categories</h1>
+                <Plus className='h-4' />
+            </div>
+            <div className={`${loading ? "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" : ""}`}>
+                {loading ? <Loader /> : ''}
+            </div>
+
             <div className="flex justify-start bg-[#2F0932] w-full mt-12">
                 {/* <Label>Search Categories</Label> */}
-                <h1 className='text-start text-xl font-medium  p-4'>Categories</h1>
+                <h1 className='text-start text-sm font-medium  p-4'>Categories</h1>
                 <div className='mt-2 ml-auto'>
                     <input
                         type="text"
                         placeholder="Search Categories"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className=" outline-none text-white bg-[#1A1C20] border rounded px-3 py-2"
+                        className=" outline-none text-xs text-white bg-[#1A1C20] border rounded px-4 py-3 mx-4"
                     />
                 </div>
             </div>
@@ -171,15 +208,15 @@ const Categories: React.FC = () => {
                     <div key={cat._id} className="border px-2 py-1 text-sm">
                         {editingCategoryId === cat._id ? (
                             <div>
-                                <Input
+                                <input
                                     type="text"
                                     value={editCategoryName}
                                     onChange={(e) => setEditCategoryName(e.target.value)}
-                                    className="w-full text-black border rounded px-3 py-2"
+                                    className="w-full text-white outline-none bg-transparent border rounded px-3 py-2"
                                 />
                                 <button
                                     onClick={() => handleEditCategory(cat._id)}
-                                    className="ml-2 mt-2 px-3 py-2 bg-primary text-white rounded"
+                                    className="ml-2 bg-[#007A5A] hover:bg-[#007A5A] mt-2 px-3 py-2  text-white rounded"
                                 >
                                     Save
                                 </button>
@@ -196,12 +233,12 @@ const Categories: React.FC = () => {
                                     <img
                                         src={getCategoryIcon(cat?.name) as string} // Type assertion
                                         alt={cat.name}
-                                        className="w-6 h-6 ml-2 mt-2"
+                                        className="w-4 h-4 ml-2 mt2"
                                     />
                                 ) : (
                                     <FallbackImage name={cat.name} />
                                 )}
-                                <span>{cat.name}</span>
+                                <span className='text-sm'>{cat.name}</span>
                                 {role === "orgAdmin" && (
                                     <div>
                                         <button
@@ -211,13 +248,13 @@ const Categories: React.FC = () => {
                                             }}
                                             className="px-3 py-2 bg-warning text-white rounded"
                                         >
-                                            <Edit3 className='h-5' />
+                                            <Edit3 className='h-4' />
                                         </button>
                                         <button
                                             onClick={() => handleDeleteCategory(cat._id)}
                                             className="ml-2 px-3 py-2 bg-danger text-white rounded"
                                         >
-                                            <Trash className='h-5' />
+                                            <Trash className='h-4' />
                                         </button>
                                     </div>
                                 )}

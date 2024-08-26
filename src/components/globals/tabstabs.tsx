@@ -263,7 +263,7 @@ export default function TeamTabs() {
   //   }
   // }, [selectedUser]);
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mt-16 mx-auto">
 
       <div className="gap-2 ml-24 mb-6 w-full">
         <div className="flex mt-4 gap-2 mb-4">

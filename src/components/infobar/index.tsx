@@ -124,43 +124,19 @@ const InfoBar = (props: Props) => {
     else if (pathName.startsWith('/dashboard/tickets/')) {
       return 'Ticket Details';
     }
+    else if (pathName === '/dashboard/profile') {
+      return 'My Profile';
+    }
   };
 
-  const [isVisible, setIsVisible] = useState(true);
-
-  const handleClose = () => {
-    setIsVisible(false);
-  };
-
-  useEffect(() => {
-    // Reset visibility on route change
-    setIsVisible(true);
-  }, [pathName]);
 
   return (
     <>
 
 
-      <div className="  fixed  w-[98%]   ">
-        {isVisible && (
-          <div className='p-2 flex  top-0  justify-center gap-2 bg-[rgb(56,14,61)]'>
-            <div className='flex gap-2 justify-center w-full'>
-              <h1 className='text-center mt-1 text-white text-xs'>
-                Your Trial Period will expire <strong className='text-yellow-500'>{remainingTime}</strong>, upgrade now for uninterrupted access
-              </h1>
-              <Link href='/dashboard/billing'>
-                <Button className='h-5 rounded dark:bg-[#007A5A] text-xs text-white'>
-                  Upgrade Now
-                </Button>
-              </Link>
-            </div>
+      <div className="  fixed  w-[98%]  z-[10]">
 
-            {/* <button onClick={handleClose} className='-ml-24 text-white'>
-              <XIcon className='h-4 w-4' />
-            </button> */}
-          </div>
-        )}
-        <div className='gap-6 border-b items-center px-4 py-2 w-[98%] z-[20] flex flex-row  bg-[#211025]'>
+        <div className='gap-6 ml-12 border-b items-center px-4 py-2 w-[98%] z-[10] flex flex-row  bg-[#211025]'>
           {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
           <div className='flex ml-4'>
             <h1 className='text-md mt-1  text-white font-bold'>{getPageTitle()} </h1>
@@ -170,7 +146,6 @@ const InfoBar = (props: Props) => {
 
             {/* <ModeToggle /> */}
             <Button
-
               className='relative rounded-full bg-[#75517B] p-2 h-9 w-9'
               size="icon"
             >

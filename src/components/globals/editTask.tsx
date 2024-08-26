@@ -84,7 +84,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 title: task.title || '',
                 description: task.description || '',
                 priority: task.priority || 'Medium',
-                category: task.category._id || '',
+                category: task.category?._id || '',
                 assignedUser: task.assignedUser._id || '',
                 repeat: task.repeat || false,
                 repeatType: task.repeatType || 'Daily',

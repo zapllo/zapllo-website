@@ -11,7 +11,7 @@ const categorySchema: Schema<ICategory> = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
+        unique: false
     },
     organization: {
         type: mongoose.Schema.Types.ObjectId,

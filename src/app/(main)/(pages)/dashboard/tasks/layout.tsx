@@ -13,7 +13,7 @@ type Props = { children: React.ReactNode }
 const Layout = (props: Props) => {
 
     return (
-        <div className='w-full overflow-hidden okay bg-  h-screen '>
+        <div className='w-full overflow-hidden  bg-  h-screen '>
             {/* <InfoBar /> */}
             {props.children}
         </div>

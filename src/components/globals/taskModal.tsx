@@ -28,7 +28,7 @@ import {
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mail, MailIcon, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { format } from 'date-fns';
 import CustomDatePicker from './date-picker';
 import CustomTimePicker from './time-picker';
@@ -39,6 +39,8 @@ import Loader from '../ui/loader';
 import { Toggle } from '../ui/toggle';
 import Select, { StylesConfig } from 'react-select';
 import { Switch } from '../ui/switch';
+import { FaUpload } from 'react-icons/fa';
+import CustomAudioPlayer from './customAudioPlayer';
 
 
 
@@ -105,6 +107,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [audioURL, setAudioURL] = useState('');
     const audioURLRef = useRef<string | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [files, setFiles] = useState<File[]>([]) // Updated to handle array of files
 
 
 
@@ -399,7 +402,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             days: repeat ? days : [], // Only include days if repeat is true
             dates: repeatMonthlyDays,
             dueDate,
-            attachment,
+            attachment: files,
             links,
             reminder: {
                 email: emailReminderType === 'specific' ? null : {
@@ -490,14 +493,58 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     };
 
 
+    const handleSubmit = async () => {
+        let fileUrl = [];
+        if (files && files.length > 0) {
+            // Upload files to S3 and get the URLs
+            const formData = new FormData();
+            files.forEach(file => formData.append('files', file));
 
+            try {
+                const s3Response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (s3Response.ok) {
+                    const s3Data = await s3Response.json();
+                    console.log('S3 Data:', s3Data); // Log the response from S3
+                    fileUrl = s3Data.fileUrls;
+                } else {
+                    console.error('Failed to upload files to S3');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error uploading files:', error);
+                return;
+            }
+        }
+    };
+
+
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = event.target.files;
+
+        if (selectedFiles && selectedFiles.length > 0) {
+            const validFiles: File[] = [];
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                validFiles.push(file);
+            }
+
+            if (validFiles.length > 0) {
+                setFiles(validFiles); // Update state with all selected files
+            }
+        }
+    };
 
 
     return (
-        <div className="absolute    inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
+        <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
             <Toaster />
 
-            <div className="bg-[#1A1C20] z-[100] text-[#D0D3D3] w-[50%] rounded-lg p-8">
+            <div className="bg-[#1A1C20] z-[100] h-full max-h-5xl text-[#D0D3D3] w-[50%] rounded-lg p-8">
                 <div className='flex justify-between'>
                     <h2 className="text-lg font-bold mb-6 -mt-4  ">Assign New Task</h2>
                     <img className='cursor-pointer -mt-4 h-4' src='/icons/x.png' onClick={closeModal} />
@@ -602,12 +649,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
 
 
-                            <div className=' gap-2 flex justify-between bg-[#282d32] p-3 w-full '>
-                                <div className='flex gap-2  text-xs text-white font-bold'>
+                            <div className=' gap-2 flex justify-between bg-[#282d32] p-4 w-full '>
+                                <div className='flex gap-2   text-xs text-white font-bold'>
                                     {/* <FlagIcon className='h-5' /> */}
                                     Priority
                                 </div>
-                                <div className=" rounded-lg ">
+                                <div className=" rounded-lg  -mt-[2px]">
                                     {['High', 'Medium', 'Low'].map((level) => (
                                         <label
                                             key={level}
@@ -629,32 +676,32 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                     ))}
                                 </div>
                             </div>
-                         
+
                         </div>
 
                         <div className="- px-2  ml-auto justify-between">
-                                <div className="flex gap-2 items-center ">
-                                    <Repeat className='h-4' />
-                                    <Label htmlFor="repeat" className="font-semibold text-xs ">Repeat</Label>
-                                    <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-10" />
-                                </div>
-                                <div>
-                                    {repeat && (
-                                        <div>
-                                            <div className="bg-transparent">
-                                                {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
-                                                <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full bg-[#292d33] border rounded px-3 py-2">
-                                                    <option value="bg-[#292D33]">Select Repeat Type</option>
-                                                    <option value="Daily">Daily</option>
-                                                    <option value="Weekly">Weekly</option>
-                                                    <option value="Monthly">Monthly</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                </div>
+                            <div className="flex gap-2 items-center ">
+                                <Repeat className='h-4' />
+                                <Label htmlFor="repeat" className="font-semibold text-xs ">Repeat</Label>
+                                <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-10" />
                             </div>
+                            <div>
+                                {repeat && (
+                                    <div>
+                                        <div className="bg-transparent">
+                                            {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
+                                            <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full bg-[#292d33] border outline-none rounded px-3 py-2">
+                                                <option value="bg-[#292D33]">Select Repeat Type</option>
+                                                <option value="Daily">Daily</option>
+                                                <option value="Weekly">Weekly</option>
+                                                <option value="Monthly">Monthly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
 
 
                     </div>
@@ -726,19 +773,16 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             }
 
                         </Button>
-                        <div className="flex items-center space-x-4">
-                            <Switch
-                                id="assign-more-tasks" className='scale-125'
-                                checked={assignMoreTasks}
-                                onCheckedChange={handleCheckboxChange}
-                            />
-                            <Label htmlFor="assign-more-tasks ">Assign More Tasks</Label>
-                        </div>
+                     
 
                         {isDateTimeModalOpen && (
                             <Dialog open={isDateTimeModalOpen} onOpenChange={setIsDateTimeModalOpen}>
                                 <DialogContent >
-                                    <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle>
+                                    <div className='w-full flex justify-between'>
+                                        <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle>
+                                        <DialogClose >X</DialogClose>
+                                    </div>
+
                                     <DialogDescription>
                                         <div className="flex flex-col w-full py-4 space-y-4">
                                             <AnimatePresence>
@@ -813,6 +857,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Label htmlFor="attachment" className="block font-semibold">Attachment</Label>
                         <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
                     </div> */}
+                    
                     <div className='flex   gap-4'>
                         <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Link className='h-5 text-center m-auto mt-1' />
@@ -823,13 +868,44 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Clock className='h-5 text-center m-auto mt-1' />
                         </div>
-                        <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
+                        {/* <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Mic className='h-5 text-center m-auto mt-1' />
-                        </div>
+                        </div> */}
+                        {recording ? (
+                            <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500'>
+                                <Mic className='h-5 text-center m-auto mt-1' />
+                            </div>
+                        ) : (
+                            <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
+                                <Mic className='h-5 text-center m-auto mt-1' />
+                            </div>
+                        )}
+
                     </div>
+                    <div className="flex ">
+                        {/* <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> </h1> */}
+
+
+
+                    </div>
+                    <canvas ref={canvasRef} className={` ${recording ? `w-1/2 h-12` : 'hidden'} `}></canvas>
+                    {audioBlob && (
+                        <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
+                    )}
+                       <div className="flex items-center justify-end space-x-4">
+                            <Switch
+                                id="assign-more-tasks" className='scale-125'
+                                checked={assignMoreTasks}
+                                onCheckedChange={handleCheckboxChange}
+                            />
+                            <Label htmlFor="assign-more-tasks ">Assign More Tasks</Label>
+                        </div>
                     <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
                         <DialogContent>
-                            <DialogTitle>Add Links</DialogTitle>
+                            <div className='flex justify-between'>
+                                <DialogTitle>Add Links</DialogTitle>
+                                <DialogClose>X</DialogClose>
+                            </div>
                             <DialogDescription>
                                 Attach Links to the Task.
                             </DialogDescription>
@@ -837,25 +913,55 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 <Label className="block font-semibold mb-2">Links</Label>
                                 {links.map((link, index) => (
                                     <div key={index} className="flex gap-2 items-center mb-2">
-                                        <Input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full border rounded px-3 py-2 mr-2" />
+                                        <input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full outline-none border-[#505356]  bg-transparent border rounded px-3 py-2 mr-2" />
                                         <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 hover:bg-red-500 text-white rounded">Remove</Button>
                                     </div>
                                 ))}
-                                <Button type="button" onClick={addLinkField} className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded">Add Link</Button>
+                                <div className='w-full flex justify-between mt-6'>
+                                    <Button type="button" onClick={addLinkField} className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded">Add Link
+                                        <Plus />
+                                    </Button>
+                                    <Button type="button" onClick={() => setIsLinkModalOpen(false)} className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded">Save Links</Button>
+                                </div>
+
                             </div>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isAttachmentModalOpen} onOpenChange={setIsAttachmentModalOpen}>
                         <DialogContent>
-                            <DialogTitle>Add an Attachment</DialogTitle>
+                            <div className='flex w-full justify-between'>
+                                <DialogTitle>Add an Attachment</DialogTitle>
+                                <DialogClose>X</DialogClose>
+                            </div>
                             <DialogDescription>
                                 Add Attachments to the Task.
                             </DialogDescription>
-                            <div className="mb-4">
-                                <Label className="block font-semibold mb-2">Attachments</Label>
-                                <Input type='file' />
-                                <Button type="button" className="bg-[#017A5B] mt-2 text-white hover:bg-[#017A5B]">Add Attachment</Button>
+                            <div className='flex items-center space-x-2'>
+                                <input
+                                    id="file-upload"
+                                    type="file"
+                                    multiple
+                                    onChange={handleFileUpload}
+                                    style={{ display: 'none' }} // Hide the file input
+                                />
+
+                                <label htmlFor='file-upload' className='cursor-pointer flex items-center space-x-2'>
+                                    <FaUpload className='h-5 w-5' />
+                                    <span>Attach Files</span>
+                                </label>
                             </div>
+
+                            {/* Display selected file names */}
+                            <div>
+                                {files.length > 0 && (
+                                    <ul className='list-disc list-inside'>
+                                        {files.map((file, index) => (
+                                            <li key={index}>{file.name}</li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                            <Button className='bg-[#017A5B] hover:bg-[#017A5B]' onClick={() => setIsAttachmentModalOpen(false)}>Save Attachments</Button>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isReminderModalOpen} onOpenChange={setIsReminderModalOpen}>
@@ -946,30 +1052,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
                     <Dialog open={isRecordingModalOpen} onOpenChange={setIsRecordingModalOpen}>
                         <DialogContent>
-                            <DialogTitle>Attach a Recording</DialogTitle>
+                            <div className='flex justify-between w-full'>
+                                <DialogTitle>Attach a Recording</DialogTitle>
+                                <DialogClose>X</DialogClose>
+                            </div>
                             <DialogDescription>
                                 Add Recordings to the Task.
                             </DialogDescription>
-                            <div className="flex mt-2">
-                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                {recording ? (
-                                    <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                        <Mic className='h-5 text-center m-auto mt-1' />
-                                    </div>
-                                ) : (
-                                    <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                        <Mic className='h-5 text-center m-auto mt-1' />
-                                    </div>
-                                )}
 
-
-                            </div>
-                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                            {audioBlob && (
-                                <div className="mt-4">
-                                    <audio controls src={audioURL} />
-                                </div>
-                            )}
                             {/* <div className="mb-4">
                                 <Label className="block font-semibold mb-2">Attachments</Label>
                                 <Input type='file' />

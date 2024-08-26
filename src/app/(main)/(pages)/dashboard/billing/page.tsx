@@ -31,7 +31,7 @@ export default function BillingPage() {
         );
     }
     return (
-        <div>
+        <div className='mt-12'>
             <Billing />
 
         </div>

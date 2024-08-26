@@ -22,7 +22,7 @@ const ChecklistSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/dashboard/checklist') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-none mt-6 gap-2 px-4  justify-start  hover:bg-transparent bg-transparent mb-2 ${isActive('/dashboard/checklist') ? 'bg-[#75517B] hover:bg-[#75517B] rounded-lg text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-none mt-6 gap-2 px-4  justify-start hover:rounded-lg hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/dashboard/checklist') ? 'bg-[#75517B] hover:bg-[#75517B] rounded-lg text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/checklist')}
                     >
                         <IconChecklist className='h-5' /> Checklist
@@ -31,7 +31,7 @@ const ChecklistSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/dashboard/checklist/tutorials') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-none  gap-2 px-4 bg-transparent justify-start hover:bg-transparent mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] text-white rounded-lg' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-none  gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] text-white rounded-lg' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/billing/wallet-logs')}
                     >
                         <VideoIcon className='h-5' /> Tutorials
@@ -40,7 +40,7 @@ const ChecklistSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/dashboard/checklist/events') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-none  gap-2 px-4 bg-transparent justify-start hover:bg-transparent mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-none  gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/billing/wallet-logs')}
                     >
                         <Calendar className='h-5' /> Events
@@ -49,7 +49,7 @@ const ChecklistSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/dashboard/tickets') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-none  gap-2 py-4 h-10  px-4 bg-transparent justify-start hover:bg-transparent mb-2 ${isActive('/dashboard/tickets') ? 'bg-[#75517B] hover:bg-[#75517B] text-white rounded-lg' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-none  gap-2 py-4 h-10  px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/tickets') ? 'bg-[#75517B] hover:bg-[#75517B] text-white rounded-lg' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/tickets')}
                     >
                         <Ticket className='h-5' /> Tickets
