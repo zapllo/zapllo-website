@@ -158,8 +158,8 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
     return (
         <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-black border max-h-screen overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-xl shadow-lg">
-                <h2 className="text-xl font-semibold mb-4">Edit Task</h2>
+            <div className="bg-[#1A1C20] border max-h-screen overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-1/2 shadow-lg">
+                <h2 className="text-sm font-semibold mb-4">Edit Task</h2>
                 <label className="block mb-2">
                     Title:
                     <input
@@ -167,7 +167,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         name="title"
                         value={formData.title}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded mt-1"
+                        className="w-full p-2 border bg-transparent outline-none rounded mt-1"
                     />
                 </label>
                 <label className="block mb-2">
@@ -176,65 +176,88 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded mt-1"
+                        className="w-full bg-transparent outline-none p-2 border rounded mt-1"
                         rows={4}
                     />
                 </label>
                 <div className="grid gap-2 grid-cols-2">
+
                     <label className="block mb-2">
-                        Priority:
-                        <select
-                            name="priority"
-                            value={formData.priority}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded mt-1"
-                        >
-                            <option value="High">High</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Low">Low</option>
-                        </select>
-                    </label>
-                    <label className="block mb-2">
-                        Category:
-                        <select
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded mt-1"
-                        >
-                            {categories.map(category => (
-                                <option key={category._id} value={category.name}>
-                                    {category.name}
-                                </option>
+                        <div className="flex justify-between bg-[#282d32] p-2 w-full rounded-lg mt-1">
+                            <h1 className='text-xs mt-2' >Priority:</h1>
+
+
+                            {['High', 'Medium', 'Low'].map((level) => (
+                                <label
+                                    key={level}
+                                    className={`px-4 py-2 text-xs border border-[#505356] font-semibold cursor-pointer ${formData.priority === level
+                                        ? 'bg-[#017A5B] text-white'
+                                        : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
+                                        }`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="priority"
+                                        value={level}
+                                        checked={formData.priority === level}
+                                        onChange={handleChange}
+                                        className="hidden"
+                                    />
+                                    {level}
+                                </label>
                             ))}
-                        </select>
+                        </div>
                     </label>
+                    <div className='bg-[#282d32]  p-2 h-12 mt-1 rounded-lg grid grid-cols-2'>
+                        <h1 className='mt-2'>Category:</h1>
+
+                        <label className="block mb-2 ">
+                            <select
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                                className="w-full bg-t outline-none p-2 border rounded "
+                            >
+                                {categories.map(category => (
+                                    <option key={category._id} value={category.name}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
                 </div>
-                <label className="block mb-2">
-                    Assigned User:
-                    <select
-                        name="assignedUser"
-                        value={formData.assignedUser}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded mt-1"
-                    >
-                        {users.map(user => (
-                            <option key={user._id} value={user._id}>
-                                {user.firstName}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <label className="flex items-center mb-4">
-                    <input
-                        type="checkbox"
-                        name="repeat"
-                        checked={formData.repeat}
-                        onChange={handleChange}
-                        className="mr-2"
-                    />
-                    Repeat
-                </label>
+                <div className='flex justify-between gap-2 w-full'>
+                    <div className='w-full'>
+                        <label className="block mb-2">
+                            Assigned User: 
+                            <select
+                                name="assignedUser"
+                                value={formData.assignedUser}
+                                onChange={handleChange}
+                                className="w-1/2 ml-2 outline-none p-2 border rounded mt-1"
+                            >
+                                {users.map(user => (
+                                    <option key={user._id} value={user._id}>
+                                        {user.firstName}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+             
+                        <label className="flex mt-2 items-center mb-4">
+                            <input
+                                type="checkbox"
+                                name="repeat"
+                                checked={formData.repeat}
+                                onChange={handleChange}
+                                className="mr-2"
+                            />
+                            Repeat
+                        </label>
+             
+                </div>
                 {formData.repeat && (
                     <div className="grid gap-2 grid-cols-2">
                         <label className="block mb-2">

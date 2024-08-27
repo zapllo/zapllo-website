@@ -10,7 +10,7 @@ connectDB();
 
 export async function PATCH(request: NextRequest) {
     try {
-        const { id, status, comment, userName } = await request.json();
+        const { id, status, comment, userName, fileUrl, imageUrl } = await request.json();
 
         // Find the task by ID
         const task = await Task.findById(id);
@@ -32,7 +32,7 @@ export async function PATCH(request: NextRequest) {
         }
 
         // Add a comment to the task
-        task.comments.push({ userName, comment, createdAt: new Date() });
+        task.comments.push({ userName, comment, fileUrl, imageUrl, createdAt: new Date() });
         await task.save();
 
         // Find the user who created the task
@@ -50,7 +50,6 @@ export async function PATCH(request: NextRequest) {
         if (!taskCategory) {
             return NextResponse.json({ error: 'category  not found' }, { status: 404 });
         }
-
         // Send Email to the task creator
         if (taskCreator.notifications.email) { // Check if email notifications are enabled
             const emailOptions: SendEmailOptions = {

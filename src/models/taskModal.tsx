@@ -34,6 +34,8 @@ export interface ITask extends Document {
     organization: mongoose.Types.ObjectId;
     comments: {
         userName: string;
+        fileUrl: string;
+        imageUrl: string;
         comment: string;
         createdAt?: Date;
     }[];
@@ -190,6 +192,12 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
         comment: {
             type: String,
             required: true,
+        },
+        fileUrl: {
+            type: String,
+        },
+        imageUrl: {
+            type: String,
         },
         createdAt: {
             type: Date,

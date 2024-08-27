@@ -17,7 +17,7 @@ const ChecklistSidebar: React.FC = () => {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <div className="w-52 border-r  bg-[#201024] text-white h-screen ">
+        <div className="w-52 -mt-12 bg-[#201024] fixed text-white h-screen ">
             <div className='space-y-4'>
                 <div className='flex justify-center'>
                     <Button

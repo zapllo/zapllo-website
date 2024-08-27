@@ -151,133 +151,139 @@ export default function Tickets() {
     };
 
     return (
-        <div className="flex">
+        <div className="flex mt-24">
             <ChecklistSidebar />
             <div className="flex-1 p-4">
-                <div className="w-full -ml-2 max-w-9xl mx-auto">
+                <div className="w-full -ml-2  mx-auto">
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 w-full">
                             {loading ? (
                                 <Loader /> // Display loader while fetching tickets
                             ) : (
-                                <div className='p-10 w-full'>
-                                    <div>
 
-                                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                                            <div className='flex mb-2 justify-between'>
-                                                <h1 className='text-lg font-medium'>Support Tickets</h1>
-                                                <DialogTrigger asChild>
-                                                    <Button className='bg-[#75517B] hover:bg-[#75517B]'>Raise A Ticket</Button>
-                                                </DialogTrigger>
-                                            </div>
-                                            <Separator className='bg-[#380E3D]' />
-                                            <DialogContent className='space-y-2 overflow-y-scroll scrollbar-hide max-h-2xl'>
-                                                <DialogClose asChild>
-                                                    <button className='absolute top-4 right-4 text-white hover:text-gray-400'>
-                                                        <X className='h-6 w-6' />
-                                                    </button>
-                                                </DialogClose>
-                                                <h1 className='text-center text-lg font-medium'>Raise a Ticket</h1>
-                                                <div>
-                                                    <label htmlFor='category' className='block text-sm font-medium text-white -700'>
-                                                        Select Category
-                                                    </label>
-                                                    <select
-                                                        id='category'
-                                                        value={category}
-                                                        onChange={(e) => setCategory(e.target.value)}
-                                                        className='mt-1 block w-full border outline-none p-2 rounded-md shadow-sm sm:text-sm'
-                                                    >
-                                                        <option disabled value=''>Select a category</option>
-                                                        <option value='Report An Error'>Report An Error</option>
-                                                        <option value='Provide Feedback'>Provide Feedback</option>
-                                                        <option value='Payment/Subscription Issue'>Payment/Subscription Issue</option>
-                                                        <option value='Delete My Account'>Delete My Account</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label htmlFor='subcategory' className='block text-sm font-medium text-white -700'>
-                                                        Select Subcategory
-                                                    </label>
-                                                    <select
-                                                        id='subcategory'
-                                                        value={subcategory}
-                                                        onChange={(e) => setSubcategory(e.target.value)}
-                                                        className='mt-1 block w-full rounded-md shadow-sm outline-none p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                                                    >
-                                                        <option disabled value=''>Select a subcategory</option>
-                                                        <option value='Task Delegation'>Task Delegation</option>
-                                                        <option value='My Team'>My Team</option>
-                                                        <option value='Intranet'>Intranet</option>
-                                                        <option value='Leaves'>Leaves</option>
-                                                        <option value='Attendance'>Attendance</option>
-                                                        <option value='Other'>Other</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label htmlFor='subject' className='block text-sm font-medium text-white -700'>
-                                                        Subject
-                                                    </label>
-                                                    <input
-                                                        type='text'
-                                                        id='subject'
-                                                        value={subject}
-                                                        placeholder='Enter the subject for the ticket'
-                                                        onChange={(e) => setSubject(e.target.value)}
-                                                        className='mt-1 block w-full rounded-md shadow-sm outline-none p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                                                    />
-                                                </div>
+                                <div className='p-10 border-l flex justify-center -mt-16 l w-full max-w-8xl  ml-56'>
 
-                                                <div>
-                                                    <label htmlFor='description' className='block text-sm font-medium text-white -700'>
-                                                        Description
-                                                    </label>
-                                                    <textarea
-                                                        id='description'
-                                                        rows={4}
-                                                        value={description}
-                                                        placeholder='Describe in detail and attach files (if any)'
-                                                        onChange={(e) => setDescription(e.target.value)}
-                                                        className='mt-1 block w-full rounded-md shadow-sm outline-none p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                                                    />
-                                                </div>
 
-                                                <div className='flex items-center space-x-2'>
-                                                    <input
-                                                        id="file-upload"
-                                                        type="file"
-                                                        multiple
-                                                        onChange={handleFileUpload}
-                                                        style={{ display: 'none' }} // Hide the file input
-                                                    />
+                                    <div className='overflow-x-auto  w-full max-w-4xl -ml-56 '>
+                                        <div className='w-full max-w-8xl mb-4 flex  justify-center'>
+                                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                                <div className='flex mb-2 gap-2 justify-between'>
+                                                    <h1 className='text-md m font-medium'>Support Tickets</h1>
+                                                    <div className=''>
+                                                        <DialogTrigger asChild>
+                                                            <Button className='bg-[#75517B] h-6 text-xs hover:bg-[#75517B]'>Raise A Ticket</Button>
+                                                        </DialogTrigger>
+                                                    </div>
 
-                                                    <label htmlFor='file-upload' className='cursor-pointer flex items-center space-x-2'>
-                                                        <FaUpload className='h-5 w-5' />
-                                                        <span>Attach Files</span>
-                                                    </label>
                                                 </div>
+                                                <Separator className='bg-[#380E3D]' />
+                                                <DialogContent className='space-y-2 overflow-y-scroll scrollbar-hide max-h-2xl'>
+                                                    <DialogClose asChild>
+                                                        <button className='absolute top-4 right-4 text-white hover:text-gray-400'>
+                                                            <X className='h-6 w-6' />
+                                                        </button>
+                                                    </DialogClose>
+                                                    <h1 className='text-center text-lg font-medium'>Raise a Ticket</h1>
+                                                    <div>
+                                                        <label htmlFor='category' className='block text-sm font-medium text-white -700'>
+                                                            Select Category
+                                                        </label>
+                                                        <select
+                                                            id='category'
+                                                            value={category}
+                                                            onChange={(e) => setCategory(e.target.value)}
+                                                            className='mt-1 block w-full border outline-none p-2 rounded-md shadow-sm sm:text-sm'
+                                                        >
+                                                            <option disabled value=''>Select a category</option>
+                                                            <option value='Report An Error'>Report An Error</option>
+                                                            <option value='Provide Feedback'>Provide Feedback</option>
+                                                            <option value='Payment/Subscription Issue'>Payment/Subscription Issue</option>
+                                                            <option value='Delete My Account'>Delete My Account</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label htmlFor='subcategory' className='block text-sm font-medium text-white -700'>
+                                                            Select Subcategory
+                                                        </label>
+                                                        <select
+                                                            id='subcategory'
+                                                            value={subcategory}
+                                                            onChange={(e) => setSubcategory(e.target.value)}
+                                                            className='mt-1 block w-full rounded-md shadow-sm outline-none p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                                        >
+                                                            <option disabled value=''>Select a subcategory</option>
+                                                            <option value='Task Delegation'>Task Delegation</option>
+                                                            <option value='My Team'>My Team</option>
+                                                            <option value='Intranet'>Intranet</option>
+                                                            <option value='Leaves'>Leaves</option>
+                                                            <option value='Attendance'>Attendance</option>
+                                                            <option value='Other'>Other</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label htmlFor='subject' className='block text-sm font-medium text-white -700'>
+                                                            Subject
+                                                        </label>
+                                                        <input
+                                                            type='text'
+                                                            id='subject'
+                                                            value={subject}
+                                                            placeholder='Enter the subject for the ticket'
+                                                            onChange={(e) => setSubject(e.target.value)}
+                                                            className='mt-1 block w-full rounded-md shadow-sm outline-none p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                                        />
+                                                    </div>
 
-                                                {/* Display selected file names */}
-                                                <div>
-                                                    {files.length > 0 && (
-                                                        <ul className='list-disc list-inside'>
-                                                            {files.map((file, index) => (
-                                                                <li key={index}>{file.name}</li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </div>
+                                                    <div>
+                                                        <label htmlFor='description' className='block text-sm font-medium text-white -700'>
+                                                            Description
+                                                        </label>
+                                                        <textarea
+                                                            id='description'
+                                                            rows={4}
+                                                            value={description}
+                                                            placeholder='Describe in detail and attach files (if any)'
+                                                            onChange={(e) => setDescription(e.target.value)}
+                                                            className='mt-1 block w-full rounded-md shadow-sm outline-none p-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                                        />
+                                                    </div>
 
-                                                <div className='flex justify-center'>
-                                                    <Button onClick={handleSubmit} className='bg-[#75517B] hover:bg-[#75517B]'>
-                                                        Submit Ticket
-                                                    </Button>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </div>
-                                    <div className='overflow-x-auto'>
+                                                    <div className='flex items-center space-x-2'>
+                                                        <input
+                                                            id="file-upload"
+                                                            type="file"
+                                                            multiple
+                                                            onChange={handleFileUpload}
+                                                            style={{ display: 'none' }} // Hide the file input
+                                                        />
+
+                                                        <label htmlFor='file-upload' className='cursor-pointer flex items-center space-x-2'>
+                                                            <FaUpload className='h-5 w-5' />
+                                                            <span>Attach Files</span>
+                                                        </label>
+                                                    </div>
+
+                                                    {/* Display selected file names */}
+                                                    <div>
+                                                        {files.length > 0 && (
+                                                            <ul className='list-disc list-inside'>
+                                                                {files.map((file, index) => (
+                                                                    <li key={index}>{file.name}</li>
+                                                                ))}
+                                                            </ul>
+                                                        )}
+                                                    </div>
+
+                                                    <div className='flex justify-center'>
+                                                        <Button onClick={handleSubmit} className='bg-[#75517B] hover:bg-[#75517B]'>
+                                                            Submit Ticket
+                                                        </Button>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                        </div>
                                         <table className='min-w-full divide-y 0'>
+
                                             <thead className='bg-[#380E3D] text-white'>
                                                 <tr>
                                                     <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
@@ -343,7 +349,10 @@ export default function Tickets() {
                                             </DialogContent>
                                         </Dialog>
                                     )}
+
                                 </div>
+
+
                             )}
                         </div>
                     </div>

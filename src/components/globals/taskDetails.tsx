@@ -107,7 +107,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
     return (
         <div>
             <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-                <SheetContent className="max-w-4xl w-full ">
+                <SheetContent className="max-w-4xl  w-full ">
                     <SheetHeader>
                         <div className="flex gap-2">
                             <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
@@ -118,9 +118,8 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
 
 
                     </SheetHeader>
-                    <div className="border overflow-y-scroll scrollbar-hide  h-10/11 p-4 rounded-lg">
+                    <div className="border overflow-y-scroll scrollbar-hide   h-10/11 p-4 rounded-lg">
                         <h1 className="font-bold text-xl">{selectedTask.title}</h1>
-
                         <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
                             <div className="flex items-center gap-4">
                                 <Label htmlFor="user" className="text-right">

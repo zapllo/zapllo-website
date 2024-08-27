@@ -7,7 +7,7 @@ import DashboardAnalytics from "@/components/globals/dashboardAnalytics";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Loader, Calendar, Flag, FlagIcon, Edit, Delete, Trash, PersonStanding, TagIcon, FilterIcon, CircleAlert, Check, FileIcon, FileCodeIcon, FileTextIcon, Grid2X2, Tag, Repeat1Icon, RepeatIcon, ArrowLeft, Plus, Link, Copy, CopyIcon, GlobeIcon, File, Mic, TagsIcon } from "lucide-react";
+import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Loader, Calendar, Flag, FlagIcon, Edit, Delete, Trash, PersonStanding, TagIcon, FilterIcon, CircleAlert, Check, FileIcon, FileCodeIcon, FileTextIcon, Grid2X2, Tag, Repeat1Icon, RepeatIcon, ArrowLeft, Plus, Link, Copy, CopyIcon, GlobeIcon, File, Mic, TagsIcon, Paperclip, Image, Files, X } from "lucide-react";
 import { IconBrandTeams, IconClock, IconCopy, IconProgress, IconProgressBolt, IconProgressCheck } from "@tabler/icons-react";
 import { PersonIcon, PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +32,8 @@ import { DelegatedTasksSummary } from "./delegatedTasksSummary";
 import TaskDetails from "./taskDetails";
 import TaskSidebar from "../sidebar/taskSidebar";
 import TaskTabs from "../sidebar/taskSidebar";
+import { DialogClose } from "@radix-ui/react-dialog";
+import CustomAudioPlayer from "./customAudioPlayer";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -110,6 +112,11 @@ interface TaskStatusCounts {
 
 export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageOrVideo, setImageOrVideo] = useState<File | null>(null);
+  const [otherFile, setOtherFile] = useState<File | null>(null);
+
   const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>("today");
   const [activeDashboardTab, setActiveDashboardTab] = useState<string>("employee-wise");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -237,11 +244,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
   };
-
-
-
-
-
 
   const applyFilters = (filters: any) => {
     setCategoryFilter(filters.categories);
@@ -546,9 +548,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const allTasksInTimeCount = allTasksCounts["In Time"] || 0;
   const allTasksDelayedCount = allTasksCounts["Delayed"] || 0;
 
-  console.log("My Tasks - Pending:", myTasksPendingCount, "In Progress:", myTasksInProgressCount, "Completed:", myTasksCompletedCount, "Overdue:", myTasksOverdueCount, "In Time:", myTasksInTimeCount, "Delayed:", myTasksDelayedCount);
-  console.log("Delegated Tasks - Pending:", delegatedTasksPendingCount, "In Progress:", delegatedTasksInProgressCount, "Completed:", delegatedTasksCompletedCount, "Overdue:", delegatedTasksOverdueCount, "In Time:", delegatedTasksInTimeCount, "Delayed:", delegatedTasksDelayedCount);
-  console.log("All Tasks - Pending:", allTasksPendingCount, "In Progress:", allTasksInProgressCount, "Completed:", allTasksCompletedCount, "Overdue:", allTasksOverdueCount, "In Time:", allTasksInTimeCount, "Delayed:", allTasksDelayedCount);
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -583,9 +582,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     fetchUsers();
   }, []);
 
-
   const [categories, setCategories] = useState<Category[]>([]);
-
 
   // Fetch categories from the server
   const fetchCategories = async () => {
@@ -607,8 +604,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       console.log(error.message);
     }
   };
-
-  console.log(categories, 'categories?')
 
   useEffect(() => {
 
@@ -647,9 +642,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       console.error('Error updating task:', error);
     }
   };
-
-
-
 
   if (tasks === null) {
     return (
@@ -766,60 +758,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     };
   };
 
-  // const renderTabs = () => {
-  //   if (userDetails?.role === 'member') {
-  //     return (
-  //       <>
-  //         <TabsTrigger value="all" className="gap-2 ">
-  //           <div className="flex ">
-  //             <HomeIcon />
-  //             Dashboard
-  //           </div>
-  //         </TabsTrigger>
-  //         <TabsTrigger value="myTasks" className="gap-2"><TasksIcon /> Tasks</TabsTrigger>
-  //         <TabsTrigger value="delegatedTasks" className="gap-2">Delegated Tasks</TabsTrigger>
-  //       </>
-  //     );
-  //   } else {
-  //     return (
-  //       <>
-  //         <TabsTrigger value="all" className=" flex justify-start w- gap-2">
-  //           <div className="flex justify-start ml-4 w-full gap-2">
-  //             <HomeIcon />
-  //             <h1 className="mt-auto text-xs">
-  //               Dashboard
-  //             </h1>
-  //           </div>
-  //         </TabsTrigger>
-  //         <TabsTrigger value="myTasks" className=" flex justify-start w-">
-  //           <div className="flex justify-start ml-4 w-full gap-2">
-  //             <TasksIcon />
-  //             <h1 className="mt-auto text-xs">
-  //               My Tasks
-  //             </h1>
-  //           </div>
-  //         </TabsTrigger>
-  //         <TabsTrigger value="delegatedTasks" className=" flex justify-start w-">
-  //           <div className="flex justify-start w-full ml-4 gap-2">
-  //             <img src='/icons/delegated.png' className='h-[15px]' />
-  //             <h1 className="text-xs">
-  //               Delegated Tasks
-  //             </h1>
-  //           </div>
-  //         </TabsTrigger>
-  //         <TabsTrigger value="allTasks" className=" flex justify-start w-">
-  //           <div className="flex justify-start w-full gap-2 ml-4">
-  //             <img src='/icons/all.png' className='h-4' />
-  //             <h1 className="text-xs">
-  //               All Tasks
-  //             </h1>
-  //           </div>
-  //         </TabsTrigger>
-  //       </>
-  //     );
-  //   }
-  // };
-
   const formatTaskDate = (dateString: string): string => {
     const date = new Date(dateString);
     const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'long', day: 'numeric' };
@@ -827,9 +765,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
     return `${date.toLocaleDateString(undefined, optionsDate)} - ${date.toLocaleTimeString(undefined, optionsTime)}`;
   };
-
-
-
 
   const handleCopy = (link: string) => {
     setCopied(true);
@@ -860,6 +795,114 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
 
+  const handleImageOrVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (selectedFile) {
+      setImageOrVideo(selectedFile); // Update state with the selected image/video file
+
+      // Upload image/video to S3 and get the URL
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const s3Response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (s3Response.ok) {
+          const s3Data = await s3Response.json();
+          console.log('S3 Image/Video Data:', s3Data);
+          const fileUrl = s3Data.fileUrl;
+
+          // Do something with the file URL, e.g., set it in state
+        } else {
+          console.error('Failed to upload image/video to S3');
+        }
+      } catch (error) {
+        console.error('Error uploading image/video:', error);
+      }
+    }
+  };
+
+  const handleOtherFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (selectedFile) {
+      setOtherFile(selectedFile); // Update state with the selected file
+
+      // Upload file to S3 and get the URL
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const s3Response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (s3Response.ok) {
+          const s3Data = await s3Response.json();
+          console.log('S3 File Data:', s3Data);
+          const fileUrl = s3Data.fileUrl;
+
+          // Do something with the file URL, e.g., set it in state
+        } else {
+          console.error('Failed to upload file to S3');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+      }
+    }
+  };
+
+  const triggerImageOrVideoUpload = () => {
+    imageInputRef.current?.click();
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveImageOrVideo = () => {
+    setImageOrVideo(null);
+  };
+
+  const handleRemoveOtherFile = () => {
+    setOtherFile(null);
+  };
+  // const handleSubmit = async () => {
+  //   let fileUrl = [];
+  //   if (files && files.length > 0) {
+  //     // Upload files to S3 and get the URLs
+  //     const formData = new FormData();
+  //     files.forEach(file => formData.append('files', file));
+
+  //     try {
+  //       const s3Response = await fetch('/api/upload', {
+  //         method: 'POST',
+  //         body: formData,
+  //       });
+
+  //       if (s3Response.ok) {
+  //         const s3Data = await s3Response.json();
+  //         console.log('S3 Data:', s3Data); // Log the response from S3
+  //         fileUrl = s3Data.fileUrls;
+  //       } else {
+  //         console.error('Failed to upload files to S3');
+  //         return;
+  //       }
+  //     } catch (error) {
+  //       console.error('Error uploading files:', error);
+  //       return;
+  //     }
+  //   }
+  // }
+
+  const handleFileRemove = (file: File) => {
+    setImageOrVideo(null);
+  }
 
 
   return (
@@ -920,10 +963,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                   <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96">
                                     <div className="w-full flex justify-between">
-                                    <h3 className="text-lg text-white font-semibold mb-4">Select Date Range</h3>
-                                    <h1 className="cursor-pointer"      onClick={() => setActiveDateFilter("today")}>X</h1>
+                                      <h3 className="text-lg text-white font-semibold mb-4">Select Date Range</h3>
+                                      <h1 className="cursor-pointer" onClick={() => setActiveDateFilter("today")}>X</h1>
                                     </div>
-                
+
                                     <div className="flex gap-2">
                                       <div>
                                         <label className="text-">Start Date</label>
@@ -1425,67 +1468,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                                     )}
 
-                                    {isDialogOpen && (
-                                      <Dialog
-                                        open={isDialogOpen}
-                                      >
-                                        <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                                        <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                                          <DialogTitle>Task Update</DialogTitle>
-                                          <p>Please add a note before marking the task as in progress</p>
-                                          <div className="mt-4">
-                                            <Label>Comment</Label>
-                                            <div
-                                              ref={editorRef}
-                                              contentEditable
-                                              className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                              onInput={(e) => {
-                                                const target = e.target as HTMLDivElement; // Cast to HTMLDivElement
-                                                setComment(target.innerHTML);
-                                              }}
-                                            ></div>
-                                            <div className="flex mt-2">
-                                              <input type="file" onChange={handleFileChange} className="mt-2" />
-                                              <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                              {recording ? (
-                                                <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                                  <Mic className='h-5 text-center m-auto mt-1' />
-                                                </div>
-                                              ) : (
-                                                <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                                  <Mic className='h-5 text-center m-auto mt-1' />
-                                                </div>
-                                              )}
 
-
-                                            </div>
-                                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                                            {audioBlob && (
-                                              <div className="mt-4">
-                                                <audio controls src={audioURL} />
-                                              </div>
-                                            )}
-
-                                            {/* <img src="/icons/image.png" alt="image icon" /> */}
-                                          </div>
-                                          <div className="mt-4 flex justify-end space-x-2">
-                                            <Button
-                                              onClick={() => setIsDialogOpen(false)}
-                                              className="w- text-white bg-gray-500 "
-                                            >
-                                              Close
-                                            </Button>
-                                            <Button
-                                              onClick={handleUpdateTaskStatus}
-                                              className="w-full text-white bg-[#007A5A]"
-                                            >
-                                              Update Task
-                                            </Button>
-
-                                          </div>
-                                        </DialogContent>
-                                      </Dialog>
-                                    )}
                                   </div>
                                 ))
                               ) : (
@@ -1644,68 +1627,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                                     )}
 
-                                    {isDialogOpen && (
-                                      <Dialog
-                                        open={isDialogOpen}
-                                      >
-                                        <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                                        <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                                          <DialogTitle>Task Update</DialogTitle>
-                                          <p>Please add a note before marking the task as in progress</p>
-                                          <div className="mt-4">
-                                            <Label>Comment</Label>
-                                            <div
-                                              ref={editorRef}
-                                              contentEditable
-                                              className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                              onInput={(e) => {
-                                                const target = e.target as HTMLDivElement;
-                                                setComment(target.innerHTML);
-                                              }}
-                                            ></div>
-
-                                            <div className="flex mt-2">
-                                              <input type="file" onChange={handleFileChange} className="mt-2" />
-                                              <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                              {recording ? (
-                                                <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                                  <Mic className='h-5 text-center m-auto mt-1' />
-                                                </div>
-                                              ) : (
-                                                <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                                  <Mic className='h-5 text-center m-auto mt-1' />
-                                                </div>
-                                              )}
-
-
-                                            </div>
-                                            <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                                            {audioBlob && (
-                                              <div className="mt-4">
-                                                <audio controls src={audioURL} />
-                                              </div>
-                                            )}
-
-                                            {/* <img src="/icons/image.png" alt="image icon" /> */}
-                                          </div>
-                                          <div className="mt-4 flex justify-end space-x-2">
-                                            <Button
-                                              onClick={() => setIsDialogOpen(false)}
-                                              className="w- text-white bg-gray-500 "
-                                            >
-                                              Close
-                                            </Button>
-                                            <Button
-                                              onClick={handleUpdateTaskStatus}
-                                              className="w-full text-white bg-[#007A5A]"
-                                            >
-                                              Update Task
-                                            </Button>
-
-                                          </div>
-                                        </DialogContent>
-                                      </Dialog>
-                                    )}
                                   </div>
                                 ))
                               ) : (
@@ -1727,8 +1648,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           </div>
                         ) : (
                           //  <div className="flex mt-6   flex-col ">
-                            <div className="flex -ml-52 mt-6 flex-col ">
-                              <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
+                          <div className="flex -ml-52 mt-6 flex-col ">
+                            <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
                               <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
                             </div>
                             <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
@@ -1749,10 +1670,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             {filteredTasks!.length > 0 ? (
                               filteredTasks!.map((task) => (
                                 <div key={task._id} className="">
-                                    <Card
-                                      className="flex  w-[81%] ml-52 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
-                                      onClick={() => setSelectedTask(task)}
-                                    >
+                                  <Card
+                                    className="flex  w-[81%] ml-52 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                    onClick={() => setSelectedTask(task)}
+                                  >
                                     <div className=" items-center gap-4">
                                       <div>
                                         <p className="font-medium text-sm text-white">{task.title}</p>
@@ -1844,7 +1765,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             ) : (
                               <div className="ml-52">
                                 <h1 className="text-center font-bold text-md mt-12">
-                                  No Tasks Found 
+                                  No Tasks Found
                                 </h1>
                                 <p className="text-center text-sm">The list is currently empty</p>
                               </div>
@@ -1914,16 +1835,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           </DialogContent>
                         </Dialog>
                       )}
+
+
+                      {/** In Progress Modal */}
+
                       {isDialogOpen && (
                         <Dialog
                           open={isDialogOpen}
                         >
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                            <DialogTitle>Task Update</DialogTitle>
-                            <p>Please add a note before marking the task as in progress</p>
-                            <div className="mt-4">
-                              <Label>Comment</Label>
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
+                            <div className="flex justify-between w-full">
+                              <DialogTitle className="text-sm">Task Update</DialogTitle>
+                              <DialogClose onClick={() => setIsDialogOpen(false)}>X</DialogClose>
+                            </div>
+                            <p className="text-xs -mt-2">Please add a note before marking the task as in progress</p>
+                            <div className="mt-2">
+                              <Label className="text-sm">Comment</Label>
                               <div
                                 ref={editorRef}
                                 contentEditable
@@ -1934,40 +1862,77 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 }}
                               ></div>
 
-                              <div className="flex mt-2">
-                                <input type="file" onChange={handleFileChange} className="mt-2" />
-                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
+                              <div className='flex mb-4  mt-4 gap-4'>
                                 {recording ? (
-                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
+                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500'>
                                     <Mic className='h-5 text-center m-auto mt-1' />
                                   </div>
                                 ) : (
-                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
+                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
                                     <Mic className='h-5 text-center m-auto mt-1' />
                                   </div>
                                 )}
-
-
-                              </div>
-                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                              {audioBlob && (
-                                <div className="mt-4">
-                                  <audio controls src={audioURL} />
+                                <div
+                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
+                                  onClick={triggerImageOrVideoUpload}
+                                >
+                                  <Image className="h-5 text-center m-auto mt-1" />
                                 </div>
-                              )}
+                                <input
+                                  ref={imageInputRef}
+                                  type="file"
+                                  accept="image/*,video/*" // Only accept images and videos
+                                  style={{ display: 'none' }}
+                                  onChange={handleImageOrVideoUpload}
+                                />
+                                <div
+                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
+                                  onClick={triggerFileUpload}
+                                >
+                                  <Files className="h-5 text-center m-auto mt-1" />
+                                </div>
+                                <input
+                                  ref={fileInputRef}
+                                  type="file"
+                                  accept="application/pdf,.doc,.docx,.xls,.xlsx,.txt" // Accept other file types
+                                  style={{ display: 'none' }}
+                                  onChange={handleOtherFileUpload}
+                                />
 
+                                {otherFile && (
+                                  <div className="mt-2">
+                                    <span>{otherFile.name}</span>
+                                    <button onClick={handleRemoveOtherFile} className="ml-2 text-red-500">Remove</button>
+                                  </div>
+                                )}
+                              </div>
+                              <canvas ref={canvasRef} className={` ${recording ? `w-1/2 h-12 ` : 'hidden'} `}></canvas>
+                              {audioBlob && (
+                                <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
+                              )}
                               {/* <img src="/icons/image.png" alt="image icon" /> */}
                             </div>
+                            {imageOrVideo && (
+                              <div className='relative  w-32 h-32 mb-2'>
+                                <img
+                                  src={URL.createObjectURL(imageOrVideo)}
+                                  alt={`File `}
+                                  className='object-cover w-full h-full rounded-lg'
+                                />
+                                <button
+                                  type='button'
+                                  onClick={() => handleFileRemove(imageOrVideo)}
+                                  className='absolute top-1 right-1 bg-red-600 text-white rounded-full p-1'
+                                >
+                                  <X className='h-4 w-4' />
+                                </button>
+                              </div>
+                            )}
                             <div className="mt-4 flex justify-end space-x-2">
-                              <Button
-                                onClick={() => setIsDialogOpen(false)}
-                                className="w- text-white bg-gray-500 "
-                              >
-                                Close
-                              </Button>
+
                               <Button
                                 onClick={handleUpdateTaskStatus}
-                                className="w-full text-white bg-[#007A5A]"
+                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
                               >
                                 Update Task
                               </Button>
@@ -1976,6 +1941,22 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           </DialogContent>
                         </Dialog>
                       )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                       {isReopenDialogOpen && (
                         <Dialog
                           open={isReopenDialogOpen}

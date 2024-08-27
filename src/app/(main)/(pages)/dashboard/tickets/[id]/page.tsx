@@ -105,16 +105,16 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
 
 
     return (
-        <div className="flex">
+        <div className="flex mt-24">
             <ChecklistSidebar />
-            <div className="flex-1 p-4">
-                <div className="w-full -ml-2 max-w-9xl mx-auto">
+            <div className="flex-1  p-4">
+                <div className="w-full -ml-2 max-w-8xl mx-auto">
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 w-full">
                             {loading ? (
                                 <Loader /> // Display loader while fetching tickets
                             ) : (
-                                <div className='p-6 space-y-4'>
+                                <div className='p-6 border-l ml-56  -mt-12 space-y-4'>
                                     <Link href='/dashboard/tickets'>
                                         <div className='flex gap-2 mb-8 font-medium text-xl cursor-pointer'>
                                             <ArrowLeft className='h-7' />
