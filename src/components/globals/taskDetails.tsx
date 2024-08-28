@@ -40,6 +40,20 @@ interface Task {
     completionDate: string;
     attachment?: string[];
     links?: string[];
+    reminder: {
+        email?: {
+            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+            value?: number;
+            date?: Date; // Added for specific reminders
+            sent: boolean;
+        } | null;
+        whatsapp?: {
+            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+            value?: number;
+            date?: Date; // Added for specific reminders
+            sent: boolean;
+        } | null;
+    } | null;
     status: string;
     comments: Comment[];
     createdAt: string;
@@ -53,6 +67,8 @@ interface Comment {
     comment: string;
     createdAt: string; // Date/time when the comment was added
     status: string;
+    fileUrl?: string[]; // Optional array of URLs
+    tag?: 'In Progress' | 'Completed' | 'Reopen'; // Optional tag with specific values
 }
 
 interface Category {
@@ -120,7 +136,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                     </SheetHeader>
                     <div className="border overflow-y-scroll scrollbar-hide   h-10/11 p-4 rounded-lg">
                         <h1 className="font-bold text-sm">{selectedTask.title}</h1>
-                        <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6">
+                        <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6 px-2">
                             <div className="flex items-center gap-4">
                                 <Label htmlFor="user" className="text-right text-xs">
                                     Assigned To
@@ -328,26 +344,25 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                         <div className="">
                             {selectedTask.reminder ? (
                                 <div className="flex flex-col gap-2">
-
-                                    {selectedTask.reminder.email && selectedTask.reminder.email.value > 0 && (
+                                    {(selectedTask.reminder.email?.value ?? 0) > 0 && (
                                         <div className="flex items-center gap-2">
                                             <span className="font-bold">Email:</span>
                                             <span>
-                                                {`Type: ${selectedTask.reminder.email.type}, Value: ${selectedTask.reminder.email.value} minutes`}
+                                                {`Type: ${selectedTask.reminder.email?.type ?? ''}, Value: ${selectedTask.reminder.email?.value ?? 0} minutes`}
                                             </span>
                                         </div>
                                     )}
-                                    {selectedTask.reminder.whatsapp && selectedTask.reminder.whatsapp.value > 0 && (
+                                    {(selectedTask.reminder.whatsapp?.value ?? 0) > 0 && (
                                         <div className="flex items-center gap-2">
                                             <span className="font-bold">WhatsApp:</span>
                                             <span>
-                                                {`Type: ${selectedTask.reminder.whatsapp.type}, Value: ${selectedTask.reminder.whatsapp.value} minutes`}
+                                                {`Type: ${selectedTask.reminder.whatsapp?.type ?? ''}, Value: ${selectedTask.reminder.whatsapp?.value ?? 0} minutes`}
                                             </span>
                                         </div>
                                     )}
                                     {!(
-                                        (selectedTask.reminder.email && selectedTask.reminder.email.value > 0) ||
-                                        (selectedTask.reminder.whatsapp && selectedTask.reminder.whatsapp.value > 0)
+                                        (selectedTask.reminder.email?.value ?? 0) > 0 ||
+                                        (selectedTask.reminder.whatsapp?.value ?? 0) > 0
                                     ) && (
                                             <p className='text-xs p-4'>No reminders set</p>
                                         )}
@@ -356,6 +371,8 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                 <p className='text-xs p-4'>No reminders set.</p>
                             )}
                         </div>
+
+
 
                         <div className="">
                             {selectedTask.audioUrl && (
@@ -439,57 +456,76 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                     <Separator />
                     <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
                         <div className="mb-4 gap-2 flex justify-start ">
-                            <UpdateIcon className="h-5" />
+                            <CheckCheck className="h-5" />
                             <Label className=" text-md mt-auto">Task Updates</Label>
 
                         </div>
-                        <div className="space-y-2 h-full ">
-                            {sortedComments?.map((commentObj, index) => (
-                                <div key={index} className="relative border rounded-lg p-2">
-                                    <div className="flex gap-2 items-center">
-                                        <div className="h-6 w-6 text-lg text-center rounded-full bg-red-700">
-                                            {`${commentObj.userName}`.slice(0, 1)}
+                        <div className="space-y-2 h-full">
+                            {sortedComments && sortedComments.length > 0 ? (
+                                sortedComments.map((commentObj, index) => (
+                                    <div key={index} className="relative border rounded-lg p-2">
+                                        <div className="flex gap-2 items-center">
+                                            <div className="h-6 w-6 text-xs  text-center rounded-full bg-red-700">
+
+                                                <h1 className='mt-1'>
+                                                    {commentObj.userName.slice(0, 1)}
+                                                </h1>
+                                            </div>
+                                            <strong>{commentObj.userName}</strong>
                                         </div>
-                                        <strong>{commentObj.userName}</strong>
+                                        <p className="px-2 ml-6 text-xs">{formatDate(commentObj.createdAt)}</p>
+                                        <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
+
+                                        {/* Render fileUrl if it exists */}
+                                        {commentObj.fileUrl && commentObj.fileUrl.length > 0 && (
+                                            <div className="ml-6 mt-2">
+                                                {commentObj.fileUrl.map((url, fileIndex) => (
+                                                    <div key={fileIndex} className="mb-2">
+                                                        {url.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
+                                                            <img
+                                                                src={url}
+                                                                alt={`Attachment ${fileIndex}`}
+                                                                className="max-w-full h-auto rounded-lg"
+                                                            />
+                                                        ) : (
+                                                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 text-xs ml-2">
+                                                                View File
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {commentObj.tag && (
+                                            <div
+                                                className={`absolute top-0 right-0 m-4 text-xs text-white px-2 py-1 rounded ${commentObj.tag === 'In Progress'
+                                                    ? 'bg-orange-600'
+                                                    : commentObj.tag === 'Completed'
+                                                        ? 'bg-green-500'
+                                                        : commentObj.tag === 'Reopen'
+                                                            ? 'bg-red-500'
+                                                            : ''
+                                                    }`}
+                                            >
+                                                {commentObj.tag}
+                                            </div>
+                                        )}
                                     </div>
-                                    <p className="px-2 ml-6 text-xs">{formatDate(commentObj.createdAt)}</p>
-
-                                    <p className="p-2 text-sm ml-6">{commentObj.comment}</p>
-
-                                    {/* Render fileUrl if it exists */}
-                                    {commentObj.fileUrl && commentObj.fileUrl.length > 0 && (
-                                        <div className="ml-6 mt-2 bordd">
-                                            {commentObj.fileUrl.map((url, fileIndex) => (
-                                                <div key={fileIndex} className="mb-2">
-                                                    {/* Display images */}
-                                                    {url.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
-                                                        <img
-                                                            src={url}
-                                                            alt={`Attachment ${fileIndex}`}
-                                                            className="max-w-full h-auto rounded-lg"
-                                                        />
-                                                    ) : (
-                                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 text-xs ml-2">
-                                                            View File
-                                                        </a>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {commentObj.tag && (
-                                        <div
-                                            className={`absolute top-0 right-0 m-4 text-xs text-white px-2 py-1 rounded ${commentObj.tag === 'In Progress' ? 'bg-orange-600' :
-                                                commentObj.tag === 'Completed' ? 'bg-green-500' :  commentObj.tag === 'Reopen' ? 'bg-red-500' : ''
-                                                }`}
-                                        >
-                                            {commentObj.tag}
-                                        </div>
-                                    )}
+                                ))
+                            ) : (
+                                <div className="text-center text-white mt-6 -500">
+                                    <div className='flex mt-4 justify-center'>
+                                        <Bell className='mt-2' />
+                                    </div>
+                                    <h1 className='mt-1'>
+                                        No Activity
+                                    </h1>
+                                    <p className='text-xs mt-1'>It seems that you don't have any recent activity for this task.</p>
                                 </div>
-                            ))}
+                            )}
                         </div>
+
 
                     </div>
 

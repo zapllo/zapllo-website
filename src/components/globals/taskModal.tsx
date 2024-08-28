@@ -27,7 +27,7 @@ import {
 } from "@radix-ui/react-icons";
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Calendar, CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mail, MailIcon, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
+import { Calendar, CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mail, MailIcon, Mic, Paperclip, Plus, PlusCircleIcon, Repeat, Tag, User } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { format } from 'date-fns';
 import CustomDatePicker from './date-picker';
@@ -214,27 +214,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     }, [repeatType, repeat]);
 
 
-    // const handleSwitchChange = (event: any) => {
-    //     setAssignMoreTasks(event.target.checked);
-
-    //     // Clear fields when switch is toggled
-    //     if (event.target.checked) {
-    //         setTitle("");
-    //         setDescription("");
-    //         setAssignedUser("");
-    //         setCategory("");
-    //         setPriority("");
-    //         setRepeat(false);
-    //         setRepeatType("");
-    //         setDays([]);
-    //         setDueDate(null);
-    //         setDueTime("");
-    //         setAttachment("");
-    //         setLinks([]);
-    //         setDueDate(null);
-    //         setDueTime('');
-    //     }
-    // };
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -517,11 +496,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     };
 
 
-
-    // const [open, setOpen] = useState(false);
-    // const [searchQuery, setSearchQuery] = useState('');
-    // const [popoverInputValue, setPopoverInputValue] = useState('');
-
     const handleOpen = () => setOpen(true);
     const handleCategoryOpen = () => setCategoryOpen(true);
 
@@ -604,14 +578,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
             <Toaster />
 
-            <div className="bg-[#1A1C20] z-[100] h-[580px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8">
+            <div className="bg-[#1A1C20] z-[100] h-[500px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8">
                 <div className='flex justify-between'>
                     <h2 className="text-lg font-bold mb-4 -mt-4  ">Assign New Task</h2>
                     <img className='cursor-pointer -mt-4 h-4' src='/icons/x.png' onClick={closeModal} />
                 </div>
 
-                <form className="text-sm space-y-5 overflow-y-scroll scrollbar-hide h-full max-h-4xl">
-                    <div className='grid grid-cols-1 gap-4'>
+                <form className="text-sm space-y-2 overflow-y-scroll scrollbar-hide h-full max-h-4xl">
+                    <div className='grid grid-cols-1 gap-2'>
                         <div className="">
                             {/* <Label htmlFor="title" className="block text-[#D0D3D3] text-xs font-semibold">Title</Label> */}
                             <input type="text" placeholder='Task Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full text-xs  outline-none bg-transparent border-2 mt-1 rounded px-3 py-2" />
@@ -628,7 +602,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
                                 onClick={handleOpen}
                             >
-                                {popoverInputValue ? popoverInputValue : "Select User"}
+                                {popoverInputValue ? popoverInputValue :  <h1 className='flex gap-2'>
+                                    <User className='h-4' /> Select User </h1>}
                                 <CaretDownIcon />
                             </button>
                         </div>
@@ -654,7 +629,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                     className="p-2 text-xs flex border-2   bg-transparent justify-between w-full text-start  rounded"
                                     onClick={handleCategoryOpen}
                                 >
-                                    {popoverCategoryInputValue ? popoverCategoryInputValue : "Select Category"}
+                                    {popoverCategoryInputValue ? popoverCategoryInputValue : <h1 className='flex gap-2'>
+                                        <Tag className='h-4' /> Select Category </h1>}
                                     <CaretDownIcon />
                                 </button>
                             </div>
@@ -869,13 +845,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
                     </div>
 
-                    {/* <div className="mb-4">
-                        <Label htmlFor="attachment" className="block font-semibold">Attachment</Label>
-                        <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
-                    </div> */}
-
-                    <div className='flex   gap-4'>
-                        <div className='flex gap-2'>
+                    <div className='flex    gap-4'>
+                        <div className='flex mt-4  gap-2'>
                             <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.length > 0 ? 'border-[#017A5B]' : ''
                                 }`}>
                                 <Link className='h-5 text-center m-auto mt-1' />
@@ -885,7 +856,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             )}
                         </div>
 
-                        <div className='flex gap-2'>
+                        <div className='flex mt-4 gap-2'>
                             <div onClick={() => { setIsAttachmentModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? 'border-[#017A5B]' : ''
                                 }`} >
                                 <Paperclip className='h-5 text-center m-auto mt-1' />
@@ -896,18 +867,18 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             )}
                         </div>
 
-                        <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
+                        <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 mt-4 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Clock className='h-5 text-center m-auto mt-1' />
                         </div>
                         {/* <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div> */}
                         {recording ? (
-                            <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500'>
+                            <div onClick={stopRecording} className='h-8 mt-4 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500'>
                                 <Mic className='h-5 text-center m-auto mt-1' />
                             </div>
                         ) : (
-                            <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
+                            <div onClick={startRecording} className='h-8 mt-4 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
                                 <Mic className='h-5 text-center m-auto mt-1' />
                             </div>
                         )}

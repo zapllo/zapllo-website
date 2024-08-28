@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Lato, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
 import Script from "next/script";
 
-const inter = Space_Grotesk({ subsets: ["latin"] });
+const inter = Lato({ weight: "400", subsets:['latin'] });
 
 export const metadata: Metadata = {
   title: "Zapllo - Automate and Upgrade your Workflow by 10x",

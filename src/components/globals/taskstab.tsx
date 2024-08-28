@@ -62,12 +62,27 @@ interface Task {
   repeatType: string;
   repeat: boolean;
   days?: string[];
+  audioUrl?: string;
   dates?: string[];
   categories?: string[];
   dueDate: string;
   completionDate: string;
   attachment?: string[];
   links?: string[];
+  reminder: {
+    email?: {
+      type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+      value?: number;
+      date?: Date; // Added for specific reminders
+      sent: boolean;
+    } | null;
+    whatsapp?: {
+      type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+      value?: number;
+      date?: Date; // Added for specific reminders
+      sent: boolean;
+    } | null;
+  } | null;
   status: string;
   comments: Comment[];
   createdAt: string;
@@ -87,6 +102,8 @@ interface Comment {
   comment: string;
   createdAt: string; // Date/time when the comment was added
   status: string;
+  fileUrl?: string[]; // Optional array of URLs
+  tag?: 'In Progress' | 'Completed' | 'Reopen'; // Optional tag with specific values
 }
 
 interface Category {
@@ -984,7 +1001,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           </TabsList>
         </Tabs>
       </div>
-      <div className="flex-1 h-screen overflow-y-scroll scrollbar-hide  border ml-44  p-4">
+      <div className="flex-1 h-screen overflow-y-scroll overflow-x-hidden scrollbar-hide  border ml-44  p-4">
         <div className="w-screen overflow-x-hidden max-w-6xl mx-auto">
           <div className="gap-2 flex mb-6 w-full">
             <div className="-mt-2">
@@ -1010,13 +1027,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                   <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96">
                                     <div className="w-full flex justify-between">
-                                      <h3 className="text-lg text-white font-semibold mb-4">Select Date Range</h3>
+                                      <h3 className="text-md text-white font-semibold mb-4">Select Date Range</h3>
                                       <h1 className="cursor-pointer" onClick={() => setActiveDateFilter("today")}>X</h1>
                                     </div>
 
                                     <div className="flex gap-2">
-                                      <div>
-                                        <label className="text-">Start Date</label>
+                                      <div className="space-y-1">
+                                        <label className="text-sm">Start Date</label>
                                         <input
                                           type="date"
                                           value={customStartDate}
@@ -1024,8 +1041,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           className="border px-2 py-1"
                                         />
                                       </div>
-                                      <div>
-                                        <label>End Date</label>
+                                      <div className="space-y-1">
+                                        <label className="text-sm ">End Date</label>
 
                                         <input
                                           type="date"
@@ -1040,7 +1057,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                       <button
                                         onClick={() => setActiveDateFilter(undefined)} // This will close the modal
-                                        className="px-4 py-2 bg-[#007A5A] text-white rounded "
+                                        className="px-4 py-1 bg-[#007A5A] text-white rounded "
                                       >
                                         Done
                                       </button>
@@ -1529,7 +1546,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <h1 className="text-center font-bold text-md mt-12">
                                     No Tasks Found
                                   </h1>
+
                                   <p className="text-center text-sm">The list is currently empty</p>
+
                                 </div>
                                 // {/* <img src="/logo.png" className="w-[52.5%] h-[100%] opacity-0" /> */}
 
@@ -1772,30 +1791,30 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     </div>
                                     <div className="">
                                       <div className="flex ">
-                                      <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                            <Button
-                                              onClick={() => {
-                                                setStatusToUpdate("In Progress");
-                                                setIsDialogOpen(true);
-                                              }}
-                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
-                                            >
-                                              <Play className="h-4 w-4" />
-                                              <h1 className="text-xs">
-                                                In Progress
-                                              </h1>
-                                            </Button>
-                                            <Button
-                                              onClick={() => {
-                                                setStatusToUpdate("Completed");
-                                                setIsCompleteDialogOpen(true);
-                                              }}
-                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
-                                            >
-                                              <CheckCheck className="h-4 rounded-full text-green-400" />
-                                              <h1 className="text-xs">Completed</h1>
-                                            </Button>
-                                          </div>
+                                        <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                          <Button
+                                            onClick={() => {
+                                              setStatusToUpdate("In Progress");
+                                              setIsDialogOpen(true);
+                                            }}
+                                            className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
+                                          >
+                                            <Play className="h-4 w-4" />
+                                            <h1 className="text-xs">
+                                              In Progress
+                                            </h1>
+                                          </Button>
+                                          <Button
+                                            onClick={() => {
+                                              setStatusToUpdate("Completed");
+                                              setIsCompleteDialogOpen(true);
+                                            }}
+                                            className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
+                                          >
+                                            <CheckCheck className="h-4 rounded-full text-green-400" />
+                                            <h1 className="text-xs">Completed</h1>
+                                          </Button>
+                                        </div>
                                       </div>
                                     </div>
                                   </Card>

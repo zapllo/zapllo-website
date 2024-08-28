@@ -158,10 +158,10 @@ export default function Tickets() {
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 w-full">
                             {loading ? (
-                                <Loader /> // Display loader while fetching tickets
+                                <Loader />
                             ) : (
 
-                                <div className='p-10 border-l flex justify-center -mt-16 l w-full max-w-8xl  ml-56'>
+                                <div className='p-10 border-l flex justify-center -mt-16 l w-full max-w-8xl  ml-52'>
 
 
                                     <div className='overflow-x-auto  w-full max-w-4xl -ml-56 '>
@@ -171,7 +171,7 @@ export default function Tickets() {
                                                     <h1 className='text-md m font-medium'>Support Tickets</h1>
                                                     <div className=''>
                                                         <DialogTrigger asChild>
-                                                            <Button className='bg-[#75517B] h-6 text-xs hover:bg-[#75517B]'>Raise A Ticket</Button>
+                                                            <Button className='bg-[#75517B] h-7 rounded n text-xs hover:bg-[#75517B]'>Raise A Ticket</Button>
                                                         </DialogTrigger>
                                                     </div>
 

@@ -20,6 +20,20 @@ interface Task {
     dueDate: string;
     completionDate: string;
     attachment?: string[];
+    reminder: {
+        email?: {
+            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+            value?: number;
+            date?: Date; // Added for specific reminders
+            sent: boolean;
+        } | null;
+        whatsapp?: {
+            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+            value?: number;
+            date?: Date; // Added for specific reminders
+            sent: boolean;
+        } | null;
+    } | null;
     links?: string[];
     status: string;
     comments: Comment[];
@@ -74,7 +88,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         dueDate: '',
         days: [] as string[],
         dates: [] as string[],
-        attachment:[] as string[],
+        attachment: [] as string[],
         links: [] as string[],
         status: 'Pending'
     });
@@ -160,7 +174,10 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     return (
         <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#1A1C20] border max-h-screen overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-1/2 shadow-lg">
-                <h2 className="text-sm font-semibold mb-4">Edit Task</h2>
+                <div className='flex w-full justify-between'>
+                    <h2 className="text-sm font-semibold mb-4">Edit Task</h2>
+                    <h1 className='cursor-pointer' onClick={onClose}>X</h1>
+                </div>
                 <label className="block mb-2">
                     Title:
                     <input
@@ -182,34 +199,30 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                     />
                 </label>
                 <div className="grid gap-2 grid-cols-2">
-
-                    <label className="block mb-2">
-                        <div className="flex justify-between bg-[#282d32] p-2 w-full rounded-lg mt-1">
-                            <h1 className='text-xs mt-2' >Priority:</h1>
-
-
-                            {['High', 'Medium', 'Low'].map((level) => (
-                                <label
-                                    key={level}
-                                    className={`px-4 py-2 text-xs border border-[#505356] font-semibold cursor-pointer ${formData.priority === level
-                                        ? 'bg-[#017A5B] text-white'
-                                        : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
-                                        }`}
+                    <div className='flex justify-between gap-2 w-full'>
+                        <div className='w-full'>
+                            <label className="block mb-2">
+                                Assigned User:
+                                <select
+                                    name="assignedUser"
+                                    value={formData.assignedUser}
+                                    onChange={handleChange}
+                                    className="w-1/2 ml-2 outline-none p-2 border rounded mt-1"
                                 >
-                                    <input
-                                        type="radio"
-                                        name="priority"
-                                        value={level}
-                                        checked={formData.priority === level}
-                                        onChange={handleChange}
-                                        className="hidden"
-                                    />
-                                    {level}
-                                </label>
-                            ))}
+                                    {users.map(user => (
+                                        <option key={user._id} value={user._id}>
+                                            {user.firstName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
                         </div>
-                    </label>
-                    <div className='bg-[#282d32]  p-2 h-12 mt-1 rounded-lg grid grid-cols-2'>
+
+
+
+                    </div>
+
+                    <div className='p-2 h-12 mt-1 rounded-lg flex gap-2 ml-auto'>
                         <h1 className='mt-2'>Category:</h1>
 
                         <label className="block mb-2 ">
@@ -228,23 +241,33 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         </label>
                     </div>
                 </div>
-                <div className='flex justify-between gap-2 w-full'>
-                    <div className='w-full'>
-                        <label className="block mb-2">
-                            Assigned User:
-                            <select
-                                name="assignedUser"
-                                value={formData.assignedUser}
-                                onChange={handleChange}
-                                className="w-1/2 ml-2 outline-none p-2 border rounded mt-1"
-                            >
-                                {users.map(user => (
-                                    <option key={user._id} value={user._id}>
-                                        {user.firstName}
-                                    </option>
+                <div className='w-full flex justify-between'>
+                    <div className="block mb-2">
+                        <div className="flex gap-2   w-full rounded-lg mt-1">
+                            <h1 className='text-xs mt-2' >Priority:</h1>
+
+                            <div className='mt-2'>
+                                {['High', 'Medium', 'Low'].map((level) => (
+                                    <label
+                                        key={level}
+                                        className={`px-4 py-2 text-xs border border-[#505356] font-semibold cursor-pointer ${formData.priority === level
+                                            ? 'bg-[#017A5B] text-white'
+                                            : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
+                                            }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="priority"
+                                            value={level}
+                                            checked={formData.priority === level}
+                                            onChange={handleChange}
+                                            className="hidden"
+                                        />
+                                        {level}
+                                    </label>
                                 ))}
-                            </select>
-                        </label>
+                            </div>
+                        </div>
                     </div>
 
                     <label className="flex mt-2 items-center mb-4">
@@ -257,7 +280,6 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         />
                         Repeat
                     </label>
-
                 </div>
                 {formData.repeat && (
                     <div className="grid gap-2 grid-cols-2">
@@ -322,15 +344,10 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                     />
                 </label>
                 <div className="flex justify-end mt-4">
-                    <button
-                        onClick={onClose}
-                        className="bg-gray-500 text-white p-2 rounded mr-2"
-                    >
-                        Cancel
-                    </button>
+
                     <button
                         onClick={handleSubmit}
-                        className="bg-blue-500 text-white p-2 rounded"
+                        className="bg-[#017A5B]  w-full text-white p-2 rounded"
                     >
                         Save
                     </button>
