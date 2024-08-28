@@ -95,7 +95,7 @@ const InfoBar = (props: Props) => {
 
   const getPageTitle = () => {
     if (pathName === '/dashboard') {
-      return 'Dashboard';
+      return 'All Apps ';
     } else if (pathName === '/dashboard/tasks') {
       return 'Task Management';
     } else if (pathName === '/dashboard/teams') {
@@ -136,12 +136,14 @@ const InfoBar = (props: Props) => {
 
       <div className="  fixed  w-[98%]  z-[10]">
 
-        <div className='gap-6 ml-12 border-b items-center px-4 py-2 w-[98%] z-[10] flex flex-row  bg-[#211025]'>
+        <div className='gap-6 ml-12 border-b  items-center px-4 py-2 w-[98%] z-[10] flex flex-row  bg-[#211025]'>
           {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
-          <div className='flex ml-4'>
-            <h1 className='text-md mt-1  text-white font-bold'>{getPageTitle()} </h1>
+          <div className={`flex ml-4   ${pathName === '/dashboard' ? 'text-center ml-[48%] w-screen' : ''}`}>
+            <h1 className={`text-md mt-1 text-white font-bold `}>
+              {getPageTitle()}
+            </h1>
           </div>
-          <div className="flex items-center gap-4 ml-auto font-bold">
+          <div className="flex items-center  gap-4 ml-auto font-bold">
             {/* <h1 className='text-xs mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1> */}
 
             {/* <ModeToggle /> */}
@@ -152,20 +154,10 @@ const InfoBar = (props: Props) => {
               <img src='/icons/bell.png' className='h' alt="Notification Bell" />
               <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border-2 border-red-500 "></span>
             </Button>
-            {/* <TooltipProvider>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger>
-                <Headphones />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Contact Support</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
 
-            <DropdownMenu>
+            <DropdownMenu >
               <DropdownMenuTrigger asChild>
-                <div className='flex gap-2'>
+                <div className='flex gap-2 '>
                   <div className='h-9 text-xs  items-center cursor-pointer flex justify-center w-9 border bg-[#75517B] -500 rounded-full '>
                     {/* <User className='h-5 w-5' />
                */}
@@ -181,9 +173,11 @@ const InfoBar = (props: Props) => {
                 </div>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-56 -ml-36">
                 <DropdownMenuLabel>{firstName} {lastName}
-                  <p className='text-xs text-gray-400 capitalize'>Team {role}</p>
+                  <p className='text-xs text-gray-400 capitalize'>Role: {role === "orgAdmin" ? <span>
+                    Admin
+                  </span>: role === "manager" ? <span className='text-[10px]'>Manager</span> : <span className='text-[10px]'>Member</span>}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -193,10 +187,18 @@ const InfoBar = (props: Props) => {
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem>
-                    Billing
-                    <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-                  </DropdownMenuItem>
+                  <Link href='/dashboard/billing'>
+                    <DropdownMenuItem>
+                      Billing
+                      <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href='/dashboard/settings'>
+                    <DropdownMenuItem>
+                      Settings
+                      <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </Link>
 
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

@@ -29,13 +29,14 @@ export interface ITask extends Document {
     dueDate: Date;
     completionDate: Date;
     attachment?: string[];
+    audioUrl?: string;
     links?: string[];
     status: 'Pending' | 'In Progress' | 'Completed' | 'Reopen';
     organization: mongoose.Types.ObjectId;
     comments: {
         userName: string;
-        fileUrl: string;
-        imageUrl: string;
+        fileUrl: string[];
+        tag: string;
         comment: string;
         createdAt?: Date;
     }[];
@@ -125,6 +126,9 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
     attachment: {
         type: [String],
     },
+    audioUrl: {
+        type: String, // Change to handle a single audio file URL
+    },
     links: {
         type: [String],
     },
@@ -194,9 +198,9 @@ const taskSchema: Schema<ITask> = new mongoose.Schema({
             required: true,
         },
         fileUrl: {
-            type: String,
+            type: [String],
         },
-        imageUrl: {
+        tag: {
             type: String,
         },
         createdAt: {

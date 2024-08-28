@@ -7,7 +7,7 @@ import DashboardAnalytics from "@/components/globals/dashboardAnalytics";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Loader, Calendar, Flag, FlagIcon, Edit, Delete, Trash, PersonStanding, TagIcon, FilterIcon, CircleAlert, Check, FileIcon, FileCodeIcon, FileTextIcon, Grid2X2, Tag, Repeat1Icon, RepeatIcon, ArrowLeft, Plus, Link, Copy, CopyIcon, GlobeIcon, File, Mic, TagsIcon, Paperclip, Image, Files, X } from "lucide-react";
+import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Calendar, Flag, FlagIcon, Edit, Delete, Trash, PersonStanding, TagIcon, FilterIcon, CircleAlert, Check, FileIcon, FileCodeIcon, FileTextIcon, Grid2X2, Tag, Repeat1Icon, RepeatIcon, ArrowLeft, Plus, Link, Copy, CopyIcon, GlobeIcon, File, Mic, TagsIcon, Paperclip, Image, Files, X, Play } from "lucide-react";
 import { IconBrandTeams, IconClock, IconCopy, IconProgress, IconProgressBolt, IconProgressCheck } from "@tabler/icons-react";
 import { PersonIcon, PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,6 +34,7 @@ import TaskSidebar from "../sidebar/taskSidebar";
 import TaskTabs from "../sidebar/taskSidebar";
 import { DialogClose } from "@radix-ui/react-dialog";
 import CustomAudioPlayer from "./customAudioPlayer";
+import Loader from "../ui/loader";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -65,7 +66,7 @@ interface Task {
   categories?: string[];
   dueDate: string;
   completionDate: string;
-  attachment?: string;
+  attachment?: string[];
   links?: string[];
   status: string;
   comments: Comment[];
@@ -130,6 +131,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   // State variables for filters
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [repeatFilter, setRepeatFilter] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState<boolean | null>(false);
   const [isPro, setIsPro] = useState<boolean | null>(null);
   const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(null);
   const [dueDateFilter, setDueDateFilter] = useState<string | null>(null);
@@ -158,6 +160,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioURLRef = useRef<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+
 
   useEffect(() => {
     if (audioBlob) {
@@ -612,7 +616,41 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   }, []);
 
   const handleUpdateTaskStatus = async () => {
-    if (!selectedTask || !statusToUpdate) return;
+    setLoading(true);
+    let fileUrl = [];
+    if (files && files.length > 0) {
+      // Upload files to S3 and get the URLs
+      const formData = new FormData();
+      files.forEach(file => formData.append('files', file));
+
+      try {
+        const s3Response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (s3Response.ok) {
+          const s3Data = await s3Response.json();
+          console.log('S3 Data:', s3Data); // Log the response from S3
+          fileUrl = s3Data.fileUrls;
+        } else {
+          console.error('Failed to upload files to S3');
+          return;
+        }
+      } catch (error) {
+        console.error('Error uploading files:', error);
+        return;
+      }
+    }
+
+    // Prepare the request body with URLs obtained from the uploads
+    const requestBody = {
+      id: selectedTask?._id,
+      status: statusToUpdate,
+      comment,
+      fileUrl, // URL of the uploaded file
+      userName: `${currentUser.firstName} `,
+    };
 
     try {
       const response = await fetch('/api/tasks/update', {
@@ -620,28 +658,30 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: selectedTask._id,
-          status: statusToUpdate,
-          comment,
-          userName: `${currentUser.firstName} `,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const result = await response.json();
 
       if (response.ok) {
         onTaskUpdate(result.task); // Call the callback function to update the task
+        setFiles([]); // Reset files
+        setFilePreviews([]); // Reset file previews
         setIsDialogOpen(false);
+        setIsCompleteDialogOpen(false);
+        setIsReopenDialogOpen(false);
         setSelectedTask(null);
-        setComment("");
+        setComment('');
+        setLoading(false);
       } else {
         console.error('Error updating task:', result.error);
       }
     } catch (error) {
       console.error('Error updating task:', error);
     }
-  };
+  }
+
+
 
   if (tasks === null) {
     return (
@@ -794,34 +834,41 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     }
   };
 
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
+
+  const handleRemoveFile = (index: number) => {
+    // Remove the file and preview at the given index
+    const updatedFiles = files.filter((_, i) => i !== index);
+    const updatedPreviews = filePreviews.filter((_, i) => i !== index);
+
+    setFiles(updatedFiles);
+    setFilePreviews(updatedPreviews);
+
+    // Revoke the object URL to free up memory
+    URL.revokeObjectURL(filePreviews[index]);
+  };
+
+
 
   const handleImageOrVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+    const selectedFiles = event.target.files;
 
-    if (selectedFile) {
-      setImageOrVideo(selectedFile); // Update state with the selected image/video file
+    if (selectedFiles && selectedFiles.length > 0) {
+      const validFiles: File[] = [];
+      const previews: string[] = [];
 
-      // Upload image/video to S3 and get the URL
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        validFiles.push(file);
 
-      try {
-        const s3Response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
+        // Generate preview URL for the file
+        const fileUrl = URL.createObjectURL(file);
+        previews.push(fileUrl);
+      }
 
-        if (s3Response.ok) {
-          const s3Data = await s3Response.json();
-          console.log('S3 Image/Video Data:', s3Data);
-          const fileUrl = s3Data.fileUrl;
-
-          // Do something with the file URL, e.g., set it in state
-        } else {
-          console.error('Failed to upload image/video to S3');
-        }
-      } catch (error) {
-        console.error('Error uploading image/video:', error);
+      if (validFiles.length > 0) {
+        setFiles(validFiles); // Update state with valid files
+        setFilePreviews(previews); // Update state with file previews
       }
     }
   };
@@ -1428,20 +1475,22 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                                 setStatusToUpdate("In Progress");
                                                 setIsDialogOpen(true);
                                               }}
-                                              className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
                                             >
-                                              <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
-                                              In Progress
+                                              <Play className="h-4 w-4" />
+                                              <h1 className="text-xs">
+                                                In Progress
+                                              </h1>
                                             </Button>
                                             <Button
                                               onClick={() => {
                                                 setStatusToUpdate("Completed");
                                                 setIsCompleteDialogOpen(true);
                                               }}
-                                              className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
                                               <CheckCheck className="h-4 rounded-full text-green-400" />
-                                              Completed
+                                              <h1 className="text-xs">Completed</h1>
                                             </Button>
 
 
@@ -1521,7 +1570,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81%] ml-52 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[81%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -1588,23 +1637,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                                 setStatusToUpdate("In Progress");
                                                 setIsDialogOpen(true);
                                               }}
-                                              className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
+                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
                                             >
-                                              <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
-                                              In Progress
+                                              <Play className="h-4 w-4" />
+                                              <h1 className="text-xs">
+                                                In Progress
+                                              </h1>
                                             </Button>
                                             <Button
                                               onClick={() => {
                                                 setStatusToUpdate("Completed");
                                                 setIsCompleteDialogOpen(true);
                                               }}
-                                              className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
+                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
                                               <CheckCheck className="h-4 rounded-full text-green-400" />
-                                              Completed
+                                              <h1 className="text-xs">Completed</h1>
                                             </Button>
-
-
                                           </div>
                                         </div>
 
@@ -1671,7 +1720,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               filteredTasks!.map((task) => (
                                 <div key={task._id} className="">
                                   <Card
-                                    className="flex  w-[81%] ml-52 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                    className="flex  w-[81%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                     onClick={() => setSelectedTask(task)}
                                   >
                                     <div className=" items-center gap-4">
@@ -1723,28 +1772,30 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     </div>
                                     <div className="">
                                       <div className="flex ">
-                                        <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                          <Button
-                                            onClick={() => {
-                                              setStatusToUpdate("In Progress");
-                                              setIsDialogOpen(true);
-                                            }}
-                                            className="gap-2 border mt-2 h-6 bg-transparent hover:bg-[#007A5A]  border-gray-600 w-full"
-                                          >
-                                            <PlayIcon className="h-3  bg-[#FDB077] rounded-full w-3" />
-                                            In Progress
-                                          </Button>
-                                          <Button
-                                            onClick={() => {
-                                              setStatusToUpdate("Completed");
-                                              setIsCompleteDialogOpen(true);
-                                            }}
-                                            className=" border mt-2 bg-transparent h-6 hover:bg-[#007A5A]  border-gray-600 w-full "
-                                          >
-                                            <CheckCheck className="h-4 rounded-full text-green-400" />
-                                            Completed
-                                          </Button>
-                                        </div>
+                                      <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("In Progress");
+                                                setIsDialogOpen(true);
+                                              }}
+                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
+                                            >
+                                              <Play className="h-4 w-4" />
+                                              <h1 className="text-xs">
+                                                In Progress
+                                              </h1>
+                                            </Button>
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("Completed");
+                                                setIsCompleteDialogOpen(true);
+                                              }}
+                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
+                                            >
+                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              <h1 className="text-xs">Completed</h1>
+                                            </Button>
+                                          </div>
                                       </div>
                                     </div>
                                   </Card>
@@ -1780,61 +1831,79 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           </div>
                         )}
                       </div>
-                      {isCompleteDialogOpen && (
-                        <Dialog
-                          open={isCompleteDialogOpen}
-                        >
-                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-lg -mt-1">
-                            <DialogTitle>Task Update</DialogTitle>
-                            <p>Please add a note before marking the task completed</p>
-                            <div className="mt-4">
-                              <Label>Comment</Label>
 
+
+                      {/** Completed Modal */}
+
+                      {isCompleteDialogOpen && (
+                        <Dialog open={isCompleteDialogOpen}>
+                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21] rounded-lg p-6 mx-auto max-w-2xl">
+                            <div className="flex justify-between w-full">
+                              <DialogTitle className="text-sm">Task Update</DialogTitle>
+                              <DialogClose onClick={() => setIsCompleteDialogOpen(false)}>X</DialogClose>
+                            </div>
+                            <p className="text-xs -mt-2">Please add a note before marking the task as completed</p>
+                            <div className="mt-2">
+                              <Label className="text-sm">Comment</Label>
                               <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                className="border rounded-lg px-2 py-1 w-full mt-2"
+                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
                               />
-                              <div className="flex mt-2">
-                                <input type="file" onChange={handleFileChange} className="mt-2" />
-                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                {recording ? (
-                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                    <Mic className='h-5 text-center m-auto mt-1' />
-                                  </div>
-                                ) : (
-                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                    <Mic className='h-5 text-center m-auto mt-1' />
-                                  </div>
-                                )}
 
+                              <div className='flex mb-4  mt-4 gap-4'>
+                                <div
+                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
+                                  onClick={triggerImageOrVideoUpload}
+                                >
+                                  <Files className="h-5 text-center m-auto mt-1" />
 
-                              </div>
-                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                              {audioBlob && (
-                                <div className="mt-4">
-                                  <audio controls src={audioURL} />
                                 </div>
-                              )}
+                                <h1 className="text-xs mt-2">Attach a File (All File Types Accepted)</h1>
+
+                                <input
+                                  ref={imageInputRef}
+                                  type="file"
+                                  style={{ display: 'none' }}
+                                  onChange={handleImageOrVideoUpload}
+                                />
+                              </div>
+                              <div className="file-previews">
+                                {filePreviews.map((preview, index) => (
+                                  <div key={index} className="file-preview-item relative inline-block">
+                                    {files[index].type.startsWith('image/') ? (
+                                      <img
+                                        src={preview}
+                                        alt={`Preview ${index}`}
+                                        className="w-28 h-28 object-cover rounded-lg"
+                                      />
+                                    ) : (
+                                      <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
+                                        {files[index].name}
+                                      </div>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveFile(index)}
+                                      className='absolute top-2 right-1 bg-red-600 text-white rounded-full p-1'
+                                    >
+                                      <X className='h-3 w-3' />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
-                              <Button
-                                onClick={() => setIsCompleteDialogOpen(false)}
-                                className="w- text-white bg-gray-500 "
-                              >
-                                Close
-                              </Button>
-                              <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full bg-[#007A5A] text-white"
-                              >
-                                Update Task
+
+                              <Button onClick={handleUpdateTaskStatus} className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]">
+                                {loading ? <Loader /> : "Update Task"}
                               </Button>
                             </div>
                           </DialogContent>
                         </Dialog>
                       )}
+
 
 
                       {/** In Progress Modal */}
@@ -1863,78 +1932,56 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               ></div>
 
                               <div className='flex mb-4  mt-4 gap-4'>
-                                {recording ? (
-                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500'>
-                                    <Mic className='h-5 text-center m-auto mt-1' />
-                                  </div>
-                                ) : (
-                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
-                                    <Mic className='h-5 text-center m-auto mt-1' />
-                                  </div>
-                                )}
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
                                   onClick={triggerImageOrVideoUpload}
                                 >
-                                  <Image className="h-5 text-center m-auto mt-1" />
+                                  <Files className="h-5 text-center m-auto mt-1" />
+
                                 </div>
+                                <h1 className="text-xs mt-2">Attach a File (All File Types Accepted)</h1>
+
                                 <input
                                   ref={imageInputRef}
                                   type="file"
-                                  accept="image/*,video/*" // Only accept images and videos
                                   style={{ display: 'none' }}
                                   onChange={handleImageOrVideoUpload}
                                 />
-                                <div
-                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
-                                  onClick={triggerFileUpload}
-                                >
-                                  <Files className="h-5 text-center m-auto mt-1" />
-                                </div>
-                                <input
-                                  ref={fileInputRef}
-                                  type="file"
-                                  accept="application/pdf,.doc,.docx,.xls,.xlsx,.txt" // Accept other file types
-                                  style={{ display: 'none' }}
-                                  onChange={handleOtherFileUpload}
-                                />
-
-                                {otherFile && (
-                                  <div className="mt-2">
-                                    <span>{otherFile.name}</span>
-                                    <button onClick={handleRemoveOtherFile} className="ml-2 text-red-500">Remove</button>
-                                  </div>
-                                )}
                               </div>
-                              <canvas ref={canvasRef} className={` ${recording ? `w-1/2 h-12 ` : 'hidden'} `}></canvas>
-                              {audioBlob && (
-                                <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
-                              )}
+
                               {/* <img src="/icons/image.png" alt="image icon" /> */}
                             </div>
-                            {imageOrVideo && (
-                              <div className='relative  w-32 h-32 mb-2'>
-                                <img
-                                  src={URL.createObjectURL(imageOrVideo)}
-                                  alt={`File `}
-                                  className='object-cover w-full h-full rounded-lg'
-                                />
-                                <button
-                                  type='button'
-                                  onClick={() => handleFileRemove(imageOrVideo)}
-                                  className='absolute top-1 right-1 bg-red-600 text-white rounded-full p-1'
-                                >
-                                  <X className='h-4 w-4' />
-                                </button>
-                              </div>
-                            )}
+                            <div className="file-previews">
+                              {filePreviews.map((preview, index) => (
+                                <div key={index} className="file-preview-item relative inline-block">
+                                  {files[index].type.startsWith('image/') ? (
+                                    <img
+                                      src={preview}
+                                      alt={`Preview ${index}`}
+                                      className="w-28 h-28 object-cover rounded-lg"
+                                    />
+                                  ) : (
+                                    <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
+                                      {files[index].name}
+                                    </div>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveFile(index)}
+                                    className='absolute top-2 right-1 bg-red-600 text-white rounded-full p-1'
+                                  >
+                                    <X className='h-3 w-3' />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                             <div className="mt-4 flex justify-end space-x-2">
 
                               <Button
                                 onClick={handleUpdateTaskStatus}
                                 className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
                               >
-                                Update Task
+                                {loading ? <Loader /> : "Update Task"}
                               </Button>
 
                             </div>
@@ -1942,77 +1989,73 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         </Dialog>
                       )}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                      {/** Reopen Modal */}
 
                       {isReopenDialogOpen && (
                         <Dialog
                           open={isReopenDialogOpen}
                         >
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-xl ">
-                            <DialogTitle>Task Update</DialogTitle>
-                            <p>Please add a note before marking the task as Reopen</p>
-                            <div className="mt-4">
-                              <Label>Comment</Label>
-                              <div
-                                ref={editorRef}
-                                contentEditable
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
+                            <div className="flex justify-between w-full">
+                              <DialogTitle className="text-sm">Task Update</DialogTitle>
+                              <DialogClose onClick={() => setIsReopenDialogOpen(false)}>X</DialogClose>
+                            </div>
+                            <p className="text-xs -mt-2">Please add a note before marking the task as Reopen</p>
+                            <div className="mt-2">
+                              <Label className="text-sm">Comment</Label>
+                              <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
                                 className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
-                                onInput={(e) => {
-                                  const target = e.target as HTMLDivElement;
-                                  setComment(target.innerHTML);
-                                }}
-                              ></div>
+                              />
 
-                              <div className="flex mt-2">
-                                <input type="file" onChange={handleFileChange} className="mt-2" />
-                                <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> Attach an Audio</h1>
-                                {recording ? (
-                                  <div onClick={stopRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-red-500'>
-                                    <Mic className='h-5 text-center m-auto mt-1' />
-                                  </div>
-                                ) : (
-                                  <div onClick={startRecording} className='h-8 w-8 rounded-full items-center text-center mt-2 border cursor-pointer hover:shadow-white shadow-sm bg-[#007A5A]'>
-                                    <Mic className='h-5 text-center m-auto mt-1' />
-                                  </div>
-                                )}
+                              <div className='flex mb-4  mt-4 gap-4'>
+                                <div
+                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
+                                  onClick={triggerImageOrVideoUpload}
+                                >
+                                  <Files className="h-5 text-center m-auto mt-1" />
 
-
-                              </div>
-                              <canvas ref={canvasRef} className={` ${recording ? `w-full h-1/2` : 'hidden'} `}></canvas>
-                              {audioBlob && (
-                                <div className="mt-4">
-                                  <audio controls src={audioURL} />
                                 </div>
-                              )}
+                                <h1 className="text-xs mt-2">Attach a File (All File Types Accepted)</h1>
 
-                              {/* <img src="/icons/image.png" alt="image icon" /> */}
+                                <input
+                                  ref={imageInputRef}
+                                  type="file"
+                                  style={{ display: 'none' }}
+                                  onChange={handleImageOrVideoUpload}
+                                />
+                              </div>
+                              <div className="file-previews">
+                                {filePreviews.map((preview, index) => (
+                                  <div key={index} className="file-preview-item relative inline-block">
+                                    {files[index].type.startsWith('image/') ? (
+                                      <img
+                                        src={preview}
+                                        alt={`Preview ${index}`}
+                                        className="w-28 h-28 object-cover rounded-lg"
+                                      />
+                                    ) : (
+                                      <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
+                                        {files[index].name}
+                                      </div>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveFile(index)}
+                                      className='absolute top-2 right-1 bg-red-600 text-white rounded-full p-1'
+                                    >
+                                      <X className='h-3 w-3' />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
-                              <Button
-                                onClick={() => setIsDialogOpen(false)}
-                                className="w- text-white bg-gray-500 "
-                              >
-                                Close
-                              </Button>
-                              <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full text-white bg-[#007A5A]"
-                              >
-                                Update Task
+
+                              <Button onClick={handleUpdateTaskStatus} className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]">
+                                {loading ? <Loader /> : "Update Task"}
                               </Button>
 
                             </div>

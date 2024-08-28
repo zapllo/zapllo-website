@@ -57,10 +57,10 @@ const DashboardPage = () => {
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
       <div className='w-full mb-2  flex justify-center '>
-        <div className='flex w-[30%] gap-4'>
+        <div className='flex w-[100%] gap-4'>
           <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
             <div className='w-full m'>
-              <h1>App Usage Progress: </h1>
+              <h1>Checklist </h1>
               <Progress value={calculateProgress()} className='' />
             </div>
             <div className='flex justify-start mt-3'>
@@ -77,7 +77,7 @@ const DashboardPage = () => {
       </div>
       <div className='grid grid-cols-3 '>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -95,7 +95,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/intranet.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -113,7 +113,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -134,7 +134,7 @@ const DashboardPage = () => {
 
       <div className='grid grid-cols-3'>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -152,7 +152,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/whatsapp.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -160,8 +160,8 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Automate WA</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
-                <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Go To WhatsApp API</Button>
+                <Link href='https://app.zapllo.com'>
+                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To WhatsApp API</Button>
                 </Link>
 
               </div>
@@ -170,7 +170,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded-2xl '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/crm.png' className=' ml-3 mt-3 h-6  invert-[100]    object-cover' />

@@ -10,7 +10,7 @@ connectDB();
 
 export async function PATCH(request: NextRequest) {
     try {
-        const { id, status, comment, userName, fileUrl, imageUrl } = await request.json();
+        const { id, status, comment, userName, fileUrl } = await request.json();
 
         // Find the task by ID
         const task = await Task.findById(id);
@@ -20,19 +20,29 @@ export async function PATCH(request: NextRequest) {
         }
 
         // Update task status
+        let newStatus = status;
         if (status === 'Reopen') {
-            task.status = 'Pending'; // Set status to Pending when reopened
-        } else if (task.repeat === true) {
-            task.status = 'In Progress';
+            newStatus = 'Pending'; // Set status to Pending when reopened
+        } else if (task.repeat) {
+            newStatus = 'In Progress';
         } else {
-            task.status = status;
+            newStatus = status;
             if (status === 'Completed') {
                 task.completionDate = new Date();
             }
         }
 
-        // Add a comment to the task
-        task.comments.push({ userName, comment, fileUrl, imageUrl, createdAt: new Date() });
+        task.status = newStatus;
+
+        // Add a comment to the task with a status tag
+        task.comments.push({
+            userName,
+            comment,
+            fileUrl,
+            tag: status, // Add the tag here
+            createdAt: new Date()
+        });
+
         await task.save();
 
         // Find the user who created the task

@@ -114,7 +114,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                             {loading ? (
                                 <Loader /> // Display loader while fetching tickets
                             ) : (
-                                <div className='p-6 border-l ml-56  -mt-12 space-y-4'>
+                                <div className='p-6 border-l overflow-y-scroll h-screen scrollbar-hide ml-56  -mt-12 space-y-4'>
                                     <Link href='/dashboard/tickets'>
                                         <div className='flex gap-2 mb-8 font-medium text-xl cursor-pointer'>
                                             <ArrowLeft className='h-7' />
@@ -124,7 +124,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
 
                                     {ticket && (
                                         <>
-                                            <div className='border-[#E0E0E066] border p-4 rounded'>
+                                            <div className=' border p-4 rounded'>
                                                 <div className="relative max-w-full w-full h-full max-h-32">
                                                     <div className='flex border border-[#E0E0E066] p-2 rounded-lg absolute right-0'>
                                                         <h1 className='text-white text-sm'>{ticket.status}</h1>
@@ -219,7 +219,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                 )}
                                             </div>
 
-                                            <div className='border-[#E0E0E066] border rounded-lg p-4'>
+                                            <div className=' border rounded p-4'>
                                                 <h1 className='uppercase font-bold'>Reply</h1>
                                                 <form onSubmit={handleCommentSubmit} className='mt-4'>
                                                     <textarea
@@ -227,7 +227,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                         onChange={handleCommentChange}
                                                         placeholder='Type your comment here'
                                                         rows={4}
-                                                        className='w-full p-2 border outline-none border-[#E0E0E066] rounded-lg'
+                                                        className='w-full p-2 border bg-transparent outline-none  rounded'
                                                     />
 
                                                     <input

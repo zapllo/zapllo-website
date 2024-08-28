@@ -27,7 +27,7 @@ import {
 } from "@radix-ui/react-icons";
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mail, MailIcon, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
+import { Calendar, CalendarIcon, ClipboardIcon, Clock, FlagIcon, Link, Mail, MailIcon, Mic, Paperclip, Plus, PlusCircleIcon, Repeat } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { format } from 'date-fns';
 import CustomDatePicker from './date-picker';
@@ -41,6 +41,7 @@ import Select, { StylesConfig } from 'react-select';
 import { Switch } from '../ui/switch';
 import { FaUpload } from 'react-icons/fa';
 import CustomAudioPlayer from './customAudioPlayer';
+import DaysSelectModal from '../modals/DaysSelect';
 
 
 
@@ -82,6 +83,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [searchDateQuery, setSearchDateQuery] = useState<string>(''); // State for search query
     const [open, setOpen] = useState<boolean>(false); // State for popover open/close
     const [categoryOpen, setCategoryOpen] = useState<boolean>(false); // State for popover open/close
+    const [daysSelectModalOpen, setDaysSelectModalOpen] = useState<boolean>(false); // State for popover open/close
     const [popoverInputValue, setPopoverInputValue] = useState<string>(''); // State for input value in popover
     const [popoverCategoryInputValue, setPopoverCategoryInputValue] = useState<string>(''); // State for input value in popover
     const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -205,31 +207,35 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         mediaRecorderRef.current?.stop();
     };
 
-
-
-
-
-    const handleSwitchChange = (event: any) => {
-        setAssignMoreTasks(event.target.checked);
-
-        // Clear fields when switch is toggled
-        if (event.target.checked) {
-            setTitle("");
-            setDescription("");
-            setAssignedUser("");
-            setCategory("");
-            setPriority("");
-            setRepeat(false);
-            setRepeatType("");
-            setDays([]);
-            setDueDate(null);
-            setDueTime("");
-            setAttachment("");
-            setLinks([]);
-            setDueDate(null);
-            setDueTime('');
+    useEffect(() => {
+        if (repeatType === 'Monthly' && repeat) {
+            setDaysSelectModalOpen(true);
         }
-    };
+    }, [repeatType, repeat]);
+
+
+    // const handleSwitchChange = (event: any) => {
+    //     setAssignMoreTasks(event.target.checked);
+
+    //     // Clear fields when switch is toggled
+    //     if (event.target.checked) {
+    //         setTitle("");
+    //         setDescription("");
+    //         setAssignedUser("");
+    //         setCategory("");
+    //         setPriority("");
+    //         setRepeat(false);
+    //         setRepeatType("");
+    //         setDays([]);
+    //         setDueDate(null);
+    //         setDueTime("");
+    //         setAttachment("");
+    //         setLinks([]);
+    //         setDueDate(null);
+    //         setDueTime('');
+    //     }
+    // };
+
     useEffect(() => {
         const getUserDetails = async () => {
             const res = await axios.get('/api/users/me');
@@ -391,6 +397,44 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             return; // Stop execution if validation fails
         }
         setLoading(true);
+
+        let fileUrls: string[] = [];
+        let audioUrl: string | null = null;
+
+        // Upload files and audio to S3 if there are any files or audio selected
+        if ((files && files.length > 0) || audioBlob) {
+            const formData = new FormData();
+
+            if (files) {
+                files.forEach(file => formData.append('files', file));
+            }
+
+            if (audioBlob) {
+                formData.append('audio', audioBlob, 'audio.wav'); // Attach the audio blob to the formData
+            }
+
+            try {
+                const s3Response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (s3Response.ok) {
+                    const s3Data = await s3Response.json();
+                    fileUrls = s3Data.fileUrls || []; // Assuming this is an array of file URLs
+                    audioUrl = s3Data.audioUrl || null; // Assuming the API returns the audio URL
+                } else {
+                    console.error('Failed to upload files to S3');
+                    setLoading(false);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error uploading files:', error);
+                setLoading(false);
+                return;
+            }
+        }
+
         const taskData = {
             title,
             description,
@@ -402,7 +446,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             days: repeat ? days : [], // Only include days if repeat is true
             dates: repeatMonthlyDays,
             dueDate,
-            attachment: files,
+            attachment: fileUrls, // Use the URLs from S3 upload
+            audioUrl, // Add the audio URL here
             links,
             reminder: {
                 email: emailReminderType === 'specific' ? null : {
@@ -433,42 +478,44 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             if (response.ok) {
                 console.log('Task Assigned:', result);
                 setLoading(false);
-                toast.success("Task created Successfuly!!");
+                toast.success("Task created successfully!");
+
                 if (assignMoreTasks) {
                     // Clear fields when "Assign More Tasks" is checked
-                    setTitle("");
-                    setDescription("");
-                    setAssignedUser("");
-                    setCategory("");
-                    setPriority("");
-                    setRepeat(false);
-                    setRepeatType("");
-                    setDays([]);
-                    setDueDate(null);
-                    setDueTime("");
-                    setAttachment("");
-                    setLinks([]);
-                    setEmailReminderType('minutes');
-                    setEmailReminderValue(0);
-                    setWhatsappReminderType('minutes');
-                    setWhatsappReminderValue(0);
-                    setReminderDate(null);
+                    clearFormFields();
                 } else {
                     closeModal();
                 }
             } else {
                 console.error('Error assigning task:', result.error);
-                // toast.error("Error:", result.error);
                 toast.error("Please provide all fields");
-
-
             }
         } catch (error: any) {
             console.error('Error assigning task:', error);
-            toast.error(error);
-
+            toast.error(error.message);
         }
     };
+
+    const clearFormFields = () => {
+        setTitle("");
+        setDescription("");
+        setAssignedUser("");
+        setCategory("");
+        setPriority("");
+        setRepeat(false);
+        setRepeatType("");
+        setDays([]);
+        setDueDate(null);
+        setDueTime("");
+        setFiles([]); // Clear the uploaded files
+        setLinks([]);
+        setEmailReminderType('minutes');
+        setEmailReminderValue(0);
+        setWhatsappReminderType('minutes');
+        setWhatsappReminderValue(0);
+        setReminderDate(null);
+    };
+
 
 
     // const [open, setOpen] = useState(false);
@@ -488,13 +535,26 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setCategoryOpen(false);
     };
 
+    const handleUserClose = (selectedValue: any) => {
+        setPopoverInputValue(selectedValue);
+        setOpen(false);
+    }
+
+    const handleCloseCategoryPopup = () => {
+        setCategoryOpen(false);
+    }
+
+    const handleCloseUserPopup = () => {
+        setOpen(false);
+    }
+
     const handleCheckboxChange = (checked: any) => {
         setAssignMoreTasks(checked);
     };
 
 
     const handleSubmit = async () => {
-        let fileUrl = [];
+        let fileUrls = [];
         if (files && files.length > 0) {
             // Upload files to S3 and get the URLs
             const formData = new FormData();
@@ -509,7 +569,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 if (s3Response.ok) {
                     const s3Data = await s3Response.json();
                     console.log('S3 Data:', s3Data); // Log the response from S3
-                    fileUrl = s3Data.fileUrls;
+                    fileUrls = s3Data.fileUrls;
                 } else {
                     console.error('Failed to upload files to S3');
                     return;
@@ -544,28 +604,28 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
             <Toaster />
 
-            <div className="bg-[#1A1C20] z-[100] h-full max-h-5xl text-[#D0D3D3] w-[50%] rounded-lg p-8">
+            <div className="bg-[#1A1C20] z-[100] h-[580px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8">
                 <div className='flex justify-between'>
-                    <h2 className="text-lg font-bold mb-6 -mt-4  ">Assign New Task</h2>
+                    <h2 className="text-lg font-bold mb-4 -mt-4  ">Assign New Task</h2>
                     <img className='cursor-pointer -mt-4 h-4' src='/icons/x.png' onClick={closeModal} />
                 </div>
 
-                <form className="text-sm space-y-4 overflow-y-scroll scrollbar-hide h-full max-h-xl">
+                <form className="text-sm space-y-5 overflow-y-scroll scrollbar-hide h-full max-h-4xl">
                     <div className='grid grid-cols-1 gap-4'>
                         <div className="">
                             {/* <Label htmlFor="title" className="block text-[#D0D3D3] text-xs font-semibold">Title</Label> */}
-                            <input type="text" placeholder='Task Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full text-xs  outline-none bg-transparent border border-[#505356]  mt-1 rounded px-3 py-2" />
+                            <input type="text" placeholder='Task Title' id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full text-xs  outline-none bg-transparent border-2 mt-1 rounded px-3 py-2" />
                         </div>
-                        <div className="mb-2">
+                        <div className="">
                             {/* <Label htmlFor="description" className="block text-xs font-semibold">Description</Label> */}
-                            <textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="text-xs w-full  outline-none  bg-transparent border border-[#505356]   mt-1 rounded px-3 py-3"></textarea>
+                            <textarea id="description" placeholder='Task Description' value={description} onChange={(e) => setDescription(e.target.value)} className="text-xs w-full  outline-none  bg-transparent border-2    mt-1 rounded px-3 py-3"></textarea>
                         </div>
                     </div>
-                    <div className='grid-cols-2 gap-4 grid'>
+                    <div className='grid-cols-2 gap-4 grid '>
                         <div>
                             <button
                                 type="button"
-                                className="p-2 flex text-xs justify-between border border-[#505356]  bg-transparent w-full text-start  rounded"
+                                className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
                                 onClick={handleOpen}
                             >
                                 {popoverInputValue ? popoverInputValue : "Select User"}
@@ -580,46 +640,18 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 setAssignedUser={setAssignedUser}
                                 searchQuery={searchQuery}
                                 setSearchQuery={setSearchQuery}
-                                onClose={handleClose}
+                                onClose={handleCloseUserPopup}
+                                closeOnSelectUser={handleUserClose}
                             />
                         )}
 
-                        <div className="mb-4">
-                            {/* <label htmlFor="category" className="block font-semibold">Category</label> */}
-
-                            {/* <select
-                                id="category"
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="w-full border rounded px-3 py-2"
-                            >
-                                <option value="">Select Category</option>
-                                {categories.map((cat) => (
-                                    <option key={cat._id} value={cat._id}>
-                                        {cat.name}
-                                    </option>
-                                ))}
+                        <div className="mb-2">
 
 
-                                <Input
-                                    type="text"
-                                    placeholder="New Category"
-                                    value={newCategory}
-                                    onChange={(e) => setNewCategory(e.target.value)}
-                                    className="w-full bg-white border rounded px-3 py-2"
-                                />
-                                <button
-                                    onClick={handleCreateCategory}
-                                    className="ml-2 px-3 py-2 bg-blue-500 text-white rounded"
-                                >
-                                    Create
-                                </button>
-
-                            </select> */}
                             <div>
                                 <button
                                     type="button"
-                                    className="p-2 text-xs flex border border-[#505356]  bg-transparent justify-between w-full text-start  rounded"
+                                    className="p-2 text-xs flex border-2   bg-transparent justify-between w-full text-start  rounded"
                                     onClick={handleCategoryOpen}
                                 >
                                     {popoverCategoryInputValue ? popoverCategoryInputValue : "Select Category"}
@@ -636,7 +668,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                     setNewCategory={setNewCategory}
                                     searchCategoryQuery={searchCategoryQuery}
                                     setSearchCategoryQuery={setSearchCategoryQuery}
-                                    onClose={handleCategoryClose}
+                                    onClose={handleCloseCategoryPopup}
+                                    closeOnSelect={handleCategoryClose}
                                     role={role}
                                 />
                             )}
@@ -645,20 +678,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </div>
                     </div>
                     <div className=" flex justify-between">
-                        <div className="mb-4  justify-between  rounded-md  flex gap-4 mta">
-
-
-
-                            <div className=' gap-2 flex justify-between bg-[#282d32] p-4 w-full '>
+                        <div className="mb-2  justify-between  rounded-md  flex gap-4 mta">
+                            <div className=' gap-2 flex justify-between h-fit border-2 p-4 w-full '>
                                 <div className='flex gap-2   text-xs text-white font-bold'>
                                     {/* <FlagIcon className='h-5' /> */}
                                     Priority
                                 </div>
-                                <div className=" rounded-lg  -mt-[2px]">
+                                <div className=" rounded-lg  ">
                                     {['High', 'Medium', 'Low'].map((level) => (
                                         <label
                                             key={level}
-                                            className={`px-4 py-2 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
+                                            className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
                                                 ? 'bg-[#017A5B]  text-white'
                                                 : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
                                                 }`}
@@ -679,32 +709,33 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
                         </div>
 
-                        <div className="- px-2  ml-auto justify-between">
-                            <div className="flex gap-2 items-center ">
+                        <div className="- px-2 sticky right-0 w-1/2  justify-between">
+                            <div className="flex gap-2 ml-40 items-center ">
                                 <Repeat className='h-4' />
                                 <Label htmlFor="repeat" className="font-semibold text-xs ">Repeat</Label>
-                                <input type="checkbox" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="mr-2 h-10" />
+                                <input type="checkbox" className="custom-checkbox mr-2 h-10" id="repeat" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
                             </div>
                             <div>
-                                {repeat && (
-                                    <div>
-                                        <div className="bg-transparent">
-                                            {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
-                                            <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-full bg-[#292d33] border outline-none rounded px-3 py-2">
-                                                <option value="bg-[#292D33]">Select Repeat Type</option>
-                                                <option value="Daily">Daily</option>
-                                                <option value="Weekly">Weekly</option>
-                                                <option value="Monthly">Monthly</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                )}
+
 
                             </div>
+                            {repeat && (
+                                <div>
+                                    <div className="bg-transparent">
+                                        {/* <Label htmlFor="repeatType" className="block font-semibold">Repeat Type</Label> */}
+                                        <select id="repeatType" value={repeatType} onChange={(e) => setRepeatType(e.target.value)} className="w-48 ml-20 bg-[#292d33] border text-xs outline-none rounded px-3 py-2">
+                                            <option value="bg-[#292D33]">Select Repeat Type</option>
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                            <option value="Monthly">Monthly</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            )}
                         </div>
-
-
                     </div>
+
 
                     {repeatType === 'Weekly' && repeat && (
                         <div className="mb-4 ">
@@ -725,56 +756,41 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </div>
                     )}
 
-                    {repeatType === 'Monthly' && (
-                        <div className="mb-4">
-                            <Label htmlFor="repeatMonthlyDay" className="block font-semibold mb-2">Select Day of the Month</Label>
-                            {/* <select id="repeatMonthlyDay" value={repeatMonthlyDay} onChange={(e) => setRepeatMonthlyDay(e.target.value)} className="w-full border rounded px-3 py-2">
-                                <option value="">Select Day</option>
-                                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                                    <option key={day} value={day}>{day}</option>
-                                ))}
-                            </select> */}
-                            <CustomDaysSelect
-                                options={Array.from({ length: 31 }, (_, i) => i + 1)}
-                                selectedOptions={repeatMonthlyDays}
-                                setSelectedOptions={setRepeatMonthlyDays}
+                    {repeatType === 'Monthly' && repeat && (
+                        <div>
+                            <DaysSelectModal
+                                isOpen={daysSelectModalOpen}
+                                onOpenChange={setDaysSelectModalOpen}
+                                selectedDays={repeatMonthlyDays}
+                                setSelectedDays={setRepeatMonthlyDays}
                             />
+
                         </div>
                     )}
-                    <Label htmlFor="dueDate" className="block font-semibold text-xs mb-2">Due Date</Label>
+                    {/* <Label htmlFor="dueDate" className="block font-semibold text-xs mb-2">Due Date</Label> */}
 
                     <div className="mb-4 flex justify-between">
-                        {/* <Popover >
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-[280px] justify-start text-left font-normal",
-                                        !date && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Input type="datetime-local" id="dueDate" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border rounded px-3 py-2" />
-
-                            </PopoverContent>
-                        </Popover> */}
                         <Button
                             type="button"
                             onClick={() => setIsDateTimeModalOpen(true)}
-                            className=" border rounded bg-[#282D32] hover:bg-transparent px-3  py-2"
+                            className=" border-2 rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
                         >
+                            <Calendar className='h-5 text-sm' />
                             {dueDate && dueTime
                                 ? `${format(dueDate, "PPP")} ${dueTime}`
-                                : "Select Date & Time"
+                                : <h1 className='text-xs'>
+                                    Select Date & Time
+                                </h1>
                             }
-
                         </Button>
-                     
 
+                        {repeatType === 'Monthly' && repeat && (
+                            <div className='sticky   right-0 '>
+                                <h1 className='  ml- '>
+                                    Selected Days: {repeatMonthlyDays.join(', ')}
+                                </h1>
+                            </div>
+                        )}
                         {isDateTimeModalOpen && (
                             <Dialog open={isDateTimeModalOpen} onOpenChange={setIsDateTimeModalOpen}>
                                 <DialogContent >
@@ -857,14 +873,29 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         <Label htmlFor="attachment" className="block font-semibold">Attachment</Label>
                         <Input type="file" id="attachment" onChange={(e) => setAttachment(e.target.value)} className="w-full border rounded px-3 py-2" />
                     </div> */}
-                    
+
                     <div className='flex   gap-4'>
-                        <div onClick={() => { setIsLinkModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
-                            <Link className='h-5 text-center m-auto mt-1' />
+                        <div className='flex gap-2'>
+                            <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.length > 0 ? 'border-[#017A5B]' : ''
+                                }`}>
+                                <Link className='h-5 text-center m-auto mt-1' />
+                            </div>
+                            {links.length > 0 && (
+                                <span className="text-xs mt-2 text">{links.length} Links</span> // Display the count
+                            )}
                         </div>
-                        <div onClick={() => { setIsAttachmentModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
-                            <Paperclip className='h-5 text-center m-auto mt-1' />
+
+                        <div className='flex gap-2'>
+                            <div onClick={() => { setIsAttachmentModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? 'border-[#017A5B]' : ''
+                                }`} >
+                                <Paperclip className='h-5 text-center m-auto mt-1' />
+
+                            </div>
+                            {files.length > 0 && (
+                                <span className="text-xs mt-2 text">{files.length} Attachments</span> // Display the count
+                            )}
                         </div>
+
                         <div onClick={() => { setIsReminderModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Clock className='h-5 text-center m-auto mt-1' />
                         </div>
@@ -882,24 +913,22 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         )}
 
                     </div>
-                    <div className="flex ">
-                        {/* <h1 onClick={() => { setIsRecordingModalOpen(true) }} className="text-sm mt-3 ml-1 cursor-pointer"> </h1> */}
 
-
-
-                    </div>
                     <canvas ref={canvasRef} className={` ${recording ? `w-1/2 h-12` : 'hidden'} `}></canvas>
                     {audioBlob && (
                         <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
                     )}
-                       <div className="flex items-center justify-end space-x-4">
-                            <Switch
-                                id="assign-more-tasks" className='scale-125'
-                                checked={assignMoreTasks}
-                                onCheckedChange={handleCheckboxChange}
-                            />
-                            <Label htmlFor="assign-more-tasks ">Assign More Tasks</Label>
-                        </div>
+                    <div>
+
+                    </div>
+                    <div className="flex items-center -mt-4 justify-end space-x-4">
+                        <Switch
+                            id="assign-more-tasks" className='scale-125'
+                            checked={assignMoreTasks}
+                            onCheckedChange={handleCheckboxChange}
+                        />
+                        <Label htmlFor="assign-more-tasks ">Assign More Tasks</Label>
+                    </div>
                     <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
                         <DialogContent>
                             <div className='flex justify-between'>
@@ -1068,7 +1097,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         </DialogContent>
                     </Dialog>
                     <div className="flex justify-end">
-                        <Button type="button" onClick={handleAssignTask} className="bg-[#017A5B] hover:bg-[#017A5B]  selection:-500 text-white px-4 py-2 w-full mt-2 rounded">   {loading ? <Loader /> : "Assign Task →"}</Button>
+                        <Button type="button" onClick={handleAssignTask} className="bg-[#017A5B] hover:bg-[#017A5B]  selection:-500 text-white px-4 py-2 w-full mt-2 mb-2 rounded">   {loading ? <Loader /> : "Assign Task →"}</Button>
                         {/* <Button type="button" onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</Button> */}
                     </div>
                 </form>
@@ -1169,25 +1198,41 @@ interface UserSelectPopupProps {
     setAssignedUser: (userId: string) => void;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
-    onClose: (userName: string) => void;
+    closeOnSelectUser: (userName: string) => void;
+    onClose: () => void;
 }
 
 
-const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, setAssignedUser, searchQuery, setSearchQuery, onClose }) => {
+const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, setAssignedUser, searchQuery, setSearchQuery, onClose, closeOnSelectUser }) => {
     const handleSelectUser = (selectedUserId: string) => {
         const selectedUser = users.find(user => user._id === selectedUserId);
         if (selectedUser) {
             setAssignedUser(selectedUser._id);
-            onClose(selectedUser.firstName);
+            closeOnSelectUser(selectedUser.firstName);
         }
     };
+
+    const popupRef = useRef<HTMLDivElement>(null);
 
     const filteredUsers = users.filter(user =>
         user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [onClose]);
+
     return (
-        <div className="absolute bg-[#1A1C20]  text-white border mt-12 border-gray-700 rounded shadow-md p-4 w-[20%] z-50">
+        <div ref={popupRef} className="absolute bg-[#1A1C20]  text-white border mt-12 border-gray-700 rounded shadow-md p-4 w-[20%] z-50">
             <input
                 placeholder="Search user"
                 className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
@@ -1226,8 +1271,8 @@ interface FallbackImageProps {
 const FallbackImage: React.FC<FallbackImageProps> = ({ name }) => {
     const initial = name.charAt(0).toUpperCase(); // Get the first letter of the category name
     return (
-        <div className="bg-[#282D32] rounded-full h-10 w-10 flex items-center justify-center">
-            <span className="text-white font-bold text-lg">{initial}</span>
+        <div className="bg-[#282D32] rounded-full h-8 w-8 flex items-center justify-center">
+            <span className="text-white font-bold text-sm">{initial}</span>
         </div>
     );
 };
@@ -1266,19 +1311,20 @@ interface CategorySelectPopupProps {
     newCategory: string;
     setNewCategory: Dispatch<SetStateAction<string>>;
     setCategories: Dispatch<SetStateAction<Category[]>>;
-    onClose: (selectedValue: any) => void;
+    closeOnSelect: (selectedValue: any) => void;
+    onClose: () => void;
     role: string;
 }
 
-
-const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, category, setCategory, searchCategoryQuery, newCategory, setNewCategory, setCategories, setSearchCategoryQuery, onClose, role }) => {
+const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, category, setCategory, searchCategoryQuery, newCategory, setNewCategory, setCategories, setSearchCategoryQuery, onClose, closeOnSelect, role }) => {
     const handleSelectCategory = (selectedCategoryId: string) => {
         const selectedCategory = categories.find(category => category._id === selectedCategoryId);
         if (selectedCategory) {
             setCategory(selectedCategory._id);
-            onClose(selectedCategory.name);
+            closeOnSelect(selectedCategory.name);
         }
     };
+    const popupRef = useRef<HTMLDivElement>(null);
 
     const handleCreateCategory = async () => {
         if (!newCategory) return;
@@ -1302,8 +1348,22 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
         category.name.toLowerCase().includes(searchCategoryQuery.toLowerCase())
     );
 
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [onClose]);
+
     return (
-        <div className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[20%] z-50">
+        <div ref={popupRef} className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[20%] z-50">
             <input
                 placeholder=" Search Categories..."
                 className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"
@@ -1317,7 +1377,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                     <div className="w-full text-sm text-white max-h-40 overflow-y-scroll scrollbar-hide">
                         {filteredCategories.map(categorys => (
                             <div key={categorys._id} className="cursor-pointer p-2 flex items-center justify-start  mb-1" onClick={() => handleSelectCategory(categorys._id)}>
-                                <div className='bg-[#282D32] rounded-full h-8 w-8'>
+                                <div className='bg-[#282D32] rounded-full h-8  w-8'>
                                     {getCategoryIcon(categorys.name) ? (
                                         <img
                                             src={getCategoryIcon(categorys?.name) as string} // Type assertion
@@ -1328,7 +1388,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
                                         <FallbackImage name={categorys.name} />
                                     )}
                                 </div>
-                                <span className='px-4'>{categorys.name}</span>
+                                <span className='px-4 text-xs'>{categorys.name}</span>
 
                                 {category === categorys._id && (
                                     <input

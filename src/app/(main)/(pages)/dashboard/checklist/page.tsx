@@ -76,14 +76,14 @@ export default function ChecklistPage({ }) {
     };
 
     return (
-        <div className="flex mt-12">
+        <div className="flex mt-24">
             <ChecklistSidebar />
             <div className="flex-1 p-4">
-                <div className="w-full -ml-2 max-w-9xl mx-auto">
-                    <div className="gap-2 flex mb-6 w-full">
+                <div className="w-full ml-48  border-l -mt-32   max-w-4xl mx-auto">
+                    <div className="gap-2 flex mb-6  w-full">
                         <div className="-mt-2 w-full">
                             <div className="p-4 w-full">
-                                <div className='border border-[#E0E0E066] rounded p-4 w-full'>
+                                <div className='border border-[#E0E0E066] mt-20 rounded p-4 w-full'>
                                     <h1 className="text- font-bold mb-4">Checklist Progress</h1>
                                     <Progress value={calculateProgress()} className='mb-4' />
                                 </div>

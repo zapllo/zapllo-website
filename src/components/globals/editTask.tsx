@@ -14,11 +14,12 @@ interface Task {
     repeatType: string;
     repeat: boolean;
     days?: string[];
+    audioUrl?: string;
     dates?: string[];
     categories?: string[];
     dueDate: string;
     completionDate: string;
-    attachment?: string;
+    attachment?: string[];
     links?: string[];
     status: string;
     comments: Comment[];
@@ -73,7 +74,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         dueDate: '',
         days: [] as string[],
         dates: [] as string[],
-        attachment: '',
+        attachment:[] as string[],
         links: [] as string[],
         status: 'Pending'
     });
@@ -91,7 +92,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
                 days: task.days || [],
                 dates: task.dates || [],
-                attachment: task.attachment || '',
+                attachment: task.attachment || [],
                 links: task.links || [],
                 status: task.status || 'Pending'
             });
@@ -230,7 +231,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 <div className='flex justify-between gap-2 w-full'>
                     <div className='w-full'>
                         <label className="block mb-2">
-                            Assigned User: 
+                            Assigned User:
                             <select
                                 name="assignedUser"
                                 value={formData.assignedUser}
@@ -245,18 +246,18 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                             </select>
                         </label>
                     </div>
-             
-                        <label className="flex mt-2 items-center mb-4">
-                            <input
-                                type="checkbox"
-                                name="repeat"
-                                checked={formData.repeat}
-                                onChange={handleChange}
-                                className="mr-2"
-                            />
-                            Repeat
-                        </label>
-             
+
+                    <label className="flex mt-2 items-center mb-4">
+                        <input
+                            type="checkbox"
+                            name="repeat"
+                            checked={formData.repeat}
+                            onChange={handleChange}
+                            className="mr-2"
+                        />
+                        Repeat
+                    </label>
+
                 </div>
                 {formData.repeat && (
                     <div className="grid gap-2 grid-cols-2">

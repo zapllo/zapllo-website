@@ -30,9 +30,9 @@ const ChecklistSidebar: React.FC = () => {
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        variant={isActive('/dashboard/checklist/tutorials') ? 'default' : 'default'}
+                        variant={isActive('/tutorials') ? 'default' : 'default'}
                         className={`w-[90%] rounded-none  gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] text-white rounded-lg' : 'text-gray-400'}`}
-                        onClick={() => handleNavigation('/dashboard/billing/wallet-logs')}
+                        onClick={() => handleNavigation('/tutorials')}
                     >
                         <VideoIcon className='h-5' /> Tutorials
                     </Button>

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { Readable } from 'stream';
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -10,33 +9,25 @@ const s3 = new S3Client({
   },
 });
 
-// Convert stream to buffer
-async function streamToBuffer(stream: Readable): Promise<Buffer> {
-  const chunks: Uint8Array[] = [];
-  for await (let chunk of stream) {
-    chunks.push(Buffer.from(chunk));
-  }
-  return Buffer.concat(chunks);
-}
-
-// Handle file upload
+// Handle file and audio upload
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const files = formData.getAll('files'); // Get all files
+    const audio = formData.get('audio'); // Get audio if it exists
 
-    if (!files.length) {
-      return NextResponse.json({ error: 'No files uploaded' }, { status: 400 });
+    if (!files.length && !audio) {
+      return NextResponse.json({ error: 'No files or audio uploaded' }, { status: 400 });
     }
 
-    const fileUrls = [];
+    const fileUrls: string[] = [];
+    let audioUrl: string | null = null;
 
+    // Upload files to S3
     for (const file of files) {
-      // Convert file to buffer
       const arrayBuffer = await (file as File).arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Define S3 upload parameters
       const uploadParams = {
         Bucket: process.env.AWS_S3_BUCKET_NAME!,
         Key: `uploads/${Date.now()}-${(file as File).name}`,
@@ -44,17 +35,32 @@ export async function POST(request: Request) {
         ContentType: (file as File).type,
       };
 
-      // Upload file to S3
       const command = new PutObjectCommand(uploadParams);
       await s3.send(command);
 
-      // Construct the file URL
       const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
       fileUrls.push(fileUrl);
     }
-    console.log('File URLs:', fileUrls); // Log file URLs
 
-    return NextResponse.json({ message: 'Files uploaded successfully', fileUrls });
+    // Upload audio to S3
+    if (audio) {
+      const audioBuffer = await (audio as File).arrayBuffer();
+      const buffer = Buffer.from(audioBuffer);
+
+      const audioUploadParams = {
+        Bucket: process.env.AWS_S3_BUCKET_NAME!,
+        Key: `uploads/audio/${Date.now()}-${(audio as File).name}`,
+        Body: buffer,
+        ContentType: (audio as File).type,
+      };
+
+      const audioCommand = new PutObjectCommand(audioUploadParams);
+      await s3.send(audioCommand);
+
+      audioUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${audioUploadParams.Key}`;
+    }
+
+    return NextResponse.json({ message: 'Files uploaded successfully', fileUrls, audioUrl });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'File upload failed' }, { status: 500 });
