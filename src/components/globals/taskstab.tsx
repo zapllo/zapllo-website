@@ -178,6 +178,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const audioURLRef = useRef<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
 
 
   useEffect(() => {
@@ -851,7 +852,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     }
   };
 
-  const [filePreviews, setFilePreviews] = useState<string[]>([]);
 
   const handleRemoveFile = (index: number) => {
     // Remove the file and preview at the given index

@@ -521,7 +521,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                     <h1 className='mt-1'>
                                         No Activity
                                     </h1>
-                                    <p className='text-xs mt-1'>It seems that you don't have any recent activity for this task.</p>
+                                    <p className='text-xs mt-1'>It seems that you dont have any recent activity for this task.</p>
                                 </div>
                             )}
                         </div>
