@@ -6,7 +6,7 @@ import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import {
     Command,
     CommandEmpty,
@@ -119,6 +119,30 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const [whatsappReminderType, setWhatsappReminderType] = useState('minutes');
     const [whatsappReminderValue, setWhatsappReminderValue] = useState(0);
     const [reminderDate, setReminderDate] = useState<Date | null>(null); // Explicitly typed as Date or null
+    const controls = useAnimation();
+
+    const modalVariants = {
+        hidden: {
+            opacity: 0,
+            y: '100%',
+        },
+        visible: {
+            opacity: 1,
+            y: '0%',
+            transition: {
+                type: 'spring',
+                stiffness: 300,
+                damping: 40,
+            },
+        },
+    };
+
+    // Trigger the animation when the component mounts
+    useEffect(() => {
+        controls.start('visible');
+    }, [controls]);
+
+
 
 
     useEffect(() => {
@@ -578,7 +602,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
             <Toaster />
 
-            <div className="bg-[#1A1C20] z-[100] h-[500px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8">
+            <motion.div
+                className="bg-[#1A1C20] z-[100] h-[510px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
+                variants={modalVariants}
+                initial="hidden"
+                animate={controls}
+            >
                 <div className='flex justify-between'>
                     <h2 className="text-lg font-bold mb-4 -mt-4  ">Assign New Task</h2>
                     <img className='cursor-pointer -mt-4 h-4' src='/icons/x.png' onClick={closeModal} />
@@ -602,7 +631,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
                                 onClick={handleOpen}
                             >
-                                {popoverInputValue ? popoverInputValue :  <h1 className='flex gap-2'>
+                                {popoverInputValue ? popoverInputValue : <h1 className='flex gap-2'>
                                     <User className='h-4' /> Select User </h1>}
                                 <CaretDownIcon />
                             </button>
@@ -846,13 +875,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     </div>
 
                     <div className='flex    gap-4'>
-                        <div className='flex mt-4  gap-2'>
-                            <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.length > 0 ? 'border-[#017A5B]' : ''
-                                }`}>
+                        <div className='flex mt-4 mb-2  gap-2'>
+                            <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter(link => link).length > 0 ? 'border-[#017A5B]' : ''}`}>
                                 <Link className='h-5 text-center m-auto mt-1' />
                             </div>
-                            {links.length > 0 && (
-                                <span className="text-xs mt-2 text">{links.length} Links</span> // Display the count
+                            {links.filter(link => link).length > 0 && (
+                                <span className="text-xs mt-2 text">{links.filter(link => link).length} Links</span> // Display the count of non-empty links
                             )}
                         </div>
 
@@ -1072,7 +1100,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         {/* <Button type="button" onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</Button> */}
                     </div>
                 </form>
-            </div >
+            </motion.div >
         </div >
     );
 };
@@ -1203,7 +1231,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
     }, [onClose]);
 
     return (
-        <div ref={popupRef} className="absolute bg-[#1A1C20]  text-white border mt-12 border-gray-700 rounded shadow-md p-4 w-[20%] z-50">
+        <div ref={popupRef} className="absolute bg-[#1A1C20]  text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[40%] z-50">
             <input
                 placeholder="Search user"
                 className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
@@ -1334,7 +1362,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
     }, [onClose]);
 
     return (
-        <div ref={popupRef} className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[20%] z-50">
+        <div ref={popupRef} className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[40%] z-50">
             <input
                 placeholder=" Search Categories..."
                 className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"

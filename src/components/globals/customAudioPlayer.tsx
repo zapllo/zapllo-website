@@ -73,13 +73,12 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
     };
 
     return (
-        <div>
+        <div className='mt'>
             {audioSrc && (
-                <div className='border p-2 rounded-lg'>
-                    <h1 className='px-2 text-xs'>Voice Note</h1>
-
-                    <div className="flex items-center gap-4 p-2 rounded-lg">
-                        <div className="relative w-full h-2 bg-gray-600 rounded">
+                <div className='border p-1 px-2 h-12 mb-4 rounded-lg'>
+                    <h1 className='p text-xs'>Voice Note</h1>
+                    <div className="flex items-center gap-4  rounded-lg">
+                        <div className="relative w-[80%] h-1 bg-gray-600 rounded">
                             <div
                                 className="absolute top-0 left-0 h-full bg-green-500 rounded"
                                 style={{ width: `${(currentTime / duration) * 100}%` }}
@@ -90,25 +89,26 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
                         </span>
                         <button
                             onClick={handlePlayPause}
-                            className="bg-[#017A5B] text-white h-8 w-10 rounded-full"
+                            className="bg-[#017A5B] text-white h-5 w-5 rounded-full"
                         >
                             {isPlaying ? (
-                                <img src='/icons/pause.png' className='h-6 w-8' />
+                                <img src='/icons/pause.png' className='h-4 w-4 object-contain ml-[2px]' />
                             ) : (
-                                <img src='/icons/play.png' className='h-6 ml-1 w-7 object-contain' />
+                                <img src='/icons/play.png' className='h-4 ml-1 w-4 object-contain' />
                             )}
                         </button>
-                    </div>
-                    {setAudioBlob && (
-                        <div className='w-full flex mt-1 justify-end'>
+                        {setAudioBlob && (
+                        <div className=' flex  justify-end'>
                             <button
                                 onClick={handleClear}
-                                className="bg-transparent text-xs flex gap-2 border-[#505356] border text-white px-4 py-1 rounded-lg"
+                                className="bg-transparent text-xs flex gap border-[#505356] border text-white h-5 w-5 items-center  rounded-full"
                             >
-                                <h1 className='text-red-400'>X</h1> Clear
+                                <h1 className='text-red-400 ml-[5px]'>X</h1> 
                             </button>
                         </div>
                     )}
+                    </div>
+                   
                 </div>
             )}
         </div>

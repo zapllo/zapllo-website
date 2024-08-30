@@ -8,6 +8,42 @@ import Category from "@/models/categoryModel";
 
 connectDB();
 
+const sendWebhookNotification = async (taskData: any, taskCreator: any, userName: any, comment: any, taskCategory: any) => {
+    const payload = {
+        phoneNumber: taskCreator.whatsappNo,
+        templateName: 'taskupdate',
+        bodyVariables: [
+            taskCreator.firstName,
+            userName,
+            taskData.status, // Use the category name instead of "Marketing"
+            comment,
+            taskCategory.name,
+            taskData.title,
+            taskData.dueDate,
+            taskData.priority,
+        ]
+    };
+    try {
+        const response = await fetch('https://zapllo.com/api/webhook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            throw new Error(`Webhook API error: ${responseData.message}`);
+        }
+        console.log('Webhook notification sent successfully:', payload);
+    } catch (error) {
+        console.error('Error sending webhook notification:', error);
+        throw new Error('Failed to send webhook notification');
+    }
+};
+
+
 export async function PATCH(request: NextRequest) {
     try {
         const { id, status, comment, userName, fileUrl } = await request.json();
@@ -67,39 +103,40 @@ export async function PATCH(request: NextRequest) {
                 subject: "Task Status Updates",
                 text: `Task '${task.title}' has been updated.`,
                 html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-    <div style="background-color: #f0f4f8; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <div style="text-align: center; padding: 20px;">
-                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
-            </div>
-         <div style="background-color: #74517A; color: #ffffff; padding: 20px; text-align: center;">
-                <h1 style="margin: 0;">Task Status Updated to - ${task.status}</h1>
-            </div>
-          <div style="padding: 20px;">
-                <p><strong>Dear ${taskCreator.firstName},</strong></p>
-                <p>${userName} has updated the task status to ${task.status} for a task assigned by you.</p>
-                <p>Update Remarks - ${comment}</p>
-                <p>Task Details:</p>
-                <p><strong>Title:</strong> ${task.title}</p>
-                <p><strong>Description:</strong> ${task.description}</p>
-                <p><strong>Due Date:</strong> ${formatDate(task.dueDate)}</p>
-                <p><strong>Assigned To:</strong> ${assignedUser.firstName}</p>
-                <p><strong>Category:</strong> ${taskCategory.name}</p>
-                <p><strong>Priority:</strong> ${task.priority}</p>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
+                        <div style="background-color: #f0f4f8; padding: 20px;">
+                            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                 <div style="text-align: center; padding: 20px;">
+                                     <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+                                </div>
+                            <div style="background-color: #74517A; color: #ffffff; padding: 20px; text-align: center;">
+                             <h1 style="margin: 0;">Task Status Updated to - ${task.status}</h1>
+                            </div>
+                            <div style="padding: 20px;">
+                                <p><strong>Dear ${taskCreator.firstName},</strong></p>
+                                <p>${userName} has updated the task status to ${task.status} for a task assigned by you.</p>
+                                <p>Update Remarks - ${comment}</p>
+                                <p>Task Details:</p>
+                                <p><strong>Title:</strong> ${task.title}</p>
+                                <p><strong>Description:</strong> ${task.description}</p>
+                                <p><strong>Due Date:</strong> ${formatDate(task.dueDate)}</p>
+                                <p><strong>Assigned To:</strong> ${assignedUser.firstName}</p>
+                                <p><strong>Category:</strong> ${taskCategory.name}</p>
+                                <p><strong>Priority:</strong> ${task.priority}</p>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
+                            </div>
+                                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
+                         </div>
+                    </div>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
-            </div>
-        </div>
-    </div>
-</body>
+            </body>
                 `,
             };
 
             await sendEmail(emailOptions);
-        }
 
+        }
+        await sendWebhookNotification(task, taskCreator, userName, comment, taskCategory);
         return NextResponse.json({ message: 'Task updated successfully', task }, { status: 200 });
     } catch (error) {
         console.error('Error updating task:', error);

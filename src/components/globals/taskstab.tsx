@@ -50,6 +50,14 @@ interface User {
   role: string;
 }
 
+interface Reminder {
+  type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+  value: number | undefined;  // Make value required
+  date: Date | undefined;     // Make date required
+  sent: boolean;
+}
+
+
 // Define the Task interface
 interface Task {
   _id: string;
@@ -63,25 +71,15 @@ interface Task {
   repeat: boolean;
   days?: string[];
   audioUrl?: string;
-  dates?: string[];
+  dates?: number[];
   categories?: string[];
   dueDate: string;
   completionDate: string;
   attachment?: string[];
   links?: string[];
   reminder: {
-    email?: {
-      type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
-      value?: number;
-      date?: Date; // Added for specific reminders
-      sent: boolean;
-    } | null;
-    whatsapp?: {
-      type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
-      value?: number;
-      date?: Date; // Added for specific reminders
-      sent: boolean;
-    } | null;
+    email?: Reminder | null;  // Use the updated Reminder type
+    whatsapp?: Reminder | null;  // Use the updated Reminder type
   } | null;
   status: string;
   comments: Comment[];
@@ -1416,7 +1414,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     />
 
                                   </div>
-                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
+                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
                                 </div>
                               </div>
 
@@ -1582,7 +1580,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     />
 
                                   </div>
-                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
                                 </div>
                               </div>
                               {filteredTasks!.length > 0 ? (
@@ -1732,7 +1730,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   />
 
                                 </div>
-                                <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
                               </div>
                             </div>
                             {filteredTasks!.length > 0 ? (

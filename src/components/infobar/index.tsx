@@ -127,6 +127,9 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/dashboard/profile') {
       return 'My Profile';
     }
+    else if (pathName === '/intranet') {
+      return 'Intranet';
+    }
   };
 
 
@@ -134,16 +137,16 @@ const InfoBar = (props: Props) => {
     <>
 
 
-      <div className="  fixed  w-[98%]  z-[10]">
+      <div className="  fixed  w-[100%]  z-[10]">
 
-        <div className='gap-6 ml-12 border-b  items-center px-4 py-2 w-[98%] z-[10] flex flex-row  bg-[#211025]'>
+        <div className='gap-6 ml-12 border-b  items-center px-4 py-2 w-[100%] z-[10] flex flex-row  bg-[#211025]'>
           {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
           <div className={`flex ml-4   ${pathName === '/dashboard' ? 'text-center ml-[48%] w-screen' : ''}`}>
             <h1 className={`text-md mt-1 text-white font-bold `}>
               {getPageTitle()}
             </h1>
           </div>
-          <div className="flex items-center  gap-4 ml-auto font-bold">
+          <div className="flex items-center  gap-4 ml-auto mx-12 font-bold">
             {/* <h1 className='text-xs mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1> */}
 
             {/* <ModeToggle /> */}

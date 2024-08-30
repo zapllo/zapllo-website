@@ -7,6 +7,7 @@ export interface IIntranet extends Document {
     description: string;
     linkName: string;
     category: mongoose.Types.ObjectId; // Reference to the Category model
+    organization: mongoose.Types.ObjectId; // Reference to the User's organization
 }
 
 // Define the schema
@@ -26,6 +27,11 @@ const intranetSchema: Schema<IIntranet> = new mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'categories', // Referencing the Category model
+        required: true,
+    },
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'organizations', // Referencing the Organization model
         required: true,
     },
 }, {

@@ -103,7 +103,7 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Automate Intranet</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
-                <Link href='/dashboard/intranet'>
+                <Link href='/intranet'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Intranet</Button>
                 </Link>
 

@@ -4,7 +4,7 @@ import { Separator } from '../ui/separator';
 import { UpdateIcon } from '@radix-ui/react-icons';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
-import { ArrowLeft, Bell, Calendar, CheckCheck, CheckCircle, Circle, Clock, Edit, File, FileTextIcon, Flag, GlobeIcon, Link, Loader, PlayIcon, Repeat, RepeatIcon, Tag, Trash } from 'lucide-react';
+import { ArrowLeft, Bell, Calendar, CheckCheck, CheckCircle, Circle, Clock, Edit, File, FileTextIcon, Flag, GlobeIcon, Link, Loader, MailIcon, PlayIcon, Repeat, RepeatIcon, Tag, Trash } from 'lucide-react';
 import EditTaskDialog from './editTask';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { IconCopy } from '@tabler/icons-react';
@@ -21,7 +21,15 @@ interface User {
     role: string;
 }
 
+interface Reminder {
+    type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
+    value: number | undefined;  // Make value required
+    date: Date | undefined;     // Make date required
+    sent: boolean;
+}
 
+
+// Define the Task interface
 interface Task {
     _id: string;
     title: string;
@@ -34,25 +42,15 @@ interface Task {
     repeat: boolean;
     days?: string[];
     audioUrl?: string;
-    dates?: string[];
+    dates?: number[];
     categories?: string[];
     dueDate: string;
     completionDate: string;
     attachment?: string[];
     links?: string[];
     reminder: {
-        email?: {
-            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
-            value?: number;
-            date?: Date; // Added for specific reminders
-            sent: boolean;
-        } | null;
-        whatsapp?: {
-            type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
-            value?: number;
-            date?: Date; // Added for specific reminders
-            sent: boolean;
-        } | null;
+        email?: Reminder | null;  // Use the updated Reminder type
+        whatsapp?: Reminder | null;  // Use the updated Reminder type
     } | null;
     status: string;
     comments: Comment[];
@@ -135,7 +133,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                         </div>
                     </SheetHeader>
                     <div className="border overflow-y-scroll scrollbar-hide   h-10/11 p-4 rounded-lg">
-                        <h1 className="font-bold text-sm">{selectedTask.title}</h1>
+                        <h1 className="font-bold text-sm px-2">{selectedTask.title}</h1>
                         <div className="flex mt-4 justify-start space-x-12  text-start items-center gap-6 px-2">
                             <div className="flex items-center gap-4">
                                 <Label htmlFor="user" className="text-right text-xs">
@@ -341,22 +339,24 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             </div>
 
                         </div>
-                        <div className="">
+                        <div className="px-4">
                             {selectedTask.reminder ? (
                                 <div className="flex flex-col gap-2">
                                     {(selectedTask.reminder.email?.value ?? 0) > 0 && (
                                         <div className="flex items-center gap-2">
-                                            <span className="font-bold">Email:</span>
+                                            <span className="font-bold">
+                                                <MailIcon className='h-5' />
+                                            </span>
                                             <span>
-                                                {`Type: ${selectedTask.reminder.email?.type ?? ''}, Value: ${selectedTask.reminder.email?.value ?? 0} minutes`}
+                                                {`${selectedTask.reminder.email?.value ?? 0} ${selectedTask.reminder.email?.type ?? ''}`}
                                             </span>
                                         </div>
                                     )}
                                     {(selectedTask.reminder.whatsapp?.value ?? 0) > 0 && (
                                         <div className="flex items-center gap-2">
-                                            <span className="font-bold">WhatsApp:</span>
+                                            <span className="font-bold"><img src='/whatsapp.png' className='h-6' /></span>
                                             <span>
-                                                {`Type: ${selectedTask.reminder.whatsapp?.type ?? ''}, Value: ${selectedTask.reminder.whatsapp?.value ?? 0} minutes`}
+                                                {`${selectedTask.reminder.whatsapp?.value ?? 0} ${selectedTask.reminder.whatsapp?.type ?? ''} `}
                                             </span>
                                         </div>
                                     )}

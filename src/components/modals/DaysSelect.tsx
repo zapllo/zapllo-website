@@ -22,7 +22,7 @@ const DaysSelectModal: React.FC<DaysSelectModalProps> = ({ isOpen, onOpenChange,
         <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed z-[50] inset-0 bg-black bg-opacity-50" />
-                <Dialog.Content className="fixed top-1/2 z-[100] bg left-1/2  transform -translate-x-1/2 -translate-y-1/2 bg-[#1A1C20] p-6 rounded-lg shadow-lg">
+                <Dialog.Content className="fixed top-1/2 z-[150] bg left-1/2  transform -translate-x-1/2 -translate-y-1/2 bg-[#1A1C20] p-6 rounded-lg shadow-lg">
                     <Dialog.Title className="text-xl font-bold">Select Days</Dialog.Title>
                     <Dialog.Description className="mt-2 mb-4">
                         Select the days of the month for your repeat setting.
