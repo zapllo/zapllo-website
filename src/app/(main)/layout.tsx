@@ -50,19 +50,19 @@ const Layout = (props: Props) => {
 
     useEffect(() => {
         if (trialExpires) {
-          // Calculate remaining time
-          const calculateRemainingTime = () => {
-            const now = new Date();
-            const distance = formatDistanceToNow(new Date(trialExpires), { addSuffix: true });
-            setRemainingTime(distance);
-          };
-    
-          calculateRemainingTime();
-          const intervalId = setInterval(calculateRemainingTime, 1000 * 60); // Update every minute
-    
-          return () => clearInterval(intervalId); // Cleanup on unmount
+            // Calculate remaining time
+            const calculateRemainingTime = () => {
+                const now = new Date();
+                const distance = formatDistanceToNow(new Date(trialExpires), { addSuffix: true });
+                setRemainingTime(distance);
+            };
+
+            calculateRemainingTime();
+            const intervalId = setInterval(calculateRemainingTime, 1000 * 60); // Update every minute
+
+            return () => clearInterval(intervalId); // Cleanup on unmount
         }
-      }, [trialExpires]);
+    }, [trialExpires]);
 
     return (
         <div>
@@ -70,8 +70,8 @@ const Layout = (props: Props) => {
                 {isVisible && (
                     <div className='p-2 flex fixed mt- m  top-0  w-[100%] justify-center gap-2 bg-[#75517B] border'>
                         <div className='flex gap-2 justify-center w-full'>
-                            <h1 className='text-center mt-1 flex  text-white text-xs'>
-                                Your Trial Period will expire {' '} <strong className='text-yellow-500'>{'' + remainingTime}</strong>, upgrade now for uninterrupted access
+                            <h1 className='text-center mt-1 flex text-white text-xs'>
+                                Your Trial Period will expire{' '}<strong className='text-yellow-500'>{remainingTime}</strong>{' '}, upgrade now for uninterrupted access
                             </h1>
                             <Link href='/dashboard/billing' >
                                 <Button className='h-5 rounded dark:bg-[#822b90] w-fit px-2 py-3  text-xs text-white'>
@@ -86,7 +86,7 @@ const Layout = (props: Props) => {
                     </div>
                 )}
             </>
-            <div className={`flex overflow-hidden ${isVisible? 'mt-10':''}  dark:bg-[#201124] scrollbar-hide h-full w-full `}>
+            <div className={`flex overflow-hidden ${isVisible ? 'mt-10' : ''}  dark:bg-[#201124] scrollbar-hide h-full w-full `}>
 
                 <MenuOptions />
                 <div className='w-full overflow-hidden please h-screen '>

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Separator } from '../ui/separator';
 import { UpdateIcon } from '@radix-ui/react-icons';
@@ -9,6 +9,8 @@ import EditTaskDialog from './editTask';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { IconCopy } from '@tabler/icons-react';
 import CustomAudioPlayer from './customAudioPlayer';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 type Props = {}
 
@@ -44,7 +46,7 @@ interface Task {
     audioUrl?: string;
     dates?: number[];
     categories?: string[];
-    dueDate: string;
+    dueDate: Date;
     completionDate: string;
     attachment?: string[];
     links?: string[];
@@ -56,7 +58,6 @@ interface Task {
     comments: Comment[];
     createdAt: string;
 }
-
 
 interface Comment {
     _id: string;
@@ -84,6 +85,8 @@ interface TaskDetailsProps {
     handleUpdateTaskStatus: () => Promise<void>;
     handleDelete: (taskId: string) => Promise<void>;
     handleEditClick: () => void;
+    handleDeleteClick: (taskId: string) => void;
+    handleDeleteConfirm: () => void;
     handleCopy: (link: string) => void;
     setSelectedTask: (task: Task | null) => void;
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
@@ -92,7 +95,7 @@ interface TaskDetailsProps {
     setIsEditDialogOpen: Dispatch<SetStateAction<boolean>>;
     setIsCompleteDialogOpen: Dispatch<SetStateAction<boolean>>;
     setStatusToUpdate: Dispatch<SetStateAction<string | null>>; // Update the type here
-    formatTaskDate: (dateTimeString: string) => string;
+    formatTaskDate: (dateTimeString: string | Date) => string;
     users: User[];
     sortedComments?: Comment[];
     categories: Category[];
@@ -105,7 +108,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
     onTaskUpdate,
     onClose,
     handleUpdateTaskStatus,
-    handleDelete,
+    handleDeleteClick,
     handleEditClick,
     setSelectedTask,
     handleCopy,
@@ -116,10 +119,12 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
     isEditDialogOpen,
     setIsEditDialogOpen,
     users,
+    handleDeleteConfirm,
     sortedComments,
     formatDate,
     categories,
     formatTaskDate, }) => {
+
     return (
         <div>
             <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
@@ -280,25 +285,28 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                 <Link className='h-4 text-center m-auto mt-1' />
                             </div>
                         </div>
-                        <div className="px-4">
-                            {selectedTask.links?.map((link, index) => (
-                                <div key={index} className="flex justify-between w-full space-x-2 my-2">
-                                    <div className="flex justify-between w-full text-sm">
-                                        <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
-                                            {link}
-                                        </a>
-                                        <div>
-                                            <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
-                                                <button className="px-2 py-2   "><IconCopy className="h-4 text-white" /></button>
-                                            </CopyToClipboard>
-                                            <a href={link} target="_blank" rel="noopener noreferrer">
-                                                <button className="px-2 py-1 "><GlobeIcon className="h-4 text-white" /></button>
+                        <div className="">
+                            {selectedTask.links && selectedTask.links.filter(link => link.trim() !== "").length > 0 ? (
+                                selectedTask.links.map((link, index) => (
+                                    <div key={index} className="flex justify-between w-full space-x-2 my-2">
+                                        <div className="flex justify-between w-full text-sm">
+                                            <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ">
+                                                {link}
                                             </a>
+                                            <div>
+                                                <CopyToClipboard text={link} onCopy={() => handleCopy(link)}>
+                                                    <button className="px-2 py-2"><IconCopy className="h-4 text-white" /></button>
+                                                </CopyToClipboard>
+                                                <a href={link} target="_blank" rel="noopener noreferrer">
+                                                    <button className="px-2 py-1"><GlobeIcon className="h-4 text-white" /></button>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="text-xs p-4">No links attached.</p>
+                            )}
                         </div>
                         <Separator className="mt-4   " />
                         <div className="flex p-4 gap-2">
@@ -368,7 +376,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                         )}
                                 </div>
                             ) : (
-                                <p className='text-xs p-4'>No reminders set.</p>
+                                <p className='text-xs '>No reminders set.</p>
                             )}
                         </div>
 
@@ -394,7 +402,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                         Reopen
                                     </Button>
                                     <Button
-                                        onClick={() => handleDelete(selectedTask._id)}
+                                        onClick={() => handleDeleteClick(selectedTask._id)}
                                         className="border bg-transparent hover:shadow-sm hover:shadow-red-500 hover:bg-transparent border-gray-600 w-fit "
                                     >
                                         <Trash className="h-4 rounded-full text-red-400" />
@@ -431,7 +439,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                         Edit
                                     </Button>
                                     <Button
-                                        onClick={() => handleDelete(selectedTask._id)}
+                                        onClick={() => handleDeleteClick(selectedTask._id)}
                                         className="border rounded hover:shadow-sm hover:shadow-red-500 hover:bg-transparent bg-transparent border-gray-600 w-full"
                                     >
                                         <Trash className="h-4 rounded-full text-red-400 " />

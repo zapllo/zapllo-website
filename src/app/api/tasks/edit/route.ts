@@ -7,7 +7,7 @@ connectDB();
 
 export async function PATCH(request: NextRequest) {
     try {
-        const { id, title, description, priority, category, assignedUser, repeat, repeatType, dueDate, days, dates, attachment, links, status } = await request.json();
+        const { id, title, description, priority, category, assignedUser, repeat, repeatType, dueDate, reminder, days, dates, attachment, links, status } = await request.json();
 
         // Find the task by ID
         const task = await Task.findById(id);
@@ -29,6 +29,7 @@ export async function PATCH(request: NextRequest) {
         task.dates = dates || task.dates;
         task.attachment = attachment || task.attachment;
         task.links = links || task.links;
+        task.reminder = reminder || task.reminder;
         task.status = status || task.status;
 
         await task.save();

@@ -35,6 +35,7 @@ import TaskTabs from "../sidebar/taskSidebar";
 import { DialogClose } from "@radix-ui/react-dialog";
 import CustomAudioPlayer from "./customAudioPlayer";
 import Loader from "../ui/loader";
+import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -73,7 +74,7 @@ interface Task {
   audioUrl?: string;
   dates?: number[];
   categories?: string[];
-  dueDate: string;
+  dueDate: Date;
   completionDate: string;
   attachment?: string[];
   links?: string[];
@@ -111,7 +112,7 @@ interface Category {
   imgSrc: string;
 }
 
-type TaskUpdateCallback = (updatedTask: Task) => void;
+type TaskUpdateCallback = () => void;
 
 interface TasksTabProps {
   tasks: Task[] | null;
@@ -133,7 +134,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [imageOrVideo, setImageOrVideo] = useState<File | null>(null);
   const [otherFile, setOtherFile] = useState<File | null>(null);
 
-  const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>("today");
+  const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>("thisWeek");
   const [activeDashboardTab, setActiveDashboardTab] = useState<string>("employee-wise");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -149,7 +150,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [loading, setLoading] = useState<boolean | null>(false);
   const [isPro, setIsPro] = useState<boolean | null>(null);
   const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(null);
-  const [dueDateFilter, setDueDateFilter] = useState<string | null>(null);
+  const [dueDateFilter, setDueDateFilter] = useState<Date | null>(null);
   // State variables for modal
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
@@ -177,6 +178,31 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteEntryId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete('/api/tasks/delete', {
+        data: { id: selectedTask?._id },
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedTask(null);
+      await onTaskUpdate();
+      // Optionally, handle success (e.g., show a message, update state)
+      console.log('Task deleted successfully');
+
+    } catch (error: any) {
+      // Handle error (e.g., show an error message)
+      console.error('Failed to delete task:', error.message);
+    }
+  };
+
 
 
   useEffect(() => {
@@ -658,7 +684,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         return;
       }
     }
-
     // Prepare the request body with URLs obtained from the uploads
     const requestBody = {
       id: selectedTask?._id,
@@ -680,7 +705,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       const result = await response.json();
 
       if (response.ok) {
-        onTaskUpdate(result.task); // Call the callback function to update the task
+        onTaskUpdate(); // Call the callback function to update the task
         setFiles([]); // Reset files
         setFilePreviews([]); // Reset file previews
         setIsDialogOpen(false);
@@ -741,18 +766,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
   const handleDelete = async (taskId: string) => {
-    try {
-      await axios.delete('/api/tasks/delete', {
-        data: { id: selectedTask?._id },
-      });
 
-      // Optionally, handle success (e.g., show a message, update state)
-      console.log('Task deleted successfully');
-
-    } catch (error: any) {
-      // Handle error (e.g., show an error message)
-      console.error('Failed to delete task:', error.message);
-    }
   };
 
 
@@ -763,7 +777,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
   const handleTaskUpdate = (updatedTask: any) => {
     setSelectedTask(updatedTask);
-    onTaskUpdate(updatedTask);
+    onTaskUpdate();
   };
 
 
@@ -813,14 +827,24 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       pendingTasks: categoryTasks?.filter(task => task.status === 'Pending').length
     };
   };
+  const formatTaskDate = (dateInput: string | Date): string => {
+    // Convert the input to a Date object if it's a string
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
 
-  const formatTaskDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'long', day: 'numeric' };
-    const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+    const optionsDate: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      month: 'long',
+      day: 'numeric',
+    };
+    const optionsTime: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    };
 
     return `${date.toLocaleDateString(undefined, optionsDate)} - ${date.toLocaleTimeString(undefined, optionsTime)}`;
   };
+
 
   const handleCopy = (link: string) => {
     setCopied(true);
@@ -1020,7 +1044,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <TabsTrigger3 value="lastMonth" className="text-xs">Last Month</TabsTrigger3>
                               <TabsTrigger3 value="thisYear" className="text-xs">This Year</TabsTrigger3>
                               <TabsTrigger3 value="allTime" className="text-xs">All Time</TabsTrigger3>
-                              <TabsTrigger3 value="custom" className="text-xs">Custom</TabsTrigger3>
+                              <Button
+                                onClick={() => setActiveDateFilter("custom")}
+                                className={`text-xs bg-[#28152e] hover:bg-[#28152e] text-muted-foreground h-6 ${activeDateFilter === "custom" || (customStartDate && customEndDate) ? "bg-[#7C3987]" : ""
+                                  }`}
+                              >Custom</Button>
                               {activeDateFilter === "custom" && (
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                   <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96">
@@ -1391,8 +1419,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         ) : activeTab === "myTasks" ? (
                           <div>
                             <div>
-                              <div className="flex mt-6   flex-col ">
-                                <div className="flex -ml-52 flex-col ">
+                              <div className="flex    flex-col ">
+                                {customStartDate && customEndDate && (
+                                  <div className="flex gap-2 p-2 justify-center w-full">
+                                    <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
+                                    <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
+                                  </div>
+                                )}
+                                <div className="flex -ml-52 mt-4 flex-col ">
                                   <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
 
 
@@ -1525,9 +1559,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         formatDate={formatDate}
                                         sortedComments={sortedComments}
                                         users={users}
+                                        handleDeleteClick={handleDeleteClick}
+                                        handleDeleteConfirm={handleDeleteConfirm}
                                         categories={categories}
                                         setIsEditDialogOpen={setIsEditDialogOpen}
-
                                         isEditDialogOpen={isEditDialogOpen}
                                         onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                                     )}
@@ -1562,8 +1597,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </div>
                           </div>
                         ) : activeTab === "delegatedTasks" ? (
-                          <div className="flex mt-6   flex-col ">
-                            <div className="flex -ml-52 flex-col ">
+                          <div className="flex    flex-col ">
+                            {customStartDate && customEndDate && (
+                              <div className="flex gap-2 p-2 justify-center w-full">
+                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
+                                <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
+                              </div>
+                            )}
+                            <div className="flex mt-4 -ml-52 flex-col ">
                               <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
                                 <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} />
                               </div>
@@ -1687,6 +1728,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         formatDate={formatDate}
                                         sortedComments={sortedComments}
                                         users={users}
+                                        handleDeleteClick={handleDeleteClick}
+                                        handleDeleteConfirm={handleDeleteConfirm}
                                         categories={categories}
                                         setIsEditDialogOpen={setIsEditDialogOpen}
                                         isEditDialogOpen={isEditDialogOpen}
@@ -1713,138 +1756,148 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </div>
                           </div>
                         ) : (
-                          //  <div className="flex mt-6   flex-col ">
-                          <div className="flex -ml-52 mt-6 flex-col ">
-                            <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
-                              <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
-                            </div>
-                            <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
-                              <div className="space-x-2 flex">
-                                <div className=" flex px-4 ml-52 mt-4 space-x-2 justify-center mb-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Search Task"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
-                                  />
-
-                                </div>
-                                <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
-                              </div>
-                            </div>
-                            {filteredTasks!.length > 0 ? (
-                              filteredTasks!.map((task) => (
-                                <div key={task._id} className="">
-                                  <Card
-                                    className="flex  w-[81%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
-                                    onClick={() => setSelectedTask(task)}
-                                  >
-                                    <div className=" items-center gap-4">
-                                      <div>
-                                        <p className="font-medium text-sm text-white">{task.title}</p>
-                                        <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                          {task.user.firstName}
-                                        </span></p>
-                                      </div>
-                                      <div className="flex gap-2">
-
-                                        <div className="flex -ml-1  text-xs mt-2">
-                                          <IconClock className="h-5" />
-                                          <h1 className="mt-[1.5px]">
-                                            {formatTaskDate(task.dueDate)}
-                                          </h1>
-                                        </div>
-                                        <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
-                                        <div className="flex text-xs mt-[10px]">
-                                          <UserIcon className="h-4" />
-                                          {task.assignedUser.firstName}
-                                        </div>
-                                        <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-
-                                        <div className="flex text-xs mt-[11px]">
-                                          <TagIcon className="h-4" />
-                                          {task.category.name}
-                                        </div>
-                                        {task.repeat ? (
-                                          <div className="flex items-center">
-                                            <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
-                                            {task.repeatType && (
-                                              <h1 className="flex mt-[11px] text-xs">
-                                                <Repeat className="h-4 " />  {task.repeatType}
-                                              </h1>
-                                            )}
-                                          </div>
-                                        ) : null}
-                                        <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
-                                        <div className="flex text-xs">
-                                          <div className="mt-[11px]">
-                                            <IconProgressBolt className="h-4  " />
-                                          </div>
-                                          <h1 className="mt-auto">
-                                            {task.status}
-                                          </h1>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="">
-                                      <div className="flex ">
-                                        <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                          <Button
-                                            onClick={() => {
-                                              setStatusToUpdate("In Progress");
-                                              setIsDialogOpen(true);
-                                            }}
-                                            className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
-                                          >
-                                            <Play className="h-4 w-4" />
-                                            <h1 className="text-xs">
-                                              In Progress
-                                            </h1>
-                                          </Button>
-                                          <Button
-                                            onClick={() => {
-                                              setStatusToUpdate("Completed");
-                                              setIsCompleteDialogOpen(true);
-                                            }}
-                                            className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
-                                          >
-                                            <CheckCheck className="h-4 rounded-full text-green-400" />
-                                            <h1 className="text-xs">Completed</h1>
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </Card>
-                                  {selectedTask && selectedTask._id === task._id && (
-                                    <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                                      setIsDialogOpen={setIsDialogOpen}
-                                      setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                                      formatDate={formatDate}
-                                      sortedComments={sortedComments}
-                                      users={users}
-                                      categories={categories}
-                                      setIsEditDialogOpen={setIsEditDialogOpen}
-                                      isEditDialogOpen={isEditDialogOpen}
-                                      onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
-                                  )}
-                                </div>
-                              ))
-                            ) : (
-                              <div className="ml-52">
-                                <h1 className="text-center font-bold text-md mt-12">
-                                  No Tasks Found
-                                </h1>
-                                <p className="text-center text-sm">The list is currently empty</p>
+                          <div className="flex    flex-col ">
+                            {customStartDate && customEndDate && (
+                              <div className="flex gap-2 p-2 justify-center w-full">
+                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
+                                <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
                               </div>
                             )}
-                            <FilterModal
-                              isOpen={isModalOpen}
-                              closeModal={() => setIsModalOpen(false)}
-                              categories={categories}
-                              users={users}
-                              applyFilters={applyFilters}
-                            />
+                            <div className="flex -ml-52  mt-4 flex-col ">
+
+                              <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
+                                <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
+                              </div>
+                              <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                                <div className="space-x-2 flex">
+                                  <div className=" flex px-4 ml-52 mt-4 space-x-2 justify-center mb-2">
+                                    <input
+                                      type="text"
+                                      placeholder="Search Task"
+                                      value={searchQuery}
+                                      onChange={(e) => setSearchQuery(e.target.value)}
+                                      className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                    />
+
+                                  </div>
+                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                </div>
+                              </div>
+                              {filteredTasks!.length > 0 ? (
+                                filteredTasks!.map((task) => (
+                                  <div key={task._id} className="">
+                                    <Card
+                                      className="flex  w-[81%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      onClick={() => setSelectedTask(task)}
+                                    >
+                                      <div className=" items-center gap-4">
+                                        <div>
+                                          <p className="font-medium text-sm text-white">{task.title}</p>
+                                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
+                                            {task.user.firstName}
+                                          </span></p>
+                                        </div>
+                                        <div className="flex gap-2">
+
+                                          <div className="flex -ml-1  text-xs mt-2">
+                                            <IconClock className="h-5" />
+                                            <h1 className="mt-[1.5px]">
+                                              {formatTaskDate(task.dueDate)}
+                                            </h1>
+                                          </div>
+                                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                          <div className="flex text-xs mt-[10px]">
+                                            <UserIcon className="h-4" />
+                                            {task.assignedUser.firstName}
+                                          </div>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
+                                          <div className="flex text-xs mt-[11px]">
+                                            <TagIcon className="h-4" />
+                                            {task.category.name}
+                                          </div>
+                                          {task.repeat ? (
+                                            <div className="flex items-center">
+                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+                                              {task.repeatType && (
+                                                <h1 className="flex mt-[11px] text-xs">
+                                                  <Repeat className="h-4 " />  {task.repeatType}
+                                                </h1>
+                                              )}
+                                            </div>
+                                          ) : null}
+                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <div className="flex text-xs">
+                                            <div className="mt-[11px]">
+                                              <IconProgressBolt className="h-4  " />
+                                            </div>
+                                            <h1 className="mt-auto">
+                                              {task.status}
+                                            </h1>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="">
+                                        <div className="flex ">
+                                          <div className="gap-2 w-1/2 mt-4 mb-4 flex">
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("In Progress");
+                                                setIsDialogOpen(true);
+                                              }}
+                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
+                                            >
+                                              <Play className="h-4 w-4" />
+                                              <h1 className="text-xs">
+                                                In Progress
+                                              </h1>
+                                            </Button>
+                                            <Button
+                                              onClick={() => {
+                                                setStatusToUpdate("Completed");
+                                                setIsCompleteDialogOpen(true);
+                                              }}
+                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
+                                            >
+                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              <h1 className="text-xs">Completed</h1>
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </Card>
+                                    {selectedTask && selectedTask._id === task._id && (
+                                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
+                                        setIsDialogOpen={setIsDialogOpen}
+                                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
+                                        formatDate={formatDate}
+                                        sortedComments={sortedComments}
+                                        users={users}
+                                        categories={categories}
+                                        handleDeleteClick={handleDeleteClick}
+                                        handleDeleteConfirm={handleDeleteConfirm}
+                                        setIsEditDialogOpen={setIsEditDialogOpen}
+                                        isEditDialogOpen={isEditDialogOpen}
+                                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="ml-52">
+                                  <h1 className="text-center font-bold text-md mt-12">
+                                    No Tasks Found
+                                  </h1>
+                                  <p className="text-center text-sm">The list is currently empty</p>
+                                </div>
+                              )}
+                              <FilterModal
+                                isOpen={isModalOpen}
+                                closeModal={() => setIsModalOpen(false)}
+                                categories={categories}
+                                users={users}
+                                applyFilters={applyFilters}
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1922,7 +1975,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       )}
 
 
-
+                      <DeleteConfirmationDialog
+                        isOpen={isDeleteDialogOpen}
+                        onClose={() => setIsDeleteDialogOpen(false)}
+                        onConfirm={handleDeleteConfirm}
+                        title="Delete Task"
+                        description="Are you sure you want to delete this task? This action cannot be undone."
+                      />
                       {/** In Progress Modal */}
 
                       {isDialogOpen && (

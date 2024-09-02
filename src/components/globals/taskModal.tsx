@@ -42,6 +42,8 @@ import { Switch } from '../ui/switch';
 import { FaUpload } from 'react-icons/fa';
 import CustomAudioPlayer from './customAudioPlayer';
 import DaysSelectModal from '../modals/DaysSelect';
+import { Avatar } from '../ui/avatar';
+import { AvatarFallback } from '@radix-ui/react-avatar';
 
 
 
@@ -1188,6 +1190,7 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({ options, selectedOp
 interface User {
     _id: string;
     firstName: string;
+    lastName: string;
     email: string;
 }
 
@@ -1231,7 +1234,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
     }, [onClose]);
 
     return (
-        <div ref={popupRef} className="absolute bg-[#1A1C20]  text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[40%] z-50">
+        <div ref={popupRef} className="absolute bg-[#1A1C20]  text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[45%] z-50">
             <input
                 placeholder="Search user"
                 className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
@@ -1245,7 +1248,20 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({ users, assignedUser, 
                     <div className="w-full text-sm max-h-40 overflow-y-scroll scrollbar-hide">
                         {filteredUsers.map(user => (
                             <div key={user._id} className="cursor-pointer p-2 flex items-center justify-between mb-1" onClick={() => handleSelectUser(user._id)}>
-                                <span className='text-xs'>{user.email}</span>
+                                <div className='flex gap-2'>
+                                    <Avatar className='h-8 w-8 rounded-full flex bg-[#75517B] items-center'>
+                                        <AvatarFallback className='ml-2'>
+                                            <h1 className='text-sm'>
+                                                {`${user.firstName}`.slice(0, 1)}
+                                                {`${user.lastName}`.slice(0, 1)}
+                                            </h1>
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <h1 className='text-sm'>{user.firstName} {user.lastName}</h1>
+                                        <span className='text-xs'>{user.email}</span>
+                                    </div>
+                                </div>
                                 <input
                                     type="radio"
                                     name="user"
@@ -1362,7 +1378,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
     }, [onClose]);
 
     return (
-        <div ref={popupRef} className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[40%] z-50">
+        <div ref={popupRef} className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[45%] z-50">
             <input
                 placeholder=" Search Categories..."
                 className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"

@@ -51,9 +51,9 @@ const DashboardPage = () => {
 
 
   return (
-    
-    <div className=' dark:bg-[#211025] pt-2 scale-95 mt-12 gap- relative overflow-x-hidden scrollbar-hide'>
-      
+
+    <div className=' dark:bg-[#211025] pt-2 scale-95 mt-16 gap- relative overflow-x-hidden scrollbar-hide'>
+
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
       <div className='w-full mb-2  flex justify-center '>
@@ -101,7 +101,7 @@ const DashboardPage = () => {
                 <img src='/icons/intranet.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Intranet</h1>
-              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
+              <p className='text-xs font-medium'>Manage all your Important Company Links</p>
               <div className='pt-2'>
                 <Link href='/intranet'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Intranet</Button>
@@ -158,9 +158,9 @@ const DashboardPage = () => {
                 <img src='/icons/whatsapp.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate WA</h1>
-              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
+              <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
               <div className='pt-2'>
-                <Link href='https://app.zapllo.com'>
+                <Link href='https://app.zapllo.com/signup'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To WhatsApp API</Button>
                 </Link>
 

@@ -52,7 +52,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <input
                             type="text"
                             placeholder="Search categories"
-                            className="w-full px-2 py-2 bg-[#282D32] border border-gray-600 mb-4 rounded-md"
+                            className="w-full px-2 py-2 bg-[#282D32] border outline-none  mb-4 rounded-md"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -82,7 +82,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <input
                             type="text"
                             placeholder="Search users"
-                            className="w-full px-2 py-2 bg-[#282D32] border border-gray-600 mb-4 rounded-md"
+                            className="w-full px-2 py-2 bg-[#282D32] border mb-4 rounded-md"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -206,7 +206,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
                 &#8203;
                 <div className="inline-block align-bottom max-h-4xl h-[450px] bg-[#1A1D21]  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full  py-6">
-                    <div className='flex border-b border-[#E0E0E066] justify-end px-4 py-2'>
+                    <div className='flex border-b  justify-end px-4 py-2'>
                         <h3 className="text-lg leading-6 font-medium text-white mb-4">Filter Tasks</h3>
                         <h1 className='ml-auto cursor-pointer' onClick={closeModal}>X</h1>
                     </div>
@@ -214,7 +214,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
 
                         <div className="flex">
 
-                            <div className=" border-r h-[400px] border-[#E0E0E066]  ">
+                            <div className=" border-r h-[400px]  ">
                                 <ul className='space-y-2 mt-2  '>
                                     {sections.map((section) => (
                                         <li

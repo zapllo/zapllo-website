@@ -42,7 +42,7 @@ export default function WalletLogs({ }: Props) {
 
   if (!orderLogs.length) {
     return (
-      <div className="flex">
+      <div className="flex mt-12">
         <BillingSidebar />
         <div className="flex-1 p-4">
           <div className="w-full -ml-2 max-w-8xl mx-auto">
@@ -62,7 +62,7 @@ export default function WalletLogs({ }: Props) {
   }
 
   return (
-    <div className="flex">
+    <div className="flex mt-12">
       <BillingSidebar />
       <div className="flex-1 p-4">
         <div className="w-full -ml-2 max-w-8xl mx-auto">

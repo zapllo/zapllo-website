@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
 
         const savedTask = await newTask.save();
         const taskUser = await User.findById(savedTask.user);
+
         if (!taskUser) {
             throw new Error("Task user not found");
         }
@@ -104,9 +105,10 @@ export async function POST(request: NextRequest) {
         <div style="text-align: center; padding: 20px;">
                 <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
-            <div style="background-color: #74517A; color: #ffffff; padding: 20px; text-align: center;">
-                <h1 style="margin: 0;">New Task Assigned</h1>
-            </div>
+           <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
+    <h1 style="margin: 0;">New Task Assigned</h1>
+</div>
+
             <div style="padding: 20px;">
                 <p><strong> Dear ${assignedUser.firstName} </strong></p>
                 <p>A new task has been assigned to you, given below are the task details:</p>
@@ -119,7 +121,7 @@ export async function POST(request: NextRequest) {
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
+                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
             </div>
         </div>
     </div>

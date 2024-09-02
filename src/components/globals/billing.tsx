@@ -242,7 +242,7 @@ export default function Billing() {
                     </div>
                 </div>
                 {activeTab === 'Active' ? (
-                    <div className="flex justify-center w-full ml-28 mt-12">
+                    <div className="flex  justify-center w-full  mt-12">
                         {displayedPlan === 'Money Saver Bundle' ? (
                             <Card key="Money Saver Bundle" className="w-[400px] border rounded bg-transparent">
                                 <CardHeader className="bg-[#2F0932] rounded border-b text-center">

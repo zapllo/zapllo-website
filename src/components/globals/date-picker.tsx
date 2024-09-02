@@ -154,7 +154,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDat
   };
 
   return (
-    <div className="bg-[#1A1D21] h-96 rounded-lg shadow p-4 w-full">
+    <div className="bg-[#1A1D21] h-fit rounded-lg shadow p-4 w-full">
       {renderHeader()}
       {renderDays()}
       {renderCells()}

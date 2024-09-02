@@ -105,9 +105,8 @@ export default function TaskManagement() {
     };
 
 
-    const handleTaskUpdate = (updatedTask: any) => {
-        fetchTasks();
-
+    const handleTaskUpdate = async () => {
+        await fetchTasks();
     };
 
     if (isTrialExpired) {

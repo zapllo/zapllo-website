@@ -1,14 +1,20 @@
 'use client'
 
-import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, MouseEvent, useRef, Dispatch, SetStateAction } from 'react';
 import axios from 'axios';
-import { Clock, Link, MailIcon, Paperclip, Plus } from 'lucide-react';
+import { Calendar, Clock, Link, MailIcon, Paperclip, Plus, Tag, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { FaUpload } from 'react-icons/fa';
 import { Label } from '../ui/label';
 import DaysSelectModal from '../modals/DaysSelect';
 import { Toggle } from '../ui/toggle';
+import { AnimatePresence, motion } from 'framer-motion';
+import CustomTimePicker from './time-picker';
+import CustomDatePicker from './date-picker';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { CaretDownIcon } from '@radix-ui/react-icons';
+import { toast } from 'sonner';
 
 
 interface Reminder {
@@ -34,7 +40,7 @@ interface Task {
     audioUrl?: string;
     dates?: number[];
     categories?: string[];
-    dueDate: string;
+    dueDate: Date;
     completionDate: string;
     attachment?: string[];
     links?: string[];
@@ -91,7 +97,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         assignedUser: '',
         repeat: false,
         repeatType: 'Daily',
-        dueDate: '',
+        dueDate: new Date(),
         days: [] as string[],
         dates: [] as number[],
         attachment: [] as string[],
@@ -119,8 +125,63 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
     const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
     const [isDateTimeModalOpen, setIsDateTimeModalOpen] = useState(false);
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(true);
+    const [dueDate, setDueDate] = useState<Date | null>(null);
+    const [dueTime, setDueTime] = useState<string>('');
     const [days, setDays] = useState<string[]>([]);
+    const [category, setCategory] = useState<string>('');
     const [dates, setDates] = useState<number[]>([]);
+    const [popoverInputValue, setPopoverInputValue] = useState<string>(''); // State for input value in popover
+    const [openUser, setOpenUser] = useState<boolean>(false); // State for popover open/close
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [categoryOpen, setCategoryOpen] = useState<boolean>(false); // State for popover open/close
+    const [newCategory, setNewCategory] = useState('');
+    const [searchCategoryQuery, setSearchCategoryQuery] = useState<string>(''); // State for search query
+
+
+
+
+    const [popoverCategoryInputValue, setPopoverCategoryInputValue] = useState<string>(''); // State for input value in popover
+
+    const handleOpen = () => setOpenUser(true);
+
+    const handleCategoryOpen = () => setCategoryOpen(true);
+
+    // const handleClose = (selectedValue: any) => {
+    //     setPopoverInputValue(selectedValue);
+    //     setOpen(false);
+    // };
+
+    const handleCategoryClose = (selectedValue: any) => {
+        setPopoverCategoryInputValue(selectedValue);
+        setCategoryOpen(false);
+    };
+
+
+    const handleCloseCategoryPopup = () => {
+        setCategoryOpen(false);
+    }
+
+
+    const handleUpdateDateTime = () => {
+        if (dueDate && dueTime) {
+            const [hours, minutes] = dueTime.split(':').map(Number);
+            const updatedDate = new Date(dueDate);
+            updatedDate.setHours(hours, minutes);
+            setFormData({ ...formData, dueDate: updatedDate }); // Keep date as Date object
+            setIsDateTimeModalOpen(false);
+        }
+    };
+
+    const handleCloseUserPopup = () => setOpenUser(false);
+    const handleUserClose = (selectedUserName: string) => {
+        setPopoverInputValue(selectedUserName);
+        setOpenUser(false);
+    };
+
+    const setAssignedUser = (userId: string) => {
+        setFormData({ ...formData, assignedUser: userId });
+    };
 
     useEffect(() => {
         if (task) {
@@ -132,7 +193,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 assignedUser: task.assignedUser._id || '',
                 repeat: task.repeat || false,
                 repeatType: task.repeatType || 'Daily',
-                dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+                dueDate: task.dueDate ? new Date(task.dueDate) : new Date(), // Ensure dueDate is a Date object
                 days: task.days || [],
                 dates: task.dates || [],
                 attachment: task.attachment || [],
@@ -177,14 +238,19 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         }
     };
 
-    const handleDaysChange = (day: string) => {
-        setFormData(prevState => ({
-            ...prevState,
-            days: prevState.days.includes(day)
-                ? prevState.days.filter(d => d !== day)
-                : [...prevState.days, day]
-        }));
+    const handleDaysChange = (day: string, pressed: boolean) => {
+        setFormData(prevFormData => {
+            const updatedDays = pressed
+                ? [...prevFormData.days, day] // Add the day if pressed is true
+                : prevFormData.days.filter(d => d !== day); // Remove the day if pressed is false
+
+            return {
+                ...prevFormData,
+                days: updatedDays,
+            };
+        });
     };
+
 
 
     console.log(formData, 'form data');
@@ -282,6 +348,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     };
 
     const handleReminderChange = (type: 'email' | 'whatsapp', field: 'type' | 'value' | 'date', value: any) => {
+        console.log(`Updating ${type} reminder:`, field, value); // Debugging line
         setFormData(prevState => ({
             ...prevState,
             reminder: {
@@ -293,6 +360,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
             }
         }));
     };
+
 
 
 
@@ -328,14 +396,14 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 </label>
                 <div className="grid gap-2 grid-cols-2">
                     <div className='flex justify-between gap-2 w-full'>
-                        <div className='w-full'>
+                        {/* <div className='w-full'>
                             <label className="block mb-2">
-                                Assigned User:
+
                                 <select
                                     name="assignedUser"
                                     value={formData.assignedUser}
                                     onChange={handleChange}
-                                    className="w-1/2 ml-2 outline-none p-2 border rounded mt-1"
+                                    className="w-1/2  outline-none p-2 border rounded mt-1"
                                 >
                                     {users.map(user => (
                                         <option key={user._id} value={user._id}>
@@ -344,16 +412,48 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                                     ))}
                                 </select>
                             </label>
+                        </div> */}
+                        <div className='w-full'>
+                            <button
+                                type="button"
+                                className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
+                                onClick={handleOpen}
+                            >
+                                {popoverInputValue ? popoverInputValue : <h1 className='flex gap-2'>
+                                    <User className='h-4' /> Select User </h1>}
+                                <CaretDownIcon />
+                            </button>
                         </div>
 
-
+                        {openUser && (
+                            <UserSelectPopup
+                                users={users}
+                                assignedUser={formData.assignedUser}
+                                setAssignedUser={setAssignedUser}
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                                onClose={handleCloseUserPopup}
+                                closeOnSelectUser={handleUserClose}
+                            />
+                        )}
 
                     </div>
+                    <div className='w-full'>
+                        <button
+                            type="button"
+                            className="p-2 text-xs flex border-2   bg-transparent justify-between w-full text-start  rounded"
+                            onClick={handleCategoryOpen}
+                        >
+                            {popoverCategoryInputValue ? popoverCategoryInputValue : <h1 className='flex gap-2'>
+                                <Tag className='h-4' /> Select Category </h1>}
+                            <CaretDownIcon />
+                        </button>
+                    </div>
 
-                    <div className='p-2 h-12 mt-1 rounded-lg flex gap-2 ml-auto'>
-                        <h1 className='mt-2'>Category:</h1>
 
-                        <label className="block mb-2 ">
+                    <div className='p-2  mt-1 rounded-lg flex gap-2 ml-auto'>
+
+                        {/* <label className="block mb-2 ">
                             <select
                                 name="category"
                                 value={formData.category}
@@ -366,7 +466,22 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                                     </option>
                                 ))}
                             </select>
-                        </label>
+                        </label> */}
+                        {categoryOpen && (
+                            <CategorySelectPopup
+                                categories={categories}
+                                category={formData.category}
+                                setCategory={setCategory}
+                                newCategory={newCategory}
+                                setNewCategory={setNewCategory}
+                                searchCategoryQuery={searchCategoryQuery}
+                                setSearchCategoryQuery={setSearchCategoryQuery}
+                                onClose={handleCloseCategoryPopup}
+                                closeOnSelect={handleCategoryClose}
+                            />
+                        )}
+
+
                     </div>
                 </div>
                 <div className='w-full flex justify-between'>
@@ -430,14 +545,15 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
                 {formData.repeatType === 'Weekly' && formData.repeat && (
                     <div className="mb-4">
-                        <Label className="block font-semibold mb-2">Select Days</Label>
+                        <Label className="block font-medium mb-2">Select Days</Label>
                         <div className="grid grid-cols-7 p-2 rounded">
                             {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
                                 <div key={day} className="flex gap-2 cursor-pointer items-center">
                                     <Toggle
                                         variant="outline"
                                         aria-label={`${day}`}
-                                        onClick={() => handleDaysChange(day)}
+                                        pressed={formData.days.includes(day)} // Set pressed state based on inclusion in formData.days
+                                        onPressedChange={(pressed) => handleDaysChange(day, pressed)} // Update handler to pass the pressed state
                                         className={formData.days.includes(day) ? "text-white cursor-pointer" : "text-black cursor-pointer"}
                                     >
                                         <Label htmlFor={day} className="font-semibold cursor-pointer">{day.slice(0, 1)}</Label>
@@ -447,6 +563,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         </div>
                     </div>
                 )}
+
 
                 {formData.repeatType === 'Monthly' && formData.repeat && (
                     <div>
@@ -463,16 +580,91 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 )}
                 <div className='flex gap-2 mt-2'>
                     <label className="block mb-2">
-                        Due Date:
-                        <input
+                        <Button
+                            type="button"
+                            onClick={() => setIsDateTimeModalOpen(true)}
+                            className=" border-2 rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
+                        >
+                            <Calendar className='h-5 text-sm' />
+                            {formData.dueDate
+                                ? `${formData.dueDate} `
+                                : <h1 className='text-xs'>
+                                    Select Date & Time
+                                </h1>
+                            }
+                        </Button>
+                        {/* <input
                             type="date"
                             name="dueDate"
                             value={formData.dueDate}
                             onChange={handleChange}
                             className=" p-2 ml-1 border rounded mt-1"
-                        />
+                        /> */}
                     </label>
                 </div>
+                {isDateTimeModalOpen && (
+                    <Dialog open={isDateTimeModalOpen} onOpenChange={() => setIsDateTimeModalOpen(false)}>
+                        <DialogContent>
+                            <div className='w-full flex justify-between'>
+                                <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle>
+                                <DialogClose onClick={() => setIsDateTimeModalOpen(false)}>X</DialogClose>
+                            </div>
+
+                            <DialogDescription>
+                                <div className="flex flex-col w-full py-4 space-y-4">
+                                    <AnimatePresence>
+                                        {isDatePickerVisible ? (
+                                            <motion.div
+                                                key="date-picker"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                transition={{ duration: 0.3, ease: 'linear' }}
+                                            >
+                                                <CustomDatePicker
+                                                    selectedDate={formData.dueDate ?? new Date()}
+                                                    onDateChange={(date: Date) => {
+                                                        setDueDate(date);
+                                                        setIsDatePickerVisible(false);
+                                                    }}
+                                                />
+                                            </motion.div>
+                                        ) : (
+                                            <motion.div
+                                                key="time-picker"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                transition={{ duration: 0.3, ease: 'linear' }}
+                                            >
+                                                <CustomTimePicker
+                                                    selectedTime={dueTime}
+                                                    onTimeChange={setDueTime}
+                                                />
+                                                <div className='flex gap-2'>
+                                                    <Button
+                                                        type="button"
+                                                        onClick={() => setIsDatePickerVisible(true)}
+                                                        className="bg-gray-600 hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
+                                                    >
+                                                        Back to Date Picker
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        onClick={handleUpdateDateTime}
+                                                        className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
+                                                    >
+                                                        Update Time & Date
+                                                    </Button>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </DialogDescription>
+                        </DialogContent>
+                    </Dialog>
+                )}
                 <div className='flex    gap-4'>
                     <div className='flex mt-4  gap-2'>
                         <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter(link => link).length > 0 ? 'border-[#017A5B]' : ''}`}>
@@ -720,3 +912,252 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 };
 
 export default EditTaskDialog;
+
+
+interface User {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
+interface UserSelectPopupProps {
+    users: User[];
+    assignedUser: string;
+    setAssignedUser: (userId: string) => void;
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
+    onClose: () => void;
+    closeOnSelectUser: (userName: string) => void;
+}
+
+const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
+    users,
+    assignedUser,
+    setAssignedUser,
+    searchQuery,
+    setSearchQuery,
+    onClose,
+    closeOnSelectUser
+}) => {
+    const handleSelectUser = (selectedUserId: string) => {
+        const selectedUser = users.find(user => user._id === selectedUserId);
+        if (selectedUser) {
+            setAssignedUser(selectedUser._id);
+            closeOnSelectUser(selectedUser.firstName);
+        }
+    };
+
+    const popupRef = useRef<HTMLDivElement>(null);
+
+    const filteredUsers = users.filter(user =>
+        user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside as unknown as EventListener);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside as unknown as EventListener);
+        };
+    }, [onClose]);
+
+    return (
+        <div ref={popupRef} className="absolute bg-[#1A1C20] text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[22%] z-50">
+            <input
+                placeholder="Search user"
+                className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div>
+                {filteredUsers.length === 0 ? (
+                    <div>No users found.</div>
+                ) : (
+                    <div className="w-full text-sm max-h-40 overflow-y-scroll scrollbar-hide">
+                        {filteredUsers.map(user => (
+                            <div
+                                key={user._id}
+                                className="cursor-pointer p-2 flex items-center justify-between mb-1"
+                                onClick={() => handleSelectUser(user._id)}
+                            >
+                                <div className='flex gap-2'>
+                                    <div className='h-8 w-8 rounded-full flex bg-[#75517B] items-center'>
+                                        <span className='ml-2 text-sm'>
+                                            {`${user.firstName[0]}${user.lastName[0]}`}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h1 className='text-sm'>{user.firstName} {user.lastName}</h1>
+                                        <span className='text-xs'>{user.email}</span>
+                                    </div>
+                                </div>
+                                <input
+                                    type="radio"
+                                    name="user"
+                                    className='bg-primary'
+                                    checked={assignedUser === user._id}
+                                    onChange={() => handleSelectUser(user._id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const getCategoryIcon = (categoryName: String) => {
+    switch (categoryName) {
+        case 'Automation':
+            return '/icons/intranet.png';
+        case 'Customer Support':
+            return '/icons/support.png';
+        case 'Marketing':
+            return '/icons/marketing.png';
+        case 'Operations':
+            return '/icons/operations.png';
+        case 'Sales':
+            return '/icons/sales.png';
+        case 'HR':
+            return '/icons/attendance.png';
+        default:
+            return null; // Or a default icon if you prefer
+    }
+};
+
+interface FallbackImageProps {
+    name: string; // Define the type of 'name'
+}
+
+const FallbackImage: React.FC<FallbackImageProps> = ({ name }) => {
+    const initial = name.charAt(0).toUpperCase(); // Get the first letter of the category name
+    return (
+        <div className="bg-[#282D32] rounded-full h-8 w-8 flex items-center justify-center">
+            <span className="text-white font-bold text-sm">{initial}</span>
+        </div>
+    );
+};
+
+
+interface Category {
+    _id: string;
+    name: string;
+}
+
+interface CategorySelectPopupProps {
+    categories: Category[];
+    category: string;
+    setCategory: Dispatch<SetStateAction<string>>;
+    searchCategoryQuery: string;
+    setSearchCategoryQuery: Dispatch<SetStateAction<string>>;
+    newCategory: string;
+    setNewCategory: Dispatch<SetStateAction<string>>;
+    closeOnSelect: (selectedValue: any) => void;
+    onClose: () => void;
+}
+
+
+const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, category, setCategory, searchCategoryQuery, newCategory, setNewCategory, setSearchCategoryQuery, onClose, closeOnSelect }) => {
+    const handleSelectCategory = (selectedCategoryId: string) => {
+        const selectedCategory = categories.find(category => category._id === selectedCategoryId);
+        if (selectedCategory) {
+            setCategory(selectedCategory._id);
+            closeOnSelect(selectedCategory.name);
+        }
+    };
+    const popupRef = useRef<HTMLDivElement>(null);
+
+    // const handleCreateCategory = async () => {
+    //     if (!newCategory) return;
+    //     try {
+    //         const response = await axios.post('/api/category/create', { name: newCategory });
+    //         if (response.status === 200) {
+    //             // Add the new category to the categories list
+    //             setCategories([...categories, response.data.data]);
+    //             // Clear the new category input
+    //             setNewCategory('');
+    //             toast.success("Category Created Successfully!")
+    //         } else {
+    //             console.error('Error creating category:', response.data.error);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error creating category:', error);
+    //     }
+    // };
+
+    const filteredCategories = categories.filter(category =>
+        category.name.toLowerCase().includes(searchCategoryQuery.toLowerCase())
+    );
+
+
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        // Add event listener
+        document.addEventListener('mousedown', handleClickOutside as unknown as EventListener);
+
+        // Cleanup event listener
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside as unknown as EventListener);
+        };
+    }, [onClose]);
+
+
+    return (
+        <div ref={popupRef} className="absolute bg-[#1a1c20] ml-4 text-black border -mt-4 rounded shadow-md p-4 w-[22%] z-50">
+            <input
+                placeholder=" Search Categories..."
+                className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"
+                value={searchCategoryQuery}
+                onChange={(e) => setSearchCategoryQuery(e.target.value)}
+            />
+            <div>
+                {categories.length === 0 ? (
+                    <div>No categories found.</div>
+                ) : (
+                    <div className="w-full text-sm text-white max-h-40 overflow-y-scroll scrollbar-hide">
+                        {filteredCategories.map(categorys => (
+                            <div key={categorys._id} className="cursor-pointer p-2 flex items-center justify-start  mb-1" onClick={() => handleSelectCategory(categorys._id)}>
+                                <div className='bg-[#282D32] rounded-full h-8  w-8'>
+                                    {getCategoryIcon(categorys.name) ? (
+                                        <img
+                                            src={getCategoryIcon(categorys?.name) as string} // Type assertion
+                                            alt={categorys.name}
+                                            className="w-4 h-4 ml-2 mt-2"
+                                        />
+                                    ) : (
+                                        <FallbackImage name={categorys.name} />
+                                    )}
+                                </div>
+                                <span className='px-4 text-xs'>{categorys.name}</span>
+
+                                {category === categorys._id && (
+                                    <input
+                                        type="radio"
+                                        name="category"
+                                        className='bg-primary ml-auto'
+                                        checked={category === categorys._id}
+                                        onChange={() => handleSelectCategory(categorys._id)}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+            </div>
+        </div>
+    );
+};

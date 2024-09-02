@@ -117,57 +117,60 @@ const IntranetPage: React.FC = () => {
                     />
                 </div>
                 <DialogContent className="">
-                    <div className="bg-[#1A1C20] z-[100] h-[420px] max-h-screen text-[#D0D3D3] w-[100%] rounded-lg p-4">
+                    <div className="bg-[#1A1C20] z-[100] h-[320px] max-h-screen text-[#D0D3D3] w-[100%] rounded-lg p-4">
                         <div className='flex justify-between w-full'>
-                            <DialogTitle className="text-sm font-semibold">Create New Link</DialogTitle>
+                            <DialogTitle className="text-sm font-semibold">Add New Link</DialogTitle>
                             <DialogClose className="text-sm font-semibold">X</DialogClose>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                             <div>
-                                <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label>
+                                {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
                                 <input
                                     type="url"
+                                    placeholder='Link Url'
                                     id="linkUrl"
                                     value={linkUrl}
                                     onChange={(e) => setLinkUrl(e.target.value)}
                                     required
-                                    className="mt-1 block w-full  bg-transparent outline-none p-2 border rounded"
+                                    className="mt-1 block text-xs w-full  bg-transparent outline-none p-2 border rounded"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="description" className="block text-xs font-medium text-white -700">Description</label>
+                                {/* <label htmlFor="description" className="block text-xs font-medium text-white -700">Description</label> */}
                                 <textarea
                                     id="description"
                                     value={description}
+                                    placeholder='Description'
                                     onChange={(e) => setDescription(e.target.value)}
                                     required
-                                    className="mt-1 block bg-transparent outline-none w-full p-2 border rounded"
+                                    className="mt-1 block text-xs bg-transparent outline-none w-full p-2 border rounded"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="linkName" className="block text-xs font-medium text-white -700">Link Name</label>
+                                {/* <label htmlFor="linkName" className="block text-xs font-medium text-white -700">Link Name</label> */}
                                 <input
                                     type="text"
                                     id="linkName"
                                     value={linkName}
                                     onChange={(e) => setLinkName(e.target.value)}
                                     required
-                                    className="mt-1 bg-transparent  outline-none block w-full p-2 border rounded"
+                                    placeholder='Link Name'
+                                    className="mt-1 bg-transparent text-xs outline-none block w-full p-2 border rounded"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="category" className="block text-xs font-medium text-white -700">Category</label>
+                                {/* <label htmlFor="category" className="block text-xs font-medium text-white -700">Category</label> */}
                                 <select
                                     id="category"
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
                                     required
-                                    className="mt-1 block  outline-none w-full p-2 border rounded"
+                                    className="mt-1 block text-xs text-xs outline-none w-full p-2 border rounded"
                                 >
-                                    <option value="" disabled>Select a category</option>
+                                    <option value="text-xs " disabled>Select a category</option>
                                     {categories.map((cat) => (
                                         <option key={cat._id} value={cat._id}>{cat.name}</option>
                                     ))}
@@ -185,8 +188,10 @@ const IntranetPage: React.FC = () => {
                     </div>
                 </DialogContent >
             </Dialog >
-            <IntranetTable entries={entries} fetchEntries={fetchEntries} selectedCategory={selectedCategory}
-                searchQuery={searchQuery} />
+            <div className='w-full flex justify-center'>
+                <IntranetTable entries={entries} fetchEntries={fetchEntries} selectedCategory={selectedCategory}
+                    searchQuery={searchQuery} />
+            </div>
         </div >
     );
 };
