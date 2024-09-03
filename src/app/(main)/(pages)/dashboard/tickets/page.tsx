@@ -136,6 +136,7 @@ export default function Tickets() {
                 setCategory('');
                 setSubcategory('');
                 setSubject('');
+                setIsDialogOpen(false);
                 setDescription('');
                 setFiles([]); // Clear files after submission
             } else {
@@ -164,7 +165,7 @@ export default function Tickets() {
                                 <div className='p-10    flex justify-center -mt-16 l w-full max-w-8xl  ml-52'>
 
 
-                                    <div className='overflow-x-auto  w-full max-w-4xl -ml-56 '>
+                                    <div className='overflow-x-auto scrollbar-hide  w-full max-w-4xl -ml-56 '>
                                         <div className='w-full max-w-8xl mb-4 flex  justify-center'>
                                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                                 <div className='flex mb-2 gap-2 justify-between'>

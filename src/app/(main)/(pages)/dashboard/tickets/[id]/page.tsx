@@ -112,12 +112,12 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 w-full">
                             {loading ? (
-                                <Loader /> 
+                                <Loader />
                             ) : (
-                                <div className='p-6 border-l overflow-y-scroll h-screen scrollbar-hide ml-56  -mt-12 space-y-4'>
+                                <div className='p-6  overflow-y-scroll h-screen scrollbar-hide ml-52  -mt-12 space-y-4'>
                                     <Link href='/dashboard/tickets'>
                                         <div className='flex gap-2 mb-8 font-medium text-xl cursor-pointer'>
-                                            <ArrowLeft className='h-7' />
+                                            <ArrowLeft className='h-7 rounded-full border-white border w-7 hover:bg-[#75517B]' />
                                             <h1>Back To My Tickets</h1>
                                         </div>
                                     </Link>
@@ -125,8 +125,19 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                         <>
                                             <div className=' border p-4 rounded'>
                                                 <div className="relative max-w-full w-full h-full max-h-32">
-                                                    <div className='flex border border-[#E0E0E066] p-2 rounded-lg absolute right-0'>
-                                                        <h1 className='text-white text-sm'>{ticket.status}</h1>
+                                                    <div
+                                                        className={`flex border border-[#E0E0E066] px-2 py-1 rounded absolute right-0 ${ticket.status === 'Pending'
+                                                                ? 'bg-red-500'
+                                                                : ticket.status === 'In Resolution'
+                                                                    ? 'bg-yellow-500'
+                                                                    : ticket.status === 'Closed'
+                                                                        ? 'bg-gray-700'
+                                                                        : ticket.status === 'Cancelled'
+                                                                            ? 'bg-red-800'
+                                                                            : ''
+                                                            }`}
+                                                    >
+                                                        <h1 className='text-white text-xs'>{ticket.status}</h1>
                                                     </div>
                                                 </div>
 
@@ -226,7 +237,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                         onChange={handleCommentChange}
                                                         placeholder='Type your comment here'
                                                         rows={4}
-                                                        className='w-full p-2 border bg-transparent outline-none  rounded'
+                                                        className='w-full p-2 border bg-[#1A1C20] outline-none  rounded'
                                                     />
 
                                                     <input

@@ -282,9 +282,9 @@ export default function TeamTabs() {
             <select
               value={selectedReportingManager}
               onChange={handleReportingManagerChange}
-              className="block bg-[#29142E] w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="block bg-[#29142E] w-full px-3 py-1 border rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
-              <option value="">Reporting Manager</option>
+              <option value="text-xs">Reporting Manager</option>
               {users.map(user => (
                 <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
               ))}
@@ -292,7 +292,7 @@ export default function TeamTabs() {
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               {loggedInUserRole === "orgAdmin" && (
                 <DialogTrigger asChild>
-                  <Button size="sm" className="ml-4 bg-[#29142E] hover:bg-[#29142E] gap-2" onClick={() => setIsModalOpen(true)}>Add Member <Plus /></Button>
+                  <Button size="sm" className="ml-4 bg-[#29142E] hover:bg-[#75517B] gap-2" onClick={() => setIsModalOpen(true)}>Add Member <Plus /></Button>
                 </DialogTrigger>
               )}
               <DialogContent>
@@ -332,7 +332,7 @@ export default function TeamTabs() {
                   <select
                     value={newMember.role}
                     onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
-                    className="block w-full px-2 text-xs py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="block w-full px-2 text-xs py-2 bg-[#292c32]   border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                   >
                     <option className="text-xs" value="member">Team Member</option>
                     <option className="text-xs" value="manager">Manager</option>
@@ -342,7 +342,7 @@ export default function TeamTabs() {
                       <select
                         value={selectedManager}
                         onChange={(e) => setSelectedManager(e.target.value)}
-                        className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                       >
                         <option className="text-xs" value="">Select Reporting Manager</option>
                         {users.map(user => (

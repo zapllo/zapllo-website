@@ -7,6 +7,7 @@ import axios from 'axios'
 import { formatDistanceToNow } from 'date-fns'
 import { XIcon } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 type Props = { children: React.ReactNode }
@@ -14,18 +15,15 @@ type Props = { children: React.ReactNode }
 const Layout = (props: Props) => {
     const [trialExpires, setTrialExpires] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState('');
-
-
+    const router = useRouter();
+    const pathname = usePathname();
     const [isVisible, setIsVisible] = useState(true);
+    const [hasRedirected, setHasRedirected] = useState(false);
 
     const handleClose = () => {
         setIsVisible(false);
     };
-
-    useEffect(() => {
-        // Reset visibility on route change
-        setIsVisible(true);
-    }, []);
+    const [isTrialExpired, setIsTrialExpired] = useState(false);
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -33,14 +31,13 @@ const Layout = (props: Props) => {
                 // Fetch trial status
                 const response = await axios.get('/api/organization/getById');
                 console.log(response.data.data); // Log the organization data
-
                 const organization = response.data.data;
-
+                // Check if the trial has expired
                 const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
                 console.log('isExpired:', isExpired);
                 console.log('trialExpires:', organization.trialExpires);
 
-                setTrialExpires(isExpired ? null : organization.trialExpires);
+                setIsTrialExpired(isExpired); // Set to true if expired, false otherwise
             } catch (error) {
                 console.error('Error fetching user details or trial status:', error);
             }
@@ -48,21 +45,50 @@ const Layout = (props: Props) => {
         getUserDetails();
     }, []);
 
-    useEffect(() => {
-        if (trialExpires) {
-            // Calculate remaining time
-            const calculateRemainingTime = () => {
-                const now = new Date();
-                const distance = formatDistanceToNow(new Date(trialExpires), { addSuffix: true });
-                setRemainingTime(distance);
-            };
 
-            calculateRemainingTime();
-            const intervalId = setInterval(calculateRemainingTime, 1000 * 60); // Update every minute
+    // if (isTrialExpired) {
+    //     return (
+    //         <div className=' text-center pt-48 h-screen'>
+    //             <div className='justify-center flex items-center w-full'>
+    //                 <div>
+    //                     <div className='flex justify-center w-full'>
+    //                         <img src='/icons/danger.png' />
+    //                     </div>
+    //                     <h1 className='text-xl font-bold text-red-500'>Your trial has expired!</h1>
+    //                     <p>Please purchase a subscription to continue using the Task Management features.</p>
+    //                 </div>
+    //             </div>
+    //             <Link href='/dashboard/billing'>
+    //                 <Button className='h-8 bg-[#822B90]  hover:bg-[#822B90]  text-white hover:text-white mt-4 text-sm '> Upgrade to Pro</Button>
+    //             </Link>
+    //         </div>
+    //     );
+    // }
 
-            return () => clearInterval(intervalId); // Cleanup on unmount
-        }
-    }, [trialExpires]);
+    // Regex to match the dynamic route
+    const isDynamicRoute = pathname.match(/^\/dashboard\/tickets\/[^/]+$/);
+
+    if (isTrialExpired && pathname !== '/dashboard/billing' && pathname !== '/tutorials' && pathname !== '/dashboard/tickets' && !isDynamicRoute) {
+        return (
+            <div className='text-center pt-48 h-screen'>
+                <div className='justify-center flex items-center w-full'>
+                    <div>
+                        <div className='flex justify-center w-full'>
+                            <img src='/icons/danger.png' alt="Danger icon" />
+                        </div>
+                        <h1 className='text-xl font-bold text-red-500'>Your trial has expired!</h1>
+                        <p>Please purchase a subscription to continue using the Task Management features.</p>
+                    </div>
+                </div>
+                <Link href='/dashboard/billing'>
+                    <Button className='h-8 bg-[#822B90] hover:bg-[#822B90] text-white hover:text-white mt-4 text-sm'>
+                        Upgrade to Pro
+                    </Button>
+                </Link>
+            </div>
+        );
+    }
+
 
     return (
         <div>

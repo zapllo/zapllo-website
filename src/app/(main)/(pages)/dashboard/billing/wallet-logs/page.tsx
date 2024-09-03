@@ -1,6 +1,9 @@
 'use client'
 
 import BillingSidebar from '@/components/sidebar/billingSidebar';
+import { Button } from '@/components/ui/button';
+import axios from 'axios';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
 type Props = {}
@@ -37,7 +40,7 @@ export default function WalletLogs({ }: Props) {
   }, []);
 
   if (loading) {
-    return <div className='text-center p-10'>Loading...</div>;
+    return <div className='text-center mt-12 p-10'>Loading...</div>;
   }
 
   if (!orderLogs.length) {
@@ -61,6 +64,8 @@ export default function WalletLogs({ }: Props) {
     )
   }
 
+
+
   return (
     <div className="flex mt-12">
       <BillingSidebar />
@@ -71,7 +76,7 @@ export default function WalletLogs({ }: Props) {
               <div className="p-4">
                 <div className="overflow-x-auto  ">
                   <h2 className="text-lg font-semibold mb-4">Wallet Logs</h2>
-                  <table className="min-w-full bg-white border border-gray-300">
+                  <table className="min-w-full  border">
                     <thead>
                       <tr className="bg-[#75517B] -100">
                         <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Order ID</th>
@@ -85,12 +90,12 @@ export default function WalletLogs({ }: Props) {
                     <tbody>
                       {orderLogs.map((order, index) => (
                         <tr key={index} className="border-b">
-                          <td className="px-6 py-4 text-sm text-gray-700">{order.orderId}</td>
-                          <td className="px-6 py-4 text-sm text-gray-700">{order.paymentId}</td>
-                          <td className="px-6 py-4 text-sm text-gray-700">{order.planName}</td>
-                          <td className="px-6 py-4 text-sm text-gray-700">₹{order.amount.toFixed(2)}</td>
-                          <td className="px-6 py-4 text-sm text-gray-700">₹{order.creditedAmount.toFixed(2)}</td>
-                          <td className="px-6 py-4 text-sm text-gray-700">{new Date(order.createdAt).toLocaleString()}</td>
+                          <td className="px-6 py-4 text-sm text-white">{order.orderId}</td>
+                          <td className="px-6 py-4 text-sm text-white">{order.paymentId}</td>
+                          <td className="px-6 py-4 text-sm text-white">{order.planName}</td>
+                          <td className="px-6 py-4 text-sm text-white">₹{order.amount.toFixed(2)}</td>
+                          <td className="px-6 py-4 text-sm text-white">₹{order.creditedAmount.toFixed(2)}</td>
+                          <td className="px-6 py-4 text-sm text-white">{new Date(order.createdAt).toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>

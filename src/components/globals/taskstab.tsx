@@ -793,7 +793,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
   const getCategoryTaskStats = (categoryId: string) => {
     // Filter tasks where the category._id matches the given categoryId
-    const categoryTasks = tasks.filter(task => task.category._id === categoryId);
+    const categoryTasks = tasks.filter(task => task?.category?._id === categoryId);
 
     // Calculate task stats
     const overdueTasks = categoryTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
@@ -1779,7 +1779,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                           <div className="flex text-xs mt-[11px]">
                                             <TagIcon className="h-4" />
-                                            {task.category.name}
+                                            {task?.category?.name}
                                           </div>
 
                                           {task.repeat ? (
@@ -1984,7 +1984,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                           <div className="flex text-xs mt-[11px]">
                                             <TagIcon className="h-4" />
-                                            {task.category.name}
+                                            {task.category?.name}
                                           </div>
 
                                           {task.repeat ? (
@@ -2102,7 +2102,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
                               />
 
                               <div className='flex mb-4  mt-4 gap-4'>
@@ -2183,7 +2183,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <div
                                 ref={editorRef}
                                 contentEditable
-                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
                                 onInput={(e) => {
                                   const target = e.target as HTMLDivElement;
                                   setComment(target.innerHTML);
@@ -2266,7 +2266,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 border rounded-lg outline-none px-2 py-6 w-full mt-2"
+                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 w-full mt-2"
                               />
 
                               <div className='flex mb-4  mt-4 gap-4'>

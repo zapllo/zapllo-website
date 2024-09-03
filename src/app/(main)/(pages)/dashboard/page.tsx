@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import Loader from '@/components/ui/loader'
 import { Progress } from '@/components/ui/progress'
 import axios from 'axios'
-import { Home } from 'lucide-react'
+import { Home, Megaphone } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
@@ -56,24 +56,56 @@ const DashboardPage = () => {
 
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
-      <div className='w-full mb-2  flex justify-center '>
-        <div className='flex w-[100%] gap-4'>
+      <div className='w-full mb-2 flex'>
+        {calculateProgress() < 100 && (
+          <div className=' w-[50.33%] flex justify-start gap-4'>
+            <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
+              <div className='w-full m'>
+                <h1>Checklist </h1>
+                <Progress value={calculateProgress()} className='' />
+              </div>
+              <div className='flex justify-start mt-3'>
+                <Link href='/dashboard/checklist' >
+                  <Button className='bg-[#7C3886] mt-12 hover:bg-[#7C3886]'>
+                    Checklist
+                  </Button>
+                </Link>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+        <div className=' w-full h-48 flex justify-start gap-4'>
           <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
-            <div className='w-full m'>
-              <h1>Checklist </h1>
-              <Progress value={calculateProgress()} className='' />
+            <div className='w-full p'>
+              <h1 className='px-4 text-lg font-medium'>Tutorials </h1>
+              <h1 className='px-4 py-4'>Learn how to to get best out of our business workspace </h1>
+              <Button className='bg-white text-black ml-4  hover:bg-white mt-6' >Go To Tutorials</Button>
+              <img src='/animations/tutorials.png' className='absolute h-48 ml-[50%] -mt-40' />
             </div>
-            <div className='flex justify-start mt-3'>
-              <Link href='/dashboard/checklist' >
-                <Button className='bg-[#7C3886]  hover:bg-[#7C3886]'>
-                  Checklist
-                </Button>
-              </Link>
-            </div>
+
 
           </div>
 
         </div>
+        {calculateProgress() == 100 && (
+          <div className=' w-[50.33%] flex justify-start gap-4'>
+            <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
+              <div className='w-full m'>
+                <h1 className='text-lg font-medium flex gap-2'><Megaphone /> Events </h1>
+                <p className='text-sm py-4'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
+              </div>
+              <div className='flex justify-start '>
+                <Link href='/dashboard/checklist' >
+                  <Button className='bg-white text-black   hover:bg-white ' >Go To Events</Button>
+                </Link>
+              </div>
+
+            </div>
+
+          </div>
+        )}
       </div>
       <div className='grid grid-cols-3 '>
         <div className='flex  gap-4 '>

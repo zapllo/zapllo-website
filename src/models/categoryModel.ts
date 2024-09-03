@@ -10,8 +10,6 @@ export interface ICategory extends Document {
 const categorySchema: Schema<ICategory> = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        unique: false
     },
     organization: {
         type: mongoose.Schema.Types.ObjectId,

@@ -21,7 +21,7 @@ const BillingSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/dashboard/billing') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-none mt-6 gap-2 px-4 justify-start hover:bg-[#75517B] hover:rounded-lg bg-transparent mb-2 ${isActive('/dashboard/billing') ? 'bg-[#75517B] hover:bg-[#75517B] rounded-lg text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg mt-6 gap-2 px-4 justify-start hover:bg-[#75517B] hover:rounded-lg bg-transparent mb-2 ${isActive('/dashboard/billing') ? 'bg-[#75517B] hover:bg-[#75517B] rounded-lg text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/billing')}
                     >
                         <File className='h-5' /> Billing
@@ -30,7 +30,7 @@ const BillingSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/dashboard/billing/wallet-logs') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-none gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] hover:bg-[#75517B] rounded-lg text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] hover:bg-[#75517B] rounded-lg text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/billing/wallet-logs')}
                     >
                         <Wallet className='h-5' /> Wallet Logs

@@ -294,7 +294,7 @@ export default function Billing() {
                                         <h1 className="text-xs italic">(Per User Per Year)</h1>
                                     </CardDescription>
                                     <div className="flex justify-center py-2 w-full">
-                                        <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
+                                        <Button className="bg-[#7C3886] hover:bg-[#75517B] w-fit px-6" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
                                     </div>
                                 </CardHeader>
                                 <div className='p-4'>
@@ -334,7 +334,7 @@ export default function Billing() {
                                 const planKey = plan as keyof typeof plans; // Type assertion
                                 return (
                                     <Card key={index} className="w-[400px] rounded border bg-transparent">
-                                        <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                        <CardHeader className="bg-[#2F0932]  rounded border-b text-center">
                                             <CardTitle className="text-2xl">{plan}</CardTitle>
                                             <CardDescription className="text-center text-white text-sm px-2">
                                                 <span className="text-[#007A5A]">INR </span>
@@ -342,7 +342,7 @@ export default function Billing() {
                                                 <h1 className="text-xs italic">(Per User Per Year)</h1>
                                             </CardDescription>
                                             <div className="flex justify-center py-2 w-full">
-                                                <Button className="bg-[#7C3886] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                                <Button className="bg-[#7C3886]  hover:bg-[#75517B] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
                                             </div>
                                         </CardHeader>
                                         <div className='p-4'>

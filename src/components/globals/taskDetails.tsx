@@ -131,7 +131,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                 <SheetContent className="max-w-4xl  w-full ">
                     <SheetHeader>
                         <div className="flex gap-2">
-                            <ArrowLeft className="cursor-pointer" onClick={() => setSelectedTask(null)} />
+                            <ArrowLeft className="cursor-pointer h-7 w-7 bg-[#121212] border border-white rounded-full" onClick={() => setSelectedTask(null)} />
                             <SheetTitle className="text-white mb-4">
                                 Task details
                             </SheetTitle>
@@ -471,7 +471,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                         <div className="space-y-2 h-full">
                             {sortedComments && sortedComments.length > 0 ? (
                                 sortedComments.map((commentObj, index) => (
-                                    <div key={index} className="relative border rounded-lg p-2">
+                                    <div key={index} className="relative border bg-[#121212] rounded-lg p-2">
                                         <div className="flex gap-2 items-center">
                                             <div className="h-6 w-6 text-xs  text-center rounded-full bg-red-700">
 

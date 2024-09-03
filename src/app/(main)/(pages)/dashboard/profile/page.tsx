@@ -111,6 +111,28 @@ export default function Profile({ }: Props) {
     }, []);
 
 
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            try {
+                // Fetch trial status
+                const response = await axios.get('/api/organization/getById');
+                console.log(response.data.data); // Log the organization data
+                const organization = response.data.data;
+                // Check if the trial has expired
+                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
+                console.log('isExpired:', isExpired);
+                console.log('trialExpires:', organization.trialExpires);
+
+                setIsTrialExpired(isExpired); // Set to true if expired, false otherwise
+            } catch (error) {
+                console.error('Error fetching user details or trial status:', error);
+            }
+        }
+        getUserDetails();
+    }, []);
+
+
     if (isTrialExpired) {
         return (
             <div className='p-4 text-center mt-32'>
@@ -122,6 +144,8 @@ export default function Profile({ }: Props) {
             </div>
         );
     }
+
+
 
 
     const logout = async () => {
@@ -165,7 +189,7 @@ export default function Profile({ }: Props) {
             </div>
             <div className='p-4 '>
                 <div>
-                <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
+                    <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
                         <h1 className='text-sm'>My Account Information</h1>
                     </div>
                     <Link href='/dashboard/settings/changePassword'>

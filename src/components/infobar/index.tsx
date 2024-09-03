@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Bell, BellDot, Book, Headphones, LogOutIcon, Search, User, XIcon } from 'lucide-react'
+import { Bell, BellDot, Book, DollarSign, Headphones, LogOut, LogOutIcon, Search, Settings, User, User2, XIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
@@ -186,34 +186,40 @@ const InfoBar = (props: Props) => {
                 <DropdownMenuLabel>{firstName} {lastName}
                   <p className='text-xs text-gray-400 capitalize'>Role: {role === "orgAdmin" ? <span>
                     Admin
-                  </span>: role === "manager" ? <span className='text-[10px]'>Manager</span> : <span className='text-[10px]'>Member</span>}</p>
+                  </span> : role === "manager" ? <span className='text-[10px]'>Manager</span> : <span className='text-[10px]'>Member</span>}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <Link href='/dashboard/profile'>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem className='gap-1'>
+                      <User2 className='h-4' />
                       Profile
-                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                      {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
                   </Link>
                   <Link href='/dashboard/billing'>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem className='gap-1'>
+                      <DollarSign className='h-4' />
+
                       Billing
-                      <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                      {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
                   </Link>
                   <Link href='/dashboard/settings'>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem className='gap-1'>
+                      <Settings className='h-4' />
+
                       Settings
-                      <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                      {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
                   </Link>
 
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
+                <DropdownMenuItem className='gap-1' onClick={logout}>
+                  <LogOut className='h-4' />
                   Log out
-                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { businessCategories } from '@/lib/constants';
 import { toast, Toaster } from 'sonner';
 import Loader from '@/components/ui/loader';
+import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
 
 interface Category {
     _id: string;
@@ -26,6 +27,8 @@ const Categories: React.FC = () => {
     const [isTrialExpired, setIsTrialExpired] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -85,19 +88,6 @@ const Categories: React.FC = () => {
         }
     };
 
-    const handleDeleteCategory = async (categoryId: string) => {
-        try {
-            const response = await axios.delete('/api/category/delete', { data: { categoryId } });
-
-            if (response.status === 200) {
-                setCategories(categories.filter(cat => cat._id !== categoryId));
-            } else {
-                console.error('Error deleting category:', response.data.error);
-            }
-        } catch (error) {
-            console.error('Error deleting category:', error);
-        }
-    };
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -148,7 +138,29 @@ const Categories: React.FC = () => {
             setLoading(false);
         }
     };
+    const handleDeleteCategory = async () => {
+        if (!deleteEntryId) return; // No ID to delete
 
+        try {
+            const response = await axios.delete('/api/category/delete', { data: { categoryId: deleteEntryId } });
+
+            if (response.status === 200) {
+                setCategories(categories.filter(cat => cat._id !== deleteEntryId));
+                setIsDeleteDialogOpen(false);
+                setDeleteEntryId(null); // Clear the ID after deletion
+            } else {
+                console.error('Error deleting category:', response.data.error);
+            }
+        } catch (error) {
+            console.error('Error deleting category:', error);
+        }
+    };
+
+
+    const handleDeleteClick = (id: string) => {
+        setDeleteEntryId(id);
+        setIsDeleteDialogOpen(true);
+    };
 
     return (
         <div className='p-4'>
@@ -180,7 +192,7 @@ const Categories: React.FC = () => {
                 )}
 
             </div>
-            <div className='flex gap-2 border rounded-lg w-56  mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
+            <div className='flex gap-2 border rounded-lg w-fit hover:bg-[#75517B]  mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
                 <h1 className='text-xs'>Add Suggested Categories</h1>
                 <Plus className='h-4' />
             </div>
@@ -248,13 +260,13 @@ const Categories: React.FC = () => {
                                             }}
                                             className="px-3 py-2 bg-warning text-white rounded"
                                         >
-                                            <Edit3 className='h-4' />
+                                            <Edit3 className='h-4 text-blue-400' />
                                         </button>
                                         <button
-                                            onClick={() => handleDeleteCategory(cat._id)}
+                                            onClick={() => handleDeleteClick(cat._id)}
                                             className="ml-2 px-3 py-2 bg-danger text-white rounded"
                                         >
-                                            <Trash className='h-4' />
+                                            <Trash className='h-4 text-red-500' />
                                         </button>
                                     </div>
                                 )}
@@ -263,6 +275,13 @@ const Categories: React.FC = () => {
                     </div>
                 ))}
             </div>
+            <DeleteConfirmationDialog
+                isOpen={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onConfirm={handleDeleteCategory}
+                title="Delete Task"
+                description="Are you sure you want to delete this category? This action cannot be undone."
+            />
         </div>
     );
 };

@@ -27,7 +27,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
                     <Dialog.Description className="mt-2 text-sm text-white -500">{description}</Dialog.Description>
                     <div className="mt-4 flex justify-end space-x-2">
                         <button
-                            className="px-4 py-2 text-sm  rounded-md"
+                            className="px-4 py-2 text-sm border  rounded-md"
                             onClick={onClose}
                         >
                             Cancel

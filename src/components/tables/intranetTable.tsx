@@ -101,7 +101,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
     };
 
     return (
-        <div className="mt-6">
+        <div className="mt-6 h-56   ">
             <Toaster />
 
             <table className="w-full border-collapse">
@@ -120,8 +120,8 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
                             <td className="px-4 py-2 flex mt-1 text-xs space-x-2">
                                 <button onClick={() => handleGoToLink(entry.linkUrl)}><Globe className='h-4' /></button>
                                 <button onClick={() => handleCopyLink(entry.linkUrl)}><Copy className='h-4' /></button>
-                                <button onClick={() => handleEdit(entry)}><Edit className='h-4' /></button>
-                                <button onClick={() => handleDeleteClick(entry._id)}><Trash className='h-4' /></button>
+                                <button onClick={() => handleEdit(entry)}><Edit className='h-4 text-blue-400' /></button>
+                                <button onClick={() => handleDeleteClick(entry._id)}><Trash className='h-4 text-red-500' /></button>
                             </td>
                         </tr>
                     ))}
@@ -129,7 +129,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
             </table>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center justify-between bottom-0 h-full mt-4">
                 <div className="flex items-center">
                     <span className="mr-2 text-sm">Rows per page:</span>
                     <select
@@ -142,7 +142,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center bottom-0 h-full mt-4">
                     <button
                         onClick={handlePrevPage}
                         disabled={currentPage === 1}
