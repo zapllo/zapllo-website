@@ -68,10 +68,10 @@ const Layout = (props: Props) => {
         <div>
             <>
                 {isVisible && (
-                    <div className='p-2 flex fixed mt- m  top-0  w-[100%] justify-center gap-2 bg-[#75517B] border'>
+                    <div className='p-2 flex fixed mt- m   top-0  w-[100%] justify-center gap-2 bg-[#75517B] border'>
                         <div className='flex gap-2 justify-center w-full'>
-                            <h1 className='text-center mt-1 flex text-white text-xs'>
-                                Your Trial Period will expire{' '}<strong className='text-yellow-500'>{remainingTime}</strong>{' '}, upgrade now for uninterrupted access
+                            <h1 className='text-center  mt-1 flex text-white text-xs'>
+                                Your Trial Period will expire {'  '} <strong className='text-yellow-500 ml-1'>{remainingTime}</strong>{' '}, Upgrade now for uninterrupted access
                             </h1>
                             <Link href='/dashboard/billing' >
                                 <Button className='h-5 rounded dark:bg-[#822b90] w-fit px-2 py-3  text-xs text-white'>

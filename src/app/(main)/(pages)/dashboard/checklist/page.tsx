@@ -79,7 +79,7 @@ export default function ChecklistPage({ }) {
         <div className="flex mt-24">
             <ChecklistSidebar />
             <div className="flex-1 p-4">
-                <div className="w-full ml-48  border-l -mt-32   max-w-4xl mx-auto">
+                <div className=" ml-48  border-l -mt-32   max-w-8xl mx-auto">
                     <div className="gap-2 flex mb-6  w-full">
                         <div className="-mt-2 w-full">
                             <div className="p-4 w-full">

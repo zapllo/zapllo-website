@@ -17,7 +17,7 @@ const ChecklistSidebar: React.FC = () => {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <div className="w-52 -mt-12 bg-[#201024] fixed text-white h-screen ">
+        <div className="w-52 border-r -mt-12 bg-[#201024] fixed text-white h-screen ">
             <div className='space-y-4'>
                 <div className='flex justify-center'>
                     <Button
@@ -31,7 +31,7 @@ const ChecklistSidebar: React.FC = () => {
                 <div className='flex justify-center'>
                     <Button
                         variant={isActive('/tutorials') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-lg  gap-2 px-4  bg-transparent justify-start py-1 hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] py-1 text-white rounded-lg' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg  gap-2 px-4  bg-transparent justify-start py-1 hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/tutorials') ? 'bg-[#75517B] py-1 text-white rounded-lg' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/tutorials')}
                     >
                         <Video className='h-5' /> Tutorials
@@ -39,9 +39,9 @@ const ChecklistSidebar: React.FC = () => {
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        variant={isActive('/dashboard/checklist/events') ? 'default' : 'default'}
-                        className={`w-[90%] rounded-lg  gap-2 py-1 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] py-1 text-white' : 'text-gray-400'}`}
-                        onClick={() => handleNavigation('/dashboard/events')}
+                        variant={isActive('/events') ? 'default' : 'default'}
+                        className={`w-[90%] rounded-lg  gap-2 py-1 px-4 bg-transparent justify-start hover:bg-[#75517B] hover:rounded-lg mb-2 ${isActive('/events') ? 'bg-[#75517B] py-1 text-white' : 'text-gray-400'}`}
+                        onClick={() => handleNavigation('/events')}
                     >
                         <Calendar className='h-5' /> Events
                     </Button>

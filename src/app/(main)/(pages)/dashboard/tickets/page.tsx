@@ -161,7 +161,7 @@ export default function Tickets() {
                                 <Loader />
                             ) : (
 
-                                <div className='p-10 border-l flex justify-center -mt-16 l w-full max-w-8xl  ml-52'>
+                                <div className='p-10    flex justify-center -mt-16 l w-full max-w-8xl  ml-52'>
 
 
                                     <div className='overflow-x-auto  w-full max-w-4xl -ml-56 '>

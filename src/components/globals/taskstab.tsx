@@ -141,7 +141,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customStartDate, setCustomStartDate] = useState<string>("");
   const [customEndDate, setCustomEndDate] = useState<string>("");
-
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchEmployeeQuery, setSearchEmployeeQuery] = useState<string>("");
   // State variables for filters
@@ -792,8 +791,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
 
-  const getCategoryTaskStats = (categoryId: any) => {
-    const categoryTasks = tasks.filter(task => task.category === categoryId);
+  const getCategoryTaskStats = (categoryId: string) => {
+    // Filter tasks where the category._id matches the given categoryId
+    const categoryTasks = tasks.filter(task => task.category._id === categoryId);
+
+    // Calculate task stats
     const overdueTasks = categoryTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
     const completedTasks = categoryTasks.filter(task => task.status === 'Completed').length;
     const inProgressTasks = categoryTasks.filter(task => task.status === 'In Progress').length;
@@ -1045,10 +1047,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <TabsTrigger3 value="thisYear" className="text-xs">This Year</TabsTrigger3>
                               <TabsTrigger3 value="allTime" className="text-xs">All Time</TabsTrigger3>
                               <Button
-                                onClick={() => setActiveDateFilter("custom")}
-                                className={`text-xs bg-[#28152e] hover:bg-[#28152e] text-muted-foreground h-6 ${activeDateFilter === "custom" || (customStartDate && customEndDate) ? "bg-[#7C3987]" : ""
+                                onClick={() => {
+                                  setActiveDateFilter("custom"); // Set directly to "custom"
+                                }}
+                                className={`text-xs bg-[#28152e] hover:bg-[#28152e] text-muted-foreground h-6 ${activeDateFilter === "custom" || (customStartDate && customEndDate) ? "bg-[#7C3987] text-white" : ""
                                   }`}
-                              >Custom</Button>
+                              >
+                                Custom
+                              </Button>
+
                               {activeDateFilter === "custom" && (
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                   <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96">
@@ -1099,7 +1106,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       </div>
                       <div>
                         {activeTab === "all" ? (
-                          <div className="flex mt-6 -ml-48 flex-col ">
+                          <div className="flex mt-4 -ml-48 flex-col ">
                             <div className=" ml-28  w-full flex justify-center text-xs gap-4">
                               <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
                             </div>
@@ -1130,85 +1137,95 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                 </div>
                                 <div className="grid w-[80%] ml-56 gap-4">
-                                  {users.filter(user => {
-                                    const query = searchQuery.toLowerCase();
-                                    return (
-                                      user.firstName.toLowerCase().includes(query) ||
-                                      user.lastName.toLowerCase().includes(query)
-                                    );
-                                  }).map(user => {
-                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
-                                    const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
-                                    const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
-                                      return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
-                                    };
-                                    const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
+                                  {users
+                                    .filter(user => {
+                                      const query = searchQuery.toLowerCase();
+                                      return (
+                                        user.firstName.toLowerCase().includes(query) ||
+                                        user.lastName.toLowerCase().includes(query)
+                                      );
+                                    })
+                                    .filter(user => {
+                                      // Fetch task stats for the user
+                                      const { overdueTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
 
-                                    // Determine the color based on the traffic light logic
-                                    let pathColor;
-                                    if (completionPercentage < 50) {
-                                      pathColor = '#FF0000'; // Red for less than 50%
-                                    } else if (completionPercentage >= 50 && completionPercentage < 80) {
-                                      pathColor = '#FFA500'; // Orange for 50%-79%
-                                    } else {
-                                      pathColor = '#008000'; // Green for 80% and above
-                                    }
+                                      // Only include users with at least one relevant task count
+                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
+                                    })
+                                    .map(user => {
+                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
 
-                                    return (
-                                      <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
-                                        <div className="flex gap-2 justify-start">
-                                          <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
-                                            <h1 className="text-center text-sm mt-1 uppercase">
-                                              {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
-                                            </h1>
-                                          </div>
-                                          <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
-                                        </div>
+                                      const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
+                                      const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
+                                        return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+                                      };
+                                      const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
 
-                                        {/* <p className="text-xs"> {user.email}</p> */}
-                                        <div className="flex gap-2 ] text-xs mt-1">
-                                          <div className="flex font-medium ">
-                                            <CircleAlert className="text-red-500 h-4" />
-                                            <p className="text-xs">Overdue: {overdueTasks}</p>
-                                          </div>
-                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+                                      // Determine the color based on the traffic light logic
+                                      let pathColor;
+                                      if (completionPercentage < 50) {
+                                        pathColor = '#FF0000'; // Red for less than 50%
+                                      } else if (completionPercentage >= 50 && completionPercentage < 80) {
+                                        pathColor = '#FFA500'; // Orange for 50%-79%
+                                      } else {
+                                        pathColor = '#008000'; // Green for 80% and above
+                                      }
 
-                                          <div className="flex gap-2  font-medium">
-                                            <Circle className="text-red-400 h-4" />
-                                            <p className="text-xs">Pending: {pendingTasks}</p>
-                                          </div>
-                                          <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                                          <div className="flex gap-2 font-medium">
-                                            <IconProgress className="text-orange-600 h-4" />
-                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
-                                          </div>
-                                          <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                                          <div className="flex gap-2 font-medium">
-                                            <CheckCircle className="text-green-600 h-4" />
-                                            <p className="text-xs">Completed: {completedTasks}</p>
-                                          </div>
-                                        </div>
-                                        <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
-                                          <div className="">
-                                            <CircularProgressbar
-                                              value={completionPercentage}
-                                              text={`${Math.round(completionPercentage)}%`}
-                                              styles={buildStyles({
-                                                textSize: '24px',
-                                                pathColor: pathColor, // Dynamic path color
-                                                textColor: '#ffffff',
-                                                trailColor: '#6C636E', // Trail color should be lighter for better contrast
-                                                backgroundColor: '#3e98c7',
-                                              })}
-                                            />
+                                      return (
+                                        <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
+                                          <div className="flex gap-2 justify-start">
+                                            <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
+                                              <h1 className="text-center text-sm mt-1 uppercase">
+                                                {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
+                                              </h1>
+                                            </div>
+                                            <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
                                           </div>
 
-                                        </div>
-                                      </Card>
-                                    );
-                                  })}
+                                          {/* <p className="text-xs"> {user.email}</p> */}
+                                          <div className="flex gap-2 ] text-xs mt-1">
+                                            <div className="flex font-medium ">
+                                              <CircleAlert className="text-red-500 h-4" />
+                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                            </div>
+                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                            <div className="flex gap-2  font-medium">
+                                              <Circle className="text-red-400 h-4" />
+                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                            </div>
+                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                            <div className="flex gap-2 font-medium">
+                                              <IconProgress className="text-orange-600 h-4" />
+                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                            </div>
+                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                            <div className="flex gap-2 font-medium">
+                                              <CheckCircle className="text-green-600 h-4" />
+                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                            </div>
+                                          </div>
+                                          <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
+                                            <div className="">
+                                              <CircularProgressbar
+                                                value={completionPercentage}
+                                                text={`${Math.round(completionPercentage)}%`}
+                                                styles={buildStyles({
+                                                  textSize: '24px',
+                                                  pathColor: pathColor, // Dynamic path color
+                                                  textColor: '#ffffff',
+                                                  trailColor: '#6C636E', // Trail color should be lighter for better contrast
+                                                  backgroundColor: '#3e98c7',
+                                                })}
+                                              />
+                                            </div>
+
+                                          </div>
+                                        </Card>
+                                      );
+                                    })}
                                 </div>
                               </div>
                             )}
@@ -1225,94 +1242,105 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                 </div>
                                 <div className="grid gap-4 ml-56 w-[80%]">
-                                  {categories.filter(category => {
-                                    const query = searchQuery.toLowerCase();
-                                    return category.name.toLowerCase().includes(query);
-                                  }).map(category => {
-                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+                                  {categories
+                                    .filter(category => {
+                                      const query = searchQuery.toLowerCase();
+                                      return category.name.toLowerCase().includes(query);
+                                    })
+                                    .filter(category => {
+                                      // Fetch task stats for the category
+                                      const { overdueTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
 
-                                    return (
-                                      <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
-                                        <div className="flex gap-2">
-                                          <TagsIcon className="h-5" />
-                                          <h2 className="text-sm font-medium">{category.name}</h2>
-                                        </div>
-                                        <div className="flex gap-4 mt-2">
-                                          <div className="flex gap-1 font-bold">
-                                            <CircleAlert className="text-red-500 h-4" />
-                                            <p className="text-xs">Overdue: {overdueTasks}</p>
+                                      // Only include categories with at least one relevant task count
+                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
+                                    })
+                                    .map(category => {
+                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+                                      return (
+                                        <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
+                                          <div className="flex gap-2">
+                                            <TagsIcon className="h-5" />
+                                            <h2 className="text-sm font-medium">{category.name}</h2>
                                           </div>
-                                          <div className="flex gap-1 font-bold">
-                                            <Circle className="text-red-400 h-4" />
-                                            <p className="text-xs">Pending: {pendingTasks}</p>
+                                          <div className="flex gap-4 mt-2">
+                                            <div className="flex gap-1 font-">
+                                              <CircleAlert className="text-red-500 h-4" />
+                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                            </div>
+                                            <div className="flex gap-1 font-">
+                                              <Circle className="text-red-400 h-4" />
+                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                            </div>
+                                            <div className="flex gap-1 font-">
+                                              <IconProgress className="text-orange-600 h-4" />
+                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                            </div>
+                                            <div className="flex gap-1 font-">
+                                              <CheckCircle className="text-green-600 h-4" />
+                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                            </div>
                                           </div>
-                                          <div className="flex gap-1 font-bold">
-                                            <IconProgress className="text-orange-600 h-4" />
-                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
-                                          </div>
-                                          <div className="flex gap-1 font-bold">
-                                            <CheckCircle className="text-green-600 h-4" />
-                                            <p className="text-xs">Completed: {completedTasks}</p>
-                                          </div>
-                                        </div>
-                                      </Card>
-                                    );
-                                  })}
+                                        </Card>
+                                      );
+                                    })}
                                 </div>
                               </div>
                             )}
-                            {activeDashboardTab === "my-report" && userDetails && (
-                              <div>
-                                <div className="flex p-2 m-2 justify-center">
 
-                                  {/* <h1 className="font-medium ">My Report</h1> */}
+                            {activeDashboardTab === "my-report" && userDetails && (
+                              <div className="">
+                                <div className="flex p-2 m-2 justify-center">
                                   <input
                                     type="text"
                                     placeholder="Search Category"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
+                                    className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A] bg-transparent rounded-md"
                                   />
-
                                 </div>
                                 <div className="grid gap-4 ml-56 w-[80%]">
-                                  {categories.filter(category => {
-                                    const query = searchQuery.toLowerCase();
-                                    return (
-                                      category.name.toLowerCase().includes(query)
-                                    );
-                                  }).map(category => {
-                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryReportTaskStats(category._id);
+                                  {categories
+                                    .filter(category => {
+                                      const query = searchQuery.toLowerCase();
+                                      return category.name.toLowerCase().includes(query);
+                                    })
+                                    .filter(category => {
+                                      // Fetch task stats for the category
+                                      const { overdueTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
 
-                                    return (
-                                      <Card key={category._id} className="p-4 flex bg-[#]  flex-col gap-2">
-                                        <div className="flex gap-2">
-                                          <TagsIcon className="h-5" />
-                                          <h2 className="text-sm font-medium">{category.name}</h2>
-                                        </div>
-                                        <div className="flex gap-4 mt-2">
-                                          <div className="flex gap-1 font-bold">
-                                            <div className="flex gap-1 font-bold">
+                                      // Only include categories with at least one relevant task count
+                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
+                                    })
+                                    .map(category => {
+                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+
+                                      return (
+                                        <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
+                                          <div className="flex gap-2">
+                                            <TagsIcon className="h-5" />
+                                            <h2 className="text-sm font-medium">{category.name}</h2>
+                                          </div>
+                                          <div className="flex gap-4 mt-2">
+                                            <div className="flex gap-1 font-medium">
                                               <CircleAlert className="text-red-500 h-4" />
                                               <p className="text-xs">Overdue: {overdueTasks}</p>
                                             </div>
+                                            <div className="flex gap-1 font-medium">
+                                              <Circle className="text-red-400 h-4" />
+                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                            </div>
+                                            <div className="flex gap-1 font-medium">
+                                              <IconProgress className="text-orange-600 h-4" />
+                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                            </div>
+                                            <div className="flex gap-1 font-medium">
+                                              <CheckCircle className="text-green-600 h-4" />
+                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                            </div>
                                           </div>
-                                          <div className="flex gap-1 font-bold">
-                                            <Circle className="text-red-400 h-4" />
-                                            <p className="text-xs">Pending: {pendingTasks}</p>
-                                          </div>
-                                          <div className="flex gap-1 font-bold">
-                                            <IconProgress className="text-orange-600 h-4" />
-                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
-                                          </div>
-                                          <div className="flex gap-1 font-bold">
-                                            <CheckCircle className="text-green-600 h-4" />
-                                            <p className="text-xs">Completed: {completedTasks}</p>
-                                          </div>
-                                        </div>
-                                      </Card>
-                                    );
-                                  })}
+                                        </Card>
+                                      );
+                                    })}
                                 </div>
                               </div>
                             )}
@@ -1333,85 +1361,95 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                 </div>
                                 <div className="grid w-[80%] ml-56 gap-4">
-                                  {users.filter(user => {
-                                    const query = searchQuery.toLowerCase();
-                                    return (
-                                      user.firstName.toLowerCase().includes(query) ||
-                                      user.lastName.toLowerCase().includes(query)
-                                    );
-                                  }).map(user => {
-                                    const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
-                                    const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
-                                    const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
-                                      return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
-                                    };
-                                    const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
+                                  {users
+                                    .filter(user => {
+                                      const query = searchQuery.toLowerCase();
+                                      return (
+                                        user.firstName.toLowerCase().includes(query) ||
+                                        user.lastName.toLowerCase().includes(query)
+                                      );
+                                    })
+                                    .filter(user => {
+                                      // Fetch task stats for the user
+                                      const { overdueTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
 
-                                    // Determine the color based on the traffic light logic
-                                    let pathColor;
-                                    if (completionPercentage < 50) {
-                                      pathColor = '#FF0000'; // Red for less than 50%
-                                    } else if (completionPercentage >= 50 && completionPercentage < 80) {
-                                      pathColor = '#FFA500'; // Orange for 50%-79%
-                                    } else {
-                                      pathColor = '#008000'; // Green for 80% and above
-                                    }
+                                      // Only include users with at least one relevant task count
+                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
+                                    })
+                                    .map(user => {
+                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
 
-                                    return (
-                                      <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
-                                        <div className="flex gap-2 justify-start">
-                                          <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
-                                            <h1 className="text-center text-sm mt-1 uppercase">
-                                              {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
-                                            </h1>
-                                          </div>
-                                          <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
-                                        </div>
+                                      const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
+                                      const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
+                                        return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+                                      };
+                                      const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
 
-                                        {/* <p className="text-xs"> {user.email}</p> */}
-                                        <div className="flex gap-2 ] text-xs mt-1">
-                                          <div className="flex font-medium ">
-                                            <CircleAlert className="text-red-500 h-4" />
-                                            <p className="text-xs">Overdue: {overdueTasks}</p>
-                                          </div>
-                                          <h1 className="text-[#6C636E] text-xs">|</h1>
+                                      // Determine the color based on the traffic light logic
+                                      let pathColor;
+                                      if (completionPercentage < 50) {
+                                        pathColor = '#FF0000'; // Red for less than 50%
+                                      } else if (completionPercentage >= 50 && completionPercentage < 80) {
+                                        pathColor = '#FFA500'; // Orange for 50%-79%
+                                      } else {
+                                        pathColor = '#008000'; // Green for 80% and above
+                                      }
 
-                                          <div className="flex gap-2  font-medium">
-                                            <Circle className="text-red-400 h-4" />
-                                            <p className="text-xs">Pending: {pendingTasks}</p>
-                                          </div>
-                                          <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                                          <div className="flex gap-2 font-medium">
-                                            <IconProgress className="text-orange-600 h-4" />
-                                            <p className="text-xs">In Progress: {inProgressTasks}</p>
-                                          </div>
-                                          <h1 className="text-[#6C636E] text-xs">|</h1>
-
-                                          <div className="flex gap-2 font-medium">
-                                            <CheckCircle className="text-green-600 h-4" />
-                                            <p className="text-xs">Completed: {completedTasks}</p>
-                                          </div>
-                                        </div>
-                                        <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
-                                          <div className="">
-                                            <CircularProgressbar
-                                              value={completionPercentage}
-                                              text={`${Math.round(completionPercentage)}%`}
-                                              styles={buildStyles({
-                                                textSize: '24px',
-                                                pathColor: pathColor, // Dynamic path color
-                                                textColor: '#ffffff',
-                                                trailColor: '#6C636E', // Trail color should be lighter for better contrast
-                                                backgroundColor: '#3e98c7',
-                                              })}
-                                            />
+                                      return (
+                                        <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
+                                          <div className="flex gap-2 justify-start">
+                                            <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
+                                              <h1 className="text-center text-sm mt-1 uppercase">
+                                                {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
+                                              </h1>
+                                            </div>
+                                            <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
                                           </div>
 
-                                        </div>
-                                      </Card>
-                                    );
-                                  })}
+                                          {/* <p className="text-xs"> {user.email}</p> */}
+                                          <div className="flex gap-2 ] text-xs mt-1">
+                                            <div className="flex font-medium ">
+                                              <CircleAlert className="text-red-500 h-4" />
+                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                            </div>
+                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                            <div className="flex gap-2  font-medium">
+                                              <Circle className="text-red-400 h-4" />
+                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                            </div>
+                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                            <div className="flex gap-2 font-medium">
+                                              <IconProgress className="text-orange-600 h-4" />
+                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                            </div>
+                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+
+                                            <div className="flex gap-2 font-medium">
+                                              <CheckCircle className="text-green-600 h-4" />
+                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                            </div>
+                                          </div>
+                                          <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
+                                            <div className="">
+                                              <CircularProgressbar
+                                                value={completionPercentage}
+                                                text={`${Math.round(completionPercentage)}%`}
+                                                styles={buildStyles({
+                                                  textSize: '24px',
+                                                  pathColor: pathColor, // Dynamic path color
+                                                  textColor: '#ffffff',
+                                                  trailColor: '#6C636E', // Trail color should be lighter for better contrast
+                                                  backgroundColor: '#3e98c7',
+                                                })}
+                                              />
+                                            </div>
+
+                                          </div>
+                                        </Card>
+                                      );
+                                    })}
                                 </div>
                               </div>
                             )}
@@ -1419,9 +1457,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         ) : activeTab === "myTasks" ? (
                           <div>
                             <div>
-                              <div className="flex    flex-col ">
+                              <div className="flex  flex-col ">
                                 {customStartDate && customEndDate && (
-                                  <div className="flex gap-2 p-2 justify-center w-full">
+                                  <div className="flex gap-8 p-2 justify-center w-full">
                                     <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
                                     <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
                                   </div>
@@ -1451,7 +1489,49 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
                                 </div>
                               </div>
+                              <div className="applied-filters gap-2 mb-2 -ml-2 text-xs flex w-full justify-center">
 
+                                {categoryFilter.length > 0 && (
+                                  <div className="flex border px-2 py-1 gap-2">
+                                    <h3>Categories:</h3>
+                                    <ul className="flex gap-2 ">
+                                      {categoryFilter.map(id => (
+                                        <li className="flex gap-2" key={id}>{categories.find(category => category._id === id)?.name} </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {assignedByFilter.length > 0 && (
+                                  <div className="flex px-2 py-1 border gap-2">
+                                    <h3>Assigned By:</h3>
+                                    <ul>
+                                      {assignedByFilter.map(id => (
+                                        <li key={id}>{users.find(user => user._id === id)?.firstName} {users.find(user => user._id === id)?.lastName}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {frequencyFilter.length > 0 && (
+                                  <div className="flex px-2 py-1 border gap-2">
+                                    <h3>Frequency:</h3>
+                                    <ul className="flex gap-2">
+                                      {frequencyFilter.map(freq => (
+                                        <li key={freq}>{freq}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {priorityFilterModal.length > 0 && (
+                                  <div className="flex gap-2 border py-1 px-2">
+                                    <h3>Priority:</h3>
+                                    <ul>
+                                      {priorityFilterModal.map(priority => (
+                                        <li key={priority}>{priority}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
                               {filteredTasks && filteredTasks.length > 0 ? (
 
                                 filteredTasks?.map((task) => (
@@ -1566,8 +1646,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         isEditDialogOpen={isEditDialogOpen}
                                         onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
                                     )}
-
-
                                   </div>
                                 ))
                               ) : (
@@ -1597,9 +1675,12 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </div>
                           </div>
                         ) : activeTab === "delegatedTasks" ? (
+
+
+
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
-                              <div className="flex gap-2 p-2 justify-center w-full">
+                              <div className="flex gap-8 p-2 justify-center w-full">
                                 <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
                                 <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
                               </div>
@@ -1624,11 +1705,54 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
                                 </div>
                               </div>
+                              <div className="applied-filters gap-2 mb-2 text-xs flex w-full ml-24 justify-center">
+
+                                {categoryFilter.length > 0 && (
+                                  <div className="flex border px-2 py-1 gap-2">
+                                    <h3>Categories:</h3>
+                                    <ul className="flex gap-2 ">
+                                      {categoryFilter.map(id => (
+                                        <li className="flex gap-2" key={id}>{categories.find(category => category._id === id)?.name} </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {assignedByFilter.length > 0 && (
+                                  <div className="flex px-2 py-1 border gap-2">
+                                    <h3>Assigned By:</h3>
+                                    <ul>
+                                      {assignedByFilter.map(id => (
+                                        <li key={id}>{users.find(user => user._id === id)?.firstName} {users.find(user => user._id === id)?.lastName}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {frequencyFilter.length > 0 && (
+                                  <div className="flex px-2 py-1 border gap-2">
+                                    <h3>Frequency:</h3>
+                                    <ul className="flex gap-2">
+                                      {frequencyFilter.map(freq => (
+                                        <li key={freq}>{freq}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {priorityFilterModal.length > 0 && (
+                                  <div className="flex gap-2 border py-1 px-2">
+                                    <h3>Priority:</h3>
+                                    <ul>
+                                      {priorityFilterModal.map(priority => (
+                                        <li key={priority}>{priority}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
                               {filteredTasks!.length > 0 ? (
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[80.55%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -1758,7 +1882,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         ) : (
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
-                              <div className="flex gap-2 p-2 justify-center w-full">
+                              <div className="flex gap-8 p-2 justify-center w-full">
                                 <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
                                 <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
                               </div>
@@ -1780,14 +1904,60 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     />
 
                                   </div>
+
                                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
                                 </div>
+
+                              </div>
+                              {/* Display applied filters */}
+                              <div className="applied-filters gap-2 mb-2 text-xs flex w-full ml-24 justify-center">
+
+                                {categoryFilter.length > 0 && (
+                                  <div className="flex border px-2 py-1 gap-2">
+                                    <h3>Categories:</h3>
+                                    <ul className="flex gap-2 ">
+                                      {categoryFilter.map(id => (
+                                        <li className="flex gap-2" key={id}>{categories.find(category => category._id === id)?.name} </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {assignedByFilter.length > 0 && (
+                                  <div className="flex px-2 py-1 border gap-2">
+                                    <h3>Assigned By:</h3>
+                                    <ul>
+                                      {assignedByFilter.map(id => (
+                                        <li key={id}>{users.find(user => user._id === id)?.firstName} {users.find(user => user._id === id)?.lastName}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {frequencyFilter.length > 0 && (
+                                  <div className="flex px-2 py-1 border gap-2">
+                                    <h3>Frequency:</h3>
+                                    <ul className="flex gap-2">
+                                      {frequencyFilter.map(freq => (
+                                        <li key={freq}>{freq}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {priorityFilterModal.length > 0 && (
+                                  <div className="flex gap-2 border py-1 px-2">
+                                    <h3>Priority:</h3>
+                                    <ul>
+                                      {priorityFilterModal.map(priority => (
+                                        <li key={priority}>{priority}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
                               </div>
                               {filteredTasks!.length > 0 ? (
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[80.55%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -1816,9 +1986,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                             <TagIcon className="h-4" />
                                             {task.category.name}
                                           </div>
+
                                           {task.repeat ? (
                                             <div className="flex items-center">
                                               <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+
                                               {task.repeatType && (
                                                 <h1 className="flex mt-[11px] text-xs">
                                                   <Repeat className="h-4 " />  {task.repeatType}
@@ -1826,16 +1998,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               )}
                                             </div>
                                           ) : null}
+
+                                          {/* <div className="flex mt-auto">
+                      <TagIcon className="h-5" />
+                    </div> */}
                                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+
                                           <div className="flex text-xs">
                                             <div className="mt-[11px]">
                                               <IconProgressBolt className="h-4  " />
+
                                             </div>
                                             <h1 className="mt-auto">
                                               {task.status}
                                             </h1>
                                           </div>
                                         </div>
+
                                       </div>
                                       <div className="">
                                         <div className="flex ">
@@ -1863,6 +2042,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               <h1 className="text-xs">Completed</h1>
                                             </Button>
                                           </div>
+                                        </div>
+
+                                        <div className="flex justify-end mt-4">
+
                                         </div>
                                       </div>
                                     </Card>

@@ -112,7 +112,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 w-full">
                             {loading ? (
-                                <Loader /> // Display loader while fetching tickets
+                                <Loader /> 
                             ) : (
                                 <div className='p-6 border-l overflow-y-scroll h-screen scrollbar-hide ml-56  -mt-12 space-y-4'>
                                     <Link href='/dashboard/tickets'>
@@ -121,7 +121,6 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                             <h1>Back To My Tickets</h1>
                                         </div>
                                     </Link>
-
                                     {ticket && (
                                         <>
                                             <div className=' border p-4 rounded'>

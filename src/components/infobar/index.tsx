@@ -130,6 +130,12 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/intranet') {
       return 'Intranet';
     }
+    else if (pathName === '/tutorials') {
+      return 'Tutorials';
+    }
+    else if (pathName === '/events') {
+      return 'Events';
+    }
   };
 
 

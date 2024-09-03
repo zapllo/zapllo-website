@@ -96,7 +96,7 @@ export default function Billing() {
     return (
         <div className="flex ">
             <BillingSidebar />
-            <div className="flex-1  p-4">
+            <div className="flex-1 overflow-y-scroll h-screen  p-4">
                 <div className="w-full flex justify-center   max-w-5xl mx-auto">
                     <div className="gap-2 flex  mb-6 w-full">
                         <div className="-mt-2">
@@ -215,7 +215,7 @@ export default function Billing() {
                                     <input
                                         id="rechargeAmount"
                                         type="number"
-                                        className="border p-2 rounded w-full"
+                                        className="border p-2 rounded outline-none w-full"
                                         value={rechargeAmount}
                                         onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
                                     />
@@ -253,7 +253,7 @@ export default function Billing() {
                                         <h1 className="text-xs italic">(Per User Per Year)</h1>
                                     </CardDescription>
                                     <div className="flex justify-center py-2 w-full">
-                                        <Button className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribed</Button>
+                                        <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribed</Button>
                                     </div>
                                 </CardHeader>
                                 <div className='p-4'>
@@ -318,7 +318,7 @@ export default function Billing() {
                             </Card>
                         ) : (
                             <div className='w-full flex justify-center max-w-5xl'>
-                                <h1 className="text- -ml-56 rounded-lg bg-transparent border text-muted-foreground p-4 w-fit">
+                                <h1 className="text rounded-lg bg-transparent border text-muted-foreground p-4 w-fit">
                                     <span className="text-lg font-bold text-white">
                                         No Current Active Plan
                                     </span>

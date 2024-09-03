@@ -286,7 +286,7 @@ export default function TeamTabs() {
             >
               <option value="">Reporting Manager</option>
               {users.map(user => (
-                <option key={user._id} value={user._id}>{user.firstName}</option>
+                <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
               ))}
             </select>
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -401,6 +401,8 @@ export default function TeamTabs() {
                       <div>
                         <p className="font-medium w-[100px] mt-2 text-sm">
                           {user.firstName.length > 8 ? `${user.firstName.slice(0, 8)}...` : user.firstName}
+                          {' '}
+                          {user.lastName.length > 8 ? `${user.lastName.slice(0, 8)}...` : user.lastName}
                         </p>
                       </div>
 

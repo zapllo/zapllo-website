@@ -3,7 +3,7 @@
 import ChecklistSidebar from '@/components/sidebar/checklistSidebar';
 import React from 'react';
 
-export default function Tutorials() {
+export default function Events() {
     return (
         <div className="flex mt-24">
             <ChecklistSidebar />
@@ -16,7 +16,7 @@ export default function Tutorials() {
                                 <div className='space-y-2'>
                                     <img src='/animations/loading.gif' className='h-64 ml-24' />
                                     <h1 className='text-2xl text-center ml-12 font-bold'>Coming Soon!</h1>
-                                    <p className='ml-6'>We are bringing Tutorials to help you grow your business</p>
+                                    <p className='ml-6'>We are bringing Live Classes to help you grow your business</p>
                                 </div>
                             </div>
                         </div>
