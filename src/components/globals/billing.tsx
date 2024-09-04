@@ -390,7 +390,7 @@ export default function Billing() {
                         <div className='w-full flex justify-center'>
                             <img src='/icons/danger.png' className='h-8' />
                         </div>
-                        <h1 className='text-center m'>You're not authorized to view this page!</h1>
+                        <h1 className='text-center m'>You are not authorized to view this page!</h1>
                     </div>
                 </div>
             }
