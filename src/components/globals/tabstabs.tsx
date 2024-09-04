@@ -77,10 +77,6 @@ export default function TeamTabs() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
 
-
-
-
-
   useEffect(() => {
     // Update newMember's reportingManagerId when selectedManager changes
     setNewMember(prevState => ({
@@ -432,28 +428,30 @@ export default function TeamTabs() {
                   </div>
 
 
-
-
-                  <div className="flex">
-                    <Button className="bg-transparent  hover:bg-transparent" onClick={() => {
-                      setEditedUser({
-                        _id: user._id,
-                        email: user.email,
-                        role: user.role,
-                        password: "",
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        whatsappNo: user.whatsappNo,
-                        reportingManager: selectedManager,
-                      });
-                      setIsEditModalOpen(true);
-                    }}>
-                      <Pencil className="h-5 text-blue-500" />
-                    </Button>
-                    <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser()}>
-                      <Trash2 className="text-[#9C2121] h-5" />
-                    </Button>
-                  </div>
+                 
+                    { loggedInUserRole == "orgAdmin" && (
+                      <div className="flex">
+                        <Button className="bg-transparent  hover:bg-transparent" onClick={() => {
+                          setEditedUser({
+                            _id: user._id,
+                            email: user.email,
+                            role: user.role,
+                            password: "",
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            whatsappNo: user.whatsappNo,
+                            reportingManager: selectedManager,
+                          });
+                          setIsEditModalOpen(true);
+                        }}>
+                          <Pencil className="h-5 text-blue-500" />
+                        </Button>
+                        <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser()}>
+                          <Trash2 className="text-[#9C2121] h-5" />
+                        </Button>
+                      </div>
+                    )}
+               
                 </Card>
               </div>
             ))}
@@ -499,6 +497,18 @@ export default function TeamTabs() {
               <option value="member" className="text-xs">Team Member</option>
               <option value="orgAdmin" className="text-xs">Admin</option>
               <option value="manager" className="text-xs">Manager</option>
+            </select>
+            <select
+              value={selectedReportingManager}
+              className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              onChange={handleReportingManagerChange}
+            >
+              <option value={editedUser.reportingManager} className="text-xs">{`${editedUser.reportingManager === '' ? "Select Reporting Manager" : editedUser.reportingManager}`} </option>
+              {users.map((user) => (
+                <option key={user._id} className="text-xs outline-none" value={user._id}>
+                  {user.firstName} {user.lastName}
+                </option>
+              ))}
             </select>
             <input
               placeholder="WhatsApp Number"

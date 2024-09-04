@@ -197,14 +197,15 @@ const InfoBar = (props: Props) => {
                       {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
                   </Link>
-                  <Link href='/dashboard/billing'>
+                  {role === "orgAdmin" ? <Link href='/dashboard/billing'>
                     <DropdownMenuItem className='gap-1'>
                       <DollarSign className='h-4' />
 
                       Billing
                       {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
-                  </Link>
+                  </Link> : ""}
+
                   <Link href='/dashboard/settings'>
                     <DropdownMenuItem className='gap-1'>
                       <Settings className='h-4' />

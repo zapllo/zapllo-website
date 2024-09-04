@@ -170,7 +170,7 @@ const IntranetPage: React.FC = () => {
                                     required
                                     className="mt-1 block text-xs  outline-none w-full p-2 border rounded"
                                 >
-                                    <option value="text-xs " disabled>Select a category</option>
+                                    <option value="" >Select a category</option>
                                     {categories.map((cat) => (
                                         <option key={cat._id} value={cat._id}>{cat.name}</option>
                                     ))}

@@ -39,7 +39,7 @@ import Loader from '../ui/loader';
 import { Toggle } from '../ui/toggle';
 import Select, { StylesConfig } from 'react-select';
 import { Switch } from '../ui/switch';
-import { FaUpload } from 'react-icons/fa';
+import { FaTimes, FaUpload } from 'react-icons/fa';
 import CustomAudioPlayer from './customAudioPlayer';
 import DaysSelectModal from '../modals/DaysSelect';
 import { Avatar } from '../ui/avatar';
@@ -112,6 +112,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const audioURLRef = useRef<string | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [files, setFiles] = useState<File[]>([]) // Updated to handle array of files
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 
 
@@ -506,12 +507,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setDescription("");
         setAssignedUser("");
         setCategory("");
+        setPopoverCategoryInputValue("");
+        setPopoverInputValue("");
         setPriority("");
         setRepeat(false);
         setRepeatType("");
         setDays([]);
         setDueDate(null);
         setDueTime("");
+        setCategory('');
         setFiles([]); // Clear the uploaded files
         setLinks([]);
         setEmailReminderType('minutes');
@@ -582,6 +586,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     };
 
 
+
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files;
 
@@ -597,6 +602,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 setFiles(validFiles); // Update state with all selected files
             }
         }
+    };
+
+    const removeFile = (index: number) => {
+        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove the file at the specified index
     };
 
 
@@ -986,7 +995,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 {files.length > 0 && (
                                     <ul className='list-disc list-inside'>
                                         {files.map((file, index) => (
-                                            <li key={index}>{file.name}</li>
+                                            <li key={index} className='flex justify-between items-center'>
+                                                {file.name}
+                                                <button
+                                                    onClick={() => removeFile(index)}
+                                                    className='text-red-500 ml-2 focus:outline-none'
+                                                >
+                                                    <FaTimes className='h-4 w-4' /> {/* Cross icon */}
+                                                </button>
+                                            </li>
                                         ))}
                                     </ul>
                                 )}

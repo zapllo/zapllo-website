@@ -1114,8 +1114,22 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             <div className="flex gap-4 ml-24  w-full justify-center">
                               <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="gap-4">
                                 <TabsList2 className="flex gap-4">
-                                  <TabsTrigger2 className="flex gap-2 text-xs tabs-trigger" value="employee-wise">Employee Wise</TabsTrigger2>
-                                  <TabsTrigger2 value="category-wise" className="flex gap-2 text-xs"> Category Wise</TabsTrigger2>
+                                  {userDetails?.role === "orgAdmin" && (
+                                    <>
+                                      <TabsTrigger2
+                                        className="flex gap-2 text-xs tabs-trigger"
+                                        value="employee-wise"
+                                      >
+                                        Employee Wise
+                                      </TabsTrigger2>
+                                      <TabsTrigger2
+                                        value="category-wise"
+                                        className="flex gap-2 text-xs"
+                                      >
+                                        Category Wise
+                                      </TabsTrigger2>
+                                    </>
+                                  )}
                                   <TabsTrigger2 value="my-report" className="text-xs">My Report </TabsTrigger2>
                                   <TabsTrigger2 value="delegatedTasks" className="tabs-trigger text-xs">Delegated</TabsTrigger2>
                                 </TabsList2>
