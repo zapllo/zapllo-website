@@ -1,8 +1,8 @@
-// /app/api/payment-success/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import User from '@/models/userModel'; // Adjust the path as necessary
 import Order from '@/models/orderModel'; // Adjust the path as necessary
+import Organization from '@/models/organizationModel'; // Adjust the path as necessary
 import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 
@@ -33,13 +33,34 @@ export async function POST(request: NextRequest) {
         const creditedAmount = amountWithoutGST * (1 + razorpayFeeRate);
 
         // Update the user document
-        await User.updateOne(
-            { _id: new mongoose.Types.ObjectId(userId) },
+        const user = await User.findByIdAndUpdate(
+            userId,
             {
                 $inc: { credits: creditedAmount },
                 $set: { isPro: true, subscribedPlan: planName }
-            }
+            },
+            { new: true }
         );
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // Check if the user is part of an organization and update the organization's isPro status
+        if (user.organization) {
+            const subscriptionExpires = new Date();
+            subscriptionExpires.setDate(subscriptionExpires.getDate() + 365); // Set expiry date to 365 days from now
+
+            await Organization.updateOne(
+                { _id: user.organization },
+                { 
+                    $set: { 
+                        isPro: true, 
+                        subscriptionExpires 
+                    } 
+                }
+            );
+        }
 
         // Create a new order document
         const newOrder = new Order({

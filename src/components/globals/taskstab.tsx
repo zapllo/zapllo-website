@@ -1571,7 +1571,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           </div>
                                           <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
                                           <div className="flex text-xs mt-[10px]">
-                                            <UserIcon className="h-4" />
+                                            <User2 className="h-4" />
                                             {task.assignedUser.firstName}
                                           </div>
                                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
@@ -1786,7 +1786,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           </div>
                                           <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
                                           <div className="flex text-xs mt-[10px]">
-                                            <UserIcon className="h-4" />
+                                            <User2 className="h-4" />
                                             {task.assignedUser.firstName}
                                           </div>
                                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
@@ -1991,7 +1991,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           </div>
                                           <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
                                           <div className="flex text-xs mt-[10px]">
-                                            <UserIcon className="h-4" />
+                                            <User2 className="h-4" />
                                             {task.assignedUser.firstName}
                                           </div>
                                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>

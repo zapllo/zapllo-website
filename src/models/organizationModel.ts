@@ -41,12 +41,21 @@ const organizationSchema = new mongoose.Schema({
     },
   ],
 
+  isPro: {
+    type: Boolean,
+    default: false,
+  },
+
+  subscriptionExpires: {
+    type: Date,
+  },
+
   trialExpires: {
     type: Date,
     required: true,
   },
 
-});
+}, { timestamps: true });
 
 // Model for organizations
 const Organization =

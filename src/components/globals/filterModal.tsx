@@ -91,7 +91,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                                 <label key={user._id} className='flex justify-between cursor-pointer'>
                                     <div className='flex items-center'>
                                         <div className='h-8 w-8 bg-red-700 text-center text-lg rounded-full'>
-                                            <h1 className='mt-1'>
+                                            <h1 className='mt-[1.5px]'>
                                                 {`${user.firstName}`.slice(0, 1)}{`${user.lastName}`.slice(0, 1)}
                                             </h1>
                                         </div>
@@ -198,14 +198,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
     ];
 
     return (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
+        <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div className="fixed inset-0 transition-opacity">
                     <div className="absolute inset-0 bg-black opacity-75"></div>
                 </div>
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
                 &#8203;
-                <div className="inline-block align-bottom max-h-4xl h-[450px] bg-[#1A1D21]  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full  py-6">
+                <div className="inline-block align-bottom max-h-4xl z-[60] h-[450px] bg-[#1A1D21]  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full  py-6">
                     <div className='flex border-b  justify-end px-4 py-2'>
                         <h3 className="text-lg leading-6 font-medium text-white mb-4">Filter Tasks</h3>
                         <h1 className='ml-auto cursor-pointer' onClick={closeModal}>X</h1>

@@ -136,6 +136,18 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/events') {
       return 'Events';
     }
+    else if (pathName === '/admin/dashboard') {
+      return 'Admin Dashboard';
+    }
+    else if (pathName === '/dashboard/settings/changePassword') {
+      return 'Change Password';
+    }
+    else if (pathName === '/attendance') {
+      return 'Dashboard';
+    }
+    else if (pathName === '/attendance/settings') {
+      return 'Settings';
+    }
   };
 
 

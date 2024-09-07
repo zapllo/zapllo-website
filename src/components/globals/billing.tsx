@@ -243,9 +243,9 @@ export default function Billing() {
                         </div>
                     </div>
                     {activeTab === 'Active' ? (
-                        <div className="flex  justify-center w-full  mt-12">
+                        <div className="flex  justify-center w-full mb-24  h-screen mt-12">
                             {displayedPlan === 'Money Saver Bundle' ? (
-                                <Card key="Money Saver Bundle" className="w-[400px] border rounded bg-transparent">
+                                <Card key="Money Saver Bundle" className="w-[400px] border h-fit  rounded bg-transparent">
                                     <CardHeader className="bg-[#2F0932] rounded border-b text-center">
                                         <CardTitle className="text-2xl">Money Saver Bundle</CardTitle>
                                         <CardDescription className="text-center text-white text-sm px-2">
@@ -329,8 +329,8 @@ export default function Billing() {
                             )}
                         </div>
                     ) : (
-                        <div className="w-full ml-6 flex justify-center">
-                            <div className="grid gap-x-12 md:grid-cols-2 lg:grid-cols-2">
+                        <div className="w-full ml-6  justify-center">
+                            <div className="grid w-full mb-24 h-screen gap-x-12 md:grid-cols-2 lg:grid-cols-2">
                                 {Object.keys(plans).map((plan, index) => {
                                     const planKey = plan as keyof typeof plans; // Type assertion
                                     return (

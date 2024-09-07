@@ -6,25 +6,34 @@ import { Card } from '@/components/ui/card'
 import Loader from '@/components/ui/loader'
 import { Progress } from '@/components/ui/progress'
 import axios from 'axios'
-import { Home, Megaphone } from 'lucide-react'
+import { Globe, Home, Megaphone } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const DashboardPage = () => {
   const [progress, setProgress] = useState<boolean[]>([]);
   const [userId, setUserId] = useState("");
+  const [role, setRole] = useState<string | null>(null); // Track the user's role
+  const router = useRouter();
 
   useEffect(() => {
     const getUserDetails = async () => {
       try {
         const userRes = await axios.get('/api/users/me');
         setUserId(userRes.data.data._id);
+        setRole(userRes.data.data.role); // Set role from the response
+
+        // Redirect if the role is Admin
+        if (userRes.data.data.role === 'Admin') {
+          router.replace('/admin/dashboard'); // Redirect to admin dashboard
+        }
       } catch (error) {
-        console.error('Error fetching user details or trial status:', error);
+        console.error('Error fetching user details:', error);
       }
     }
     getUserDetails();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -81,7 +90,8 @@ const DashboardPage = () => {
             <div className='w-full p'>
               <h1 className='px-4 text-lg font-medium'>Tutorials </h1>
               <h1 className='px-4 py-4'>Learn how to to get best out of our business workspace </h1>
-              <Button className='bg-white text-black ml-4  hover:bg-white mt-6' >Go To Tutorials</Button>
+              <Link href='/tutorials'>
+                <Button className='bg-white text-black ml-4  hover:bg-white mt-6' >Go To Tutorials</Button></Link>
               <img src='/animations/tutorials.png' className='absolute h-48 ml-[50%] -mt-40' />
             </div>
 
@@ -97,7 +107,7 @@ const DashboardPage = () => {
                 <p className='text-sm py-4'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
               </div>
               <div className='flex justify-start '>
-                <Link href='/dashboard/checklist' >
+                <Link href='/dashboard/events' >
                   <Button className='bg-white text-black   hover:bg-white ' >Go To Events</Button>
                 </Link>
               </div>
@@ -130,7 +140,7 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/intranet.png' className=' ml-3 mt-3 h-6     object-cover' />
+                <Globe className=' ml-3 mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Intranet</h1>
               <p className='text-xs font-medium'>Manage all your Important Company Links</p>

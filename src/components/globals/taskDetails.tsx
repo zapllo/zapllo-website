@@ -488,13 +488,20 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                         {commentObj.fileUrl && commentObj.fileUrl.length > 0 && (
                                             <div className="ml-6 mt-2">
                                                 {commentObj.fileUrl.map((url, fileIndex) => (
-                                                    <div key={fileIndex} className="mb-2">
+                                                    <div key={fileIndex} className="mb-2 grid grid-cols-4">
                                                         {url.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
-                                                            <img
-                                                                src={url}
-                                                                alt={`Attachment ${fileIndex}`}
-                                                                className="max-w-full h-auto rounded-lg"
-                                                            />
+                                                            <div className='relative group'>
+                                                                <a href={url} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-lg">
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={`Attachment ${fileIndex}`}
+                                                                        className=" rounded-lg"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100">
+                                                                        <h1 className="text-white text-xs font-bold">Click to open</h1>
+                                                                    </div>
+                                                                </a>
+                                                            </div>
                                                         ) : (
                                                             <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 text-xs ml-2">
                                                                 View File

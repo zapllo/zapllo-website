@@ -189,9 +189,9 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                                             {c.userId.firstName.charAt(0)}{c.userId.lastName.charAt(0)}
                                                                         </AvatarFallback>
                                                                     </Avatar>
-                                                                    <div className='flex flex-col'>
-                                                                        <p><strong>{c.userId.firstName}</strong></p>
-                                                                        <p><strong>{c.userId.lastName}</strong></p>
+                                                                    <div className='flex '>
+                                                                        <p><strong>{c.userId.firstName} {c.userId.lastName}</strong></p>
+                                                                        <p><strong> { ' '}</strong></p>
                                                                     </div>
                                                                 </div>
                                                                 <div className='px-2 ml-6'>
@@ -212,7 +212,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                                                                 alt={`Comment Attachment ${index}`}
                                                                                                 className="object-cover w-36 h-full max-w-4xl max-h-32 rounded-lg"
                                                                                             />
-                                                                                            <h1 className="text-xs text-center mt-1 hover:underline">Click to open</h1>
+                                                                                            <h1 className="text-xs text-center -mt-10 hover:underline">Click to open</h1>
                                                                                         </a>
                                                                                     </div>
                                                                                 ))}

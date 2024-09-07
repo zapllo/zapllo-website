@@ -37,8 +37,8 @@ const TicketSchema = new Schema({
         required: true
     },
     user: {
-        type: Types.ObjectId,
-        ref: 'User',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
         required: true
     },
     subject: {

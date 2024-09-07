@@ -26,32 +26,34 @@ const ChangePassword = () => {
     };
 
     return (
-        <Card className="p-6 m-6">
-            <CardTitle className="text-center">Change Your Password</CardTitle>
+        <Card className="p-6  bg-transparent m-6 s">
+            <CardTitle className="text-start">Change Your Password</CardTitle>
             <form onSubmit={handleSubmit}>
                 <div className="mt-4">
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input
+                    {/* <Label htmlFor="currentPassword">Current Password</Label> */}
+                    <input
                         type="password"
                         id="currentPassword"
                         value={currentPassword}
-                        className="mt-2"
+                        placeholder="Current Password"
+                        className="mt-2 p-2 w-full rounded outline-none bg-transparent border"
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         required
                     />
                 </div>
                 <div>
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input
+                    {/* <Label htmlFor="newPassword">New Password</Label> */}
+                    <input
                         type="password"
                         id="newPassword"
                         value={newPassword}
-                        className="mt-2"
+                        className="mt-2 p-2 w-full rounded outline-none bg-transparent border"
+                        placeholder="New Password"
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
                     />
                 </div>
-                <Button className="mt-4" type="submit">Change Password</Button>
+                <Button className="mt-4 bg-[#75517B] hover:bg-[#75517B]" type="submit">Change Password</Button>
                 {message && <p>{message}</p>}
             </form>
 
