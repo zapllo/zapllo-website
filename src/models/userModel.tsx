@@ -1,5 +1,11 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 
+// Define an interface for the Leave Balance
+interface ILeaveBalance {
+    leaveType: mongoose.Types.ObjectId; // Reference to the leave type
+    balance: number; // Remaining balance for this leave type
+}
+
 // Define an interface for the User document
 export interface IUser extends Document {
     whatsappNo: string;
@@ -20,98 +26,59 @@ export interface IUser extends Document {
     subscribedPlan: string;
     promotionNotification: boolean;
     credits: number;
+    leaveBalances: ILeaveBalance[]; // Individual balances for each leave type
+    totalLeaveBalance: number; // Total leave balance (sum of all leave types)
     forgotPasswordToken: string | null;
     forgotPasswordTokenExpiry: Date | null;
     verifyToken: string | null;
     verifyTokenExpiry: Date | null;
     checklistProgress: boolean[];
+    faceDescriptors: number[][]; // An array of face descriptors (each descriptor is an array of numbers)
+    imageUrls: { type: [String], default: [] }
 }
 
 // Define the schema
 const userSchema: Schema<IUser> = new mongoose.Schema({
-    whatsappNo: {
-        type: String,
-        required: [true, "Please provide whatsappNo"],
-        unique: true,
-    },
-    firstName: {
-        type: String,
-        required: true,
-    },
-    lastName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: [true, "Please provide email"],
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: [true, "Please provide a password"],
-    },
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    },
-    role: {
-        type: String,
-        default: 'member', //member, manager, orgAdmin
-    },
-    reportingManager: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users', // Referencing the User model
-        default: null,
-    },
-    organization: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'organizations', // Referencing the Organization model
-        default: null,
-    },
+    whatsappNo: { type: String, required: true, unique: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    isVerified: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false },
+    role: { type: String, default: 'member' },
+    reportingManager: { type: mongoose.Schema.Types.ObjectId, ref: 'users', default: null },
+    organization: { type: mongoose.Schema.Types.ObjectId, ref: 'organizations', default: null },
     notifications: {
         email: { type: Boolean, default: true },
         whatsapp: { type: Boolean, default: true },
     },
-    isPro: {
-        type: Boolean,
-        default: false,
+    isPro: { type: Boolean, default: false },
+    subscribedPlan: { type: String, default: '' },
+    promotionNotification: { type: Boolean, default: false },
+    credits: { type: Number, default: 0 },
+    leaveBalances: [
+        {
+            leaveType: { type: mongoose.Schema.Types.ObjectId, ref: 'leaveTypes', required: true },
+            balance: { type: Number, required: true }, // Balance for each leave type
+        },
+    ],
+    totalLeaveBalance: {
+        type: Number, // Total balance from all leave types
+        default: 0,
     },
-    subscribedPlan: {
-        type: String,
-        default: '', // This will store the name of the subscribed plan
+    forgotPasswordToken: { type: String, default: null },
+    forgotPasswordTokenExpiry: { type: Date, default: null },
+    verifyToken: { type: String, default: null },
+    verifyTokenExpiry: { type: Date, default: null },
+    checklistProgress: { type: [Boolean], default: Array(9).fill(false) },
+    faceDescriptors: {
+        type: [[Number]], // A 2D array to store multiple face descriptors for each user
+        default: [],
     },
-    promotionNotification: {
-        type: Boolean,
-        default: false,
-    },
-    credits: {
-        type: Number,
-        default: 0, // Set default value to 0 or any other initial amount
-    },
-    forgotPasswordToken: {
-        type: String,
-        default: null,
-    },
-    forgotPasswordTokenExpiry: {
-        type: Date,
-        default: null,
-    },
-    verifyToken: {
-        type: String,
-        default: null,
-    },
-    verifyTokenExpiry: {
-        type: Date,
-        default: null,
-    },
-    checklistProgress: {
-        type: [Boolean],
-        default: Array(9).fill(false), // 9 objectives, all false initially
+    imageUrls: {
+        type: [String], // Array to store multiple image URLs
+        default: [],
     },
 }, { timestamps: true });
 

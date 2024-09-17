@@ -99,18 +99,18 @@ const TicketsTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {tickets.map((ticket, index) => (
+                    {tickets?.map((ticket, index) => (
                         <tr key={ticket._id} className="border-b border-gray-700">
                             <td className="py-2 px-4">{index + 1}</td>
                             <td className="py-2 px-4">
-                                {ticket.user.firstName} {ticket.user.lastName}
+                                {ticket?.user?.firstName} {ticket?.user?.lastName}
                             </td>
-                            <td className="py-2 px-4">{ticket.user.organization.companyName}</td>
-                            <td className="py-2 px-4">{ticket.category}</td>
-                            <td className="py-2 px-4">{ticket.subcategory}</td>
-                            <td className="py-2 px-4">{dayjs(ticket.createdAt).format('MMM DD, YYYY')}</td>
-                            <td className="py-2 px-4">{dayjs(ticket.createdAt).add(1, 'day').format('MMM DD, YYYY')}</td>
-                            <td className={`py-2 px-4 ${ticket.status === "Over Due" ? "text-red-500" : "text-green-500"}`}>
+                            <td className="py-2 px-4">{ticket?.user?.organization?.companyName}</td>
+                            <td className="py-2 px-4">{ticket?.category}</td>
+                            <td className="py-2 px-4">{ticket?.subcategory}</td>
+                            <td className="py-2 px-4">{dayjs(ticket?.createdAt).format('MMM DD, YYYY')}</td>
+                            <td className="py-2 px-4">{dayjs(ticket?.createdAt).add(1, 'day').format('MMM DD, YYYY')}</td>
+                            <td className={`py-2 px-4 ${ticket?.status === "Over Due" ? "text-red-500" : "text-green-500"}`}>
                                 {ticket.status}
                             </td>
                             <td className="py-2 px-4 text-center">

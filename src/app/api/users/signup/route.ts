@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { SendEmailOptions, sendEmail } from "@/lib/sendEmail";
 import { getDataFromToken } from "@/helper/getDataFromToken";
+import Leave from "@/models/leaveTypeModel";
+import { Types } from "mongoose";
 
 connectDB();
 
@@ -37,6 +39,37 @@ const sendWebhookNotification = async (phoneNumber: string, templateName: string
     throw new Error('Failed to send webhook notification');
   }
 };
+
+
+// Function to initialize leave balances for a newly created user
+async function initializeLeaveBalancesForNewUser(userId: string, organizationId: string) {
+  const leaveTypes = await Leave.find({ organization: organizationId });
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (!user.leaveBalances) {
+    user.leaveBalances = [];
+  }
+
+  for (const leaveType of leaveTypes) {
+    const existingBalance = user.leaveBalances.find(balance =>
+      balance.leaveType && balance.leaveType.equals(leaveType._id as string)
+    );
+
+    if (!existingBalance) {
+      user.leaveBalances.push({
+        leaveType: leaveType._id as unknown as Types.ObjectId,
+        balance: leaveType.allotedLeaves,
+      });
+    }
+  }
+
+  await user.save();
+}
 
 
 export async function POST(request: NextRequest) {
@@ -295,7 +328,9 @@ export async function POST(request: NextRequest) {
     // Send the WhatsApp notification
     const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/w4B2cSkUyaf3/logo-02%204.png?se=2029-07-07T15%3A30%3A43Z&sp=rt&sv=2019-12-12&sr=b&sig=EtEFkVbZXLeBLJ%2B9pkZitby/%2BwJ4HzJkGgeT2%2BapgoQ%3D";
     await sendWebhookNotification(whatsappNo, templateName, mediaUrl, bodyVariables);
-
+    if (newOrganizationId && savedUser._id) {
+      await initializeLeaveBalancesForNewUser(savedUser._id.toString(), newOrganizationId);
+    }
 
     return NextResponse.json({
       message: "User created successfully",

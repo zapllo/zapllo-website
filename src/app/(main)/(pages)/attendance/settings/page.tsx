@@ -17,9 +17,11 @@ export default function Settings({ }: Props) {
             <div className=' mt-4 bg-[#380E3D]  my-4 mx-2 p-2 border rounded '>
                 <h1 className='text-sm'>Attendance Settings</h1>
             </div>
-            <div className='mb-2 cursor-pointer hover:bg-[#75517B]  my-4 mx-2 p-2 w-full m border rounded py-2'>
-                <h1 className=' text-xs '>Register Faces</h1>
-            </div>
+            <Link href='/attendance/settings/register-faces'>
+                <div className='mb-2 cursor-pointer hover:bg-[#75517B]  my-4 mx-2 p-2 w-full m border rounded py-2'>
+                    <h1 className=' text-xs '>Register Faces</h1>
+                </div>
+            </Link>
         </div>
     )
 }

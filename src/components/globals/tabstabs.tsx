@@ -193,25 +193,34 @@ export default function TeamTabs() {
   const handleEditUser = async () => {
     setLoading(true);
     try {
+      const updatedUser = {
+        ...editedUser,
+        reportingManager: selectedReportingManager || editedUser.reportingManager, // Ensure reporting manager is included
+      };
+
       const response = await fetch(`/api/users/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(editedUser),
+        body: JSON.stringify(updatedUser), // Send the updated user object
       });
 
       const data: APIResponse<User> = await response.json();
 
       if (data.success) {
-        // Update user details in the UI
+        // Update the users state
         setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === editedUser._id ? data.user : user
-          )
+          prevUsers.map((user) => (user._id === editedUser._id ? data.user : user))
         );
-        if (selectedUser && selectedUser._id === editedUser._id) {
-          setSelectedUser(data.user);
+
+        // Update the selected user's reporting manager name in the UI
+        const updatedManager = users.find(user => user._id === updatedUser.reportingManager);
+        if (updatedManager) {
+          setReportingManagerNames((prev) => ({
+            ...prev,
+            [data.user._id]: `${updatedManager.firstName} `,
+          }));
         }
 
         setLoading(false);
@@ -222,6 +231,7 @@ export default function TeamTabs() {
     } catch (error) {
       console.error("Error editing user:", error);
       alert("Error editing user. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -280,7 +290,7 @@ export default function TeamTabs() {
               onChange={handleReportingManagerChange}
               className="block bg-[#29142E] w-full px-3 py-1 border rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
-              <option value="text-xs">Reporting Manager</option>
+              <option value="">Reporting Manager</option>
               {users.map(user => (
                 <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
               ))}
@@ -428,30 +438,30 @@ export default function TeamTabs() {
                   </div>
 
 
-                 
-                    { loggedInUserRole == "orgAdmin" && (
-                      <div className="flex">
-                        <Button className="bg-transparent  hover:bg-transparent" onClick={() => {
-                          setEditedUser({
-                            _id: user._id,
-                            email: user.email,
-                            role: user.role,
-                            password: "",
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            whatsappNo: user.whatsappNo,
-                            reportingManager: selectedManager,
-                          });
-                          setIsEditModalOpen(true);
-                        }}>
-                          <Pencil className="h-5 text-blue-500" />
-                        </Button>
-                        <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser()}>
-                          <Trash2 className="text-[#9C2121] h-5" />
-                        </Button>
-                      </div>
-                    )}
-               
+
+                  {loggedInUserRole == "orgAdmin" && (
+                    <div className="flex">
+                      <Button className="bg-transparent  hover:bg-transparent" onClick={() => {
+                        setEditedUser({
+                          _id: user._id,
+                          email: user.email,
+                          role: user.role,
+                          password: "",
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          whatsappNo: user.whatsappNo,
+                          reportingManager: selectedManager,
+                        });
+                        setIsEditModalOpen(true);
+                      }}>
+                        <Pencil className="h-5 text-blue-500" />
+                      </Button>
+                      <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser()}>
+                        <Trash2 className="text-[#9C2121] h-5" />
+                      </Button>
+                    </div>
+                  )}
+
                 </Card>
               </div>
             ))}
@@ -499,17 +509,18 @@ export default function TeamTabs() {
               <option value="manager" className="text-xs">Manager</option>
             </select>
             <select
-              value={selectedReportingManager}
-              className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-              onChange={handleReportingManagerChange}
+              value={selectedReportingManager || editedUser.reportingManager}
+              className="block w-full px-2 py-2 bg-[#292c32] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              onChange={(e) => setSelectedReportingManager(e.target.value)} // Update selected reporting manager
             >
-              <option value={editedUser.reportingManager} className="text-xs">{`${editedUser.reportingManager === '' ? "Select Reporting Manager" : editedUser.reportingManager}`} </option>
+              <option value="">Select Reporting Manager</option>
               {users.map((user) => (
-                <option key={user._id} className="text-xs outline-none" value={user._id}>
+                <option key={user._id} className="text-xs" value={user._id}>
                   {user.firstName} {user.lastName}
                 </option>
               ))}
             </select>
+
             <input
               placeholder="WhatsApp Number"
               value={editedUser.whatsappNo}

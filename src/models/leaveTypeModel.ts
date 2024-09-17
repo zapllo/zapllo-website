@@ -14,16 +14,16 @@ enum LeaveUnit {
 
 // Define the interface for the Leave document
 export interface ILeaveType extends Document {
-    leaveType: string; // Type of leave (e.g., Sick Leave, Casual Leave, etc.)
-    description: string; // Description of the leave type
-    allotedLeaves: number; // Number of leaves allotted
-    type: LeaveType; // Whether the leave is Paid or Unpaid
-    backdatedLeaveDays: number; // Number of backdated leave days allowed
-    advanceLeaveDays: number; // Number of advance leave days allowed
-    includeHolidays: boolean; // Whether holidays are included in leave calculation
-    includeWeekOffs: boolean; // Whether week-offs are included in leave calculation
-    unit: LeaveUnit[]; // Array of units for leave (Full Day, Half Day, Short Leave)
-    organization: mongoose.Types.ObjectId; // Organization reference (leave is organization-specific)
+    leaveType: string;
+    description: string;
+    allotedLeaves: number;
+    type: LeaveType;
+    backdatedLeaveDays: number;
+    advanceLeaveDays: number;
+    includeHolidays: boolean;
+    includeWeekOffs: boolean;
+    unit: LeaveUnit[]; // Full Day, Half Day, Short Leave
+    organization: mongoose.Types.ObjectId;
 }
 
 // Define the schema
@@ -42,39 +42,38 @@ const leaveTypeSchema: Schema<ILeaveType> = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: Object.values(LeaveType), // 'Paid' or 'Unpaid'
+        enum: Object.values(LeaveType),
         required: true,
     },
     backdatedLeaveDays: {
         type: Number,
-        default: 0, // Default value if not provided
+        default: 0,
     },
     advanceLeaveDays: {
         type: Number,
-        default: 0, // Default value if not provided
+        default: 0,
     },
     includeHolidays: {
         type: Boolean,
-        default: false, // Default value if not provided
+        default: false,
     },
     includeWeekOffs: {
         type: Boolean,
-        default: false, // Default value if not provided
+        default: false,
     },
     unit: {
-        type: [String], // Changed from String to an array of strings
-        enum: Object.values(LeaveUnit), // Array of 'Full Day', 'Half Day', 'Short Leave'
+        type: [String],
+        enum: Object.values(LeaveUnit), // Only 'Full Day', 'Half Day', 'Short Leave'
         required: true,
     },
     organization: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Organization', // Reference to the Organization model
+        ref: 'organizations',
         required: true,
     },
 }, {
-    timestamps: true, // Automatically manage createdAt and updatedAt timestamps
+    timestamps: true,
 });
 
-// Define and export the Leave model
 const Leave: Model<ILeaveType> = mongoose.models.leaveTypes || mongoose.model<ILeaveType>('leaveTypes', leaveTypeSchema);
 export default Leave;
