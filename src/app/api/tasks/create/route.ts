@@ -129,9 +129,9 @@ export async function POST(request: NextRequest) {
             };
             await sendEmail(emailOptions);
         }
-        if (assignedUser.notifications.whatsapp) {
-            await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName, category.name);
-        }
+        // if (assignedUser.notifications.whatsapp) {
+        //     await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName, category.name);
+        // }
         return NextResponse.json({
             message: "Task created successfully",
             task: savedTask,

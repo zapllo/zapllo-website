@@ -809,23 +809,21 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         )}
                         {isDateTimeModalOpen && (
                             <Dialog open={isDateTimeModalOpen} onOpenChange={setIsDateTimeModalOpen}>
-                                <DialogContent >
+                                <DialogContent  className='h-[420px]'>
                                     <div className='w-full flex justify-between'>
-                                        <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle>
-                                        <DialogClose >X</DialogClose>
+                                        {/* <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle> */}
+                                        {/* <DialogClose >X</DialogClose> */}
                                     </div>
 
                                     <DialogDescription>
-                                        <div className="flex flex-col w-full py-4 space-y-4">
+                                        <div className="flex flex-col w-full  ">
                                             <AnimatePresence>
                                                 {isDatePickerVisible ? (
                                                     <motion.div
                                                         key="date-picker"
-                                                        initial={{ opacity: 0, scale: 1 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        exit={{ opacity: 0, scale: 1 }}
-                                                        transition={{ duration: 0.3, ease: 'linear' }}
-                                                        className="transition-container"
+                                                      
+                                                        // transition={{ duration: 1}}
+                                                        className=""
                                                     >
                                                         <CustomDatePicker
                                                             selectedDate={dueDate ?? new Date()}
@@ -838,46 +836,29 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                                 ) : (
                                                     <motion.div
                                                         key="time-picker"
-                                                        initial={{ opacity: 0, scale: 1 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        exit={{ opacity: 0, scale: 1 }}
-                                                        transition={{ duration: 0.3, ease: 'linear' }}
-                                                        className="transition-container"
+                                                        // transition={{ duration: 1 }}
+                                                        className=" "
                                                     >
                                                         <CustomTimePicker
                                                             selectedTime={dueTime}
                                                             onTimeChange={setDueTime}
+                                                            onCancel={() => setIsDateTimeModalOpen(false)} // Close the modal on cancel
+                                                            onAccept={() => {
+                                                                if (dueDate && dueTime) {
+                                                                    const [hours, minutes] = dueTime.split(':').map(Number);
+                                                                    const updatedDate = new Date(dueDate);
+                                                                    updatedDate.setHours(hours, minutes);
+                                                                    setDueDate(updatedDate);
+                                                                    setIsDateTimeModalOpen(false); // Close the modal after setting the date/time
+                                                                }
+                                                            }}
+                                                            onBackToDatePicker={() => setIsDatePickerVisible(true)} // Go back to the date picker
                                                         />
-                                                        <div className='flex gap-2'>
-                                                            <Button
-                                                                type="button"
-                                                                onClick={() => setIsDatePickerVisible(true)}
-                                                                className=" bg-gray-600  hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
-                                                            >
-                                                                Back to Date Picker
-                                                            </Button>
-                                                            <Button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    if (dueDate && dueTime) {
-                                                                        const [hours, minutes] = dueTime.split(':').map(Number);
-                                                                        const updatedDate = new Date(dueDate);
-                                                                        updatedDate.setHours(hours, minutes);
-                                                                        setDueDate(updatedDate);
-                                                                        setIsDateTimeModalOpen(false);
-                                                                    }
-                                                                }}
-                                                                className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
-                                                            >
-                                                                Update Time & Date
-                                                            </Button>
-
-                                                        </div>
-
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
                                         </div>
+
                                     </DialogDescription>
                                 </DialogContent>
                             </Dialog>

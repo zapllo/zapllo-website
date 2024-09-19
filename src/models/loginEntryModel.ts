@@ -1,23 +1,47 @@
-import mongoose, { Schema, Document } from 'mongoose';
+// src/models/loginEntryModel.ts
+
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface ILoginEntry extends Document {
-  userId: mongoose.Types.ObjectId;
-  action: 'login' | 'logout'; // Added to track action type
-  lat: number;
-  lng: number;
-  timestamp: Date;
+    userId: mongoose.Types.ObjectId;
+    action: 'login' | 'logout' | 'regularization';
+    lat?: number;
+    lng?: number;
+    timestamp: Date;
+    loginTime?: string;
+    logoutTime?: string;
+    remarks?: string;
+    notes?: string;
+
+    // New Fields for Approval
+    approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
+    approvalRemarks?: string;
+    approvedBy?: mongoose.Types.ObjectId; // Manager's User ID
+    approvedAt?: Date;
 }
 
 const loginEntrySchema: Schema<ILoginEntry> = new Schema(
-  {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    action: { type: String, enum: ['login', 'logout'], required: true },
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
-    timestamp: { type: Date, default: Date.now },
-  },
-  { timestamps: true }
+    {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
+        action: { type: String, enum: ['login', 'logout', 'regularization'], required: true },
+        lat: { type: Number },
+        lng: { type: Number },
+        timestamp: { type: Date, default: Date.now },
+        loginTime: { type: String },
+        logoutTime: { type: String },
+        remarks: { type: String },
+        notes: { type: String },
+        // Approval Fields
+        approvalStatus: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+        approvalRemarks: { type: String },
+        approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        approvedAt: { type: Date },
+    },
+    { timestamps: true }
 );
 
-const LoginEntry = mongoose.models.LoginEntry || mongoose.model<ILoginEntry>('LoginEntry', loginEntrySchema);
+// Prevent model overwrite upon initial compile
+const LoginEntry: Model<ILoginEntry> =
+    mongoose.models.LoginEntry || mongoose.model<ILoginEntry>('LoginEntry', loginEntrySchema);
+
 export default LoginEntry;

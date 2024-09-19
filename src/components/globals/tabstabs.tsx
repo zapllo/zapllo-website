@@ -25,6 +25,7 @@ import axios from "axios";
 import { Tabs2, TabsList2, TabsTrigger2 } from "../ui/tabs2";
 import { Tabs3, TabsList3, TabsTrigger3 } from "../ui/tabs3";
 import Loader from "../ui/loader";
+import { toast, Toaster } from "sonner";
 
 interface User {
   _id: string;
@@ -160,6 +161,7 @@ export default function TeamTabs() {
 
 
   const handleCreateUser = async () => {
+    setLoading(true); // Start loader
     try {
       const response = await axios.post('/api/users/signup', newMember);
 
@@ -180,14 +182,20 @@ export default function TeamTabs() {
           whatsappNo: "",
           reportingManager: '',
         });
+        toast.success("New member added successfully!");
+
       } else {
-        alert(data.error);
+        // Display error toast
+        toast.error(data.error);
       }
     } catch (error) {
       console.error("Error creating user:", error);
-      alert("Error creating user. Please try again.");
+      toast.error("Error creating user. Please try again.");
+    } finally {
+      setLoading(false); // Stop loader
     }
   };
+
 
 
   const handleEditUser = async () => {
@@ -270,7 +278,7 @@ export default function TeamTabs() {
   // }, [selectedUser]);
   return (
     <div className="w-full max-w-4xl mt-16 mx-auto">
-
+      <Toaster />
       <div className="gap-2 ml-24 mb-6 w-full">
         <div className="flex mt-4 gap-2 mb-4">
           <div>
@@ -298,7 +306,8 @@ export default function TeamTabs() {
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               {loggedInUserRole === "orgAdmin" && (
                 <DialogTrigger asChild>
-                  <Button size="sm" className="ml-4 bg-[#29142E] hover:bg-[#75517B] gap-2" onClick={() => setIsModalOpen(true)}>Add Member <Plus /></Button>
+                  <Button size="sm" className="ml-4 bg-[#29142E] hover:bg-[#75517B] gap-2" onClick={() => setIsModalOpen(true)}>
+                    Add Member <Plus /></Button>
                 </DialogTrigger>
               )}
               <DialogContent>
@@ -366,7 +375,15 @@ export default function TeamTabs() {
                 </div>
                 <div className="mt-4 flex justify-end gap-4">
                   <Button variant="outline" className="rounded" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-                  <Button size="sm" className="bg-[#007A5A] rounded hover:bg-[#007A5A]" onClick={handleCreateUser}>Add Member</Button>
+                  <Button size="sm" className="bg-[#007A5A] rounded hover:bg-[#007A5A]" onClick={handleCreateUser}>
+                    {loading ? (
+                      <>
+                        <Loader /> Adding Member
+                      </>
+                    ) : (
+                      'Add Member'
+                    )}
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>

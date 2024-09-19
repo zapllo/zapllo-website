@@ -1,164 +1,86 @@
-import React, { useState } from 'react';
-import Select, { StylesConfig } from 'react-select';
-import {
-  format,
-  addMonths,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  addDays,
-  isSameMonth,
-  isSameDay
-} from 'date-fns';
-import { ChevronLeftCircleIcon, ChevronRightCircleIcon } from 'lucide-react';
+'use client';
+
+import * as React from 'react';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import dayjs, { Dayjs } from 'dayjs';
+import Box from '@mui/material/Box';
 
 interface CustomDatePickerProps {
-  selectedDate: Date;
+  selectedDate: Date | null;
   onDateChange: (date: Date) => void;
 }
 
-const monthOptions = Array.from({ length: 12 }, (_, i) => ({
-  value: i,
-  label: format(new Date(2022, i), 'MMMM')
-}));
-
-const yearOptions = Array.from({ length: 20 }, (_, i) => ({
-  value: new Date().getFullYear() - 10 + i,
-  label: (new Date().getFullYear() - 10 + i).toString()
-}));
-
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDateChange }) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
-
-  const customStyles: StylesConfig = {
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isSelected ? '#6B7280' : state.isFocused ? '#4B5563' : 'black', // Adjust background for selected and focused options
-      color: 'white',
-    }),
-    control: (provided) => ({
-      ...provided,
-      backgroundColor: '#017A5B',
-      border: 'none',
-      borderRadius: '0.375rem',
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: 'white',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      backgroundColor: '#017A5B',
-      borderRadius: '0.375rem',
-    }),
-  };
-
-  const handlePrevMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-
-  const handleYearChange = (option: any) => {
-    const newYear = option.value;
-    setSelectedYear(newYear);
-    setCurrentMonth(new Date(newYear, selectedMonth));
-  };
-
-  const handleMonthChange = (option: any) => {
-    const newMonth = option.value;
-    setSelectedMonth(newMonth);
-    setCurrentMonth(new Date(selectedYear, newMonth));
-  };
-
-  const renderHeader = () => (
-    <div className="flex justify-between items-center mb-4">
-      <button onClick={handlePrevMonth}>
-        <ChevronLeftCircleIcon className="h-6 w-6" />
-      </button>
-      <div className="flex items-center space-x-8">
-        <Select
-          options={monthOptions}
-          value={monthOptions.find(option => option.value === selectedMonth)}
-          onChange={handleMonthChange}
-          className="bg-[#017A5B] w-full text-white"
-          classNamePrefix="custom-select"
-          styles={customStyles}
-        />
-        <Select
-          options={yearOptions}
-          value={yearOptions.find(option => option.value === selectedYear)}
-          onChange={handleYearChange}
-          className="bg-[#017A5B] w-full text-white"
-          classNamePrefix="custom-select"
-          styles={customStyles}
-        />
-      </div>
-      <button onClick={handleNextMonth}>
-        <ChevronRightCircleIcon className="h-6 w-6" />
-      </button>
-    </div>
+  const [selectedDateValue, setSelectedDateValue] = React.useState<Dayjs | null>(
+    selectedDate ? dayjs(selectedDate) : dayjs(new Date())
   );
 
-  const renderDays = () => {
-    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return (
-      <div className="grid grid-cols-7 gap-1 text-lg mb-4">
-        {daysOfWeek.map((day) => (
-          <div key={day} className="text-center font-bold">{day}</div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderCells = () => {
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
-
-    const rows = [];
-    let days = [];
-    let day = startDate;
-    let formattedDate = '';
-
-    while (day <= endDate) {
-      for (let i = 0; i < 7; i++) {
-        formattedDate = format(day, 'd');
-        const cloneDay = day;
-        days.push(
-          <div
-            key={day.toString()}
-            className={`text-center text-lg py-2 cursor-pointer ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDay(day, selectedDate) ? 'bg-[#017A5B] rounded text-white' : ''}`}
-            onClick={() => onDateChange(cloneDay)}
-          >
-            <span>{formattedDate}</span>
-          </div>
-        );
-        day = addDays(day, 1);
-      }
-      rows.push(
-        <div className="grid grid-cols-7 gap-1" key={day.toString()}>
-          {days}
-        </div>
-      );
-      days = [];
+  const handleDateChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setSelectedDateValue(newValue);
+      onDateChange(newValue.toDate());
     }
-    return <div>{rows}</div>;
   };
 
   return (
-    <div className="bg-[#1A1D21] h-fit rounded-lg shadow p-4 w-full">
-      {renderHeader()}
-      {renderDays()}
-      {renderCells()}
-    </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', spaceY: 2 }}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <StaticDatePicker
+          orientation="landscape"
+          value={selectedDateValue}
+          onChange={handleDateChange}
+          displayStaticWrapperAs="mobile"
+          sx={{
+            '& .MuiPickersLayout-root': {
+              backgroundColor: '#1A1C20',
+            },
+            '& .MuiPickersToolbar-root': {
+              backgroundColor: '#1A1C20',
+              color: 'white',
+            },
+            '& .MuiPickersDay-root': {
+              color: 'white',
+            },
+            '& .Mui-selected': {
+              backgroundColor: '#017A5B',
+              color: 'white',
+            },
+            '& .MuiButtonBase-root': {
+              color: 'white',
+            },
+            '& .MuiPickersDay-root:hover': {
+              backgroundColor: '#4B5563',
+            },
+            '& .MuiPickersCalendarHeader-root': {
+              backgroundColor: '#1A1C20',
+              color: 'white',
+            },
+            '& .MuiDateCalendar-root': {
+              backgroundColor: '#1A1C20',
+              color: 'white',
+            },
+            '& .MuiSvgIcon-root': {
+              color: 'white',
+            },
+            '& .MuiDialogActions-root': {
+              backgroundColor: '#1A1C20',
+              color: 'white',
+            },
+            '& .MuiTypography-root': {
+              color: 'gray',
+            },
+            '& .MuiPaper-root': {
+              backgroundColor: 'transparent',
+            },
+            '& .MuiBox-root': {
+              border: 'none',
+            },
+          }}
+        />
+      </LocalizationProvider>
+    </Box>
   );
 };
 

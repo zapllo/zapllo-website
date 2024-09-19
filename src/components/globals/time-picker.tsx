@@ -1,76 +1,113 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react';
-import Clock from 'react-clock';
-import 'react-clock/dist/Clock.css';
-import { motion } from 'framer-motion';
-import { KeyboardIcon } from 'lucide-react';
+import * as React from 'react';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticTimePicker } from '@mui/x-date-pickers/StaticTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
+import Box from '@mui/material/Box';
 
 interface CustomTimePickerProps {
   selectedTime: string | null;
   onTimeChange: (time: string) => void;
+  onCancel: () => void;
+  onAccept: () => void;
+  onBackToDatePicker: () => void;
 }
 
-const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ selectedTime, onTimeChange }) => {
-  const [isClockVisible, setIsClockVisible] = useState(true);
-  const [clockTime, setClockTime] = useState(new Date());
+const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
+  selectedTime,
+  onTimeChange,
+  onCancel,
+  onAccept,
+  onBackToDatePicker,
+}) => {
+  const [selectedTimeValue, setSelectedTimeValue] = React.useState<Dayjs | null>(
+    selectedTime ? dayjs(`1970-01-01T${selectedTime}:00`) : dayjs('1970-01-01T12:00:00')
+  );
 
-  useEffect(() => {
-    if (selectedTime) {
-      const [hours, minutes] = selectedTime.split(':').map(Number);
-      const updatedTime = new Date(clockTime);
-      updatedTime.setHours(hours);
-      updatedTime.setMinutes(minutes);
-      setClockTime(updatedTime);
-    } else {
-      // Set default time to 12:00 if selectedTime is not provided
-      const defaultTime = new Date();
-      defaultTime.setHours(12);
-      defaultTime.setMinutes(0);
-      setClockTime(defaultTime);
-      onTimeChange('12:00'); // Ensure the time input is also set to default
+  const handleTimeChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setSelectedTimeValue(newValue);
+
+      // Format the time correctly as hh:mm A for 12-hour format
+      const formattedTime = newValue.format('HH:mm'); // Using 24-hour format for accuracy
+      onTimeChange(formattedTime); // Pass the correctly formatted time back to the parent component
     }
-  }, [selectedTime, clockTime, onTimeChange]);
-
-  const toggleClockVisibility = () => {
-    setIsClockVisible(!isClockVisible);
-  };
-
-  const handleClockChange = (time: Date) => {
-    const hours = time.getHours().toString().padStart(2, '0');
-    const minutes = time.getMinutes().toString().padStart(2, '0');
-    const formattedTime = `${hours}:${minutes}`;
-    setClockTime(time);
-    onTimeChange(formattedTime);
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onTimeChange(event.target.value);
   };
 
   return (
-    <div className="flex flex-col  p-4 rounded-md items-center space-y-2">
-      <div className={` p-4 flex rounded-lg shadow-md w-full max-w-full justify-center`}>
-        <div className={`mt-2`}>
-          <label className="block text-white -700 font-bold mb-2">Select Time</label>
-          <input
-            type="time"
-            value={selectedTime || '12:00'}
-            onChange={handleInputChange}
-            className="w-full p-4 border rounded-lg bg-black mb-2 text-white font-bold text-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <motion.div
-          className={`mt-4 rounded-md flex justify-center items-center ${isClockVisible ? 'block' : 'hidden'}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isClockVisible ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-        >
-
-        </motion.div>
-      </div>
-
-    </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', spaceY: 2 }}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <StaticTimePicker
+          orientation="landscape"
+          value={selectedTimeValue}
+          onChange={handleTimeChange}
+          displayStaticWrapperAs="mobile"
+          ampm={true} // Enable 12-hour format with AM/PM
+          sx={{
+            '& .MuiPickersLayout-root': {
+              backgroundColor: 'transparent',
+            },
+            '& .MuiPickersToolbar-root': {
+              backgroundColor: '#1A1C20',
+              color: 'white',
+            },
+            '& .MuiTypography-root.Mui-selected': {
+              color: 'white', // Active AM/PM button typography is white
+            },
+            '& .MuiTypography-root': {
+              color: 'gray', // Inactive AM/PM button typography is gray
+            },
+            '& .MuiPickersToolbar-content': {
+              color: 'white',
+            },
+            '& .MuiTimeClock-root': {
+              backgroundColor: '#1A1C20',
+            },
+            '& .MuiClock-wrapper': {
+              backgroundColor: 'white',
+            },
+            '& .MuiClockNumber-root': {
+              color: 'white',
+            },
+            '& .MuiDialogActions-root': {
+              backgroundColor: '#1A1C20',
+            },
+            '& .MuiButtonBase-root': {
+              color: 'white',
+            },
+            '& .MuiSvgIcon-root': {
+              color: 'white',
+            },
+            '& .MuiClockPicker-root': {
+              backgroundColor: 'transparent',
+            },
+            '& .MuiPaper-root': {
+              backgroundColor: 'transparent',
+            },
+            '& .MuiBox-root': {
+              border: 'none',
+            },
+          }}
+        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 2 }}>
+         
+          <button
+            onClick={onBackToDatePicker}
+            className="bg-gray-600 absolute -mt-[56px] text-xs hover:bg-gray-600 text-white rounded px-4 py-2"
+          >
+            Back to Date Picker
+          </button>
+          <button
+            onClick={onAccept}
+            className="bg-green-600 absolute -mt-[56px] right-12 hover:bg-green-700 text-white rounded px-4 py-2"
+          >
+            OK
+          </button>
+        </Box>
+      </LocalizationProvider>
+    </Box>
   );
 };
 

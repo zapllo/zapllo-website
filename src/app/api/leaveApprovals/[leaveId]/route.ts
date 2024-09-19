@@ -148,11 +148,16 @@ export async function POST(request: Request, { params }: { params: { leaveId: st
                 return NextResponse.json({ success: false, error: 'Insufficient leave balance' });
             }
 
-            // Deduct the approved leave days (including partial days like 0.75) from the specific leave type's balance
-            userLeaveBalance.balance -= totalApprovedDays;
+            
+            // Directly update the balance in the database
+            const updateResult = await User.updateOne(
+                { _id: user._id, 'leaveBalances.leaveType': leave.leaveType },
+                { $inc: { 'leaveBalances.$.balance': -totalApprovedDays } }
+            );
 
+            console.log('Update result:', updateResult);
             // Save the updated user leave balance
-            await user.save();
+            // await user.save();
         }
 
         // Determine overall leave status

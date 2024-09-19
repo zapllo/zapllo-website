@@ -65,7 +65,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({ leaveId, leaveD
 
                 <div className="mb-4">
                     <h3 className="text-white mb-2">Leave Days</h3>
-                    {approvalData.map((day, index) => (
+                    {approvalData?.map((day, index) => (
                         <div key={index} className="flex justify-between items-center mb-2 bg-gray-800 p-2 rounded-md">
                             <span className="text-white">{day.date} ({day.unit})</span>
                             <div className="flex space-x-2">

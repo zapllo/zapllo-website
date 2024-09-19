@@ -45,6 +45,13 @@ export default function MyAttendance() {
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
     const webcamRef = React.useRef<Webcam>(null);
+    // State variables for Regularization Modal
+    const [isRegularizationModalOpen, setIsRegularizationModalOpen] = useState(false);
+    const [regularizationDate, setRegularizationDate] = useState('');
+    const [regularizationLoginTime, setRegularizationLoginTime] = useState('');
+    const [regularizationLogoutTime, setRegularizationLogoutTime] = useState('');
+    const [regularizationRemarks, setRegularizationRemarks] = useState('');
+    const [isSubmittingRegularization, setIsSubmittingRegularization] = useState(false);
 
     useEffect(() => {
         // if (typeof window !== 'undefined') {
@@ -251,6 +258,61 @@ export default function MyAttendance() {
         setActiveTab('custom');
     };
 
+
+    // Handle Regularization Form Submission
+    const handleSubmitRegularization = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Basic validation
+        if (!regularizationDate || !regularizationLoginTime || !regularizationLogoutTime || !regularizationRemarks) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        setIsSubmittingRegularization(true);
+
+        try {
+            const response = await fetch('/api/regularize', {
+                method: 'POST',
+                body: JSON.stringify({
+                    date: regularizationDate,
+                    loginTime: regularizationLoginTime,
+                    logoutTime: regularizationLogoutTime,
+                    remarks: regularizationRemarks,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                alert('Regularization request submitted successfully.');
+                // Refresh login entries
+                const resEntries = await fetch('/api/loginEntries', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                });
+                const dataEntries = await resEntries.json();
+                setLoginEntries(dataEntries.entries);
+
+                // Reset form fields
+                setRegularizationDate('');
+                setRegularizationLoginTime('');
+                setRegularizationLogoutTime('');
+                setRegularizationRemarks('');
+                setIsRegularizationModalOpen(false);
+            } else {
+                throw new Error(data.message || 'Failed to submit regularization request.');
+            }
+        } catch (error: any) {
+            alert(error.message);
+        } finally {
+            setIsSubmittingRegularization(false);
+        }
+    };
+
     return (
         <div className="container  rounded-lg p-4 shadow-lg">
             {/* Login/Logout Button */}
@@ -262,7 +324,15 @@ export default function MyAttendance() {
                     {isLoggedIn ? 'Logout' : 'Login'}
                 </button>
             </div>
-
+            {/* Apply Regularization Button */}
+            <div className="apply-regularization-section flex justify-center mb-6">
+                <button
+                    onClick={() => setIsRegularizationModalOpen(true)}
+                    className="bg-blue-500 text-white py-2 px-6 rounded-lg font-semibold"
+                >
+                    Apply Regularization
+                </button>
+            </div>
             {/* Last Two Days Entries */}
             <div className="last-two-days-entries border p-4 w-full flex  mb-6">
                 {filterLastTwoDaysEntries().length === 0 ? (
@@ -375,14 +445,150 @@ export default function MyAttendance() {
             </Dialog.Root>
 
             {/* Custom Date Range Modal */}
+            {/* Custom Date Range Modal */}
             <Dialog.Root open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
                     <Dialog.Content className="fixed inset-0 flex justify-center items-center">
                         <div className="bg-[#1A1C20] p-6 rounded-lg max-w-md w-full">
-                            <h3 className="text-lg mb-4">Select Custom Date Range</h3>
-                            {/* Add date pickers for start and end dates here */}
-                            <button onClick={() => handleCustomDateSubmit(new Date(), new Date())} className="bg-blue-500 text-white py-2 px-4 rounded w-full">Submit</button>
+                            <h3 className="text-lg mb-4 text-white">Select Custom Date Range</h3>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const form = e.target as HTMLFormElement;
+                                    const start = new Date(form.start.value);
+                                    const end = new Date(form.end.value);
+                                    handleCustomDateSubmit(start, end);
+                                }}
+                                className="space-y-4"
+                            >
+                                {/* Start Date Input */}
+                                <div>
+                                    <label htmlFor="start" className="block text-sm font-medium text-gray-200">
+                                        Start Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="start"
+                                        name="start"
+                                        required
+                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                    />
+                                </div>
+
+                                {/* End Date Input */}
+                                <div>
+                                    <label htmlFor="end" className="block text-sm font-medium text-gray-200">
+                                        End Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="end"
+                                        name="end"
+                                        required
+                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                    />
+                                </div>
+
+                                {/* Submit Button */}
+                                <div>
+                                    <button
+                                        type="submit"
+                                        className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
+            {/* Regularization Modal */}
+            <Dialog.Root
+                open={isRegularizationModalOpen}
+                onOpenChange={setIsRegularizationModalOpen}
+            >
+                <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
+                    <Dialog.Content className="fixed inset-0 flex justify-center items-center p-4">
+                        <div className="bg-[#1A1C20] p-6 rounded-lg max-w-md w-full">
+                            <h3 className="text-lg mb-4 text-white">Apply Regularization</h3>
+                            <form onSubmit={handleSubmitRegularization} className="space-y-4">
+                                {/* Date Input */}
+                                <div>
+                                    <label htmlFor="date" className="block text-sm font-medium text-gray-200">
+                                        Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="date"
+                                        value={regularizationDate}
+                                        onChange={(e) => setRegularizationDate(e.target.value)}
+                                        required
+                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                    />
+                                </div>
+
+                                {/* Login Time Input */}
+                                <div>
+                                    <label htmlFor="loginTime" className="block text-sm font-medium text-gray-200">
+                                        Login Time
+                                    </label>
+                                    <input
+                                        type="time"
+                                        id="loginTime"
+                                        value={regularizationLoginTime}
+                                        onChange={(e) => setRegularizationLoginTime(e.target.value)}
+                                        required
+                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                    />
+                                </div>
+
+                                {/* Logout Time Input */}
+                                <div>
+                                    <label htmlFor="logoutTime" className="block text-sm font-medium text-gray-200">
+                                        Logout Time
+                                    </label>
+                                    <input
+                                        type="time"
+                                        id="logoutTime"
+                                        value={regularizationLogoutTime}
+                                        onChange={(e) => setRegularizationLogoutTime(e.target.value)}
+                                        required
+                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                    />
+                                </div>
+
+                                {/* Remarks Input */}
+                                <div>
+                                    <label htmlFor="remarks" className="block text-sm font-medium text-gray-200">
+                                        Remarks
+                                    </label>
+                                    <textarea
+                                        id="remarks"
+                                        value={regularizationRemarks}
+                                        onChange={(e) => setRegularizationRemarks(e.target.value)}
+                                        required
+                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        rows={3}
+                                    ></textarea>
+                                </div>
+
+                                {/* Submit Button */}
+                                <div>
+                                    {isSubmittingRegularization ? (
+                                        <Loader />
+                                    ) : (
+                                        <button
+                                            type="submit"
+                                            className="bg-green-500 text-white py-2 px-4 rounded w-full"
+                                        >
+                                            Submit
+                                        </button>
+                                    )}
+                                </div>
+                            </form>
                         </div>
                     </Dialog.Content>
                 </Dialog.Portal>
