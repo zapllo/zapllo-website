@@ -263,7 +263,7 @@ export default function AllLeaves() {
                     {/* Render the reject modal if selectedLeave is set */}
                     {selectedLeave && isRejectModalOpen && (
                         <RejectModal
-                            leaveId={selectedLeave._id}
+                            entryId={selectedLeave._id}
                             remarks={remarks}
                             setRemarks={setRemarks}
                             onClose={handleModalClose}
