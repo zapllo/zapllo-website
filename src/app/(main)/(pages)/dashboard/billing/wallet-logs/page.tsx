@@ -63,7 +63,7 @@ export default function WalletLogs({ }: Props) {
               <div className="-mt-2">
                 <div className="p-4">
                   <div className="overflow-x-auto  ">
-                    <h1>No Wallet Logs Foundd</h1>
+                    <h1>No Wallet Logs Found!</h1>
                   </div>
                 </div>
               </div>

@@ -26,6 +26,7 @@ import { Tabs2, TabsList2, TabsTrigger2 } from "../ui/tabs2";
 import { Tabs3, TabsList3, TabsTrigger3 } from "../ui/tabs3";
 import Loader from "../ui/loader";
 import { toast, Toaster } from "sonner";
+import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
 
 interface User {
   _id: string;
@@ -77,6 +78,7 @@ export default function TeamTabs() {
   const [selectedReportingManager, setSelectedReportingManager] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     // Update newMember's reportingManagerId when selectedManager changes
@@ -198,6 +200,22 @@ export default function TeamTabs() {
 
 
 
+  const clearFields = () => {
+    setIsModalOpen(false);
+    // Clear the new member form
+    setNewMember({
+      email: "",
+      role: "member",
+      password: "",
+      firstName: "",
+      lastName: "",
+      whatsappNo: "",
+      reportingManager: '',
+    });
+    setSelectedManager('');
+  }
+
+
   const handleEditUser = async () => {
     setLoading(true);
     try {
@@ -244,30 +262,42 @@ export default function TeamTabs() {
   };
 
   const handleDeleteUser = async () => {
+    if (!selectedUser) return;
+
+    setLoading(true); // Optional: You can show a loading state
     try {
-      const response = await fetch(`/api/users/update`, {
+      const response = await fetch(`/api/users/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userIdToDelete: selectedUser?._id }),
+        body: JSON.stringify({ userIdToDelete: selectedUser._id }), // Pass the selected user's ID
       });
 
       const data: APIResponse<void> = await response.json();
 
       if (data.success) {
-        // Remove deleted user from the UI
+        // Remove the deleted user from the state
         setUsers((prevUsers) =>
-          prevUsers.filter((user) => user._id !== selectedUser?._id)
+          prevUsers.filter((user) => user._id !== selectedUser._id)
         );
         setSelectedUser(null); // Clear selected user state
+        toast.success("Deleted user successfully"); // Success toast
       } else {
-        alert(data.error);
+        toast.error(data.error || "Error deleting user");
       }
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Error deleting user. Please try again.");
+      toast.error("Error deleting user. Please try again.");
+    } finally {
+      setLoading(false); // Optional: Hide loading state
+      setIsDeleteDialogOpen(false); // Close dialog after operation
     }
+  };
+
+  const openDeleteDialog = (user: User) => {
+    setSelectedUser(user);
+    setIsDeleteDialogOpen(true);
   };
 
 
@@ -374,7 +404,7 @@ export default function TeamTabs() {
                   />
                 </div>
                 <div className="mt-4 flex justify-end gap-4">
-                  <Button variant="outline" className="rounded" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+                  <Button variant="outline" className="rounded" onClick={clearFields}>Cancel</Button>
                   <Button size="sm" className="bg-[#007A5A] rounded hover:bg-[#007A5A]" onClick={handleCreateUser}>
                     {loading ? (
                       <>
@@ -473,7 +503,7 @@ export default function TeamTabs() {
                       }}>
                         <Pencil className="h-5 text-blue-500" />
                       </Button>
-                      <Button className="bg-transparent hover:bg-transparent" onClick={() => handleDeleteUser()}>
+                      <Button className="bg-transparent hover:bg-transparent" onClick={() => openDeleteDialog(user)}>
                         <Trash2 className="text-[#9C2121] h-5" />
                       </Button>
                     </div>
@@ -557,9 +587,19 @@ export default function TeamTabs() {
                 'Save Changes'
               )}
             </Button>
+
           </div>
         </DialogContent>
       </Dialog>
+      {selectedUser && (
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleDeleteUser}
+          title="Delete User"
+          description={`Are you sure you want to delete ${selectedUser.firstName} ${selectedUser.lastName}? This action cannot be undone.`}
+        />
+      )}
     </div>
 
   );

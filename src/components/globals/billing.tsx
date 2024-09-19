@@ -94,7 +94,7 @@ export default function Billing() {
     };
 
     return (
-        <div className="flex ">
+        <div className="flex w-full ">
             <BillingSidebar />
             {currentUser?.role === "orgAdmin" ? (
                 <div className="flex-1 overflow-y-scroll h-screen  p-4">
@@ -319,7 +319,7 @@ export default function Billing() {
                                 </Card>
                             ) : (
                                 <div className='w-full flex justify-center max-w-5xl'>
-                                    <h1 className="text rounded-lg bg-transparent border text-muted-foreground p-4 w-fit">
+                                    <h1 className="text rounded-lg bg-transparent border text-muted-foreground p-4 h-fit w-fit">
                                         <span className="text-lg font-bold text-white">
                                             No Current Active Plan
                                         </span>
@@ -329,8 +329,8 @@ export default function Billing() {
                             )}
                         </div>
                     ) : (
-                        <div className="w-full ml-6  justify-center">
-                            <div className="grid w-full mb-24 h-screen gap-x-12 md:grid-cols-2 lg:grid-cols-2">
+                        <div className="w-full  flex justify-center">
+                            <div className=" w-full flex justify-center   max-w-5xl mx-autol mb-24 h-screen gap-12 ">
                                 {Object.keys(plans).map((plan, index) => {
                                     const planKey = plan as keyof typeof plans; // Type assertion
                                     return (

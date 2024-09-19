@@ -638,6 +638,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                                                 transition={{ duration: 0.3, ease: 'linear' }}
                                             >
                                                 <CustomTimePicker
+                                                    onCancel={() => setIsDateTimeModalOpen(false)}
+                                                    onAccept={() => setIsDateTimeModalOpen(false)}
+                                                    onBackToDatePicker={() => setIsDatePickerVisible(true)}
                                                     selectedTime={dueTime}
                                                     onTimeChange={setDueTime}
                                                 />

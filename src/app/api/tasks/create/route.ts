@@ -48,9 +48,10 @@ const sendWebhookNotification = async (taskData: any, phoneNumber: any, assigned
 
         if (!response.ok) {
             const responseData = await response.json();
-            throw new Error(`Webhook API error: ${responseData.message}`);
+            throw new Error(`Webhook API error, response data: ${JSON.stringify(responseData)}`);
         }
         console.log('Webhook notification sent successfully:', payload);
+        console.log('Response webhook:', response);
     } catch (error) {
         console.error('Error sending webhook notification:', error);
         throw new Error('Failed to send webhook notification');
@@ -129,9 +130,9 @@ export async function POST(request: NextRequest) {
             };
             await sendEmail(emailOptions);
         }
-        // if (assignedUser.notifications.whatsapp) {
-        //     await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName, category.name);
-        // }
+        if (assignedUser.notifications.whatsapp) {
+            await sendWebhookNotification(savedTask, assignedUser.whatsappNo, assignedUser.firstName, taskUser.firstName, category.name);
+        }
         return NextResponse.json({
             message: "Task created successfully",
             task: savedTask,

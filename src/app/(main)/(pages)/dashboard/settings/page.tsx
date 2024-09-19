@@ -360,7 +360,7 @@ export default function Page() {
                                             <h1 className=''>Set Reminder Time</h1>
                                             <DialogClose>X</DialogClose>
                                         </div>
-                                        <CustomTimePicker onTimeChange={setDueTime} selectedTime={dueTime} />
+                                        <CustomTimePicker onCancel={() => setIsDialogOpen(false)} onAccept={() => setIsDialogOpen(false)} onBackToDatePicker={() => setIsDialogOpen(false)} onTimeChange={setDueTime} selectedTime={dueTime} />
                                     </DialogContent>
                                 </Dialog>
                             </div>
