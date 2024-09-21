@@ -57,17 +57,17 @@ export default function MyAttendance() {
     const [isRegisterFaceModalOpen, setIsRegisterFaceModalOpen] = useState(false); // Modal for Registering Faces
     const [selectedImages, setSelectedImages] = useState<File[]>([]); // For image selection
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            // Dynamically set Leaflet icon options only after the window object is available
-            delete (L.Icon.Default.prototype as any)._getIconUrl;
-            L.Icon.Default.mergeOptions({
-                iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-            });
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (typeof window !== 'undefined') {
+    //         // Dynamically set Leaflet icon options only after the window object is available
+    //         delete (L.Icon.Default.prototype as any)._getIconUrl;
+    //         L.Icon.Default.mergeOptions({
+    //             iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    //             iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    //             shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    //         });
+    //     }
+    // }, [])
 
 
 
