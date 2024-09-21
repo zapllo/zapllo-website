@@ -57,7 +57,7 @@ async function initializeLeaveBalancesForNewUser(userId: string, organizationId:
 
   for (const leaveType of leaveTypes) {
     const existingBalance = user.leaveBalances.find(balance =>
-      balance.leaveType && balance.leaveType.equals(leaveType._id as string)
+      balance.leaveType && balance.leaveType.equals(leaveType._id as unknown as string)
     );
 
     if (!existingBalance) {
