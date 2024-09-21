@@ -180,6 +180,20 @@ const LeaveTypes: React.FC = () => {
         return leave.type === activeTab;
     });
 
+    const handleCreateRecommendedLeaveTypes = async () => {
+        setLoading(true);
+        try {
+            // Call the API to create recommended leave types
+            await axios.post('/api/leaves/recommendedLeaveTypes');
+            // Refresh the leave types list
+            fetchLeaveTypes();
+        } catch (error) {
+            console.error('Error creating recommended leave types:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="container mx-auto p-6">
             {/* Tabs for filtering */}
@@ -401,20 +415,17 @@ const LeaveTypes: React.FC = () => {
             </div>
             {leaveTypes.length === 0 ? (
                 <div className="text-center">
-                    {/* <h2 className="text-xl font-semibold">No Leave Types Found</h2> */}
                     <button
                         className="mt-2 bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md"
-                        onClick={() => {
-                            // Logic for creating recommended leave types can go here
-                            console.log("Creating recommended leave types");
-                        }}
+                        onClick={handleCreateRecommendedLeaveTypes}
+                        disabled={loading}
                     >
-                        +  Create Recommended Leave Types
+                        {loading ? 'Creating...' : '+ Create Recommended Leave Types'}
                     </button>
                 </div>
             ) : (
                 <>
-                    <h1 className='text-center'>Total Leaves Alloted: {totalAllotedLeaves}</h1>
+                    <h1 className='text-center mb-4'>Total Leaves Alloted: {totalAllotedLeaves}</h1>
                 </>
             )}
             <div>

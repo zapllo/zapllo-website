@@ -62,7 +62,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Re-fetch the user after initialization to ensure updated balances are available
-        await user.populate('leaveBalances.leaveType');  // Ensure correct population of leave balances
+        await user.populate({
+            path: 'leaveBalances.leaveType',
+            model: 'leaveTypes',  // Explicitly specify the leave type model
+        });
+
 
         // Fetch the leave type to get the balance for that type
         const leaveType = await LeaveType.findById(body.leaveType);
@@ -96,10 +100,10 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Check if the user has enough leave balance (optional for leave creation, can be done during approval)
         const userLeaveBalance = user.leaveBalances.find(
-            (balance) => String(balance.leaveType._id || balance.leaveType) === String(body.leaveType)
+            (balance) => String(balance.leaveType?._id || balance.leaveType) === String(body.leaveType)
         );
+
 
         if (!userLeaveBalance || userLeaveBalance.balance < totalAppliedDays) {
             return NextResponse.json({ success: false, error: 'Insufficient leave balance' });
@@ -117,7 +121,7 @@ export async function POST(request: NextRequest) {
             leaveDays: body.leaveDays,
             appliedDays: totalAppliedDays, // Assign the calculated appliedDays
             leaveReason: body.leaveReason,
-            attachment: body.attachment || '',
+            attachment: body.attachment ,
             audioUrl: body.audioUrl || '',
             status: 'Pending',
         });
@@ -145,13 +149,16 @@ export async function GET(request: NextRequest) {
         // Fetch all leaves for the logged-in user and populate leaveType
         const userLeaves = await Leave.find({ user: userId })
             .populate({ path: 'leaveType', model: 'leaveTypes' }) // Explicitly specify model
+            .populate({ path: 'user', model: 'users', select: 'firstName lastName _id' }) // Populate user details
+            .populate({ path: 'approvedBy', model: 'users', select: 'firstName lastName _id' })
+            .populate({ path: 'rejectedBy', model: 'users', select: 'firstName lastName _id' });
 
-        console.log(userLeaves, 'user leaves!')
+        // console.log(userLeaves, 'user leaves!')
 
         if (!userLeaves || userLeaves.length === 0) {
             return NextResponse.json({ success: false, error: 'No leaves found for this user' });
         }
-
+        console.log(userLeaves, 'user leaves!')
         return NextResponse.json({ success: true, leaves: userLeaves });
     } catch (error: any) {
         console.log('Error fetching user leaves: ', error.message);

@@ -154,6 +154,17 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/attendance/my-attendance') {
       return 'My Attendance';
     }
+    else if (pathName === '/attendance/holidays') {
+      return 'Holidays';
+    }
+    else if (pathName === '/attendance/all-leaves') {
+      return 'All Leaves';
+    }
+
+    else if (pathName === '/attendance/approvals') {
+      return 'Approvals';
+    }
+
   };
 
 

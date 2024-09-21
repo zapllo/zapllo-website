@@ -19,10 +19,12 @@ export interface ILeave extends Document {
     appliedDays: number; // Number of days applied for
     leaveDays: ILeaveDay[]; // List of leave days with unit
     leaveReason: string; // Reason for leave
-    attachment: string; // File URL for attachments
+    attachment: [string]; // File URL for attachments
     audioUrl: string; // File URL for audio attachment
     status: 'Pending' | 'Approved' | 'Rejected' | 'Partially Approved'; // Leave approval status
     remarks: string;
+    approvedBy: mongoose.Types.ObjectId | IUser; // Reference to the user who approved the leave
+    rejectedBy: mongoose.Types.ObjectId | IUser; // Reference to the user who rejected the leave
 }
 
 // Define the schema
@@ -69,8 +71,7 @@ const leaveSchema: Schema<ILeave> = new mongoose.Schema({
         required: true,
     },
     attachment: {
-        type: String, // URL of uploaded file
-        default: '',
+        type: [String], // URL of uploaded file
     },
     audioUrl: {
         type: String, // URL of uploaded audio
@@ -84,6 +85,16 @@ const leaveSchema: Schema<ILeave> = new mongoose.Schema({
     remarks: {
         type: String,
         default: '',
+    },
+    approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users', // Reference to User model
+        default: null, // Store the user who approved the leave
+    },
+    rejectedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users', // Reference to User model
+        default: null, // Store the user who rejected the leave
     },
 }, {
     timestamps: true, // Automatically manage createdAt and updatedAt timestamps

@@ -5,7 +5,7 @@ import Webcam from 'react-webcam';
 import Loader from '@/components/ui/loader';
 import * as Dialog from '@radix-ui/react-dialog';
 
-import { MapPin } from 'lucide-react';
+import { Camera, MapPin, MapPinIcon } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import Leaflet related components with `ssr: false`
@@ -14,6 +14,7 @@ const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLaye
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import RegisterFace from '../settings/register-faces/page';
 
 // Define interface for login entries
 interface LoginEntry {
@@ -52,33 +53,93 @@ export default function MyAttendance() {
     const [regularizationLogoutTime, setRegularizationLogoutTime] = useState('');
     const [regularizationRemarks, setRegularizationRemarks] = useState('');
     const [isSubmittingRegularization, setIsSubmittingRegularization] = useState(false);
+    const [hasRegisteredFaces, setHasRegisteredFaces] = useState(false);
+    const [isRegisterFaceModalOpen, setIsRegisterFaceModalOpen] = useState(false); // Modal for Registering Faces
+    const [selectedImages, setSelectedImages] = useState<File[]>([]); // For image selection
 
     useEffect(() => {
-        // if (typeof window !== 'undefined') {
-        //     // Dynamically set Leaflet icon options only after the window object is available
-        //     delete (L.Icon.Default.prototype as any)._getIconUrl;
-        //     L.Icon.Default.mergeOptions({
-        //         iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-        //         iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-        //         shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-        //     });
-        // }
+        if (typeof window !== 'undefined') {
+            // Dynamically set Leaflet icon options only after the window object is available
+            delete (L.Icon.Default.prototype as any)._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+            });
+        }
+    }, [])
 
+
+
+
+    useEffect(() => {
         const fetchLoginEntriesAndStatus = async () => {
-            const resEntries = await fetch('/api/loginEntries');
-            const dataEntries = await resEntries.json();
-            setLoginEntries(dataEntries.entries);
+            try {
+                // Fetch login entries
+                const resEntries = await fetch('/api/loginEntries');
+                const dataEntries = await resEntries.json();
+                setLoginEntries(dataEntries.entries);
 
-            const resStatus = await fetch('/api/check-login-status');
-            const dataStatus = await resStatus.json();
+                // Check if the user's face registration is approved
+                const resFaceStatus = await fetch('/api/check-face-registration-status');
+                const dataFaceStatus = await resFaceStatus.json();
 
-            if (dataStatus.success) {
-                setIsLoggedIn(dataStatus.isLoggedIn);
+                if (dataFaceStatus.success) {
+                    setHasRegisteredFaces(dataFaceStatus.isFaceRegistered);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
         };
 
         fetchLoginEntriesAndStatus();
     }, [isLoggedIn]);
+
+    const handleFaceRegistrationSubmit = async () => {
+        if (selectedImages.length !== 3) {
+            alert('Please upload exactly 3 images.');
+            return;
+        }
+
+        try {
+            // Upload the images first
+            const formData = new FormData();
+            selectedImages.forEach((file) => formData.append('files', file));
+
+            const uploadResponse = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const uploadData = await uploadResponse.json();
+            if (!uploadResponse.ok) {
+                throw new Error('Image upload failed.');
+            }
+
+            // Send a request to save the face registration request with pending status
+            const faceRegistrationResponse = await fetch('/api/face-registration-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageUrls: uploadData.fileUrls, // URLs from the image upload
+                }),
+            });
+
+            const faceRegistrationData = await faceRegistrationResponse.json();
+            if (faceRegistrationResponse.ok && faceRegistrationData.success) {
+                alert('Face registration request submitted successfully and is pending approval.');
+                setIsRegisterFaceModalOpen(false);
+                setSelectedImages([]); // Reset images
+            } else {
+                throw new Error('Face registration request submission failed.');
+            }
+        } catch (error: any) {
+            alert(error.message);
+        }
+    };
+
 
     // Open modal for face login
     const handleLoginLogout = () => {
@@ -155,6 +216,14 @@ export default function MyAttendance() {
         }
     };
 
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files) {
+            const selectedFiles = Array.from(files);
+            setSelectedImages(selectedFiles.slice(0, 3)); // Limit to 3 images
+        }
+    };
+
     // Utility function to convert base64 to Blob
     const dataURLtoBlob = (dataurl: string, filename: string) => {
         const arr = dataurl.split(',');
@@ -190,12 +259,11 @@ export default function MyAttendance() {
 
     const filterLastTwoDaysEntries = () => {
         const today = new Date();
-        const twoDaysAgo = new Date();
-        twoDaysAgo.setDate(today.getDate() - 2);
+
 
         return loginEntries.filter((entry) => {
             const entryDate = new Date(entry.timestamp);
-            return entryDate >= twoDaysAgo && entryDate <= today;
+            return entryDate >= today && entryDate <= today;
         });
     };
 
@@ -313,30 +381,138 @@ export default function MyAttendance() {
         }
     };
 
+    const handleRegisterFaces = () => {
+        setIsRegisterFaceModalOpen(true);
+    };
+    // Fetch the user's location when the component mounts
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLocation({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    });
+                },
+                (error) => {
+                    console.error('Error fetching location:', error);
+                    alert('Unable to fetch location. Please allow location access.');
+                }
+            );
+        }
+    }, []);
+
+
+    const handleModalChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            setCapturedImage(null);
+            setLocation(null);
+        }
+        setIsModalOpen(isOpen);
+    };
+
+    const captureImageAndSubmitLogin = async () => {
+        // Capture image
+        const imageSrc = webcamRef.current?.getScreenshot();
+        if (imageSrc) {
+            setCapturedImage(imageSrc);
+        }
+
+        if (!capturedImage || !location) {
+            alert('Please capture an image and ensure location is available.');
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('files', dataURLtoBlob(capturedImage, 'captured_image.jpg'));
+
+            const uploadResponse = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const uploadData = await uploadResponse.json();
+            const imageUrl = uploadData.fileUrls[0];
+
+            if (!uploadResponse.ok) {
+                throw new Error('Image upload failed.');
+            }
+
+            const action = isLoggedIn ? 'logout' : 'login'; // Determine login or logout action
+
+            const loginResponse = await fetch('/api/face-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageUrl,
+                    lat: location.lat,
+                    lng: location.lng,
+                    action, // Send the action (login or logout)
+                }),
+            });
+
+            const loginData = await loginResponse.json();
+
+            if (loginResponse.ok && loginData.success) {
+                setIsLoggedIn(action === 'login');
+                setIsModalOpen(false); // Close the modal on successful login/logout
+            } else {
+                throw new Error(loginData.error || 'Face recognition failed.');
+            }
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Utility function to conv
+
     return (
         <div className="container  rounded-lg p-4 shadow-lg">
-            {/* Login/Logout Button */}
             <div className="login-section flex justify-center mb-6">
+                {hasRegisteredFaces ? (
+                    <button
+                        onClick={handleLoginLogout}
+                        className={`bg-${isLoggedIn ? 'red-500' : '[#017a5b]'} -500 text-white py-2 px-4 rounded text-sm`}
+                    >
+                        {isLoggedIn ? 'Logout' : 'Login'}
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => setIsRegisterFaceModalOpen(true)}
+                        className="bg-[#75517B] text-white py-2 px-6 rounded text-s"
+                    >
+                        Register Faces
+                    </button>
+                )}
+            </div>
+            {/* Login/Logout Button */}
+            {/* <div className="login-section flex justify-center mb-6">
                 <button
                     onClick={handleLoginLogout}
                     className={`bg-${isLoggedIn ? 'red' : 'green'}-500 text-white py-2 px-6 rounded-lg font-semibold`}
                 >
                     {isLoggedIn ? 'Logout' : 'Login'}
                 </button>
-            </div>
+            </div> */}
             {/* Apply Regularization Button */}
-            <div className="apply-regularization-section flex justify-center mb-6">
-                <button
-                    onClick={() => setIsRegularizationModalOpen(true)}
-                    className="bg-blue-500 text-white py-2 px-6 rounded-lg font-semibold"
-                >
-                    Apply Regularization
-                </button>
-            </div>
+
             {/* Last Two Days Entries */}
-            <div className="last-two-days-entries border p-4 w-full flex  mb-6">
+            <div className="last-two-days-entries  p-4 w-full justify-center  flex  mb-6">
                 {filterLastTwoDaysEntries().length === 0 ? (
-                    <p className="text-center text-gray-600">No entries for the last 2 days!</p>
+                    <div className='bg-[#1a1c20]  w-1/2 rounded p-4'>
+                        <div className='flex w-full justify-center'>
+                            <img src='/animations/not found.gif' className='h-40 ' />
+                        </div>
+                        <h1 className='text-center  text-sm '>No Entries found for today!</h1>
+                        <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
+                    </div>
                 ) : (
                     <div className="space-y-4 w-full mx-12">
                         {filterLastTwoDaysEntries().map((entry: LoginEntry, index: number) => {
@@ -370,16 +546,23 @@ export default function MyAttendance() {
 
                 )}
             </div>
-
+            <div className="apply-regularization-section flex justify-center mb-6">
+                <button
+                    onClick={() => setIsRegularizationModalOpen(true)}
+                    className="bg-[#017A5B] text-white py-2 px-4 rounded text-sm"
+                >
+                    Apply Regularization
+                </button>
+            </div>
             {/* Tabs for filtering entries */}
             <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
-                <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>Today</button>
-                <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>Yesterday</button>
-                <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>This Week</button>
-                <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>Last Week</button>
-                <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>This Month</button>
-                <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>Last Month</button>
-                <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#7c3987]' : 'bg-transparent border'}`}>All Time</button>
+                <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}>Today</button>
+                <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Yesterday</button>
+                <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Week</button>
+                <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Last Week</button>
+                <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Month</button>
+                <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Last Month</button>
+                <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>All Time</button>
                 <button onClick={openCustomModal} className="px-4 py-2 rounded bg-transparent border text-xs">Custom</button>
             </div>
 
@@ -402,30 +585,67 @@ export default function MyAttendance() {
             </div>
 
             {/* Radix UI Dialog for Face Login */}
-            <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <Dialog.Root open={isModalOpen} onOpenChange={handleModalChange}>
                 <Dialog.Trigger asChild></Dialog.Trigger>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
                     <Dialog.Content className="fixed inset-0 flex justify-center items-center">
-                        <div className="bg-[#1A1C20] p-6 rounded-lg max-w-md w-full">
-                            <h3 className="text-lg mb-4">{isLoggedIn ? 'Log Out' : 'Log In'}</h3>
+                        <div className="bg-[#1A1C20] z-[100] p-6 rounded-lg max-w-md w-full relative">
+                            <div className='w-full flex mb-4 justify-between'>
 
-                            {/* Webcam for Face Login */}
-                            <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full h-auto rounded mb-4" />
+                                <h3 className="text-sm text-white text-center ">
+                                    {isLoggedIn ? `Logout at ${new Date().toLocaleTimeString()}` : `Login at ${new Date().toLocaleTimeString()}`}
+                                </h3>
+                                <Dialog.DialogClose className=''>X</Dialog.DialogClose>
 
-                            {/* Capture Image and Location Button */}
-                            <button onClick={captureImageAndLocation} className="bg-blue-500 text-white py-2 px-4 rounded w-full mb-4">Capture Image & Location</button>
+                            </div>
+                            {/* Webcam or Captured Image Display */}
+                            <div className="relative w-full h-auto mb-4">
+                                {capturedImage ? (
+                                    <img src={capturedImage} alt="Captured" className="w-full h-auto rounded-lg" />
+                                ) : (
+                                    <Webcam
+                                        audio={false}
+                                        ref={webcamRef}
+                                        screenshotFormat="image/jpeg"
+                                        className="w-full h-auto rounded-lg"
+                                    />
+                                )}
 
-                            {/* Display Latitude and Longitude */}
-                            <p>Latitude: {location?.lat}</p>
-                            <p>Longitude: {location?.lng}</p>
+                                {/* Face Logging Animation (if capturedImage exists) */}
+                                {capturedImage && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        {/* Example face detection animation */}
+                                        <div className="face-animation">
+                                            <div className="border-4 border-green-500 rounded-full p-4"></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
-                            {/* Submit Button */}
-                            {isLoading ? <Loader /> : <button onClick={handleSubmitLogin} className="bg-green-500 text-white py-2 px-4 rounded w-full">{isLoggedIn ? 'Log Out' : 'Log In'}</button>}
+                            {/* Single Camera Button to Capture and Submit */}
+                            <button
+                                onClick={captureImageAndSubmitLogin}
+                                className="bg-[#017A5B] text-white py-2 px-4 rounded-full flex items-center justify-center mx-auto mb-4"
+                            >
+                                <Camera className="w-6 h-6" /> {/* Replace with an actual camera icon */}
+                            </button>
+
+                            {/* Display Lat and Long */}
+                            <div className="text-center flex w-full justify-center text-xs text-gray-400">
+                                <p className='flex gap-2'>
+                                    <MapPinIcon className='h-4' /> Lat: {location?.lat || 'Loading...'}, Long: {location?.lng || 'Loading...'}
+                                </p>
+                            </div>
+
+                            {/* Show Loader if submitting */}
+                            {isLoading && <Loader />}
                         </div>
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
+
+
 
             {/* Map Modal */}
             <Dialog.Root open={mapModalOpen} onOpenChange={setMapModalOpen}>
@@ -504,20 +724,22 @@ export default function MyAttendance() {
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
-            {/* Regularization Modal */}
-            <Dialog.Root
-                open={isRegularizationModalOpen}
-                onOpenChange={setIsRegularizationModalOpen}
-            >
+
+            {/**Regularization Modal */}
+            <Dialog.Root open={isRegularizationModalOpen} onOpenChange={setIsRegularizationModalOpen}>
                 <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-                    <Dialog.Content className="fixed inset-0 flex justify-center items-center p-4">
-                        <div className="bg-[#1A1C20] p-6 rounded-lg max-w-md w-full">
-                            <h3 className="text-lg mb-4 text-white">Apply Regularization</h3>
+                    <Dialog.Overlay className="fixed inset-0 z-[50] bg-black/50" />
+                    <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
+                        <div className="bg-[#1A1C20] z-[100] p-6 rounded-lg max-w-lg w-full relative">
+                            <div className="w-full flex mb-4 justify-between">
+                                <h3 className="text-sm font-medium mb-4 text-white">Apply Regularization</h3>
+                                <Dialog.DialogClose className="">X</Dialog.DialogClose>
+                            </div>
+
                             <form onSubmit={handleSubmitRegularization} className="space-y-4">
                                 {/* Date Input */}
-                                <div>
-                                    <label htmlFor="date" className="block text-sm font-medium text-gray-200">
+                                <div className="relative">
+                                    <label htmlFor="date" className="absolute bg-[#1A1C20] z-[100] ml-2 text-xs -mt-2 px-1 text-white o">
                                         Date
                                     </label>
                                     <input
@@ -526,13 +748,13 @@ export default function MyAttendance() {
                                         value={regularizationDate}
                                         onChange={(e) => setRegularizationDate(e.target.value)}
                                         required
-                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        className="w-full text-sm p-2 outline-none opacity-65 border rounded bg-transparent"
                                     />
                                 </div>
 
                                 {/* Login Time Input */}
-                                <div>
-                                    <label htmlFor="loginTime" className="block text-sm font-medium text-gray-200">
+                                <div className="relative">
+                                    <label htmlFor="loginTime" className="absolute bg-[#1A1C20] ml-2 text-xs z-[100] -mt-2 px-1 text-white">
                                         Login Time
                                     </label>
                                     <input
@@ -541,13 +763,13 @@ export default function MyAttendance() {
                                         value={regularizationLoginTime}
                                         onChange={(e) => setRegularizationLoginTime(e.target.value)}
                                         required
-                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        className="w-full text-sm p-2 outline-none border opacity-65 rounded bg-transparent"
                                     />
                                 </div>
 
                                 {/* Logout Time Input */}
-                                <div>
-                                    <label htmlFor="logoutTime" className="block text-sm font-medium text-gray-200">
+                                <div className="relative">
+                                    <label htmlFor="logoutTime" className="absolute bg-[#1A1C20] ml-2 z-[100] text-xs -mt-2 px-1 text-white -400">
                                         Logout Time
                                     </label>
                                     <input
@@ -556,13 +778,13 @@ export default function MyAttendance() {
                                         value={regularizationLogoutTime}
                                         onChange={(e) => setRegularizationLogoutTime(e.target.value)}
                                         required
-                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        className="w-full text-sm p-2 outline-none border rounded opacity-65 bg-transparent"
                                     />
                                 </div>
 
-                                {/* Remarks Input */}
-                                <div>
-                                    <label htmlFor="remarks" className="block text-sm font-medium text-gray-200">
+                                {/* Remarks Textarea */}
+                                <div className="relative">
+                                    <label htmlFor="remarks" className="absolute bg-[#1A1C20] z-[100] ml-2 text-xs -mt-2 px-1 text-white -400">
                                         Remarks
                                     </label>
                                     <textarea
@@ -570,7 +792,7 @@ export default function MyAttendance() {
                                         value={regularizationRemarks}
                                         onChange={(e) => setRegularizationRemarks(e.target.value)}
                                         required
-                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        className="w-full text-sm p-2 outline-none border rounded opacity-65 bg-transparent"
                                         rows={3}
                                     ></textarea>
                                 </div>
@@ -580,15 +802,53 @@ export default function MyAttendance() {
                                     {isSubmittingRegularization ? (
                                         <Loader />
                                     ) : (
-                                        <button
-                                            type="submit"
-                                            className="bg-green-500 text-white py-2 px-4 rounded w-full"
-                                        >
+                                        <button type="submit" className="w-full bg-[#017A5B] text-white py-2 px-4 rounded">
                                             Submit
                                         </button>
                                     )}
                                 </div>
                             </form>
+                        </div>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
+
+            {/* Register Faces Modal */}
+            {/* Register Face Modal */}
+            <Dialog.Root open={isRegisterFaceModalOpen} onOpenChange={setIsRegisterFaceModalOpen}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
+                    <Dialog.Content className="fixed inset-0 flex justify-center items-center">
+                        <div className="bg-[#121212] p-6 rounded-lg max-w-md w-full">
+                            <h3 className="text-lg mb-4">Register Faces (Upload 3 Images)</h3>
+
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageUpload}
+                                className="block w-full mb-4"
+                            />
+
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+                                {selectedImages.length > 0 &&
+                                    selectedImages.map((file, index) => (
+                                        <div key={index}>
+                                            <img
+                                                src={URL.createObjectURL(file)}
+                                                alt={`preview-${index}`}
+                                                className="w-full h-auto"
+                                            />
+                                        </div>
+                                    ))}
+                            </div>
+
+                            <button
+                                onClick={handleFaceRegistrationSubmit}
+                                className="bg-green-500 text-white py-2 px-4 rounded w-full"
+                            >
+                                Submit Face Registration
+                            </button>
                         </div>
                     </Dialog.Content>
                 </Dialog.Portal>

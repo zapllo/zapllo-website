@@ -14,6 +14,7 @@ enum LeaveUnit {
 
 // Define the interface for the Leave document
 export interface ILeaveType extends Document {
+    _id: mongoose.Types.ObjectId;
     leaveType: string;
     description: string;
     allotedLeaves: number;

@@ -6,7 +6,7 @@ import { Trash2, Edit2 } from 'lucide-react'; // Assuming you're using lucide-re
 import HolidayFormModal from '../modals/EditHoliday'; // Import a component for the modal form
 
 interface Holiday {
-    _id: string; // Assuming holidays have an ID field
+    _id: string; // Assuming holidays have an ID fieldh
     holidayName: string;
     holidayDate: string;
 }
@@ -74,22 +74,23 @@ const HolidayList: React.FC = () => {
 
     return (
         <div className="container mx-auto p-6">
-            <h3 className="text-lg font-bold mb-4">Upcoming Holidays</h3>
+            <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
             <table className="w-full table-auto border-collapse">
                 <thead>
                     <tr>
-                        <th className="border px-4 py-2">Name</th>
-                        <th className="border px-4 py-2">Date</th>
+                        <th className="border px-4 text-xs py-2">Name</th>
+                        <th className="border px-4 text-xs py-2">Date</th>
                         {/* Conditionally render Actions column if user is orgAdmin */}
-                        {userRole === 'orgAdmin' && <th className="border px-4 py-2">Actions</th>}
+                        {userRole === 'orgAdmin' && <th className="border text-xs px-4 py-2">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {holidays.map((holiday) => (
                         <tr key={holiday._id}>
-                            <td className="border px-4 py-2">{holiday.holidayName}</td>
-                            <td className="border px-4 py-2">
+                            <td className="border px-4 text-xs py-2">{holiday.holidayName}</td>
+                            <td className="border px-4 text-xs py-2">
                                 {new Date(holiday.holidayDate).toLocaleDateString()}
+
                             </td>
                             {/* Conditionally render edit and delete buttons if user is orgAdmin */}
                             {userRole === 'orgAdmin' && (
@@ -98,14 +99,14 @@ const HolidayList: React.FC = () => {
                                         onClick={() => handleEditClick(holiday)}
                                         className="text-blue-500 hover:text-blue-700 mr-2"
                                     >
-                                        <Edit2 className="h-5 w-5" />
+                                        <Edit2 className="h-4 w-4" />
                                     </button>
                                     <button
                                         onClick={() => deleteHoliday(holiday._id)}
                                         disabled={isDeleting === holiday._id}
                                         className="text-red-500 hover:text-red-700"
                                     >
-                                        {isDeleting === holiday._id ? 'Deleting...' : <Trash2 className="h-5 w-5" />}
+                                        {isDeleting === holiday._id ? 'Deleting...' : <Trash2 className="h-4 w-4" />}
                                     </button>
                                 </td>
                             )}

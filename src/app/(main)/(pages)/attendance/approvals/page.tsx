@@ -158,6 +158,17 @@ export default function Approvals() {
         setRemarks('');
     };
 
+    // Counts for tabs and statuses
+    const leaveCount = leaves.length;
+    const regularizationCount = regularizations.length;
+    const pendingLeaveCount = leaves.filter(leave => leave.status === 'Pending').length;
+    const approvedLeaveCount = leaves.filter(leave => leave.status === 'Approved').length;
+    const rejectedLeaveCount = leaves.filter(leave => leave.status === 'Rejected').length;
+
+    const pendingRegCount = regularizations.filter(reg => reg.approvalStatus === 'Pending').length;
+    const approvedRegCount = regularizations.filter(reg => reg.approvalStatus === 'Approved').length;
+    const rejectedRegCount = regularizations.filter(reg => reg.approvalStatus === 'Rejected').length;
+
     const handleModalSubmit = async () => {
         setIsModalOpen(false);
         setSelectedEntry(null);
@@ -184,133 +195,138 @@ export default function Approvals() {
 
     return (
         <div className="container mx-auto p-6">
-            <h1 className="text-xl font-bold mb-6">Approvals</h1>
+            {/* <h1 className="text-2xl font-bold mb-6">Approvals</h1> */}
 
-            {/* Tab Buttons */}
-            <div className="flex space-x-4 mb-6">
+            {/* Filter Buttons */}
+            <div className="flex justify-center gap-4 mb-6">
                 <button
                     onClick={() => setFilter('Leave')}
-                    className={`px-4 py-2 rounded-md ${filter === 'Leave' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                    className={`px-4 text-xs h-8 rounded ${filter === 'Leave' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                 >
                     Leave
                 </button>
                 <button
                     onClick={() => setFilter('Regularization')}
-                    className={`px-4 py-2 rounded-md ${filter === 'Regularization' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                    className={`px-4 text-xs h-8 rounded ${filter === 'Regularization' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                 >
                     Regularization
                 </button>
             </div>
-
-            {/* Status Filter Buttons */}
-            <div className="flex space-x-4 mb-6">
-                {['All', 'Pending', 'Approved', 'Rejected'].map((status) => (
-                    <button
-                        key={status}
-                        onClick={() => setStatusFilter(status as 'Pending' | 'Approved' | 'Rejected' | 'All')}
-                        className={`px-4 py-2 rounded-md ${statusFilter === status ? 'bg-green-500 text-white' : 'bg-gray-200 text-black'}`}
-                    >
-                        {status}
-                    </button>
-                ))}
+            {/* Status Filter Buttons with Counts */}
+            <div className="flex justify-center gap-4 mb-6">
+                {filter === 'Leave' ? (
+                    <>
+                        <button
+                            onClick={() => setStatusFilter('All')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            All ({leaveCount})
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter('Pending')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            Pending ({pendingLeaveCount})
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter('Approved')}
+                            className={`px-4 text-xs h-8 rounded  ${statusFilter === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            Approved ({approvedLeaveCount})
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter('Rejected')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            Rejected ({rejectedLeaveCount})
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button
+                            onClick={() => setStatusFilter('All')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            All ({regularizationCount})
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter('Pending')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            Pending ({pendingRegCount})
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter('Approved')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            Approved ({approvedRegCount})
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter('Rejected')}
+                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                        >
+                            Rejected ({rejectedRegCount})
+                        </button>
+                    </>
+                )}
             </div>
+
 
             {/* Entries Display */}
             {filter === 'Leave' ? (
-                // Leave Approvals
                 <>
                     {filteredLeaves.length === 0 ? (
                         <p className="text-gray-600">No leave requests found.</p>
                     ) : (
                         <div className="space-y-4">
                             {filteredLeaves.map((leave) => (
-                                <div key={leave._id} className="border p-4 rounded-md shadow-sm">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <div>
-                                            <h2 className="font-bold text-lg">{leave.user.firstName}</h2>
-                                            <p className="text-sm text-gray-600">{leave.leaveType.leaveType}</p>
+                                <div key={leave._id} className="flex items-center justify-between border p-4 rounded shadow-sm mb-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                                            {leave.user.firstName[0]}
                                         </div>
-                                        <span className={`px-4 py-2 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-                                            leave.status === 'Approved' ? 'bg-green-500 text-white' :
-                                                leave.status === 'Rejected' ? 'bg-red-500 text-white' :
-                                                    leave.status === 'Partially Approved' ? 'bg-blue-500 text-white' :
-                                                        'bg-gray-500 text-white'}`}>
-                                            {leave.status}
-                                        </span>
+                                        <h3 className="text-md text-white">{leave.user.firstName}</h3>
+                                        <p className="text-sm text-white">
+                                            From: <span className="text-white">{format(new Date(leave.fromDate), 'MMM d, yyyy')}</span>
+                                            <span className="ml-4">To: <span className="text-white">{format(new Date(leave.toDate), 'MMM d, yyyy')}</span></span>
+                                        </p>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <div>
-                                            <p><strong>From:</strong> {format(new Date(leave.fromDate), 'MMM d, yyyy')}</p>
-                                            <p><strong>To:</strong> {format(new Date(leave.toDate), 'MMM d, yyyy')}</p>
-                                            <p><strong>Applied Days:</strong> {leave.appliedDays}</p>
-                                        </div>
-                                        {leave.status === 'Pending' && (
-                                            <div className="space-x-2">
-                                                <button
-                                                    className="bg-green-500 text-white px-4 py-2 rounded"
-                                                    onClick={() => handleApproval(leave)}
-                                                >
-                                                    Approve
-                                                </button>
-                                                <button
-                                                    className="bg-red-500 text-white px-4 py-2 rounded"
-                                                    onClick={() => handleReject(leave)}
-                                                >
-                                                    Reject
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+
+                                    <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
+                                        leave.status === 'Approved' ? 'bg-green-500 text-white' :
+                                            leave.status === 'Rejected' ? 'bg-red-500 text-white' :
+                                                'bg-gray-500 text-white'}`}>
+                                        {leave.status}
+                                    </span>
                                 </div>
                             ))}
                         </div>
                     )}
                 </>
             ) : (
-                // Regularization Approvals
                 <>
                     {filteredRegularizations.length === 0 ? (
                         <p className="text-gray-600">No regularization requests found.</p>
                     ) : (
                         <div className="space-y-4">
                             {filteredRegularizations.map((reg) => (
-                                <div key={reg._id} className="border p-4 rounded-md shadow-sm">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <div>
-                                            <h2 className="font-bold text-lg">{reg?.user?.firstName}</h2>
-                                            <p className="text-sm text-gray-600">Regularization Request</p>
+                                <div key={reg._id} className="flex items-center justify-between border p-4 rounded shadow-sm mb-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                                            {reg.user.firstName[0]}
                                         </div>
-                                        <span className={`px-4 py-2 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-500 text-white' :
-                                            reg.approvalStatus === 'Approved' ? 'bg-green-500 text-white' :
-                                                reg.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' :
-                                                    'bg-gray-500 text-white'}`}>
-                                            {reg.approvalStatus}
-                                        </span>
+                                        <h3 className="text-md text-white">{reg.user.firstName}</h3>
+                                        <p className="text-sm text-white">
+                                            Date: <span className="text-white">{format(new Date(reg.timestamp), 'MMM d, yyyy')}</span>
+                                        </p>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <div>
-                                            <p><strong>Date:</strong> {format(new Date(reg.timestamp), 'MMM d, yyyy')}</p>
-                                            <p><strong>Login Time:</strong> {reg.loginTime}</p>
-                                            <p><strong>Logout Time:</strong> {reg.logoutTime}</p>
-                                            <p><strong>Remarks:</strong> {reg.remarks}</p>
-                                        </div>
-                                        {reg.approvalStatus === 'Pending' && (
-                                            <div className="space-x-2">
-                                                <button
-                                                    className="bg-green-500 text-white px-4 py-2 rounded"
-                                                    onClick={() => handleApproval(reg)}
-                                                >
-                                                    Approve
-                                                </button>
-                                                <button
-                                                    className="bg-red-500 text-white px-4 py-2 rounded"
-                                                    onClick={() => handleReject(reg)}
-                                                >
-                                                    Reject
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+
+                                    <span className={`px-3 py-1 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-500 text-white' :
+                                        reg.approvalStatus === 'Approved' ? 'bg-green-500 text-white' :
+                                            reg.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' :
+                                                'bg-gray-500 text-white'}`}>
+                                        {reg.approvalStatus}
+                                    </span>
                                 </div>
                             ))}
                         </div>
@@ -318,7 +334,7 @@ export default function Approvals() {
                 </>
             )}
 
-            {/* Render the appropriate approval modal */}
+            {/* Render the approval modal */}
             {selectedEntry && isModalOpen && (
                 <>
                     {!isRegularization(selectedEntry) ? (
@@ -344,7 +360,7 @@ export default function Approvals() {
                 </>
             )}
 
-            {/* Render the appropriate reject modal */}
+            {/* Render the reject modal */}
             {selectedEntry && isRejectModalOpen && (
                 <>
                     {!isRegularization(selectedEntry) ? (
@@ -367,5 +383,5 @@ export default function Approvals() {
                 </>
             )}
         </div>
-    )
+    );
 }

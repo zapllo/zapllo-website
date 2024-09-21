@@ -327,7 +327,7 @@ export async function POST(request: NextRequest) {
 
     // Send the WhatsApp notification
     const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/w4B2cSkUyaf3/logo-02%204.png?se=2029-07-07T15%3A30%3A43Z&sp=rt&sv=2019-12-12&sr=b&sig=EtEFkVbZXLeBLJ%2B9pkZitby/%2BwJ4HzJkGgeT2%2BapgoQ%3D";
-    // await sendWebhookNotification(whatsappNo, templateName, mediaUrl, bodyVariables);
+    await sendWebhookNotification(whatsappNo, templateName, mediaUrl, bodyVariables);
     if (newOrganizationId && savedUser._id) {
       await initializeLeaveBalancesForNewUser(savedUser._id.toString(), newOrganizationId);
     }

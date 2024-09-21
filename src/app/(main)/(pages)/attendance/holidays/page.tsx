@@ -18,18 +18,20 @@ const HolidayManager: React.FC = () => {
 
     return (
         <div className="container mx-auto p-6">
-            <h2 className="text-lg font-bold mb-6">Holiday Manager</h2>
+            {/* <h2 className="text-lg font-bold mb-6">Holiday Manager</h2> */}
 
             {/* Dialog Root */}
             <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <Dialog.Trigger asChild>
-                    <button
-                        className="bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md flex items-center gap-2"
-                        onClick={() => setIsModalOpen(true)}
-                    >
-                        <Plus className="h-4 w-4" /> Add New Holiday
-                    </button>
-                </Dialog.Trigger>
+                <div className='flex ml-6a'>
+                    <Dialog.Trigger asChild>
+                        <button
+                            className="bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md flex items-center gap-2"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <Plus className="h-4 w-4" /> Add New Holiday
+                        </button>
+                    </Dialog.Trigger>
+                </div>
 
                 {/* Modal Content */}
                 <Dialog.Portal>
@@ -46,7 +48,7 @@ const HolidayManager: React.FC = () => {
                             <HolidayForm onHolidayCreated={handleHolidayCreated} /> {/* Holiday Form Component */}
 
                             <div className="flex justify-end mt-4">
-                              
+
                             </div>
                         </div>
                     </Dialog.Content>

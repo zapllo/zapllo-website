@@ -15,7 +15,19 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
     const [duration, setDuration] = useState<number>(0);
 
     const audioSrc = audioBlob ? URL.createObjectURL(audioBlob) : audioUrl || '';
-    const audioRef = useRef<HTMLAudioElement>(new Audio(audioSrc));
+    const audioRef = useRef<HTMLAudioElement>(null);
+
+    // Update the audio src when audioBlob or audioUrl changes
+    useEffect(() => {
+        if (audioRef.current && audioSrc) {
+            audioRef.current.src = audioSrc;
+            // Load the audio when the src changes
+            audioRef.current.load();
+            setIsPlaying(false);
+            setCurrentTime(0);
+            setDuration(0);
+        }
+    }, [audioSrc]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -25,7 +37,7 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
             };
 
             const handleLoadedMetadata = () => {
-                setDuration(audio.duration);
+                setDuration(audio.duration); // Ensure duration is correctly set
             };
 
             audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -36,24 +48,28 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
                 audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
             };
         }
-    }, [audioSrc]);
+    }, []);
 
     const handlePlayPause = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         const audio = audioRef.current;
-        if (isPlaying) {
-            audio.pause();
-        } else {
-            audio.play();
+        if (audio) {
+            if (isPlaying) {
+                audio.pause();
+            } else {
+                audio.play();
+            }
+            setIsPlaying(!isPlaying);
         }
-        setIsPlaying(!isPlaying);
     };
 
     const handleMuteUnmute = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         const audio = audioRef.current;
-        audio.muted = !isMuted;
-        setIsMuted(!isMuted);
+        if (audio) {
+            audio.muted = !isMuted;
+            setIsMuted(!isMuted);
+        }
     };
 
     const formatTime = (time: number) => {
@@ -73,7 +89,7 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
     };
 
     return (
-        <div className='mt'>
+        <div className=' bg-[#282d32] rounded mt-2'>
             {audioSrc && (
                 <div className='border p-1 px-2 h-12 mb-4 rounded-lg'>
                     <h1 className='p text-xs'>Voice Note</h1>
@@ -84,9 +100,9 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
                                 style={{ width: `${(currentTime / duration) * 100}%` }}
                             ></div>
                         </div>
-                        <span className="text-white text-sm">
-                            {formatTime(currentTime)}
-                        </span>
+                        <div className="text-white text-sm">
+                            <span>{formatTime(currentTime)}</span> 
+                        </div>
                         <button
                             onClick={handlePlayPause}
                             className="bg-[#017A5B] text-white h-5 w-5 rounded-full"
@@ -98,17 +114,17 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
                             )}
                         </button>
                         {setAudioBlob && (
-                        <div className=' flex  justify-end'>
-                            <button
-                                onClick={handleClear}
-                                className="bg-transparent text-xs flex gap border-[#505356] border text-white h-5 w-5 items-center  rounded-full"
-                            >
-                                <h1 className='text-red-400 ml-[5px]'>X</h1> 
-                            </button>
-                        </div>
-                    )}
+                            <div className=' flex  justify-end'>
+                                <button
+                                    onClick={handleClear}
+                                    className="bg-transparent text-xs flex gap border-[#505356] border text-white h-5 w-5 items-center  rounded-full"
+                                >
+                                    <h1 className='text-red-400 ml-[5px]'>X</h1>
+                                </button>
+                            </div>
+                        )}
                     </div>
-                   
+                    <audio ref={audioRef} controls className='hidden' />
                 </div>
             )}
         </div>

@@ -54,6 +54,23 @@ export default function AllLeaves() {
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const response = await axios.get('/api/users/me');  // Adjust this endpoint to fetch user data
+                if (response.data && response.data.data.role) {
+                    setCurrentUserRole(response.data.data.role);
+                }
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+            }
+        };
+
+        fetchUserRole();
+    }, []);
+
 
     useEffect(() => {
         if (tab === 'balances') {
@@ -163,39 +180,35 @@ export default function AllLeaves() {
     const filteredLeaves = filter === 'All' ? leaves : leaves.filter(leave => leave.status === filter);
 
     return (
-        <div className="container mx-auto p-6 h-screen overflow-y-scroll">
-            <h1 className="text-xl font-bold mb-6">Leave Management</h1>
-
-            {/* Tab Navigation */}
-            <div className="flex space-x-4 mb-6">
+        <div className="container mx-auto p-6">
+            {/* Tab Navigation with Counts */}
+            <div className="flex justify-center gap-4 mb-6">
                 <button
                     onClick={() => setTab('applications')}
-                    className={`px-4 py-2 rounded-md ${tab === 'applications' ? 'bg-green-500 text-white' : 'bg-gray-200 text-black'}`}
+                    className={`px-4 text-xs h-8 rounded ${tab === 'applications' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                 >
-                    Leave Applications
+                    Leave Applications ({leaves.length})
                 </button>
                 <button
                     onClick={() => setTab('balances')}
-                    className={`px-4 py-2 rounded-md ${tab === 'balances' ? 'bg-green-500 text-white' : 'bg-gray-200 text-black'}`}
+                    className={`px-4 text-xs h-8 rounded ${tab === 'balances' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                 >
-                    Leave Balances
+                    Leave Balances ({users.length})
                 </button>
             </div>
 
             {/* Tab Content */}
             {tab === 'applications' ? (
-                <div className="container  mx-auto p-6">
-                    <h1 className="text-xl font-bold mb-6">All Leaves</h1>
-
+                <>
                     {/* Filter Buttons */}
-                    <div className="flex space-x-4 mb-6">
+                    <div className="flex justify-center gap-4 mb-6">
                         {['All', 'Pending', 'Approved', 'Rejected'].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => setFilter(status as 'Pending' | 'Approved' | 'Rejected' | 'All')}
-                                className={`px-4 py-2 rounded-md ${filter === status ? 'bg-green-500 text-white' : 'bg-gray-200 text-black'}`}
+                                className={`px-4 text-xs h-8 rounded ${filter === status ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                             >
-                                {status}
+                                {status} ({leaves.filter(leave => status === 'All' || leave.status === status).length})
                             </button>
                         ))}
                     </div>
@@ -204,38 +217,56 @@ export default function AllLeaves() {
                     {filteredLeaves.length === 0 ? (
                         <p className="text-gray-600">No leave requests found.</p>
                     ) : (
-                        <div className="space-y-4 ">
+                        <div className="space-y-4">
                             {filteredLeaves.map((leave) => (
-                                <div key={leave._id} className="border p-4 rounded-md shadow-sm">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <div>
-                                            <h2 className="font-bold text-lg">{leave.user.firstName}</h2>
-                                            <p className="text-sm text-gray-600">{leave.leaveType.leaveType}</p>
+                                <div key={leave._id} className="border">
+                                    <div className='flex items-center justify-between  p-4 rounded shadow-sm mb-4'>
+                                        <div className="flex items-center gap-4">
+                                            {/* User Profile Icon */}
+                                            <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                                                {leave.user.firstName[0]}
+                                            </div>
+                                            <h3 className="text-md text-white">{leave.user.firstName}</h3>
+                                            <div className="flex gap-4">
+                                                <p className="text-sm text-gray-400">
+                                                    From: <span className="text-white">{format(new Date(leave.fromDate), 'MMM d, yyyy')}</span>
+                                                </p>
+                                                <p className="text-sm text-gray-400 ml-4">
+                                                    To: <span className="text-white">{format(new Date(leave.toDate), 'MMM d, yyyy')}</span>
+                                                </p>
+                                                <p className="text-sm text-gray-400 ml-4">
+                                                    Applied: <span className="text-white">{leave.appliedDays} Day(s)</span>
+                                                </p>
+                                                <p className="text-sm text-gray-400 ml-4">
+                                                    Approved: <span className="text-white">{leave.leaveDays.filter(day => day.status === 'Approved').length} Day(s)</span>
+                                                </p>
+                                            </div>
+
                                         </div>
-                                        <span className={`px-4 py-2 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-                                            leave.status === 'Approved' ? 'bg-green-500 text-white' :
-                                                leave.status === 'Rejected' ? 'bg-red-500 text-white' :
-                                                    leave.status === 'Partially Approved' ? 'bg-blue-500 text-white' :
-                                                        'bg-gray-500 text-white'}`}>
-                                            {leave.status}
-                                        </span>
+                                        <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
+                                        leave.status === 'Approved' ? 'bg-green-500 text-white' :
+                                            leave.status === 'Rejected' ? 'bg-red-500 text-white' :
+                                                leave.status === 'Partially Approved' ? 'bg-blue-500 text-white' :
+                                                    'bg-gray-500 text-white'}`}>
+                                        {leave.status}
+                                    </span>
+
                                     </div>
-                                    <div className="flex justify-between">
-                                        <div>
-                                            <p><strong>From:</strong> {format(new Date(leave.fromDate), 'MMM d, yyyy')}</p>
-                                            <p><strong>To:</strong> {format(new Date(leave.toDate), 'MMM d, yyyy')}</p>
-                                            <p><strong>Applied Days:</strong> {leave.appliedDays}</p>
-                                        </div>
-                                        {leave.status === 'Pending' && (
-                                            <div className="space-x-2">
+
+                                    {/* Status and Approval */}
+                                 
+                                    {/* Approve/Reject Buttons (shown only for orgAdmin and Pending leave status) */}
+                                    <div className='flex justify-center ml-4 w-full mb-4'>
+                                        {currentUserRole === 'orgAdmin' && leave.status === 'Pending' && (
+                                            <div className="flex gap-2">
                                                 <button
-                                                    className="bg-green-500 text-white px-4 py-2 rounded"
+                                                    className="bg-green-500 text-xs text-white h-6 px-4 py-1  rounded"
                                                     onClick={() => handleApproval(leave)}
                                                 >
                                                     Approve
                                                 </button>
                                                 <button
-                                                    className="bg-red-500 text-white px-4 py-2 rounded"
+                                                    className="bg-red-500 text-white px-4 py-1 h-6 text-xs rounded"
                                                     onClick={() => handleReject(leave)}
                                                 >
                                                     Reject
@@ -245,10 +276,12 @@ export default function AllLeaves() {
                                     </div>
                                 </div>
                             ))}
+
                         </div>
                     )}
 
-                    {/* Render the approval modal if selectedLeave is set */}
+
+                    {/* Render the approval modal */}
                     {selectedLeave && isModalOpen && (
                         <LeaveApprovalModal
                             leaveId={selectedLeave._id}
@@ -260,7 +293,7 @@ export default function AllLeaves() {
                         />
                     )}
 
-                    {/* Render the reject modal if selectedLeave is set */}
+                    {/* Render the reject modal */}
                     {selectedLeave && isRejectModalOpen && (
                         <RejectModal
                             entryId={selectedLeave._id}
@@ -270,7 +303,7 @@ export default function AllLeaves() {
                             onSubmit={handleRejectSubmit}
                         />
                     )}
-                </div>
+                </>
             ) : (
                 <div>
                     <table className="min-w-full border-collapse table-auto">
@@ -283,19 +316,19 @@ export default function AllLeaves() {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map(user => (
+                            {users?.map(user => (
                                 <tr key={user._id}>
                                     <td className="border px-4 py-2">
                                         {user.firstName} {user.lastName}
                                     </td>
                                     <td className="border px-4 py-2">
                                         {user.leaveBalances.map(lb => (
-                                            <div key={lb.leaveType._id}>{lb.leaveType.leaveType}</div>
+                                            <div key={lb.leaveType?._id}>{lb?.leaveType?.leaveType}</div>
                                         ))}
                                     </td>
                                     <td className="border px-4 py-2">
                                         {user.leaveBalances.map(lb => (
-                                            <div key={lb.leaveType._id}>{lb.balance}</div>
+                                            <div key={lb.leaveType?._id}>{lb?.balance}</div>
                                         ))}
                                     </td>
                                     <td className="border px-4 py-2">
@@ -323,4 +356,7 @@ export default function AllLeaves() {
             )}
         </div>
     );
+
+
+
 }

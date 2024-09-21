@@ -19,7 +19,7 @@ interface LeaveApprovalModalProps {
 }
 
 const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({ leaveId, leaveDays, appliedDays, leaveReason, onClose, onSubmit }) => {
-    const [approvalData, setApprovalData] = useState<LeaveDay[]>(leaveDays); 
+    const [approvalData, setApprovalData] = useState<LeaveDay[]>(leaveDays);
     const [remarks, setRemarks] = useState<string>(''); // State for remarks
 
     // Handle the status change (either Approve or Reject)
@@ -35,7 +35,11 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({ leaveId, leaveD
     const handleSubmit = async () => {
         console.log('Submitting leave days:', approvalData);  // Check the state
         try {
-            const response = await axios.post(`/api/leaveApprovals/${leaveId}`, { leaveDays: approvalData, remarks });  // Pass remarks
+            const response = await axios.post(`/api/leaveApprovals/${leaveId}`, {
+                leaveDays: approvalData,
+                remarks,
+                action: approvalData.every(day => day.status === 'Approved') ? 'approve' : 'reject' // Send action
+            });  // Pass remarks
             if (response.data.success) {
                 console.log('Response from API:', response.data);
                 onSubmit(); // Proceed if successful
