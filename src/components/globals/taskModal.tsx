@@ -831,6 +831,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                                                 setDueDate(date);
                                                                 setIsDatePickerVisible(false);
                                                             }}
+                                                            onCloseDialog={() => setIsDateTimeModalOpen(false)}
                                                         />
                                                     </motion.div>
                                                 ) : (

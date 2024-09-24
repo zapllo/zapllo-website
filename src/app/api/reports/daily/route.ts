@@ -50,15 +50,18 @@ export async function POST(request: NextRequest) {
 
         const usersWithLoginEntries = new Map();
         loginEntries.forEach(entry => {
+            const loginTime = entry.loginTime || 'N/A';
+            const logoutTime = entry.logoutTime || 'N/A';
             const status = entry.action === 'login' ? 'Present' : entry.action === 'logout' ? 'Absent' : 'Regularization';
             usersWithLoginEntries.set(entry.userId._id.toString(), {
                 user: `${entry.userId.firstName} ${entry.userId.lastName}`,
                 status,
-                loginTime: entry.loginTime || 'N/A',
-                logoutTime: entry.logoutTime || 'N/A',
-                totalDuration: entry.logoutTime ? calculateDuration(entry.loginTime, entry.logoutTime) : 'N/A'
+                loginTime,
+                logoutTime,
+                totalDuration: (loginTime !== 'N/A' && logoutTime !== 'N/A') ? calculateDuration(loginTime, logoutTime) : 'N/A'
             });
         });
+
 
         const report = organizationUsers.map(user => {
             const userId = user._id.toString();

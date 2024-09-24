@@ -627,6 +627,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                                                         setDueDate(date);
                                                         setIsDatePickerVisible(false);
                                                     }}
+                                                    onCloseDialog={() => setIsDateTimeModalOpen(false)}  // Add this line to fix the error
                                                 />
                                             </motion.div>
                                         ) : (

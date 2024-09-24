@@ -20,7 +20,7 @@ interface Regularization {
 }
 
 interface RegularizationDetailsProps {
-    selectedRegularization: Regularization | null;
+    selectedRegularization: Regularization ;
     onClose: () => void;
 }
 

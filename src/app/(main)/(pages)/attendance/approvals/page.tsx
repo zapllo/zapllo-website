@@ -22,25 +22,48 @@ type User = {
     firstName: string;
 };
 
-type Leave = {
+interface LeaveDay {
+    date: string;
+    unit: 'Full Day' | '1st Half' | '2nd Half' | '1st Quarter' | '2nd Quarter' | '3rd Quarter' | '4th Quarter';
+    status: 'Pending' | 'Approved' | 'Rejected';
+}
+
+interface Leave {
     _id: string;
-    user: User;
     leaveType: LeaveType;
     fromDate: string;
     toDate: string;
-    appliedDays: number;
-    leaveDays: {
-        date: string;
-        unit: string;
-        status: 'Pending' | 'Approved' | 'Rejected';
-    }[];
+    status: string;
     leaveReason: string;
-    status: 'Pending' | 'Approved' | 'Rejected' | 'Partially Approved';
-};
+    appliedDays: number;
+    leaveDays: LeaveDay[];
+    remarks: string;
+    attachment?: string[]; // File attachment URLs
+    audioUrl?: string; // Audio URL
+    user: {
+        firstName: string;
+        lastName: string;
+        _id: string;
+    };
+    approvedBy?: {
+        firstName: string;
+        lastName: string;
+        _id: string;
+    };
+    rejectedBy?: {
+        firstName: string;
+        lastName: string;
+        _id: string;
+    };
+    updatedAt: string;
+}
 
 type Regularization = {
     _id: string;
-    userId: User;
+    userId: {
+        firstName: string;
+        lastName: string;
+    };
     action: 'regularization';
     timestamp: string;
     loginTime: string;
@@ -312,8 +335,8 @@ export default function Approvals() {
                     ) : (
                         <div className="space-y-4">
                             {filteredRegularizations?.map((reg) => (
-                                <div className="border p-4 rounded shadow-sm mb-4 ">
-                                    <div key={reg._id} className='flex items-center justify-between '>
+                                <div key={reg._id} className="border p-4 rounded shadow-sm mb-4 ">
+                                    <div  className='flex items-center justify-between '>
                                         <div className="flex items-center gap-4">
                                             <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
                                                 {reg?.userId?.firstName[0]}
@@ -385,12 +408,15 @@ export default function Approvals() {
                     )}
                 </>
             )}
-
-            {selectedEntry && !isRegularization(selectedEntry) ? (
-                <LeaveDetails selectedLeave={selectedEntry} onClose={handleModalClose} />
-            ) : (
+            {/* // At the place where you render RegularizationDetails */}
+            {selectedEntry && isRegularization(selectedEntry) && (
                 <RegularizationDetails selectedRegularization={selectedEntry} onClose={handleModalClose} />
             )}
+
+            {selectedEntry && !isRegularization(selectedEntry) && (
+                <LeaveDetails selectedLeave={selectedEntry} onClose={handleModalClose} />
+            )}
+
 
 
             {/* Render the reject modal */}

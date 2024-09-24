@@ -74,9 +74,10 @@ export async function GET(req: NextRequest) {
         const userwiseReport = monthlyAttendance.map(entry => ({
             employee: `${entry.userId.firstName} ${entry.userId.lastName}`, // Dynamically get user's name
             present: entry.action === 'login' ? 1 : 0,
-            leave: leaves.some(leave => leave.user.equals(entry.userId._id)) ? 1 : 0,
+            leave: leaveEntries.some((leave: typeof Leave['prototype']) => leave.user.equals(entry.userId._id)) ? 1 : 0,
             absent: entry.action === 'logout' ? 1 : 0
         }));
+
 
         // console.log(leaves, 'leaves');
 

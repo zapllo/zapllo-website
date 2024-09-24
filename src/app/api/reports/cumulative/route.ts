@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
         endDate = new Date(period.end);
     }
 
-    const userFilter = { organization: loggedInUser.organization };
+    const userFilter: { [key: string]: any } = { organization: loggedInUser.organization };
+
 
     if (employeeId) {
         userFilter._id = new mongoose.Types.ObjectId(employeeId);
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     try {
         // Fetch users based on filters
-        const organizationUsers = await User.find(userFilter).select('_id');
+        const organizationUsers = await User.find(userFilter).select('_id reportingManager firstName lastName');
         const organizationUserIds = organizationUsers.map(user => user._id);
 
         // Fetch login entries

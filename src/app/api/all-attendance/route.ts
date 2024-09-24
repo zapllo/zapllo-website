@@ -1,13 +1,13 @@
 import LoginEntry from '@/models/loginEntryModel';
 import Leave from '@/models/leaveModel';
 import User from '@/models/userModel';  // Assuming you have this model defined
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Assuming this function extracts user data from token
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     await connectDB();
 
     // Extract the user ID from the token (using the helper function)

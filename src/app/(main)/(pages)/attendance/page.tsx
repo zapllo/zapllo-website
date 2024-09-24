@@ -68,12 +68,19 @@ interface HolidayEntry {
   holidayName: string;
   holidayDate: string;
 }
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  reportingManager?: string;
+}
 
 interface UserwiseReport {
-  employee: string;
+  user: string;
   present: number;
   leave: number;
   absent: number;
+  reportingManager: string;
 }
 
 interface ReportEntry {
@@ -83,6 +90,16 @@ interface ReportEntry {
   logoutTime: string;
   totalDuration: string;
 }
+
+interface AttendanceEntry {
+  date: string;
+  day: string;
+  present: number;
+  leave: number;
+  absent: number;
+  total: number;
+}
+
 
 const AttendanceDashboard: React.FC = () => {
   const [attendance, setAttendance] = useState<AttendanceEntry[]>([]);
@@ -99,20 +116,20 @@ const AttendanceDashboard: React.FC = () => {
   const [workingDays, setWorkingDays] = useState<number>(0);
   const [holidayCount, setHolidayCount] = useState<number>(0);
   const [period, setPeriod] = useState('thisMonth');
-  const [report, setReport] = useState([]);
+  const [report, setReport] = useState<UserwiseReport[]>([]);
   const [attendanceReport, setAttendanceReport] = useState([]);
   const [managerId, setManagerId] = useState('');
-  const [managers, setManagers] = useState([]); // For storing manager options
-  const [employees, setEmployees] = useState([]); // For storing manager options
+  const [managers, setManagers] = useState<User[]>([]);
+  const [employees, setEmployees] = useState<User[]>([]);
   const monthOptions = generateMonthOptions(); // Generate months dynamically
   const [selectedDate, setSelectedDate] = useState<string>(Date());
   const [isDateSelected, setIsDateSelected] = useState<boolean>(false); // Track whether the user manually selects a date
   const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<string>('2024-09');
   const [dailyReport, setDailyReport] = useState<ReportEntry[]>([]);
-  const [employeeId, setEmployeeId] = useState();
+  const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   const [weekOffs, setWeekOffs] = useState<number>(0);
 
- 
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -186,9 +203,9 @@ const AttendanceDashboard: React.FC = () => {
         weekdaysInMonth.forEach((day) => {
           const dayString = day.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
 
-          const isPresent = data.monthlyAttendance.some(entry => entry.date === dayString && entry.present);
-          const isLeave = data.leaves.some(leave => leave.fromDate <= dayString && leave.toDate >= dayString);
-          const isHoliday = data.holidays.some(holiday => holiday.holidayDate === dayString);
+          const isPresent = data.monthlyAttendance.some((entry: AttendanceEntry) => entry.date === dayString && entry.present);
+          const isLeave = data.leaves.some((leave: LeaveEntry) => leave.fromDate <= dayString && leave.toDate >= dayString);
+          const isHoliday = data.holidays.some((holiday: HolidayEntry) => holiday.holidayDate === dayString);
 
           if (isPresent) {
             present++;
@@ -237,8 +254,8 @@ const AttendanceDashboard: React.FC = () => {
   }, [selectedDate, employeeId]);
 
   const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-    setIsDateSelected(true); // Mark that a date has been selected
+    setSelectedDate(date.toISOString().split('T')[0]); // Convert to YYYY-MM-DD string format
+    setIsDateSelected(true);
   };
 
   const handleCloseDialog = () => {
@@ -309,9 +326,9 @@ const AttendanceDashboard: React.FC = () => {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className='scale-75 w-[45%] h-[500px] max-w-screen'>
-                  {/* <DialogClose className='ml-auto'>X</DialogClose> */}
+                    {/* <DialogClose className='ml-auto'>X</DialogClose> */}
                     <CustomDatePicker
-                      selectedDate={selectedDate}
+                      selectedDate={new Date(selectedDate)} // Convert the string to a Date object
                       onDateChange={handleDateChange}
                       onCloseDialog={handleCloseDialog} // Close the dialog on date selection
                     />
@@ -333,7 +350,7 @@ const AttendanceDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {dailyReport.map((entry, index) => (
+                {dailyReport.map((entry: ReportEntry, index) => (
                   <tr key={index} className='border-t'>
                     <td className=" px-4 text-xs py-2">{entry.user}</td>
                     <td
