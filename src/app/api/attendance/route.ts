@@ -32,13 +32,15 @@ export async function GET(req: NextRequest) {
         const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1));
 
         // 1. Fetch Attendance (Login/Logout) Data for all users in the organization
+        const userIds = await User.find({ organization: loggedInUser.organization }).select('_id');
         const monthlyAttendance = await LoginEntry.find({
-            organization: loggedInUser.organization, // Filter by the logged-in user's organization
+            userId: { $in: userIds },
             timestamp: {
-                $gte: startDate, // Start of month
-                $lt: endDate,  // End of month
+                $gte: startDate,
+                $lt: endDate,
             }
         }).populate('userId');
+
 
         // 2. Fetch Leave Data for the Same Month for all users in the organization
         const leaveEntries = await Leave.find({
