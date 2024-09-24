@@ -1,9 +1,10 @@
 // src/models/loginEntryModel.ts
 
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import { IUser } from './userModel';
 
 export interface ILoginEntry extends Document {
-    userId: mongoose.Types.ObjectId;
+    userId: IUser;
     action: 'login' | 'logout' | 'regularization';
     lat?: number;
     lng?: number;

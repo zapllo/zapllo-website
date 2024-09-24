@@ -21,12 +21,16 @@ const formatDate = (dateInput: string | Date): string => {
 };
 
 const sendReminderNotification = async (task: any, assignedUser: any) => {
+    console.log('Sending reminder notification for task:', task.title, 'to user:', assignedUser.email);
+
     const reminderTime = `${task.reminder.email?.value ?? 'N/A'}`;
     const formattedDueDate = formatDate(task.dueDate);
 
     // Email Reminder
     if (task.reminder.email && !task.reminder.email.sent && assignedUser.notifications.email) {
+        console.log('Preparing to send email reminder');
         if (task.reminder.email.value > 0) { // Check for non-zero value
+            console.log('Sending email reminder to', assignedUser.email);
             const emailOptions: SendEmailOptions = {
                 to: `${assignedUser.email}`,
                 subject: "Task Reminder",
@@ -57,14 +61,26 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
     </div>
 </body>`,
             };
-            await sendEmail(emailOptions);
-            task.reminder.email.sent = true;
+            try {
+                await sendEmail(emailOptions);
+                console.log('Email sent successfully to', assignedUser.email);
+                task.reminder.email.sent = true;
+            } catch (error) {
+                console.error('Error sending email:', error);
+                throw new Error('Failed to send email notification');
+            }
+        } else {
+            console.log('Email reminder value is zero or less; skipping email reminder');
         }
+    } else {
+        console.log('Email reminder already sent or user has disabled email notifications');
     }
 
     // WhatsApp Reminder
     if (task.reminder.whatsapp && !task.reminder.whatsapp.sent && assignedUser.whatsappNo) {
+        console.log('Preparing to send WhatsApp reminder');
         if (task.reminder.whatsapp.value > 0) { // Check for non-zero value
+            console.log('Sending WhatsApp reminder to', assignedUser.whatsappNo);
             const reminderTime = `${task.reminder.whatsapp.value ?? 'N/A'}`;
             const payload = {
                 phoneNumber: assignedUser.whatsappNo,
@@ -90,38 +106,61 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
 
                 if (!response.ok) {
                     const responseData = await response.json();
-                    console.error('Webhook API error:', responseData.message);
-                    throw new Error(`Webhook API error: ${responseData.message}`);
+                    console.error('WhatsApp Webhook API error:', responseData.message);
+                    throw new Error(`WhatsApp Webhook API error: ${responseData.message}`);
+                } else {
+                    console.log('WhatsApp notification sent successfully');
+                    task.reminder.whatsapp.sent = true;
                 }
-                task.reminder.whatsapp.sent = true;
             } catch (error) {
                 console.error('Error sending WhatsApp notification:', error);
                 throw new Error('Failed to send WhatsApp notification');
             }
+        } else {
+            console.log('WhatsApp reminder value is zero or less; skipping WhatsApp reminder');
         }
+    } else {
+        console.log('WhatsApp reminder already sent or user has no WhatsApp number');
     }
 
-    await task.save();
+    try {
+        await task.save();
+        console.log('Task updated with sent reminders');
+    } catch (error) {
+        console.error('Error saving task:', error);
+        throw new Error('Failed to save task after sending reminders');
+    }
 };
-
 
 export async function GET(req: NextRequest) {
     try {
         const now = new Date();
         const nowUTC = new Date(now.toISOString());
 
+        console.log('Current UTC time:', nowUTC.toISOString());
         console.log('Registered Models:', mongoose.models);
+
         const users = await User.find({});
+        console.log(`Found ${users.length} users`);
+
         const category = await Category.find({});
-        const tasks = await Task.find().populate<{ assignedUser: IUser }>('assignedUser').populate('category').exec();
+        console.log(`Found ${category.length} categories`);
+
+        const tasks = await Task.find()
+            .populate<{ assignedUser: IUser }>('assignedUser')
+            .populate('category')
+            .exec();
+        console.log(`Found ${tasks.length} tasks`);
 
         for (const task of tasks) {
+            console.log(`Processing task: ${task.title}, dueDate: ${task.dueDate}`);
             if (task.reminder) {
                 let emailReminderDate = new Date(task.dueDate);
                 let whatsappReminderDate = new Date(task.dueDate);
 
                 // Adjust for email reminder
                 if (task.reminder.email) {
+                    console.log(`Email reminder settings: type=${task.reminder.email.type}, value=${task.reminder.email.value}`);
                     if (task.reminder.email.type === 'minutes' && task.reminder.email.value) {
                         emailReminderDate.setMinutes(emailReminderDate.getMinutes() - task.reminder.email.value);
                     } else if (task.reminder.email.type === 'hours' && task.reminder.email.value) {
@@ -129,10 +168,12 @@ export async function GET(req: NextRequest) {
                     } else if (task.reminder.email.type === 'days' && task.reminder.email.value) {
                         emailReminderDate.setDate(emailReminderDate.getDate() - task.reminder.email.value);
                     }
+                    console.log(`Calculated emailReminderDate: ${emailReminderDate.toISOString()}`);
                 }
 
                 // Adjust for WhatsApp reminder
                 if (task.reminder.whatsapp) {
+                    console.log(`WhatsApp reminder settings: type=${task.reminder.whatsapp.type}, value=${task.reminder.whatsapp.value}`);
                     if (task.reminder.whatsapp.type === 'minutes' && task.reminder.whatsapp.value) {
                         whatsappReminderDate.setMinutes(whatsappReminderDate.getMinutes() - task.reminder.whatsapp.value);
                     } else if (task.reminder.whatsapp.type === 'hours' && task.reminder.whatsapp.value) {
@@ -140,12 +181,15 @@ export async function GET(req: NextRequest) {
                     } else if (task.reminder.whatsapp.type === 'days' && task.reminder.whatsapp.value) {
                         whatsappReminderDate.setDate(whatsappReminderDate.getDate() - task.reminder.whatsapp.value);
                     }
+                    console.log(`Calculated whatsappReminderDate: ${whatsappReminderDate.toISOString()}`);
                 }
 
                 // Handle specific reminder dates for email
                 if (task.reminder.email?.type === 'specific' && task.reminder.email.date) {
                     const specificEmailReminderDate = new Date(task.reminder.email.date);
+                    console.log(`Specific email reminder date: ${specificEmailReminderDate.toISOString()}`);
                     if (specificEmailReminderDate <= nowUTC) {
+                        console.log('Email reminder is due now or overdue');
                         const assignedUser = task.assignedUser;
                         if (!assignedUser || !assignedUser.notifications.email) {
                             console.error('User or email notification setting is missing');
@@ -158,7 +202,9 @@ export async function GET(req: NextRequest) {
                 // Handle specific reminder dates for WhatsApp
                 if (task.reminder.whatsapp?.type === 'specific' && task.reminder.whatsapp.date) {
                     const specificWhatsAppReminderDate = new Date(task.reminder.whatsapp.date);
+                    console.log(`Specific WhatsApp reminder date: ${specificWhatsAppReminderDate.toISOString()}`);
                     if (specificWhatsAppReminderDate <= nowUTC) {
+                        console.log('WhatsApp reminder is due now or overdue');
                         const assignedUser = task.assignedUser;
                         if (!assignedUser || !assignedUser.whatsappNo) {
                             console.error('User or WhatsApp number is missing');
@@ -168,14 +214,20 @@ export async function GET(req: NextRequest) {
                     }
                 }
 
+                // Check if general reminder is due
                 if (emailReminderDate <= nowUTC || whatsappReminderDate <= nowUTC) {
+                    console.log('General reminder is due now or overdue');
                     const assignedUser = task.assignedUser;
                     if (!assignedUser) {
                         console.error('Assigned user is missing');
                         continue;
                     }
                     await sendReminderNotification(task, assignedUser);
+                } else {
+                    console.log('No reminders are due for this task');
                 }
+            } else {
+                console.log('No reminders set for this task');
             }
         }
         return new Response(JSON.stringify({ message: 'Reminders processed successfully.' }), {

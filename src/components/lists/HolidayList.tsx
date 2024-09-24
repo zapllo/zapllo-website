@@ -75,26 +75,26 @@ const HolidayList: React.FC = () => {
     return (
         <div className="container mx-auto p-6">
             <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
-            <table className="w-full table-auto border-collapse">
-                <thead>
+            <table className="w-full rounded table-auto border-collapse border">
+                <thead className='bg-[#380e3d] '>
                     <tr>
-                        <th className="border px-4 text-xs py-2">Name</th>
-                        <th className="border px-4 text-xs py-2">Date</th>
+                        <th className=" px-4 text-xs text-start py-2">Name</th>
+                        <th className=" px-4 text-xs text-start py-2">Date</th>
                         {/* Conditionally render Actions column if user is orgAdmin */}
-                        {userRole === 'orgAdmin' && <th className="border text-xs px-4 py-2">Actions</th>}
+                        {userRole === 'orgAdmin' && <th className=" text-xs text-start px-4 py-2">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {holidays.map((holiday) => (
-                        <tr key={holiday._id}>
-                            <td className="border px-4 text-xs py-2">{holiday.holidayName}</td>
-                            <td className="border px-4 text-xs py-2">
+                        <tr className='border-t' key={holiday._id}>
+                            <td className=" px-4 text-xs py-2">{holiday.holidayName}</td>
+                            <td className=" px-4 text-xs py-2">
                                 {new Date(holiday.holidayDate).toLocaleDateString()}
 
                             </td>
                             {/* Conditionally render edit and delete buttons if user is orgAdmin */}
                             {userRole === 'orgAdmin' && (
-                                <td className="border px-4 py-2">
+                                <td className=" px-4 py-2">
                                     <button
                                         onClick={() => handleEditClick(holiday)}
                                         className="text-blue-500 hover:text-blue-700 mr-2"

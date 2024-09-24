@@ -49,34 +49,34 @@ const LeavesSidebar: React.FC = () => {
             <div className='space-y-4'>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg mt-6 gap-2 px-4 h-8 justify-start hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg mt-6 gap-2 text-xs px-4 h-8 justify-start hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance')}
                     >
-                        <Grid2X2 className='h-5' /> Dashboard
+                        <Grid2X2 className='h-4' /> Dashboard
                     </Button>
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg gap-2 px-4 h-8 justify-start hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/attendance/my-attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg gap-2 text-xs px-4 h-8 justify-start hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/attendance/my-attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance/my-attendance')}
                     >
-                        <CalendarCheck className='h-5' /> My Attendance
+                        <CalendarCheck className='h-4' /> My Attendance
                     </Button>
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/my-leaves') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg gap-2 text-xs px-4  bg-transparent h-8 justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/my-leaves') ? 'bg-[#75517B] text-white ' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance/my-leaves')}
                     >
-                        <CalendarMinus className='h-5' /> My Leaves
+                        <CalendarMinus className='h-4' /> My Leaves
                     </Button>
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/holidays') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg text-xs gap-2 px-4 h-8 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/holidays') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance/holidays')}
                     >
-                        <CalendarX className='h-5' /> Holidays
+                        <CalendarX className='h-4' /> Holidays
                     </Button>
                 </div>
 
@@ -84,10 +84,10 @@ const LeavesSidebar: React.FC = () => {
                 {isAdminOrManager && (
                     <div className='flex justify-center'>
                         <Button
-                            className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/approvals') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                            className={`w-[90%] rounded-lg text-xs gap-2 px-4  h-8 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/approvals') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                             onClick={() => handleNavigation('/attendance/approvals')}
                         >
-                            <Stamp className='h-5' /> Approvals
+                            <Stamp className='h-4' /> Approvals
                         </Button>
                     </div>
                 )}
@@ -97,26 +97,26 @@ const LeavesSidebar: React.FC = () => {
                     <>
                         <div className='flex justify-center'>
                             <Button
-                                className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/all-leaves') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/all-leaves') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                                 onClick={() => handleNavigation('/attendance/all-leaves')}
                             >
-                                <CalendarMinus2Icon className='h-5' /> All Leaves
+                                <CalendarMinus2Icon className='h-4' /> All Leaves
                             </Button>
                         </div>
                         <div className='flex justify-center'>
                             <Button
-                                className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
-                                onClick={() => handleNavigation('/dashboard/billing/wallet-logs')}
+                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/all-attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                                onClick={() => handleNavigation('/attendance/all-attendance')}
                             >
-                                <CalendarCheck2 className='h-5' /> All Attendance
+                                <CalendarCheck2 className='h-4' /> All Attendance
                             </Button>
                         </div>
                         <div className='flex justify-center'>
                             <Button
-                                className={`w-[90%] rounded-lg gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/settings') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/settings') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
                                 onClick={() => handleNavigation('/attendance/settings')}
                             >
-                                <Settings className='h-5' /> Settings
+                                <Settings className='h-4' /> Settings
                             </Button>
                         </div>
                     </>

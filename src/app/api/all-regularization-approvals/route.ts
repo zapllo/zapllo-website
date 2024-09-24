@@ -1,4 +1,3 @@
-// src/app/api/regularization-approvals/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import LoginEntry from '@/models/loginEntryModel';
@@ -20,21 +19,24 @@ export async function GET(request: NextRequest) {
         // Connect to the database
         await connectDB();
 
-        // Find team members reporting to the manager
-        const teamMembers = await User.find({ reportingManager: managerId });
-
-        if (!teamMembers || teamMembers.length === 0) {
+        // Fetch the manager's data to get the organization
+        const manager = await User.findById(managerId).select('organization');
+        if (!manager || !manager.organization) {
             return NextResponse.json(
-                { success: false, message: 'No team members found for this manager' },
+                { success: false, message: 'Manager or organization not found' },
                 { status: 404 }
             );
         }
 
-        const teamMemberIds = teamMembers.map(member => member._id);
+        // Fetch users from the same organization as the manager
+        const organizationUsers = await User.find({ organization: manager.organization }).select('_id');
 
-        // Fetch regularization entries that are pending approval
+        // Extract user IDs from the organization
+        const organizationUserIds = organizationUsers.map(user => user._id);
+
+        // Fetch regularization entries that are pending approval for users in the same organization
         const pendingRegularizations = await LoginEntry.find({
-            userId: { $in: teamMemberIds },
+            userId: { $in: organizationUserIds },
             action: 'regularization',
         })
             .populate('userId', 'firstName lastName email'); // Populate user details if needed

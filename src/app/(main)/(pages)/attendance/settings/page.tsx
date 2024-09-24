@@ -5,8 +5,8 @@ type Props = {}
 
 export default function Settings({ }: Props) {
     return (
-        <div>
-            <div className=' mt-4 bg-[#380E3D]  my-4 mx-2 p-2 border rounded '>
+        <div className='pt-4'>
+            <div className=' bg-[#380E3D] mt-4  my-4 mx-2 p-2 border rounded '>
                 <h1 className='text-sm'>Leave Types</h1>
             </div>
             <Link href='/attendance/settings/leave-types'>

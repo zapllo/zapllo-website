@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import AWS from 'aws-sdk';
 import User from '@/models/userModel'; // Import the User model
-import LoginEntry from '@/models/loginEntryModel'; // Import the new LoginEntry model
+import FaceRegistrationRequest from '@/models/faceRegistrationRequest'; // Import the FaceRegistrationRequest model
+import LoginEntry from '@/models/loginEntryModel'; // Import the LoginEntry model
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Function to extract userId from token
-import mongoose from 'mongoose';
 
 // AWS Rekognition client (using v3 SDK)
 const rekognitionClient = new AWS.Rekognition({
@@ -34,17 +34,22 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Image URL or location data missing' });
         }
 
-        // Find the user in MongoDB
-        const user = await User.findById(userId);
-        if (!user || !Array.isArray(user.imageUrls) || user.imageUrls.length === 0) {
-            return NextResponse.json({ success: false, error: 'User or images not found' });
+        // Find the approved face registration request for the user
+        const faceRegistration = await FaceRegistrationRequest.findOne({
+            userId,
+            status: 'approved',
+        });
+
+        // If no approved registration is found, return an error
+        if (!faceRegistration || faceRegistration.imageUrls.length === 0) {
+            return NextResponse.json({ success: false, error: 'No approved face registrations found for this user' });
         }
 
         let matchFound = false;
         let matchConfidence = 0;
 
-        // Iterate over the user's registered images
-        for (const registeredImageUrl of user.imageUrls as string[]) { // Cast to string[]
+        // Iterate over the user's approved registered images
+        for (const registeredImageUrl of faceRegistration.imageUrls) {
             const compareParams = {
                 SourceImage: {
                     S3Object: {

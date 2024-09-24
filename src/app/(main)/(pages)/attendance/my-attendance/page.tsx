@@ -5,7 +5,7 @@ import Webcam from 'react-webcam';
 import Loader from '@/components/ui/loader';
 import * as Dialog from '@radix-ui/react-dialog';
 
-import { Camera, MapPin, MapPinIcon } from 'lucide-react';
+import { Calendar, Camera, Clock, MapPin, MapPinIcon } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import Leaflet related components with `ssr: false`
@@ -22,10 +22,22 @@ interface LoginEntry {
     lat: number;
     lng: number;
     timestamp: string;
-    action: 'login' | 'logout';
+    action: 'login' | 'logout' | 'regularization';
+    approvalStatus?: 'Pending' | 'Approved' | 'Rejected'; // Add the approvalStatus field
 }
 
 
+// Helper function to group entries by day
+const groupEntriesByDay = (entries: LoginEntry[]) => {
+    return entries.reduce((acc: { [date: string]: LoginEntry[] }, entry) => {
+        const date = new Date(entry.timestamp).toLocaleDateString(); // Group by date
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(entry);
+        return acc;
+    }, {});
+};
 
 
 export default function MyAttendance() {
@@ -36,6 +48,7 @@ export default function MyAttendance() {
     const [mapModalOpen, setMapModalOpen] = useState(false);
     const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [activeTab, setActiveTab] = useState('thisMonth'); // Set default to 'thisMonth'
+    const [activeAttendanceTab, setActiveAttendanceTab] = useState('dailyReport');
     const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({
         start: null,
         end: null,
@@ -56,6 +69,7 @@ export default function MyAttendance() {
     const [hasRegisteredFaces, setHasRegisteredFaces] = useState(false);
     const [isRegisterFaceModalOpen, setIsRegisterFaceModalOpen] = useState(false); // Modal for Registering Faces
     const [selectedImages, setSelectedImages] = useState<File[]>([]); // For image selection
+    const [expandedDays, setExpandedDays] = useState<{ [date: string]: boolean }>({});
 
     // useEffect(() => {
     //     if (typeof window !== 'undefined') {
@@ -70,7 +84,25 @@ export default function MyAttendance() {
     // }, [])
 
 
+    useEffect(() => {
+        const fetchLoginStatus = async () => {
+            try {
+                const res = await fetch('/api/check-login-status');
+                const data = await res.json();
 
+                if (data.success) {
+                    setIsLoggedIn(data.isLoggedIn);
+                    setHasRegisteredFaces(data.hasRegisteredFaces);
+                } else {
+                    alert(data.error || 'Failed to fetch login status.');
+                }
+            } catch (error) {
+                console.error('Error fetching login status:', error);
+            }
+        };
+
+        fetchLoginStatus();
+    }, []);
 
     useEffect(() => {
         const fetchLoginEntriesAndStatus = async () => {
@@ -143,6 +175,9 @@ export default function MyAttendance() {
 
     // Open modal for face login
     const handleLoginLogout = () => {
+        setIsModalOpen(true);
+        setCapturedImage(null);
+        setLocation(null);
         setIsModalOpen(true);
     };
 
@@ -261,9 +296,9 @@ export default function MyAttendance() {
         const today = new Date();
 
 
-        return loginEntries.filter((entry) => {
+        return loginEntries?.filter((entry) => {
             const entryDate = new Date(entry.timestamp);
-            return entryDate >= today && entryDate <= today;
+            return entryDate <= today && entryDate >= today;
         });
     };
 
@@ -276,31 +311,31 @@ export default function MyAttendance() {
 
         switch (activeTab) {
             case 'today':
-                return loginEntries.filter((entry) => isSameDay(new Date(entry.timestamp), today));
+                return loginEntries?.filter((entry) => isSameDay(new Date(entry?.timestamp), today));
             case 'yesterday':
                 const yesterday = new Date(today);
                 yesterday.setDate(today.getDate() - 1);
-                return loginEntries.filter((entry) => isSameDay(new Date(entry.timestamp), yesterday));
+                return loginEntries?.filter((entry) => isSameDay(new Date(entry?.timestamp), yesterday));
             case 'thisWeek':
                 const thisWeekStart = new Date(today);
                 thisWeekStart.setDate(today.getDate() - today.getDay());
-                return loginEntries.filter((entry) => isWithinDateRange(new Date(entry.timestamp), thisWeekStart, today));
+                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), thisWeekStart, today));
             case 'lastWeek':
                 const lastWeekStart = new Date(today);
                 lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
                 const lastWeekEnd = new Date(today);
                 lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
-                return loginEntries.filter((entry) => isWithinDateRange(new Date(entry.timestamp), lastWeekStart, lastWeekEnd));
+                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), lastWeekStart, lastWeekEnd));
             case 'thisMonth':
-                return loginEntries.filter((entry) => isWithinDateRange(new Date(entry.timestamp), thisMonthStart, today));
+                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), thisMonthStart, today));
             case 'lastMonth':
-                return loginEntries.filter((entry) => isWithinDateRange(new Date(entry.timestamp), lastMonthStart, lastMonthEnd));
+                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), lastMonthStart, lastMonthEnd));
             case 'allTime':
                 return loginEntries;
             case 'custom':
-                return loginEntries.filter((entry) =>
+                return loginEntries?.filter((entry) =>
                     customDateRange.start && customDateRange.end
-                        ? isWithinDateRange(new Date(entry.timestamp), customDateRange.start, customDateRange.end)
+                        ? isWithinDateRange(new Date(entry?.timestamp), customDateRange.start, customDateRange.end)
                         : true
                 );
             default:
@@ -404,12 +439,31 @@ export default function MyAttendance() {
 
 
     const handleModalChange = (isOpen: boolean) => {
-        if (!isOpen) {
+        if (isOpen) {
+            setLocation(null); // Reset the location initially
+            // Set loading state while fetching the location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        setLocation({
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        });
+                    },
+                    (error) => {
+                        console.error('Error fetching location:', error);
+                        alert('Unable to fetch location. Please allow location access.');
+                    }
+                );
+            }
+        } else {
             setCapturedImage(null);
             setLocation(null);
         }
         setIsModalOpen(isOpen);
     };
+
+
 
     const captureImageAndSubmitLogin = async () => {
         // Capture image
@@ -471,10 +525,153 @@ export default function MyAttendance() {
         }
     };
 
-    // Utility function to conv
 
+
+    const filterDailyReportEntries = () => {
+        return loginEntries.filter((entry) => {
+            if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
+                return false;
+            }
+            return true;
+        });
+    };
+
+    // Filter for "Regularization" tab (all regularization entries)
+    const filterRegularizationEntries = () => {
+        return loginEntries.filter((entry) => entry.action === 'regularization');
+    };
+
+    const renderRegularizationEntries = () => {
+        const regularizationEntries = filterRegularizationEntries();
+
+        return (
+            <>
+                {regularizationEntries.length === 0 ? (
+                    <p className="text-center text-gray-600">No Regularization Entries found!</p>
+                ) : (
+                    <ul className="space-y-4">
+                        {regularizationEntries.map((entry, index) => (
+                            <li key={index} className="flex border justify-between items-center p-4 rounded shadow-md">
+                                <span>
+                                    {new Date(entry.timestamp).toLocaleString()} - <strong>{entry.action.toUpperCase()}</strong>
+                                </span>
+
+                                {/* Display approvalStatus */}
+                                <span className="ml-2 text-xs text-gray-400">
+                                    {`Approval Status: `}
+                                    <strong
+                                        className={
+                                            entry.approvalStatus === 'Approved'
+                                                ? 'text-green-500'
+                                                : entry.approvalStatus === 'Rejected'
+                                                    ? 'text-red-500'
+                                                    : 'text-yellow-500'
+                                        }
+                                    >
+                                        {entry.approvalStatus}
+                                    </strong>
+                                </span>
+
+                                {/* If lat and lng are present, render the map icon */}
+                                {entry.lat && entry.lng && (
+                                    <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-blue-500 ml-2">
+                                        <MapPin />
+                                    </button>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </>
+        );
+    };
+
+    const displayedEntries = activeAttendanceTab === 'dailyReport'
+        ? filterDailyReportEntries()
+        : filterRegularizationEntries();
+
+    const calculateHoursBetweenLoginLogout = (entries: LoginEntry[]) => {
+        const login = entries.find((entry) => entry.action === 'login');
+        const logout = entries.find((entry) => entry.action === 'logout');
+
+        if (login && logout) {
+            const loginTime = new Date(login.timestamp).getTime();
+            const logoutTime = new Date(logout.timestamp).getTime();
+            const diffMs = logoutTime - loginTime; // This will now work, as .getTime() returns a number
+            const diffHours = diffMs / (1000 * 60 * 60); // Convert milliseconds to hours
+            return diffHours.toFixed(2); // Hours rounded to 2 decimal places
+        }
+        return '0';
+    };
+
+    // Define state variables for counts and hours
+    const [daysCount, setDaysCount] = useState(0);
+    const [regularizedCount, setRegularizedCount] = useState(0);
+    const [verifiedCount, setVerifiedCount] = useState(0);
+    const [totalHours, setTotalHours] = useState(0);
+
+    // Calculate counts and hours based on filtered entries
+    useEffect(() => {
+        const dailyReportEntries = filterDailyReportEntries();
+
+        const uniqueDays = new Set(dailyReportEntries.map(entry => new Date(entry.timestamp).toLocaleDateString()));
+        const totalRegularized = dailyReportEntries.filter(entry => entry.action === 'regularization').length;
+        const verifiedRegularized = dailyReportEntries.filter(entry => entry.approvalStatus === 'Approved').length;
+
+        let totalHoursAcc = 0;
+        uniqueDays.forEach(day => {
+            const entriesForDay = dailyReportEntries.filter(entry => new Date(entry.timestamp).toLocaleDateString() === day);
+            totalHoursAcc += parseFloat(calculateHoursBetweenLoginLogout(entriesForDay));
+        });
+
+        setDaysCount(uniqueDays.size);
+        setRegularizedCount(totalRegularized);
+        setVerifiedCount(verifiedRegularized);
+        setTotalHours(Number(totalHoursAcc.toFixed(2))); // Ensure that you're passing a number
+    }, [loginEntries, activeAttendanceTab]);
+
+
+    const isToday = (someDate: Date) => {
+        const today = new Date();
+        return (
+            someDate.getDate() === today.getDate() &&
+            someDate.getMonth() === today.getMonth() &&
+            someDate.getFullYear() === today.getFullYear()
+        );
+    };
+
+    // Filter function to get today's login entries
+    const filterTodayEntries = (entries: LoginEntry[]) => {
+        return entries.filter((entry) => isToday(new Date(entry.timestamp)));
+    };
+
+    const todayEntries = filterTodayEntries(loginEntries);
+
+
+    // Handle accordion toggling
+    const toggleDayExpansion = (date: string) => {
+        setExpandedDays((prevState) => ({
+            ...prevState,
+            [date]: !prevState[date],
+        }));
+    };
+
+    // Filter approved entries and group them by day
+    const filterApprovedEntries = (entries: LoginEntry[]) => {
+        return entries.filter((entry) => {
+            if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
+                return false;
+            }
+            return true;
+        });
+    };
+
+    // Grouped entries by day
+    const groupedEntries = groupEntriesByDay(filterApprovedEntries(loginEntries));
+
+    // console.log(displayedEntries, 'loginEntries');
     return (
-        <div className="container  rounded-lg p-4 shadow-lg">
+        <div className="container h-screen overflow-y-scroll rounded-lg p-4 shadow-lg">
             <div className="login-section flex justify-center mb-6">
                 {hasRegisteredFaces ? (
                     <button
@@ -486,7 +683,7 @@ export default function MyAttendance() {
                 ) : (
                     <button
                         onClick={() => setIsRegisterFaceModalOpen(true)}
-                        className="bg-[#75517B] text-white py-2 px-6 rounded text-s"
+                        className="bg-[#75517B] text-white py-2 px-6 rounded text-xs"
                     >
                         Register Faces
                     </button>
@@ -503,19 +700,19 @@ export default function MyAttendance() {
             </div> */}
             {/* Apply Regularization Button */}
 
-            {/* Last Two Days Entries */}
-            <div className="last-two-days-entries  p-4 w-full justify-center  flex  mb-6">
-                {filterLastTwoDaysEntries().length === 0 ? (
-                    <div className='bg-[#1a1c20]  w-1/2 rounded p-4'>
+
+            <div className="last-two-days-entries p-4 w-full justify-center flex mb-6">
+                {todayEntries.length === 0 ? (
+                    <div className='bg-[#1a1c20] w-1/2 rounded p-4'>
                         <div className='flex w-full justify-center'>
                             <img src='/animations/not found.gif' className='h-40 ' />
                         </div>
-                        <h1 className='text-center  text-sm '>No Entries found for today!</h1>
+                        <h1 className='text-center text-sm'>No Entries found for today!</h1>
                         <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
                     </div>
                 ) : (
-                    <div className="space-y-4 w-full mx-12">
-                        {filterLastTwoDaysEntries().map((entry: LoginEntry, index: number) => {
+                    <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-full mx-12">
+                        {todayEntries.map((entry: LoginEntry, index: number) => {
                             const date = new Date(entry.timestamp);
                             const formattedDate = date.toLocaleDateString(); // Get the date string
                             const formattedTime = date.toLocaleTimeString(); // Get the time string
@@ -532,20 +729,26 @@ export default function MyAttendance() {
                                         <h1>
                                             {entry.action.toUpperCase()}
                                         </h1>
+
+
                                     </div>
 
-                                    <div>
-                                        <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-gray-500 ml-2">
-                                            <MapPin />
-                                        </button>
-                                    </div>
+
+                                    {/* Render map icon only if lat and lng are present */}
+                                    {entry.lat && entry.lng && (
+                                        <div>
+                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-gray-500 ml-2">
+                                                <MapPin />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
                     </div>
-
                 )}
             </div>
+
             <div className="apply-regularization-section flex justify-center mb-6">
                 <button
                     onClick={() => setIsRegularizationModalOpen(true)}
@@ -565,22 +768,90 @@ export default function MyAttendance() {
                 <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>All Time</button>
                 <button onClick={openCustomModal} className="px-4 py-2 rounded bg-transparent border text-xs">Custom</button>
             </div>
+            <div className="flex justify-center gap-4 mt-2 mb-6">
+                <button
+                    onClick={() => setActiveAttendanceTab('dailyReport')}
+                    className={`px-4 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
+                >
+                    Daily Report
+                </button>
+                <button
+                    onClick={() => setActiveAttendanceTab('regularization')}
+                    className={`px-4 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
+                >
+                    Regularization
+                </button>
+            </div>
 
             {/* Display login/logout entries */}
-            <div className="entries-list mb-6">
-                {filterEntriesByTab()?.length === 0 ? (
-                    <p className="text-center text-gray-600">No Entries for the selected time frame!</p>
+            <div className="entries-list mb-36">
+                {activeAttendanceTab === 'dailyReport' ? (
+                    <>
+                        {Object.keys(groupedEntries).length === 0 ? (
+                            <p className="text-center text-gray-600">No Entries for the selected time frame!</p>
+                        ) : (
+                            <>
+                                <div className="flex justify-center mb-4 gap-4">
+                                    <div className="text-xs border px-4 py-1 ">Days: {daysCount}</div>
+                                    <div className="text-xs border px-4 py-1">Verified: {verifiedCount}</div>
+                                    <div className="text-xs border px-4 py-1">Regularized: {regularizedCount}</div>
+                                    <div className="text-xs border px-4 py-1">Hours: {totalHours}</div>
+                                </div>
+
+                                {Object.keys(groupedEntries).map((date, index) => (
+                                    <div key={index} className="mb-4 ">
+                                        <div
+                                            onClick={() => toggleDayExpansion(date)}
+                                            className="w-full grid cursor-pointer grid-cols-3 gap-2 text-sm text-left border text-white px-4 py-4 rounded"
+                                        >
+                                            <div className='flex gap-2'>
+                                                <Calendar className='h-5' />    {date}
+                                            </div>
+                                            <div className='flex gap-2'>
+                                                <Clock className='h-5' /> {calculateHoursBetweenLoginLogout(groupedEntries[date])} hours
+                                            </div>
+                                            <div className="flex justify-end">
+                                                <span
+                                                    className={`transition-transform duration-300 ${expandedDays[date] ? 'rotate-180' : 'rotate-0'}`}
+                                                >
+                                                    {/* Use a caret icon (chevron-down) */}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {expandedDays[date] && (
+                                            <div className="p-4 border rounded">
+                                                {groupedEntries[date].map((entry, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="flex justify-between items-center p-2  rounded mb-2"
+                                                    >
+                                                        <span>{new Date(entry.timestamp).toLocaleTimeString()}</span>
+                                                        <span className={`text-xs border p-2 rounded ${entry.action === 'login' ? 'bg-green-600' : 'bg-red-800'}`}>
+                                                            {entry.action.toUpperCase()}
+                                                        </span>
+                                                        {entry.lat && entry.lng && (
+                                                            <button
+                                                                onClick={() => handleViewMap(entry.lat, entry.lng)}
+                                                                className="underline text-blue-400"
+                                                            >
+                                                                <MapPinIcon />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </>
                 ) : (
-                    <ul className="space-y-4">
-                        {filterEntriesByTab().map((entry, index) => (
-                            <li key={index} className="flex justify-between items-center  p-4 rounded-lg shadow-md">
-                                <span>{new Date(entry.timestamp).toLocaleString()} - <strong>{entry?.action?.toUpperCase()}</strong></span>
-                                <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-blue-500 ml-2">
-                                    <MapPin />
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    // Render regularization entries
+                    renderRegularizationEntries()
                 )}
             </div>
 
@@ -634,10 +905,10 @@ export default function MyAttendance() {
                             {/* Display Lat and Long */}
                             <div className="text-center flex w-full justify-center text-xs text-gray-400">
                                 <p className='flex gap-2'>
-                                    <MapPinIcon className='h-4' /> Lat: {location?.lat || 'Loading...'}, Long: {location?.lng || 'Loading...'}
+                                    <MapPinIcon className='h-4' />
+                                    {location ? `Lat: ${location.lat}, Long: ${location.lng}` : 'Fetching location...'}
                                 </p>
                             </div>
-
                             {/* Show Loader if submitting */}
                             {isLoading && <Loader />}
                         </div>

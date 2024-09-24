@@ -7,25 +7,28 @@ import clsx from 'clsx';
 import { Plus } from 'lucide-react';
 import HolidayForm from '@/components/forms/HolidayForm'; // Ensure you have this component to create holidays
 import HolidayList from '@/components/lists/HolidayList'; // Ensure you have this component to display holidays
+import { toast, Toaster } from 'sonner';
 
 const HolidayManager: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // Control the modal state
 
     const handleHolidayCreated = () => {
         setIsModalOpen(false); // Close modal after holiday is created
+        toast.success("Holiday added successfully!")
         window.location.reload(); // Refresh the page to fetch the updated holiday list
     };
 
     return (
         <div className="container mx-auto p-6">
+            <Toaster />
             {/* <h2 className="text-lg font-bold mb-6">Holiday Manager</h2> */}
 
             {/* Dialog Root */}
             <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <div className='flex ml-6a'>
+                <div className='flex ml-6'>
                     <Dialog.Trigger asChild>
                         <button
-                            className="bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md flex items-center gap-2"
+                            className="bg-[#017A5B] text-white text-xs px-2 py-2  rounded-md flex items-center gap-2"
                             onClick={() => setIsModalOpen(true)}
                         >
                             <Plus className="h-4 w-4" /> Add New Holiday

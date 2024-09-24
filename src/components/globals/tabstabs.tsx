@@ -432,9 +432,7 @@ export default function TeamTabs() {
           <div className="flex gap-2">
             <Users className="h-4" />
             <h1 className="text-sm"> {filteredUsers.length} Members</h1>
-
           </div>
-
         </div>
         <div className="grid text-sm w-full py-4 -ml-24 gap-4">
           {filteredUsers

@@ -9,6 +9,8 @@ import LeaveApprovalModal from '@/components/modals/leaveApprovalModal';
 import RejectModal from '@/components/modals/rejectModal';
 import RegularizationApprovalModal from '@/components/modals/regularizationApprovalModal';
 import RegularizationRejectModal from '@/components/modals/rejectRegularizationModal';
+import LeaveDetails from '@/components/sheets/leaveDetails';
+import RegularizationDetails from '@/components/sheets/regularizationDetails';
 
 type LeaveType = {
     _id: string;
@@ -38,7 +40,7 @@ type Leave = {
 
 type Regularization = {
     _id: string;
-    user: User;
+    userId: User;
     action: 'regularization';
     timestamp: string;
     loginTime: string;
@@ -309,26 +311,50 @@ export default function Approvals() {
                         <p className="text-gray-600">No regularization requests found.</p>
                     ) : (
                         <div className="space-y-4">
-                            {filteredRegularizations.map((reg) => (
-                                <div key={reg._id} className="flex items-center justify-between border p-4 rounded shadow-sm mb-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
-                                            {reg.user.firstName[0]}
+                            {filteredRegularizations?.map((reg) => (
+                                <div className="border p-4 rounded shadow-sm mb-4 ">
+                                    <div key={reg._id} className='flex items-center justify-between '>
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                                                {reg?.userId?.firstName[0]}
+                                            </div>
+                                            <h3 className="text-md text-white">{reg?.userId?.firstName}</h3>
+                                            <p className="text-sm text-white">
+                                                Date: <span className="text-white">{format(new Date(reg?.timestamp), 'MMM d, yyyy')}</span>
+                                            </p>
                                         </div>
-                                        <h3 className="text-md text-white">{reg.user.firstName}</h3>
-                                        <p className="text-sm text-white">
-                                            Date: <span className="text-white">{format(new Date(reg.timestamp), 'MMM d, yyyy')}</span>
-                                        </p>
-                                    </div>
 
-                                    <span className={`px-3 py-1 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-500 text-white' :
-                                        reg.approvalStatus === 'Approved' ? 'bg-green-500 text-white' :
-                                            reg.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' :
-                                                'bg-gray-500 text-white'}`}>
-                                        {reg.approvalStatus}
-                                    </span>
+                                        <span className={`px-3 py-1 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-500 text-white' :
+                                            reg?.approvalStatus === 'Approved' ? 'bg-green-500 text-white' :
+                                                reg?.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' :
+                                                    'bg-gray-500 text-white'}`}>
+                                            {reg?.approvalStatus}
+                                        </span>
+                                    </div>
+                                    <div className='flex gap-2 mt-2 justify-center w-full'>
+                                        {/* Approve Button */}
+                                        {reg.approvalStatus === 'Pending' && (
+                                            <button
+                                                onClick={() => handleApproval(reg)} // Opens the approval modal
+                                                className="bg-green-500 text-xs text-white px-4 py-2 rounded"
+                                            >
+                                                Approve
+                                            </button>
+                                        )}
+
+                                        {/* Reject Button */}
+                                        {reg.approvalStatus === 'Pending' && (
+                                            <button
+                                                onClick={() => handleReject(reg)} // Opens the reject modal
+                                                className="bg-red-500 text-xs text-white px-4 py-2 rounded"
+                                            >
+                                                Reject
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
+
                         </div>
                     )}
                 </>
@@ -359,6 +385,13 @@ export default function Approvals() {
                     )}
                 </>
             )}
+
+            {selectedEntry && !isRegularization(selectedEntry) ? (
+                <LeaveDetails selectedLeave={selectedEntry} onClose={handleModalClose} />
+            ) : (
+                <RegularizationDetails selectedRegularization={selectedEntry} onClose={handleModalClose} />
+            )}
+
 
             {/* Render the reject modal */}
             {selectedEntry && isRejectModalOpen && (

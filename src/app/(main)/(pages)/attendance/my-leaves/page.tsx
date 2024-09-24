@@ -269,13 +269,13 @@ const MyLeaves: React.FC = () => {
                 <div className="items-center space-x-4 mb-4">
                     <div className="flex justify-center gap-4 w-full">
                         {leaveTypes.map((leaveType) => (
-                            <div key={leaveType._id} className="border px-6 py-3 mb-4">
+                            <div key={leaveType._id} className="border px-6  py-3 mb-4">
                                 <div className='flex gap-2'>
                                     <Info
-                                        className="h-5 mt-[2px] cursor-pointer"
+                                        className="h-4 mt-[2px] cursor-pointer"
                                         onClick={() => handleInfoClick(leaveType.leaveType)}
                                     />
-                                    <h1 >{leaveType.leaveType}</h1>
+                                    <h1 className='text-sm' >{leaveType.leaveType}</h1>
                                 </div>
                                 <div className='  gap-2 mt-2 '>
                                     <h1 className='text-xs'>Alloted: {leaveType.allotedLeaves}</h1>
@@ -394,7 +394,7 @@ const MyLeaves: React.FC = () => {
 
                                 {/* Leave Details */}
                                 <div className=" flex gap-4">
-                                    <h3 className=" text-md">
+                                    <h3 className=" text-sm mt-[5px]">
                                         {leave?.leaveType?.leaveType}
                                     </h3>
                                     <p className="text-sm flex gap-1 mt-1 text-gray-400">

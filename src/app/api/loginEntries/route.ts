@@ -5,12 +5,10 @@ import { getDataFromToken } from '@/helper/getDataFromToken'; // Assuming you ha
 export async function GET(request: NextRequest) {
     try {
         const userId = await getDataFromToken(request);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+
 
         const entries = await LoginEntry.find({
             userId,
-            timestamp: { $gte: today }, // Fetch today's entries
         });
 
         return NextResponse.json({ success: true, entries });

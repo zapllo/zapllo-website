@@ -180,7 +180,7 @@ export default function AllLeaves() {
     const filteredLeaves = filter === 'All' ? leaves : leaves.filter(leave => leave.status === filter);
 
     return (
-        <div className="container mx-auto p-6">
+        <div className="container h-screen overflow-y-scroll scrollbar-hide  mx-auto p-6">
             {/* Tab Navigation with Counts */}
             <div className="flex justify-center gap-4 mb-6">
                 <button

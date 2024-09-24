@@ -101,52 +101,55 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
     };
 
     return (
-        <div className="mt-6 h-56   ">
+        <div className="relative mt-6">
             <Toaster />
 
-            <table className="w-full border-collapse">
-                <thead className='bg-[#017A5B]'>
-                    <tr>
-                        <th className="rounded-l text-sm font-medium text-start p-2 w-96 px-4">Link Name</th>
-                        <th className="text-sm text-start font-medium w-96 p-2 px-4">Category</th>
-                        <th className="text-sm w-96 text-start rounded-r font-medium p-2 px-4">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentEntries.map(entry => (
-                        <tr key={entry._id}>
-                            <td className="px-4 py-2 text-xs">{entry.linkName}</td>
-                            <td className="px-4 py-2 text-xs">{entry.category.name}</td>
-                            <td className="px-4 py-2 flex mt-1 text-xs space-x-2">
-                                <button onClick={() => handleGoToLink(entry.linkUrl)}><Globe className='h-4' /></button>
-                                <button onClick={() => handleCopyLink(entry.linkUrl)}><Copy className='h-4' /></button>
-                                <button onClick={() => handleEdit(entry)}><Edit className='h-4 text-blue-400' /></button>
-                                <button onClick={() => handleDeleteClick(entry._id)}><Trash className='h-4 text-red-500' /></button>
-                            </td>
+            {/* Table container with a fixed height and scrollable content */}
+            <div className="h-80 overflow-y-auto rounded-md">
+                <table className="w-full border-collapse">
+                    <thead className='bg-[#017A5B]'>
+                        <tr>
+                            <th className="rounded-l text-sm font-medium text-start p-2 w-96 px-4">Link Name</th>
+                            <th className="text-sm text-start font-medium w-96 p-2 px-4">Category</th>
+                            <th className="text-sm w-96 text-start rounded-r font-medium p-2 px-4">Action</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {currentEntries?.map(entry => (
+                            <tr key={entry._id}>
+                                <td className="px-4 py-2 text-xs">{entry?.linkName}</td>
+                                <td className="px-4 py-2 text-xs">{entry?.category?.name}</td>
+                                <td className="px-4 py-2 flex mt-1 text-xs space-x-2">
+                                    <button onClick={() => handleGoToLink(entry?.linkUrl)}><Globe className='h-4' /></button>
+                                    <button onClick={() => handleCopyLink(entry?.linkUrl)}><Copy className='h-4' /></button>
+                                    <button onClick={() => handleEdit(entry)}><Edit className='h-4 text-blue-400' /></button>
+                                    <button onClick={() => handleDeleteClick(entry?._id)}><Trash className='h-4 text-red-500' /></button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-            {/* Pagination Controls */}
-            <div className="flex items-center justify-between bottom-0 h-full mt-4">
+            {/* Pagination Controls - fixed at the bottom */}
+            <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center">
                     <span className="mr-2 text-sm">Rows per page:</span>
                     <select
                         value={rowsPerPage}
                         onChange={handleRowsPerPageChange}
-                        className="px-2 py-1 border rounded"
+                        className="px-2 py-1 border outline-none rounded"
                     >
                         {[5, 10, 15, 20].map((rows) => (
                             <option key={rows} value={rows}>{rows}</option>
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center bottom-0 h-full mt-4">
+                <div className="flex items-center">
                     <button
                         onClick={handlePrevPage}
                         disabled={currentPage === 1}
-                        className="px-3 py-1 mx-1  rounded h"
+                        className="px-3 py-1 mx-1 rounded"
                     >
                         &lt; 
                     </button>
@@ -154,9 +157,9 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
                     <button
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-1 mx-1 "
+                        className="px-3 py-1 mx-1"
                     >
-                         &gt;
+                        &gt;
                     </button>
                 </div>
             </div>

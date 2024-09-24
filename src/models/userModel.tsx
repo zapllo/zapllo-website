@@ -8,6 +8,7 @@ interface ILeaveBalance {
 
 // Define an interface for the User document
 export interface IUser extends Document {
+    _id: mongoose.Types.ObjectId;
     whatsappNo: string;
     firstName: string;
     lastName: string;
