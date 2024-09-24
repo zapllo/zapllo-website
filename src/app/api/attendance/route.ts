@@ -7,7 +7,7 @@ import User from '@/models/userModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 
 export async function GET(req: NextRequest) {
-    connectDB();    // Get logged-in user
+    await connectDB();    // Get logged-in user
     const userId = await getDataFromToken(req);
     if (!userId) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
