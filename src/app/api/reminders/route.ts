@@ -94,6 +94,7 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
                 ],
                 templateName: 'reminder_template',
             };
+            console.log('WhatsApp payload:', JSON.stringify(payload));
 
             try {
                 const response = await fetch('https://zapllo.com/api/webhook', {

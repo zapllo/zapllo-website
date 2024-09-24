@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: 'User not found or no organization found' }, { status: 404 });
     }
 
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = req.nextUrl; // Use req.nextUrl instead of new URL(req.url)
     const date = searchParams.get('date'); // Expecting format like "2024-09"
 
     if (!date || !/^\d{4}-\d{2}$/.test(date)) {
