@@ -22,7 +22,7 @@ export const menuOptions = [
   { name: "Teams", Component: Category, href: "/dashboard/teams" },
   { name: "Settings", Component: Settings, href: "/dashboard/settings" },
   { name: "Billing", Component: Payment, href: "/dashboard/billing" },
-  { name: "Help", Component: Clipboard, href: "/tutorials" },
+  { name: "Help", Component: Clipboard, href: "/help/tutorials" },
 ];
 
 

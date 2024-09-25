@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
-import { Edit, Edit3, FileEdit, Mail, Pencil, Phone, Plus, Trash, Trash2, User, UserCheck, Users } from "lucide-react";
+import { Edit, Edit3, FileEdit, Mail, Pencil, Phone, Plus, Trash, Trash2, User, UserCheck, Users, Users2Icon } from "lucide-react";
 import axios from "axios";
 import { Tabs2, TabsList2, TabsTrigger2 } from "../ui/tabs2";
 import { Tabs3, TabsList3, TabsTrigger3 } from "../ui/tabs3";
@@ -127,6 +127,8 @@ export default function TeamTabs() {
 
     fetchUsers();
   }, []);
+
+  console.log(users, 'wow')
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -430,7 +432,7 @@ export default function TeamTabs() {
         </div>
         <div className="flex justify-center -ml-64">
           <div className="flex gap-2">
-            <Users className="h-4" />
+            <Users2Icon className="h-4" />
             <h1 className="text-sm"> {filteredUsers.length} Members</h1>
           </div>
         </div>

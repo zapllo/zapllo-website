@@ -62,8 +62,11 @@ export default function WalletLogs({ }: Props) {
             <div className="gap-2 flex mb-6 w-full">
               <div className="-mt-2">
                 <div className="p-4">
-                  <div className="overflow-x-auto  ">
-                    <h1>No Wallet Logs Found!</h1>
+                  <div className="overflow-x-auto  flex justify-center w-full ">
+                    <div className='ml-80'>
+                      <img src='/animations/money.gif' className='w-[30%]' />
+                      <h1 className=' text-sm ml-4 '>No Wallet Logs Found</h1>
+                    </div>
                   </div>
                 </div>
               </div>

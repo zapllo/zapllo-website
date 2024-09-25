@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 interface CustomDatePickerProps {
   selectedDate: Date | null;
   onDateChange: (date: Date) => void;
-  onCloseDialog: () => void; // Function to close the dialog
+  onCloseDialog?: () => void; // Function to close the dialog
 }
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDateChange, onCloseDialog }) => {
@@ -36,7 +36,9 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onDat
   // Accept the selected date and pass it to the parent via onDateChange, then close the dialog
   const handleAccept = () => {
     onDateChange(selectedDateValue.toDate());
-    onCloseDialog(); // Close the dialog after accepting the date
+    if (onCloseDialog) {
+      onCloseDialog(); // Call onCloseDialog if provided
+    }
   };
 
   const daysInMonth = currentDate.daysInMonth();

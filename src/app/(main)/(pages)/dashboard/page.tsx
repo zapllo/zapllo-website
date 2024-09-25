@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import Loader from '@/components/ui/loader'
 import { Progress } from '@/components/ui/progress'
 import axios from 'axios'
-import { Globe, Home, Megaphone } from 'lucide-react'
+import { CalendarMinus, Globe, Home, Megaphone } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -69,12 +69,12 @@ const DashboardPage = () => {
         {calculateProgress() < 100 && (
           <div className=' w-[50.33%] flex justify-start gap-4'>
             <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
-              <div className='w-full m'>
+              <div className='w-full'>
                 <h1>Checklist </h1>
                 <Progress value={calculateProgress()} className='' />
               </div>
               <div className='flex justify-start mt-3'>
-                <Link href='/dashboard/checklist' >
+                <Link href='/help/checklist' >
                   <Button className='bg-[#7C3886] mt-12 hover:bg-[#7C3886]'>
                     Checklist
                   </Button>
@@ -89,10 +89,10 @@ const DashboardPage = () => {
           <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
             <div className='w-full p'>
               <h1 className='px-4 text-lg font-medium'>Tutorials </h1>
-              <h1 className='px-4 py-4'>Learn how to to get best out of our business workspace </h1>
-              <Link href='/tutorials'>
+              <h1 className='px-4 py-4 text-sm'>Learn how to to get best out of our business workspace </h1>
+              <Link href='/help/tutorials'>
                 <Button className='bg-white text-black ml-4  hover:bg-white mt-6' >Go To Tutorials</Button></Link>
-              <img src='/animations/tutorials.png' className='absolute h-48 ml-[50%] -mt-40' />
+              <img src='/animations/tutorials.png' className='absolute h-48 ml-[45%] -mt-[150px]' />
             </div>
 
 
@@ -122,7 +122,7 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/atask.png' className=' ml-3 mt-3 h-6     object-cover' />
+                <img src='/icons/atask.png' className=' ml-[15px] mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Tasks</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
@@ -140,7 +140,7 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <Globe className=' ml-3 mt-3 h-6     object-cover' />
+                <Globe className=' ml-[11px] mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Intranet</h1>
               <p className='text-xs font-medium'>Manage all your Important Company Links</p>
@@ -158,12 +158,12 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
+                <CalendarMinus className=' ml-[11px] mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Leaves</h1>
-              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
+              <p className='text-xs font-medium'>Manage your Employee Leaves & Holidays</p>
               <div className='pt-2'>
-                <Link href='/attendance'>
+                <Link href='/attendance/my-leaves'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Leaves</Button>
                 </Link>
 
@@ -182,9 +182,9 @@ const DashboardPage = () => {
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Attendance</h1>
-              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
+              <p className='text-xs font-medium'>Track your Team's Attendance & Breaks</p>
               <div className='pt-2'>
-                <Link href='/attendance'>
+                <Link href='/attendance/my-attendance'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Attendance</Button>
                 </Link>
 
@@ -197,7 +197,7 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/whatsapp.png' className=' ml-3 mt-3 h-6     object-cover' />
+                <img src='/icons/whatsapp.png' className=' ml-3 mt-[10px] h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate WA</h1>
               <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
@@ -215,10 +215,10 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/crm.png' className=' ml-3 mt-3 h-6  invert-[100]    object-cover' />
+                <img src='/icons/crm.png' className=' ml-[10px] mt-3 h-6  invert-[100]    object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate CRM</h1>
-              <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
+              <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Coming Soon</Button>

@@ -176,13 +176,13 @@ const Categories: React.FC = () => {
                                 placeholder="Add New Category"
                                 value={newCategory}
                                 onChange={(e) => setNewCategory(e.target.value)}
-                                className="w-full outline-none text-xs text-white bg-[#2F0932] border rounded px-3 py-1"
+                                className="w-full outline-none text-xs text-white bg-[#2F0932] border rounded px-3 py-2"
                             />
                         </div>
                         <div className='mt-4'>
                             <button
                                 onClick={handleCreateCategory}
-                                className="ml-2 px-3 py-1  bg-[#75517B] text-sm text-white rounded"
+                                className="ml-2 px-3 py-2  bg-[#75517B] text-sm text-white rounded"
                             >
                                 {loading ? 'Creating...' : 'Create'}
                             </button>
@@ -203,7 +203,7 @@ const Categories: React.FC = () => {
             <div className="flex justify-start bg-[#2F0932] w-full mt-12">
                 {/* <Label>Search Categories</Label> */}
                 <h1 className='text-start text-sm font-medium  p-4'>Categories</h1>
-                <div className='mt-2 ml-auto'>
+                <div className='mt-1 ml-auto'>
                     <input
                         type="text"
                         placeholder="Search Categories"

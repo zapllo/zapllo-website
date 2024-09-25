@@ -113,7 +113,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [files, setFiles] = useState<File[]>([]) // Updated to handle array of files
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false); // For Date picker modal
+    const [isTimePickerOpen, setIsTimePickerOpen] = useState(false); // For Time picker modal
 
 
     // States for reminder settings
@@ -144,8 +145,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     useEffect(() => {
         controls.start('visible');
     }, [controls]);
-
-
 
 
     useEffect(() => {
@@ -556,6 +555,25 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setAssignMoreTasks(checked);
     };
 
+    // Open date picker
+    const handleOpenDatePicker = () => {
+        setIsDatePickerOpen(true);
+        setIsTimePickerOpen(false); // Close time picker if open
+    };
+
+    // Handle date selection
+    const handleDateChange = (date: Date) => {
+        setDueDate(date);
+        setIsDatePickerOpen(false); // Close date picker
+        setIsTimePickerOpen(true); // Open time picker
+    };
+
+    // Handle time selection
+    const handleTimeChange = (time: string) => {
+        setDueTime(time);
+        setIsTimePickerOpen(false); // Close time picker
+    };
+
 
     const handleSubmit = async () => {
         let fileUrls = [];
@@ -788,7 +806,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     <div className="mb-4 flex justify-between">
                         <Button
                             type="button"
-                            onClick={() => setIsDateTimeModalOpen(true)}
+                            onClick={handleOpenDatePicker}
                             className=" border-2 rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
                         >
                             <Calendar className='h-5 text-sm' />
@@ -807,60 +825,30 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 </h1>
                             </div>
                         )}
-                        {isDateTimeModalOpen && (
-                            <Dialog open={isDateTimeModalOpen} onOpenChange={setIsDateTimeModalOpen}>
-                                <DialogContent  className='h-[420px]'>
-                                    <div className='w-full flex justify-between'>
-                                        {/* <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle> */}
-                                        {/* <DialogClose >X</DialogClose> */}
-                                    </div>
+                        {isDatePickerOpen && (
+                            <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                                <DialogContent className='scale-75'>
+                                    <CustomDatePicker
+                                        selectedDate={dueDate ?? new Date()}
+                                        onDateChange={handleDateChange}
+                                        onCloseDialog={() => setIsDatePickerOpen(false)}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        )}
 
-                                    <DialogDescription>
-                                        <div className="flex flex-col w-full  ">
-                                            <AnimatePresence>
-                                                {isDatePickerVisible ? (
-                                                    <motion.div
-                                                        key="date-picker"
-                                                      
-                                                        // transition={{ duration: 1}}
-                                                        className=""
-                                                    >
-                                                        <CustomDatePicker
-                                                            selectedDate={dueDate ?? new Date()}
-                                                            onDateChange={(date: Date) => {
-                                                                setDueDate(date);
-                                                                setIsDatePickerVisible(false);
-                                                            }}
-                                                            onCloseDialog={() => setIsDateTimeModalOpen(false)}
-                                                        />
-                                                    </motion.div>
-                                                ) : (
-                                                    <motion.div
-                                                        key="time-picker"
-                                                        // transition={{ duration: 1 }}
-                                                        className=" "
-                                                    >
-                                                        <CustomTimePicker
-                                                            selectedTime={dueTime}
-                                                            onTimeChange={setDueTime}
-                                                            onCancel={() => setIsDateTimeModalOpen(false)} // Close the modal on cancel
-                                                            onAccept={() => {
-                                                                if (dueDate && dueTime) {
-                                                                    const [hours, minutes] = dueTime.split(':').map(Number);
-                                                                    const updatedDate = new Date(dueDate);
-                                                                    updatedDate.setHours(hours, minutes);
-                                                                    setDueDate(updatedDate);
-                                                                    setIsDateTimeModalOpen(false); // Close the modal after setting the date/time
-                                                                }
-                                                            }}
-                                                            onBackToDatePicker={() => setIsDatePickerVisible(true)} // Go back to the date picker
-                                                        />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-
-                                    </DialogDescription>
+                        {/* Time Picker Modal */}
+                        {isTimePickerOpen && (
+                            <Dialog open={isTimePickerOpen} onOpenChange={setIsTimePickerOpen}>
+                                <DialogContent>
+                                    <CustomTimePicker
+                                        selectedTime={dueTime}
+                                        onTimeChange={handleTimeChange}
+                                        onBackToDatePicker={() => {
+                                            setIsTimePickerOpen(false); // Close time picker
+                                            setIsDatePickerOpen(true);  // Open date picker
+                                        }}
+                                    />
                                 </DialogContent>
                             </Dialog>
                         )}

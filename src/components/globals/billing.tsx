@@ -258,7 +258,7 @@ export default function Billing() {
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
-                                        <CardContent className=" bg-transparent">
+                                        <CardContent className="  bg-transparent">
                                             <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                             <ul className="list-disc text-sm">
                                                 <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
@@ -334,7 +334,7 @@ export default function Billing() {
                                 {Object.keys(plans).map((plan, index) => {
                                     const planKey = plan as keyof typeof plans; // Type assertion
                                     return (
-                                        <Card key={index} className="w-[400px] rounded border bg-transparent">
+                                        <Card key={index} className="w-[400px] h-[690px]  rounded border bg-transparent">
                                             <CardHeader className="bg-[#2F0932]  rounded border-b text-center">
                                                 <CardTitle className="text-2xl">{plan}</CardTitle>
                                                 <CardDescription className="text-center text-white text-sm px-2">
@@ -361,9 +361,9 @@ export default function Billing() {
                                                         <li>Task Wise Reminders</li>
                                                         <li>Save more than <span className="text-[#3281F6]">5 hours per day per employee</span></li>
                                                         {plan === 'Money Saver Bundle' && (
-                                                            <>
-                                                                <h1 className="mt-2 p-2 text-md text-[#3281F6]">Leave & Attendance App - <span className="text-[#007A5A]">Coming Soon</span></h1>
-                                                                <li>Easy Attendance Marking using Geo-Location & face recognition feature</li>
+                                                            <div>
+                                                                <h1 className=" p-2 text-sm text-[#3281F6]">Leave & Attendance App</h1>
+                                                                <li className=''>Easy Attendance Marking using Geo-Location & face recognition feature</li>
                                                                 <li>Easy leave application</li>
                                                                 <li>Attendance & leave Tracking</li>
                                                                 <li>WhatsApp & Email notification</li>
@@ -371,7 +371,7 @@ export default function Billing() {
                                                                 <li>Regularization Process (Apply for past date attendance)</li>
                                                                 <li>Define your own leave types</li>
                                                                 <li>Reports/Dashboards</li>
-                                                            </>
+                                                            </div>
                                                         )}
                                                     </ul>
                                                 </CardContent>

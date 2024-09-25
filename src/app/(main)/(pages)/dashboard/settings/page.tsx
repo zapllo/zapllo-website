@@ -349,10 +349,10 @@ export default function Page() {
                                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                     <DialogTrigger>
                                         <Avatar
-                                            className='bg-[#017A5B] h-7 items-center cursor-pointer flex w-7'
+                                            className='bg-[#017A5B] h-8 items-center cursor-pointer flex w-8'
                                             onClick={() => setIsDialogOpen(true)}
                                         >
-                                            <StopwatchIcon className='h-6 w-5 ml-1' />
+                                            <StopwatchIcon className='h-6 w-6 ml-1' />
                                         </Avatar>
                                     </DialogTrigger>
                                     <DialogContent className='h-fit w-fit'>
@@ -388,7 +388,7 @@ export default function Page() {
                             </div>
                         </div>
                         <Separator />
-                        <div>
+                        <div className='mt-2'>
                             <h1>Weekly Offs</h1>
                             <div className='grid grid-cols-7 p-4 gap-2'>
                                 {daysOfWeek.map(day => (

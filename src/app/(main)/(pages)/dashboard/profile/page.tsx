@@ -202,7 +202,7 @@ export default function Profile({ }: Props) {
                     <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
                         <h1 className='text-sm'>Support</h1>
                     </div>
-                    <Link href='/dashboard/tutorials'>
+                    <Link href='/tutorials'>
                         <div className='border-b p-2 mt-2 h-10 '>
                             <h1 className='text-sm'>Tutorials</h1>
                         </div>
@@ -218,7 +218,7 @@ export default function Profile({ }: Props) {
                         </div>
                     </Link>
                     <div className='flex justify-center '>
-                        <div onClick={logout} className='border cursor-pointer w-fit  px-8 mt-4 py-2  rounded-lg'>
+                        <div onClick={logout} className='border cursor-pointer w-fit  bg-red-700 px-8 mt-4 py-2  rounded-lg'>
                             <h1 className='text-sm'>Logout</h1>
                         </div>
                     </div>

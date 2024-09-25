@@ -159,6 +159,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const router = useRouter();
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [assignedByFilter, setAssignedByFilter] = useState<string[]>([]);
+  const [assignedToFilter, setAssignedToFilter] = useState<string>(''); // New state for "Assigned To"
   const [frequencyFilter, setFrequencyFilter] = useState<string[]>([]);
   const [priorityFilterModal, setPriorityFilterModal] = useState<string[]>([]);
   const [userDetails, setUserDetails] = useState<User | null>(null);
@@ -179,11 +180,30 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
+  // Add this state to the component
+  const [taskStatusFilter, setTaskStatusFilter] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<User | null>(null);
+
+
 
   const handleDeleteClick = (id: string) => {
     setDeleteEntryId(id);
     setIsDeleteDialogOpen(true);
   };
+
+  const clearFilters = () => {
+    setCategoryFilter([]); // Reset category filter
+    setAssignedByFilter([]); // Reset assigned by filter
+    setFrequencyFilter([]); // Reset frequency filter
+    setPriorityFilterModal([]); // Reset priority filter
+    setSelectedUserId(null); // Reset assigned user
+    setTaskStatusFilter(null); // Reset task status filter
+  };
+
+
+  // Render clear button based on the presence of any applied filters
+  const areFiltersApplied = categoryFilter.length > 0 || assignedByFilter.length > 0 || frequencyFilter.length > 0 || priorityFilterModal.length > 0;
+
 
   const handleDeleteConfirm = async () => {
     try {
@@ -293,6 +313,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const applyFilters = (filters: any) => {
     setCategoryFilter(filters.categories);
     setAssignedByFilter(filters.users);
+    setAssignedToFilter(filters.assignedTo); // Set "Assigned To" filter
     setFrequencyFilter(filters.frequency);
     setPriorityFilterModal(filters.priority);
   };
@@ -404,10 +425,53 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     });
   };
 
+  const dateRange = getDateRange((activeDateFilter || "thisWeek") as DateFilter);  // Cast to DateFilter
+
+
   const filteredTasks = tasks?.filter(task => {
     let isFiltered = true;
+    const dueDate = new Date(task.dueDate);
+    const completionDate = task.completionDate ? new Date(task.completionDate) : null;
+    const now = new Date();
 
-    // Filter based on active tab
+    // 1. Filter by selected user if a user card was clicked (critical filter applied first)
+    if (selectedUserId && selectedUserId._id) {
+      isFiltered = task.assignedUser?._id === selectedUserId._id;
+    }
+    // Apply "Assigned To" filter
+    if (assignedToFilter && task.assignedUser?._id !== assignedToFilter) {
+      isFiltered = false;
+    }
+    // Skip task if it doesn't match the selected user filter
+    if (!isFiltered) return false;
+
+    // 2. Apply date range filter
+    if (dateRange && dateRange.startDate && dateRange.endDate) {
+      const taskDueDate = new Date(task.dueDate);
+      if (taskDueDate < dateRange.startDate || taskDueDate > dateRange.endDate) {
+        return false;  // Skip task if it doesn't fall within the date range
+      }
+    }
+
+    // 3. Apply status filter
+    if (taskStatusFilter === "overdue") {
+      isFiltered = dueDate < now && task.status !== "Completed";
+    } else if (taskStatusFilter === "pending") {
+      isFiltered = task.status === "Pending";
+    } else if (taskStatusFilter === "inProgress") {
+      isFiltered = task.status === "In Progress";
+    } else if (taskStatusFilter === "completed") {
+      isFiltered = task.status === "Completed";
+    } else if (taskStatusFilter === "inTime") {
+      isFiltered = task.status === "Completed" && completionDate !== null && completionDate <= dueDate;
+    } else if (taskStatusFilter === "delayed") {
+      isFiltered = task.status === "Completed" && completionDate !== null && completionDate > dueDate;
+    }
+
+    // Skip task if it doesn't match the status filter
+    if (!isFiltered) return false;
+
+    // 4. Filter based on active tab
     if (activeTab === "myTasks") {
       isFiltered = task.assignedUser?._id === currentUser?._id;
     } else if (activeTab === "delegatedTasks") {
@@ -416,41 +480,30 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       isFiltered = task.user.organization === currentUser?.organization;
     }
 
-    // Apply other filters
-    if (isFiltered && priorityFilter) {
-      isFiltered = task.priority === priorityFilter;
+    // Skip task if it doesn't match the active tab filter
+    if (!isFiltered) return false;
+
+    // 5. Apply category filter
+    if (categoryFilter.length > 0) {
+      isFiltered = categoryFilter.includes(task.category?._id);
     }
 
-    if (isFiltered && repeatFilter !== null) {
-      isFiltered = task.repeat === repeatFilter;
-    }
-
-    if (isFiltered && assignedUserFilter) {
-      isFiltered = task.assignedUser._id === assignedUserFilter;
-    }
-
-    if (isFiltered && dueDateFilter) {
-      isFiltered = task.dueDate === dueDateFilter;
-    }
-
-    // Apply filters from modal
-    if (isFiltered && categoryFilter.length > 0) {
-      isFiltered = categoryFilter.includes(task.category.name);
-    }
-
-    if (isFiltered && assignedByFilter.length > 0) {
+    // 6. Apply "Assigned By" filter
+    if (assignedByFilter.length > 0) {
       isFiltered = assignedByFilter.includes(task.user._id);
     }
 
-    if (isFiltered && frequencyFilter.length > 0) {
+    // 7. Apply frequency filter
+    if (frequencyFilter.length > 0) {
       isFiltered = frequencyFilter.includes(task.repeatType);
     }
 
-    if (isFiltered && priorityFilterModal.length > 0) {
+    // 8. Apply priority filter
+    if (priorityFilterModal.length > 0) {
       isFiltered = priorityFilterModal.includes(task.priority);
     }
 
-    // Apply search query filter globally
+    // 9. Apply search query filter
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
       isFiltered = (
@@ -463,11 +516,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         task.status.toLowerCase().includes(lowerCaseQuery)
       );
     }
-    const dateRange = getDateRange(activeDateFilter as DateFilter);
-    isFiltered = isFiltered && filterTasksByDate([task], dateRange).length > 0;
 
     return isFiltered;
   });
+
+
+
+
+  console.log(tasks, 'tasks to check if category.name is present')
 
   const filterTasks = (tasks: Task[], activeTab: string): Task[] => {
     return tasks?.filter(task => {
@@ -482,57 +538,42 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         isFiltered = task.user?.organization === currentUser?.organization;
       }
 
-      // Apply other filters
-      if (isFiltered && priorityFilter) {
-        isFiltered = task.priority === priorityFilter;
-      }
-
-      if (isFiltered && repeatFilter !== null) {
-        isFiltered = task.repeat === repeatFilter;
-      }
-
-      if (isFiltered && assignedUserFilter) {
-        isFiltered = task.assignedUser._id === assignedUserFilter;
-      }
-
-      if (isFiltered && dueDateFilter) {
-        isFiltered = task.dueDate === dueDateFilter;
-      }
-
-      // Apply filters from modal
+      // Apply the other filters (this can be factored out or reused from the `filteredTasks` logic)
       if (isFiltered && categoryFilter.length > 0) {
-        isFiltered = categoryFilter.includes(task.category.name);
+        isFiltered = categoryFilter.includes(task.category?._id);
       }
-
       if (isFiltered && assignedByFilter.length > 0) {
         isFiltered = assignedByFilter.includes(task.user._id);
       }
-
       if (isFiltered && frequencyFilter.length > 0) {
         isFiltered = frequencyFilter.includes(task.repeatType);
       }
-
       if (isFiltered && priorityFilterModal.length > 0) {
         isFiltered = priorityFilterModal.includes(task.priority);
-      }
-
-      // Apply search query filter globally
-      if (searchQuery) {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        isFiltered = (
-          task.title.toLowerCase().includes(lowerCaseQuery) ||
-          task.description.toLowerCase().includes(lowerCaseQuery) ||
-          task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
-          task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
-          task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
-          task.assignedUser.lastName.toLowerCase().includes(lowerCaseQuery) ||
-          task.status.toLowerCase().includes(lowerCaseQuery)
-        );
       }
 
       return isFiltered;
     });
   };
+
+  // // Filtering tasks by date range after filtering by active tab
+  // const filterTasksByDate = (tasks: Task[], dateRange: { startDate: Date; endDate: Date }) => {
+  //   return tasks.filter(task => {
+  //     const taskDueDate = new Date(task.dueDate);
+  //     return taskDueDate >= dateRange.startDate && taskDueDate <= dateRange.endDate;
+  //   });
+  // };
+
+  // Applying the filters
+  const myTasks = filterTasks(tasks || [], "myTasks");
+  const delegatedTasks = filterTasks(tasks || [], "delegatedTasks");
+  const allTasks = filterTasks(tasks || [], "allTasks");
+
+  // Applying date range filtering after active tab filtering
+  const myTasksByDate = filterTasksByDate(myTasks, dateRange);
+  const delegatedTasksByDate = filterTasksByDate(delegatedTasks, dateRange);
+  const allTasksByDate = filterTasksByDate(allTasks, dateRange);
+
 
   const countStatuses = (tasks: Task[]): TaskStatusCounts => {
     return tasks.reduce<TaskStatusCounts>((counts, task) => {
@@ -561,17 +602,21 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     }, {} as TaskStatusCounts);
   };
 
-  // Filter tasks for each tab
-  const myTasks = filterTasks(tasks || [], "myTasks");
-  const delegatedTasks = filterTasks(tasks || [], "delegatedTasks");
-  const allTasks = filterTasks(tasks || [], "allTasks");
+  // // Filter tasks for each tab
+  // const myTasks = filterTasks(tasks || [], "myTasks");
+  // const delegatedTasks = filterTasks(tasks || [], "delegatedTasks");
+  // const allTasks = filterTasks(tasks || [], "allTasks");
 
 
-  // Count statuses for each filtered set
-  const myTasksCounts = countStatuses(myTasks);
-  const delegatedTasksCounts = countStatuses(delegatedTasks);
-  const allTasksCounts = countStatuses(allTasks);
+  // // Filter tasks for each tab based on the active date range
+  // const myTasksByDate = filterTasksByDate(myTasks, dateRange);
+  // const delegatedTasksByDate = filterTasksByDate(delegatedTasks, dateRange);
+  // const allTasksByDate = filterTasksByDate(allTasks, dateRange);
 
+  // Step 2: Count the statuses for each filtered set of tasks
+
+  // Count statuses for my tasks
+  const myTasksCounts = countStatuses(myTasksByDate);
   const myTasksPendingCount = myTasksCounts["Pending"] || 0;
   const myTasksInProgressCount = myTasksCounts["In Progress"] || 0;
   const myTasksCompletedCount = myTasksCounts["Completed"] || 0;
@@ -579,6 +624,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const myTasksInTimeCount = myTasksCounts["In Time"] || 0;
   const myTasksDelayedCount = myTasksCounts["Delayed"] || 0;
 
+  // Count statuses for delegated tasks
+  const delegatedTasksCounts = countStatuses(delegatedTasksByDate);
   const delegatedTasksPendingCount = delegatedTasksCounts["Pending"] || 0;
   const delegatedTasksInProgressCount = delegatedTasksCounts["In Progress"] || 0;
   const delegatedTasksCompletedCount = delegatedTasksCounts["Completed"] || 0;
@@ -586,13 +633,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const delegatedTasksInTimeCount = delegatedTasksCounts["In Time"] || 0;
   const delegatedTasksDelayedCount = delegatedTasksCounts["Delayed"] || 0;
 
+  // Count statuses for all tasks
+  const allTasksCounts = countStatuses(allTasksByDate);
   const allTasksPendingCount = allTasksCounts["Pending"] || 0;
   const allTasksInProgressCount = allTasksCounts["In Progress"] || 0;
   const allTasksCompletedCount = allTasksCounts["Completed"] || 0;
   const allTasksOverdueCount = allTasksCounts["Overdue"] || 0;
   const allTasksInTimeCount = allTasksCounts["In Time"] || 0;
   const allTasksDelayedCount = allTasksCounts["Delayed"] || 0;
-
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -996,7 +1044,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   return (
     <div className="flex  overflow-x-hidden w-screen ">
       <div className=" w-44    fixed   ">
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-[180px] mt-12 ">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[180px] mt-12 ">
           <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
             <TabsTrigger value="all" className="flex justify-start gap-2">
               <div className="flex justify-start ml-4 w-full gap-2">
@@ -1108,7 +1156,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                         {activeTab === "all" ? (
                           <div className="flex mt-4 -ml-48 flex-col ">
                             <div className=" ml-28  w-full flex justify-center text-xs gap-4">
-                              <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
+                              {/* <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
+                               */}
+                              <TaskSummary
+                                overdueTasks={allTasksOverdueCount}
+                                completedTasks={allTasksCompletedCount}
+                                inProgressTasks={allTasksInProgressCount}
+                                pendingTasks={allTasksPendingCount}
+                                delayedTasks={allTasksDelayedCount}
+                                inTimeTasks={allTasksInTimeCount}
+                              />
                             </div>
                             {/* <DashboardAnalytics /> */}
                             <div className="flex gap-4 ml-24  w-full justify-center">
@@ -1186,7 +1243,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                       }
 
                                       return (
-                                        <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
+                                        <Card onClick={() => {
+                                          setActiveTab('allTasks'); // Switch to the "All Tasks" tab
+                                          setSelectedUserId(user); // Set the selected user ID
+                                        }}
+                                          key={user._id} className="p-4 flex bg-[#] cursor-pointer flex-col gap-2">
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">
@@ -1259,7 +1320,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   {categories
                                     .filter(category => {
                                       const query = searchQuery.toLowerCase();
-                                      return category.name.toLowerCase().includes(query);
+                                      return category?.name.toLowerCase().includes(query);
                                     })
                                     .filter(category => {
                                       // Fetch task stats for the category
@@ -1274,7 +1335,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
                                           <div className="flex gap-2">
                                             <TagsIcon className="h-5" />
-                                            <h2 className="text-sm font-medium">{category.name}</h2>
+                                            <h2 className="text-sm font-medium">{category?.name}</h2>
                                           </div>
                                           <div className="flex gap-4 mt-2">
                                             <div className="flex gap-1 font-">
@@ -1316,7 +1377,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   {categories
                                     .filter(category => {
                                       const query = searchQuery.toLowerCase();
-                                      return category.name.toLowerCase().includes(query);
+                                      return category?.name.toLowerCase().includes(query);
                                     })
                                     .filter(category => {
                                       // Fetch task stats for the category
@@ -1332,7 +1393,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
                                           <div className="flex gap-2">
                                             <TagsIcon className="h-5" />
-                                            <h2 className="text-sm font-medium">{category.name}</h2>
+                                            <h2 className="text-sm font-medium">{category?.name}</h2>
                                           </div>
                                           <div className="flex gap-4 mt-2">
                                             <div className="flex gap-1 font-medium">
@@ -1371,6 +1432,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
                                   />
+                                  {/* // Add this block below the search input in MyTasks, DelegatedTasks, and AllTasks */}
+
 
 
                                 </div>
@@ -1479,16 +1542,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
                                 )}
                                 <div className="flex -ml-52 mt-4 flex-col ">
-                                  <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
-
-
+                                  {/* <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
                                     <MyTasksSummary myTasksCompletedCount={myTasksCompletedCount} myTasksInProgressCount={myTasksInProgressCount} myTasksOverdueCount={myTasksOverdueCount} myTasksPendingCount={myTasksPendingCount} myTasksDelayedCount={myTasksDelayedCount} myTasksInTimeCount={myTasksInTimeCount} />
-
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
 
-                              <div className="flex px-4  -mt-6 w-[100%]    space-x-2 justify-center ">
+                              <div className="flex px-4  -mt-2 w-[100%]    space-x-2 justify-center ">
                                 <div className="space-x-2 flex">
                                   <div className=" flex px-4 mt-4  space-x-2 justify-center mb-2">
                                     <input
@@ -1502,6 +1562,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
                                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
                                 </div>
+                                {areFiltersApplied && (
+                                  <Button onClick={clearFilters} className="bg-transparent hover:bg-transparent mt-4 h-8">
+                                    <FilterIcon className="h-4" /> Clear
+                                  </Button>
+                                )}
                               </div>
                               <div className="applied-filters gap-2 mb-2 -ml-2 text-xs flex w-full justify-center">
 
@@ -1546,12 +1611,73 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
                                 )}
                               </div>
+                              <div className="flex gap-2 ml- mb-4 justify-center mt-2">
+                                {/* Overdue Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("overdue")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CircleAlert className="text-red-500 h-3  " />
+
+                                  Overdue ({myTasksOverdueCount})
+                                </Button>
+
+                                {/* Pending Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("pending")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <Circle className="text-red-400 h-3 " />
+
+                                  Pending ({myTasksPendingCount})
+                                </Button>
+
+                                {/* In Progress Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("inProgress")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <IconProgress className="text-orange-500 h-3 " />
+
+                                  In Progress ({myTasksInProgressCount})
+                                </Button>
+
+                                {/* Completed Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("completed")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CheckCircle className="text-green-500 h-3 " />
+
+                                  Completed ({myTasksCompletedCount})
+                                </Button>
+
+                                {/* In Time Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("inTime")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <Clock className="text-green-500 h-3 " />
+
+                                  In Time ({myTasksInTimeCount})
+                                </Button>
+
+                                {/* Delayed Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("delayed")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CheckCircle className="text-red-500 h-3 " />
+
+                                  Delayed ({myTasksDelayedCount})
+                                </Button>
+                              </div>
                               {filteredTasks && filteredTasks.length > 0 ? (
 
                                 filteredTasks?.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[100%] ml- mb-2  border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[100%] ml- mb-2   border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -1620,7 +1746,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               }}
                                               className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
                                             >
-                                              <Play className="h-4 w-4" />
+                                              <Play className="h-4 w-4 text-orange-400" />
                                               <h1 className="text-xs">
                                                 In Progress
                                               </h1>
@@ -1632,7 +1758,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               }}
                                               className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
-                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              <CheckCircle className="h-4 rounded-full text-green-400" />
                                               <h1 className="text-xs">Completed</h1>
                                             </Button>
 
@@ -1668,12 +1794,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                 // >
                                 <div>
-                                  <h1 className="text-center font-bold text-md mt-12">
-                                    No Tasks Found
-                                  </h1>
-
-                                  <p className="text-center text-sm">The list is currently empty</p>
-
+                                  <div className='flex w-full justify-center '>
+                                    <div className="mt-8">
+                                      <img src='/animations/notfound.gif' className="h-56" />
+                                      <h1 className="text-center font-bold text-md mt-2 ml-4">
+                                        No Tasks Found
+                                      </h1>
+                                      <p className="text-center text-sm ml-4">The list is currently empty</p>
+                                    </div>
+                                  </div>
                                 </div>
                                 // {/* <img src="/logo.png" className="w-[52.5%] h-[100%] opacity-0" /> */}
 
@@ -1685,6 +1814,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 categories={categories}
                                 users={users}
                                 applyFilters={applyFilters}
+                                initialSelectedCategories={categoryFilter} // Pass the currently selected categories
+                                initialSelectedUsers={assignedByFilter} // Pass the currently selected users
+                                initialSelectedFrequency={frequencyFilter} // Pass the currently selected frequency
+                                initialSelectedPriority={priorityFilterModal} // Pass the currently selected priority
                               />
                             </div>
                           </div>
@@ -1701,10 +1834,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             )}
                             <div className="flex mt-4 -ml-52 flex-col ">
                               <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
-                                <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} />
+                                {/* <DelegatedTasksSummary delegatedTasksCompletedCount={delegatedTasksCompletedCount} delegatedTasksInProgressCount={delegatedTasksInProgressCount} delegatedTasksOverdueCount={delegatedTasksOverdueCount} delegatedTasksPendingCount={delegatedTasksPendingCount} delegatedTasksDelayedCount={delegatedTasksDelayedCount} delegatedTasksInTimeCount={delegatedTasksInTimeCount} /> */}
                               </div>
 
-                              <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                              <div className="flex px-4 -mt-2 w-[100%]  space-x-2 justify-center ">
                                 <div className="space-x-2 flex">
                                   <div className=" flex px-4 mt-4 ml-52 space-x-2 justify-center mb-2">
                                     <input
@@ -1717,6 +1850,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                   </div>
                                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                  {areFiltersApplied && (
+                                    <Button
+                                      type="button"
+                                      className="bg-transparent hover:bg-red-500 mt-4 h-8 gap-2 flex border"
+                                      onClick={clearFilters}
+                                    >
+                                      <img src='/icons/clear.png' className="h-3" />    Clear
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                               <div className="applied-filters gap-2 mb-2 text-xs flex w-full ml-24 justify-center">
@@ -1762,11 +1904,72 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
                                 )}
                               </div>
+                              <div className="flex gap-2 ml-52 mb-4 justify-center ">
+                                {/* Overdue Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("overdue")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CircleAlert className="text-red-500 h-3  " />
+
+                                  Overdue ({delegatedTasksOverdueCount})
+                                </Button>
+
+                                {/* Pending Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("pending")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <Circle className="text-red-400 h-3 " />
+
+                                  Pending ({delegatedTasksPendingCount})
+                                </Button>
+
+                                {/* In Progress Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("inProgress")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <IconProgress className="text-orange-500 h-3 " />
+
+                                  In Progress ({delegatedTasksInProgressCount})
+                                </Button>
+
+                                {/* Completed Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("completed")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CheckCircle className="text-green-500 h-3 " />
+
+                                  Completed ({delegatedTasksCompletedCount})
+                                </Button>
+
+                                {/* In Time Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("inTime")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <Clock className="text-green-500 h-3 " />
+
+                                  In Time ({delegatedTasksInTimeCount})
+                                </Button>
+
+                                {/* Delayed Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("delayed")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CheckCircle className="text-red-500 h-3 " />
+
+                                  Delayed ({delegatedTasksDelayedCount})
+                                </Button>
+                              </div>
                               {filteredTasks!.length > 0 ? (
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[80.55%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -1835,7 +2038,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               }}
                                               className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
                                             >
-                                              <Play className="h-4 w-4" />
+                                              <Play className="h-4 w-4 text-orange-400" />
                                               <h1 className="text-xs">
                                                 In Progress
                                               </h1>
@@ -1847,7 +2050,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               }}
                                               className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
-                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              <CheckCircle className="h-4 rounded-full text-green-400" />
                                               <h1 className="text-xs">Completed</h1>
                                             </Button>
                                           </div>
@@ -1877,11 +2080,12 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
                                 ))
                               ) : (
-                                <div className="ml-52"> {/**No Delegated Tasks found!! */}
-                                  <h1 className="text-center font-bold text-md  mt-12">
+                                <div className="mt-8 ml-36">
+                                  <img src='/animations/notfound.gif' className="h-56 ml-[41%]" />
+                                  <h1 className="text-center font-bold text-md mt-2 ml-4">
                                     No Tasks Found
                                   </h1>
-                                  <p className="text-center text-sm">The list is currently empty</p>
+                                  <p className="text-center text-sm ml-4">The list is currently empty</p>
                                 </div>
                               )}
                               <FilterModal
@@ -1890,10 +2094,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 categories={categories}
                                 users={users}
                                 applyFilters={applyFilters}
+                                initialSelectedCategories={categoryFilter} // Pass the currently selected categories
+                                initialSelectedUsers={assignedByFilter} // Pass the currently selected users
+                                initialSelectedFrequency={frequencyFilter} // Pass the currently selected frequency
+                                initialSelectedPriority={priorityFilterModal} // Pass the currently selected priority
                               />
                             </div>
                           </div>
-                        ) : (
+                        ) : activeTab === "allTasks" ? (
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
                               <div className="flex gap-8 p-2 justify-center w-full">
@@ -1903,10 +2111,17 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             )}
                             <div className="flex -ml-52  mt-4 flex-col ">
 
-                              <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4">
-                                <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
-                              </div>
-                              <div className="flex px-4 -mt-6 w-[100%]  space-x-2 justify-center ">
+                              {/* <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4"> */}
+                              {/* <TaskSummary
+                                  overdueTasks={allTasksOverdueCount}
+                                  completedTasks={allTasksCompletedCount}
+                                  inProgressTasks={allTasksInProgressCount}
+                                  pendingTasks={allTasksPendingCount}
+                                  delayedTasks={allTasksDelayedCount}
+                                  inTimeTasks={allTasksInTimeCount}
+                                /> */}
+                              {/* </div> */}
+                              <div className="flex px-4 -mt-2 w-[100%]  space-x-2 justify-center ">
                                 <div className="space-x-2 flex">
                                   <div className=" flex px-4 ml-52 mt-4 space-x-2 justify-center mb-2">
                                     <input
@@ -1920,12 +2135,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
 
                                   <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                  {areFiltersApplied && (
+                                    <Button onClick={clearFilters} className="bg-transparent hover:bg-transparent mt-4 h-8">
+                                      <FilterIcon className="h-4" /> Clear
+                                    </Button>
+                                  )}
                                 </div>
 
                               </div>
                               {/* Display applied filters */}
                               <div className="applied-filters gap-2 mb-2 text-xs flex w-full ml-24 justify-center">
-
+                                <div>
+                                  {selectedUserId && (
+                                    <div className="flex border px-2 py-1 gap-2">
+                                      <h1>Assigned To: {selectedUserId.firstName} {selectedUserId.lastName}</h1>
+                                    </div>
+                                  )}
+                                </div>
                                 {categoryFilter.length > 0 && (
                                   <div className="flex border px-2 py-1 gap-2">
                                     <h3>Categories:</h3>
@@ -1967,11 +2193,72 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   </div>
                                 )}
                               </div>
+                              <div className="flex gap-2 ml-52 mb-4 justify-center ">
+                                {/* Overdue Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("overdue")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CircleAlert className="text-red-500 h-3  " />
+
+                                  Overdue ({allTasksOverdueCount})
+                                </Button>
+
+                                {/* Pending Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("pending")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <Circle className="text-red-400 h-3 " />
+
+                                  Pending ({allTasksPendingCount})
+                                </Button>
+
+                                {/* In Progress Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("inProgress")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <IconProgress className="text-orange-500 h-3 " />
+
+                                  In Progress ({allTasksInProgressCount})
+                                </Button>
+
+                                {/* Completed Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("completed")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CheckCircle className="text-green-500 h-3 " />
+
+                                  Completed ({allTasksCompletedCount})
+                                </Button>
+
+                                {/* In Time Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("inTime")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <Clock className="text-green-500 h-3 " />
+
+                                  In Time ({allTasksInTimeCount})
+                                </Button>
+
+                                {/* Delayed Filter */}
+                                <Button
+                                  onClick={() => setTaskStatusFilter("delayed")}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                >
+                                  <CheckCircle className="text-red-500 h-3 " />
+
+                                  Delayed ({allTasksDelayedCount})
+                                </Button>
+                              </div>
                               {filteredTasks!.length > 0 ? (
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[80.55%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -2040,7 +2327,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               }}
                                               className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
                                             >
-                                              <Play className="h-4 w-4" />
+                                              <Play className="h-4 w-4 text-orange-400" />
                                               <h1 className="text-xs">
                                                 In Progress
                                               </h1>
@@ -2052,7 +2339,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               }}
                                               className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
-                                              <CheckCheck className="h-4 rounded-full text-green-400" />
+                                              <CheckCircle className="h-4 rounded-full text-green-400" />
                                               <h1 className="text-xs">Completed</h1>
                                             </Button>
                                           </div>
@@ -2081,7 +2368,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 ))
                               ) : (
                                 <div className="ml-52">
-                                  <h1 className="text-center font-bold text-md mt-12">
+                                  <h1 className="text-center font-bold text-md mt-12"> {/**All */}
                                     No Tasks Found
                                   </h1>
                                   <p className="text-center text-sm">The list is currently empty</p>
@@ -2093,10 +2380,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 categories={categories}
                                 users={users}
                                 applyFilters={applyFilters}
+                                initialSelectedCategories={categoryFilter} // Pass the currently selected categories
+                                initialSelectedUsers={assignedByFilter} // Pass the currently selected users
+                                initialSelectedFrequency={frequencyFilter} // Pass the currently selected frequency
+                                initialSelectedPriority={priorityFilterModal} // Pass the currently selected priority
                               />
                             </div>
                           </div>
-                        )}
+                        ) : <h1>Oops Wrong Tab Selected!</h1>
+                        }
                       </div>
 
 

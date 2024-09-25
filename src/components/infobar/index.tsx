@@ -114,14 +114,14 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/dashboard/checklist') {
       return 'My Checklist';
     }
-    else if (pathName === '/dashboard/tickets') {
+    else if (pathName === '/help/tickets') {
       return 'My Tickets';
     }
-    else if (pathName === '/dashboard/tickets') {
+    else if (pathName === '/help/tickets') {
       return 'My Tickets';
     }
     // Handle the dynamic route for /dashboard/tickets/[id]
-    else if (pathName.startsWith('/dashboard/tickets/')) {
+    else if (pathName.startsWith('/help/tickets/')) {
       return 'Ticket Details';
     }
     else if (pathName === '/dashboard/profile') {
@@ -130,10 +130,10 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/intranet') {
       return 'Intranet';
     }
-    else if (pathName === '/tutorials') {
+    else if (pathName === '/help/tutorials') {
       return 'Tutorials';
     }
-    else if (pathName === '/events') {
+    else if (pathName === '/help/events') {
       return 'Events';
     }
     else if (pathName === '/admin/dashboard') {
@@ -188,13 +188,20 @@ const InfoBar = (props: Props) => {
             {/* <h1 className='text-xs mt- '>Access Expires in <span className='text-red-500 font-bold'>{remainingTime || 'Loading...'}</span></h1> */}
 
             {/* <ModeToggle /> */}
-            <Button
-              className='relative rounded-full bg-[#75517B] p-2 h-9 w-9'
-              size="icon"
-            >
-              <img src='/icons/bell.png' className='h' alt="Notification Bell" />
-              <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border-2 border-red-500 "></span>
-            </Button>
+            <DropdownMenu >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className='relative rounded-full hover:bg-[#75517B] bg-[#75517B] p-2 h-9 w-9'
+                  size="icon"
+                >
+                  <img src='/icons/bell.png' className='h' alt="Notification Bell" />
+                  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border-2 border-red-500 "></span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 -ml-36">
+                <DropdownMenuLabel>Notifications Coming Soon.</DropdownMenuLabel>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <DropdownMenu >
               <DropdownMenuTrigger asChild>

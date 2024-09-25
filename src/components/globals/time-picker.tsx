@@ -10,8 +10,8 @@ import Box from '@mui/material/Box';
 interface CustomTimePickerProps {
   selectedTime: string | null;
   onTimeChange: (time: string) => void;
-  onCancel: () => void;
-  onAccept: () => void;
+  onCancel?: () => void;
+  onAccept?: () => void;
   onBackToDatePicker: () => void;
 }
 

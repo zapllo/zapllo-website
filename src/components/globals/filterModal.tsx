@@ -8,15 +8,19 @@ interface FilterModalProps {
     categories: { _id: string; name: string; imgSrc: string }[];
     users: { _id: string; firstName: string; lastName: string; email: string; }[];
     applyFilters: (filters: any) => void;
+    initialSelectedCategories: string[]; // New
+    initialSelectedUsers: string[]; // New
+    initialSelectedFrequency: string[]; // New
+    initialSelectedPriority: string[]; // New
 }
 
-const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categories, users, applyFilters }) => {
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-    const [selectedFrequency, setSelectedFrequency] = useState<string[]>([]);
-    const [selectedPriority, setSelectedPriority] = useState<string[]>([]);
-    const [activeSection, setActiveSection] = useState<string>('Category');
-    const [searchTerm, setSearchTerm] = useState<string>('');
+const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categories, users, applyFilters, initialSelectedCategories, initialSelectedFrequency, initialSelectedPriority, initialSelectedUsers }) => {
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(initialSelectedCategories);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(initialSelectedUsers);
+  const [selectedFrequency, setSelectedFrequency] = useState<string[]>(initialSelectedFrequency);
+  const [selectedPriority, setSelectedPriority] = useState<string[]>(initialSelectedPriority);
+  const [activeSection, setActiveSection] = useState<string>('Category');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
     const toggleSelection = (selectedItems: string[], setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
         if (selectedItems.includes(item)) {
