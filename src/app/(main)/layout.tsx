@@ -13,8 +13,6 @@ import React, { useEffect, useState } from 'react'
 type Props = { children: React.ReactNode }
 
 const Layout = (props: Props) => {
-    const [trialExpires, setTrialExpires] = useState<Date | null>(null);
-    const [remainingTime, setRemainingTime] = useState('');
     const router = useRouter();
     const pathname = usePathname();
     const [isVisible, setIsVisible] = useState(true);
@@ -37,7 +35,6 @@ const Layout = (props: Props) => {
                 console.log('isExpired:', isExpired);
                 console.log('trialExpires:', organization.trialExpires);
 
-                setIsTrialExpired(isExpired); // Set to true if expired, false otherwise
             } catch (error) {
                 console.error('Error fetching user details or trial status:', error);
             }
@@ -45,6 +42,61 @@ const Layout = (props: Props) => {
         getUserDetails();
     }, []);
 
+    const [firstName, setFirstName] = useState("User");
+    const [lastName, setLastName] = useState("User");
+    const [role, setRole] = useState("role");
+    const [trialExpires, setTrialExpires] = useState<Date | null>(null);
+    const [remainingTime, setRemainingTime] = useState('');
+    const [userLoading, setUserLoading] = useState<boolean | null>(false);
+
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            try {
+                setUserLoading(true)
+                const userRes = await axios.get('/api/users/me');
+                setFirstName(userRes.data.data.firstName);
+                setLastName(userRes.data.data.lastName);
+                setRole(userRes.data.data.role);
+                setUserLoading(false)
+                // Fetch trial status
+                const response = await axios.get('/api/organization/getById');
+                console.log(response.data.data); // Log the organization data
+
+                const organization = response.data.data;
+
+                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
+                console.log('isExpired:', isExpired);
+                console.log('trialExpires:', organization.trialExpires);
+
+                setTrialExpires(isExpired ? null : organization.trialExpires);
+            } catch (error) {
+                console.error('Error fetching user details or trial status:', error);
+            }
+        }
+        getUserDetails();
+    }, []);
+
+
+    console.log(trialExpires, 'trial')
+
+    useEffect(() => {
+        if (trialExpires) {
+            // Calculate remaining time
+            const calculateRemainingTime = () => {
+                const now = new Date();
+                const distance = formatDistanceToNow(new Date(trialExpires), { addSuffix: true });
+                setRemainingTime(distance);
+            };
+
+            calculateRemainingTime();
+            const intervalId = setInterval(calculateRemainingTime, 1000 * 60); // Update every minute
+
+            return () => clearInterval(intervalId); // Cleanup on unmount
+        }
+    }, [trialExpires]);
+
+    console.log(remainingTime, 'time?')
 
     // if (isTrialExpired) {
     //     return (

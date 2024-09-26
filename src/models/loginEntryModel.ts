@@ -4,7 +4,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 import { IUser } from './userModel';
 
 export interface ILoginEntry extends Document {
-    userId: IUser;
+    userId: IUser | mongoose.Types.ObjectId;
     action: 'login' | 'logout' | 'regularization';
     lat?: number;
     lng?: number;

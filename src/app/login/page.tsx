@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,9 @@ import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [loading, setLoading] = React.useState(false);
-    const [user, setUser] = React.useState({
+    const [loading, setLoading] = useState(false);
+    const [userLoading, setUserLoading] = useState<boolean | null>(false);
+    const [user, setUser] = useState({
         email: "",
         password: "",
     });
@@ -36,6 +37,7 @@ export default function LoginPage() {
     const onLogin = async () => {
         try {
             setLoading(true);
+            setUserLoading(true)
             const response = await axios.post("/api/users/login", user);
             if (response.status === 200) {
                 Cookies.set("token", response.data.token);
@@ -46,12 +48,30 @@ export default function LoginPage() {
             toast.error("Invalid credentials"); // Display error toast
         } finally {
             setLoading(false);
+            setUserLoading(false)
         }
     };
 
     return (
         <>
-            <div className="relative flex bg-[#211123] h-screen items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
+            {userLoading && (
+                <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-black -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+                    {/* <Toaster /> */}
+                    <div
+                        className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
+                        <div className="">
+                            <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
+
+                                <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
+                                <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
+                                    Loading...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <div className="relative flex bg-[#211123] h-screen z-[50] items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
                 <div className="z-10 bg-[#211123]">
                     <Meteors number={30} />
                 </div>
@@ -89,7 +109,7 @@ export default function LoginPage() {
                             type="submit"
                             onClick={onLogin}
                         >
-                            {loading ? <Loader /> : "Login →"}
+                            Login →
                             <BottomGradient />
                         </button>
                         <div className="p-4 flex justify-center">

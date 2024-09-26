@@ -29,6 +29,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
         // Connect to the database
         await connectDB();
 
+        // Fetch the logged-in user's data to get the role
+        const loggedInUser = await User.findById(managerId);
+
+        if (!loggedInUser) {
+            return NextResponse.json(
+                { success: false, message: 'User not found' },
+                { status: 404 }
+            );
+        }
+
         // Fetch the regularization entry
         const regularizationEntry = await LoginEntry.findById(entryId);
 
@@ -57,8 +67,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
             );
         }
 
-        // Check if the manager has the authority to approve/reject this entry
-        if (user.reportingManager?.toString() !== managerId) {
+        // Check if the logged-in user has the authority to approve/reject this entry
+        const isManager = user.reportingManager?.toString() === managerId;
+        const isOrgAdmin = loggedInUser.role === 'orgAdmin';
+
+        if (!isManager && !isOrgAdmin) {
             return NextResponse.json(
                 { success: false, message: 'You do not have permission to approve this regularization' },
                 { status: 403 }

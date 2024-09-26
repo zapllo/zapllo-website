@@ -9,10 +9,12 @@ import {
     DialogTitle,
     DialogDescription,
     DialogClose,
+    DialogOverlay,
 } from '@/components/ui/dialog';
 import MyLeaveForm from '@/components/forms/MyLeavesForm'; // Your form component
 import LeaveDetails from '@/components/sheets/leaveDetails';
-import { Info } from 'lucide-react';
+import { CheckCircle, Circle, Info } from 'lucide-react';
+import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
 
 interface LeaveType {
     allotedLeaves: number;
@@ -119,6 +121,76 @@ const MyLeaves: React.FC = () => {
     const [selectedLeave, setSelectedLeave] = useState<Leave | null>(null);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const [infoModalContent, setInfoModalContent] = useState<{ title: string; description: string; details: string } | null>(null);
+    const [activeTab, setActiveTab] = useState('thisMonth'); // Set default to 'thisMonth'
+    const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+    const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({
+        start: null,
+        end: null,
+    });
+
+    const normalizeDate = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const isWithinDateRange = (date: Date, startDate: Date, endDate: Date) => date >= startDate && date <= endDate;
+
+    // Filter leaves by both date range (active tab) and other filters
+    const filterEntriesByTab = () => {
+        const today = new Date();
+        const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+        const todayNormalized = normalizeDate(today);
+
+        let dateFilteredLeaves = leaves;
+
+        switch (activeTab) {
+            case 'today':
+                dateFilteredLeaves = leaves.filter((leave) =>
+                    normalizeDate(new Date(leave.fromDate)).getTime() === todayNormalized.getTime()
+                );
+                break;
+            case 'thisWeek':
+                const thisWeekStart = new Date(today);
+                thisWeekStart.setDate(today.getDate() - today.getDay());
+                dateFilteredLeaves = leaves.filter((leave) => {
+                    const leaveDate = normalizeDate(new Date(leave.fromDate));
+                    return leaveDate >= normalizeDate(thisWeekStart) && leaveDate <= todayNormalized;
+                });
+                break;
+            case 'thisMonth':
+                dateFilteredLeaves = leaves.filter((leave) => {
+                    const leaveDate = normalizeDate(new Date(leave.fromDate));
+                    return leaveDate >= thisMonthStart && leaveDate <= todayNormalized;
+                });
+                break;
+            case 'lastMonth':
+                dateFilteredLeaves = leaves.filter((leave) => {
+                    const leaveDate = normalizeDate(new Date(leave.fromDate));
+                    return leaveDate >= lastMonthStart && leaveDate <= lastMonthEnd;
+                });
+                break;
+            case 'custom':
+                if (customDateRange.start && customDateRange.end) {
+                    const startNormalized = normalizeDate(customDateRange.start);
+                    const endNormalized = normalizeDate(customDateRange.end);
+                    dateFilteredLeaves = leaves.filter((leave) => {
+                        const leaveDate = normalizeDate(new Date(leave.fromDate));
+                        return leaveDate >= startNormalized && leaveDate <= endNormalized;
+                    });
+                }
+                break;
+            default:
+                break;
+        }
+
+        // Apply additional filters like leave type, status, year, and month
+        return dateFilteredLeaves
+            .filter((leave) => (selectedLeaveType ? leave.leaveType.leaveType === selectedLeaveType : true))
+            .filter((leave) => {
+                const leaveDate = new Date(leave.fromDate);
+                return leaveDate.getFullYear() === selectedYear && leaveDate.getMonth() === selectedMonth;
+            })
+            .filter((leave) => (selectedStatus === 'All' ? true : leave.status === selectedStatus));
+    };
 
     const handleLeaveClick = (leave: Leave) => {
         setSelectedLeave(leave);
@@ -127,6 +199,18 @@ const MyLeaves: React.FC = () => {
     const handleSheetClose = () => {
         setSelectedLeave(null);
     };
+
+    // Handle Custom Date Range Modal
+    const openCustomModal = () => {
+        setIsCustomModalOpen(true);
+    };
+
+    const handleCustomDateSubmit = (start: Date, end: Date) => {
+        setCustomDateRange({ start, end });
+        setIsCustomModalOpen(false);
+        setActiveTab('custom');
+    };
+
 
     const fetchLeaveTypes = async () => {
         try {
@@ -143,6 +227,7 @@ const MyLeaves: React.FC = () => {
 
             for (const leaveType of leaveTypes) {
                 const response = await axios.get(`/api/leaves/${leaveType._id}`);
+                console.log(response.data, 'response.data')
                 if (response.data.success) {
                     leaveDetailsMap[leaveType._id] = {
                         totalAllotedLeaves: response.data.data.allotedLeaves,
@@ -199,26 +284,19 @@ const MyLeaves: React.FC = () => {
         setInfoModalContent(null);
     };
 
-    const filteredLeaves = leaves
-        .filter((leave) =>
-            selectedLeaveType ? leave?.leaveType?.leaveType === selectedLeaveType : true
-        )
-        .filter((leave) => {
-            const leaveDate = new Date(leave.fromDate);
-            return (
-                leaveDate.getFullYear() === selectedYear &&
-                leaveDate.getMonth() === selectedMonth
-            );
-        })
-        .filter((leave) => (selectedStatus === 'All' ? true : leave.status === selectedStatus));
+    const filteredLeaves = filterEntriesByTab();
+
 
     // Count leaves based on status
     const pendingCount = leaves.filter((leave) => leave.status === 'Pending').length;
     const approvedCount = leaves.filter((leave) => leave.status === 'Approved').length;
     const rejectedCount = leaves.filter((leave) => leave.status === 'Rejected').length;
 
+    console.log(leaveDetails, 'leaveDetails')
+
     return (
-        <div className="container mx-auto p-6">
+        <div className="container h-screen overflow-y-scroll scrollbar-hidet mx-auto p-6">
+
             <div className="flex items-center justify-center gap-4 mb-4">
                 <select
                     value={selectedYear}
@@ -255,7 +333,7 @@ const MyLeaves: React.FC = () => {
                     </DialogTrigger>
 
                     <DialogContent className='hidden '>
-                       
+
                         <DialogDescription>
                             Select leave type and details to apply for leave.
                         </DialogDescription>
@@ -263,33 +341,44 @@ const MyLeaves: React.FC = () => {
                     </DialogContent>
                 </Dialog>
             </div>
+            {/* Date Tabs */}
+            <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
+                <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Today</button>
+                <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Week</button>
+                <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Month</button>
+                <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Last Month</button>
+                <button onClick={openCustomModal} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'custom' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Custom</button>
+            </div>
 
             {/* Leave Balance and Type Filter */}
             {leaveTypes.length > 0 && (
                 <div className="items-center space-x-4 mb-4">
                     <div className="flex justify-center gap-4 w-full">
-                        {leaveTypes.map((leaveType) => (
-                            <div key={leaveType._id} className="border px-6  py-3 mb-4">
-                                <div className='flex gap-2'>
-                                    <Info
-                                        className="h-4 mt-[2px] cursor-pointer"
-                                        onClick={() => handleInfoClick(leaveType.leaveType)}
-                                    />
-                                    <h1 className='text-sm' >{leaveType.leaveType}</h1>
+                        <div className='grid grid-cols-4 gap-4'>
+                            {leaveTypes.map((leaveType) => (
+                                <div key={leaveType._id} className="border w-48 px-2  py-3 mb-4">
+                                    <div className='flex justify-between w-full'>
+                                        <h1 className='text-sm' >{leaveType.leaveType}</h1>
+                                        <Info
+                                            className="h-4 mt-[2px]  text-blue-200 cursor-pointer"
+                                            onClick={() => handleInfoClick(leaveType.leaveType)}
+                                        />
+                                    </div>
+                                    <div className='gap-2 mt-2'>
+                                        <h1 className='text-xs'>Alloted: {leaveType.allotedLeaves}</h1>
+                                        {/* Fetch leave details from leaveDetails map using the leaveType._id */}
+                                        {leaveDetails[leaveType._id] ? (
+                                            <div>
+                                                <p className='text-xs'>Balance: {leaveDetails[leaveType._id]?.userLeaveBalance ?? 'N/A'}</p>
+                                            </div>
+                                        ) : (
+                                            <div>Loading...</div> // Add a loading state if needed
+                                        )}
+                                    </div>
+
                                 </div>
-                                <div className='  gap-2 mt-2 '>
-                                    <h1 className='text-xs'>Alloted: {leaveType.allotedLeaves}</h1>
-                                    {/* Fetch leave details from leaveDetails map using the leaveType._id */}
-                                    {leaveDetails[leaveType._id] ? (
-                                        <div className="">
-                                            <p className='text-xs'>Balance: {leaveDetails[leaveType._id].userLeaveBalance}</p>
-                                        </div>
-                                    ) : (
-                                        <div>Loading...</div> // Add a loading state if needed
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                     <div className='flex gap-2 w-full justify-center'>
                         <div>
@@ -309,32 +398,36 @@ const MyLeaves: React.FC = () => {
                         {/* Status Filters */}
                         <div className="flex items-center  text-xs space-x-4 mb-4">
                             <button
-                                className={`px-4 py-2 rounded ${selectedStatus === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
+                                className={`px-4 py-2 flex gap-2 rounded ${selectedStatus === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
                                     }`}
                                 onClick={() => setSelectedStatus('All')}
                             >
-                                All {leaves.length}
+                                <HamburgerMenuIcon />
+                                All ({leaves.length})
                             </button>
                             <button
-                                className={`px-4 py-2 rounded ${selectedStatus === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
+                                className={`px-4 py-2 flex gap-2 rounded ${selectedStatus === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
                                     }`}
                                 onClick={() => setSelectedStatus('Pending')}
                             >
-                                Pending {pendingCount}
+                                <Circle className='h-4 text-red-500' />
+                                Pending ({pendingCount})
                             </button>
                             <button
-                                className={`px-4 py-2 rounded ${selectedStatus === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
+                                className={`px-4 py-2 flex gap-2 rounded ${selectedStatus === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
                                     }`}
                                 onClick={() => setSelectedStatus('Approved')}
                             >
-                                Approved {approvedCount}
+                                <CheckCircle className='h-4 text-green-500' />
+                                Approved ({approvedCount})
                             </button>
                             <button
-                                className={`px-4 py-2 rounded ${selectedStatus === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
+                                className={`px-4 py-2 flex gap-2 rounded ${selectedStatus === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'
                                     }`}
                                 onClick={() => setSelectedStatus('Rejected')}
                             >
-                                Rejected {rejectedCount}
+                                <Cross1Icon className='h-4 text-red-500' />
+                                Rejected ({rejectedCount})
                             </button>
                         </div>
                     </div>
@@ -347,7 +440,7 @@ const MyLeaves: React.FC = () => {
                     <DialogContent className='w-96'>
                         <div className='flex w-full justify-between'>
                             <div className='flex gap-2'>
-                                <Info className='h-5 mt-1' />
+                                <Info className='h-5 mt-1 ' />
                                 <DialogTitle className="text-center text-lg flex gap-2 font-semibold">{infoModalContent.title}</DialogTitle>
                             </div>
 
@@ -373,7 +466,7 @@ const MyLeaves: React.FC = () => {
 
             {/* Display Filtered Leaves */}
             {/* Display Filtered Leaves */}
-            <div className="grid grid-cols-1 w-full ">
+            <div className="grid grid-cols-1 w-full mb-12 ">
                 {filteredLeaves?.length > 0 ? (
                     filteredLeaves?.map((leave) => (
                         <div
@@ -405,7 +498,6 @@ const MyLeaves: React.FC = () => {
                                             To:
                                             <span className='text-white'>
                                                 {new Date(leave?.toDate).toLocaleDateString()}
-
                                             </span>
                                         </h1>
                                     </p>
@@ -425,17 +517,16 @@ const MyLeaves: React.FC = () => {
                                     </p>
                                 </div>
                             </div>
-
                             {/* Status and Approval */}
                             <div className="flex items-center">
                                 <span
-                                    className={`px-3 py-1 rounded-full text-xs ${leave.status === 'Approved'
-                                        ? 'bg-green-200 text-green-800'
+                                    className={`px-3  py-1 rounded-full text-[10px] ${leave.status === 'Approved'
+                                        ? 'bg-green-700  text-white'
                                         : leave.status === 'Partially Approved'
-                                            ? 'bg-yellow-200 text-yellow-800'
+                                            ? 'bg-orange-900 text-white -800'
                                             : leave.status === 'Rejected'
-                                                ? 'bg-red-200 text-red-800'
-                                                : 'bg-gray-200 text-gray-800'
+                                                ? 'bg-orange-200 text-red-800'
+                                                : 'bg-orange-700 text-white -800'
                                         }`}
                                 >
                                     {leave.status}
@@ -444,11 +535,78 @@ const MyLeaves: React.FC = () => {
                         </div>
                     ))
                 ) : (
-                    <p>No leaves found for the selected filters.</p>
+                    <div className='flex w-full justify-center '>
+                        <div className="mt-8 ml-4">
+                            <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                            <h1 className="text-center font-bold text-md mt-2 ">
+                                No Leaves Found
+                            </h1>
+                            <p className="text-center text-sm ">The list is currently empty for the selected filters</p>
+                        </div>
+                    </div>
                 )}
             </div>
             {selectedLeave && <LeaveDetails selectedLeave={selectedLeave} onClose={handleSheetClose} />}
-        </div>
+            {/* Custom Date Range Modal */}
+            {/* Custom Date Range Modal */}
+            <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
+                <DialogContent className='w-96'>
+                    <div className="flex justify-between">
+                        <DialogTitle className="text-xs mb-4 text-white">Select Custom Date Range</DialogTitle>
+                        <DialogClose className="h-2 scale-75">X</DialogClose>
+                    </div>
+
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            const form = e.target as HTMLFormElement;
+                            const start = new Date(form.start.value);
+                            const end = new Date(form.end.value);
+                            handleCustomDateSubmit(start, end);
+                        }}
+                        className="space-y-4"
+                    >
+                        {/* Start Date Input */}
+                        <div>
+                            <label htmlFor="start" className="absolute -mt-2 bg-[#1a1c20] ml-2 text-xs font-medium text-white">
+                                Start Date
+                            </label>
+                            <input
+                                type="date"
+                                id="start"
+                                name="start"
+                                required
+                                className="mt-1 block w-full p-2 text-xs rounded"
+                            />
+                        </div>
+
+                        {/* End Date Input */}
+                        <div className="mt-2">
+                            <label htmlFor="end" className="absolute text-xs ml-2 bg-[#1a1c20] -mt-2 font-medium text-white">
+                                End Date
+                            </label>
+                            <input
+                                type="date"
+                                id="end"
+                                name="end"
+                                required
+                                className="mt-1 block w-full p-2 text-xs rounded"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <div>
+                            <button
+                                type="submit"
+                                className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div >
     );
 };
 

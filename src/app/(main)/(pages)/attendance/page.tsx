@@ -128,6 +128,8 @@ const AttendanceDashboard: React.FC = () => {
   const [dailyReport, setDailyReport] = useState<ReportEntry[]>([]);
   const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   const [weekOffs, setWeekOffs] = useState<number>(0);
+  const [attendanceLoading, setAttendanceLoading] = useState<boolean | null>(false);
+
 
 
   useEffect(() => {
@@ -155,6 +157,7 @@ const AttendanceDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchCumulativeReport = async () => {
+      setAttendanceLoading(true)
       try {
         const res = await fetch('/api/reports/cumulative', {
           method: 'POST',
@@ -168,7 +171,7 @@ const AttendanceDashboard: React.FC = () => {
         setWorkingDays(workingDays);
         setHolidaysCumulative(holidays.length);
         setWeekOffs(weekOffs);
-
+        setAttendanceLoading(false)
       } catch (error) {
         console.error('Error fetching cumulative report:', error);
       }
@@ -180,6 +183,7 @@ const AttendanceDashboard: React.FC = () => {
   // Fetch attendance, leave, and holiday data for the entire organization
   useEffect(() => {
     async function fetchAttendanceData() {
+      setAttendanceLoading(true)
       try {
         const response = await fetch(`/api/attendance?date=${selectedAttendanceDate}`);
         const data = await response.json();
@@ -195,7 +199,7 @@ const AttendanceDashboard: React.FC = () => {
           parseInt(selectedAttendanceDate.split('-')[1]) - 1
         );
         setTotalDays(weekdaysInMonth.length);
-
+        setAttendanceLoading(false)
         let present = 0;
         let leave = 0;
         let absent = 0;
@@ -234,6 +238,7 @@ const AttendanceDashboard: React.FC = () => {
   // Function to fetch the daily report from the server
   const fetchDailyReport = async (date: string) => {
     try {
+      setAttendanceLoading(true)
       const res = await fetch('/api/reports/daily', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -241,6 +246,7 @@ const AttendanceDashboard: React.FC = () => {
       });
       const data = await res.json();
       setDailyReport(data.report);
+      setAttendanceLoading(false)
     } catch (error) {
       console.error('Error fetching daily report:', error);
     }
@@ -265,10 +271,27 @@ const AttendanceDashboard: React.FC = () => {
 
   return (
     <div className="p-6 h-screen overflow-y-scroll">
+      {attendanceLoading && (
+        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+          {/* <Toaster /> */}
+          <div
+            className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
+            <div className="">
+              <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
+
+                <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
+                <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
+                  Loading...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className='mb-12  gap-2'>
         <div className="mb-4 flex gap-2 justify-center w-full">
           <select
-            className="border rounded text-xs outline-none p-2"
+            className="border-2 rounded text-xs border-[#380e3d]  outline-none p-2"
             onChange={(e) => setManagerId(e.target.value)}
           >
             <option value="">Select Manager</option>
@@ -280,7 +303,7 @@ const AttendanceDashboard: React.FC = () => {
           </select>
           {/* <label htmlFor="employee" className="mr-2">Employee:</label> */}
           <select
-            className="border outline-none text-xs  rounded p-2"
+            className="border-[#380e3d] border-2 outline-none text-xs  rounded p-2"
             id="employee"
             onChange={(e) => setEmployeeId(e.target.value)} // Update selected employee
           >
@@ -313,7 +336,7 @@ const AttendanceDashboard: React.FC = () => {
                     <Button
                       type="button"
                       onClick={() => setIsDatePickerOpen(true)}
-                      className=" rounded bg-black hover:bg-black px-3 flex gap-1 py-2"
+                      className=" rounded  border-2 border-[#380e3d] bg-[#121212] hover:bg-[#121212] px-3 flex gap-1 py-2"
                     >
                       <Calendar className="h-5 text-sm" />
                       {isDateSelected ? (
@@ -378,7 +401,7 @@ const AttendanceDashboard: React.FC = () => {
 
               <div>
                 <select
-                  className="border text-xs rounded-lg p-2"
+                  className="border-[#380e3d] border-2 text-xs rounded-lg p-2"
                   onChange={(e) => setPeriod(e.target.value)}
                 >
                   <option value="thisMonth">This Month</option>
@@ -388,7 +411,7 @@ const AttendanceDashboard: React.FC = () => {
 
             </div>
             <div className="flex space-x-4 mb-2 mt-2">
-              <span className=" border p-2 text-xs">Total Days: {totalCumulativeDays}</span>
+              <span className=" border p-2  text-xs">Total Days: {totalCumulativeDays}</span>
               <span className="border p-2 text-xs">Working: {workingDays}</span>
               <span className="border p-2 text-xs">Week Offs: {weekOffs}</span>
               <span className="border p-2 text-xs">Holidays: {holidaysCumulative}</span>
@@ -423,7 +446,7 @@ const AttendanceDashboard: React.FC = () => {
         <div className="flex items-center  space-x-4">
           {/* Month selector */}
           <select
-            className="p-2 text-sm border outline-none w-24 rounded"
+            className="p-2 text-sm border-2 outline-none w-24 border-[#380e3d] rounded"
             value={selectedAttendanceDate}
             onChange={(e) => setSelectedAttendanceDate(e.target.value)}
           >
@@ -438,10 +461,10 @@ const AttendanceDashboard: React.FC = () => {
 
       {/* Summary */}
       <div className="mb-4 flex w-full justify-center space-x-2">
-        <span className="border text-sm text-white p-2 rounded">Total Days: {workingDays}</span>
-        <span className="border text-sm text-white p-2 rounded">Working: {presentCount + leaveCount}</span>
-        <span className="border text-sm text-white p-2 rounded">Week Offs: {totalDays - workingDays}</span>
-        <span className="border text-sm text-white p-2 rounded">Holidays: {holidayCount}</span>
+        <span className="border text-sm bg-blue-900 text-white p-2 rounded">Total Days: {workingDays}</span>
+        <span className="border text-sm bg-yellow-600 text-white p-2 rounded">Working: {presentCount + leaveCount}</span>
+        <span className="border text-sm bg-green-700 text-white p-2 rounded">Week Offs: {totalDays - workingDays}</span>
+        <span className="border text-sm bg-red-700 text-white p-2 rounded">Holidays: {holidayCount}</span>
       </div>
 
       {/* Monthly Attendance Report */}

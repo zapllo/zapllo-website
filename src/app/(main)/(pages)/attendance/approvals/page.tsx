@@ -58,22 +58,27 @@ interface Leave {
     updatedAt: string;
 }
 
-type Regularization = {
+interface Regularization {
     _id: string;
     userId: {
         firstName: string;
         lastName: string;
+        reportingManager: {
+            firstName: string;
+            lastName: string;
+        };
     };
     action: 'regularization';
     timestamp: string;
     loginTime: string;
     logoutTime: string;
     remarks: string;
-    approvalStatus: 'Pending' | 'Approved' | 'Rejected';
-    approvalRemarks?: string;
+    approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
+    notes?: string;
     approvedBy?: string;
     approvedAt?: string;
-};
+    updatedAt?: string;
+}
 
 // Type Guard to check if an entry is Regularization
 function isRegularization(entry: Leave | Regularization): entry is Regularization {
@@ -89,6 +94,7 @@ export default function Approvals() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false); // For triggering the reject modal
     const [remarks, setRemarks] = useState<string>(''); // For storing the rejection remarks
+    const [isLeaveDetailsOpen, setIsLeaveDetailsOpen] = useState(false); // Leave Detai
 
     useEffect(() => {
         const fetchApprovals = async () => {
@@ -124,6 +130,11 @@ export default function Approvals() {
     const handleReject = (entry: Leave | Regularization) => {
         setSelectedEntry(entry);
         setIsRejectModalOpen(true); // Open the reject modal
+    };
+    // Function to handle clicking on a leave card
+    const handleLeaveClick = (leave: Leave) => {
+        setSelectedEntry(leave); // Set the clicked leave in state
+        setIsLeaveDetailsOpen(true); // Open the Leave Details sheet
     };
 
     const handleRejectSubmit = async () => {
@@ -180,6 +191,7 @@ export default function Approvals() {
         setIsModalOpen(false);
         setIsRejectModalOpen(false); // Close reject modal as well
         setSelectedEntry(null);
+        setIsLeaveDetailsOpen(false); // Close the Leave Details sheet
         setRemarks('');
     };
 
@@ -305,7 +317,7 @@ export default function Approvals() {
                     ) : (
                         <div className="space-y-4">
                             {filteredLeaves.map((leave) => (
-                                <div key={leave._id} className="flex items-center justify-between border p-4 rounded shadow-sm mb-4">
+                                <div onClick={() => handleLeaveClick(leave)} key={leave._id} className="flex items-center cursor-pointer justify-between border p-4 rounded shadow-sm mb-4">
                                     <div className="flex items-center gap-4">
                                         <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
                                             {leave.user.firstName[0]}
@@ -317,10 +329,10 @@ export default function Approvals() {
                                         </p>
                                     </div>
 
-                                    <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-                                        leave.status === 'Approved' ? 'bg-green-500 text-white' :
+                                    <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-600 text-white' :
+                                        leave.status === 'Approved' ? 'bg-green-800 text-white' :
                                             leave.status === 'Rejected' ? 'bg-red-500 text-white' :
-                                                'bg-gray-500 text-white'}`}>
+                                                'bg-orange-800 text-white'}`}>
                                         {leave.status}
                                     </span>
                                 </div>
@@ -336,7 +348,7 @@ export default function Approvals() {
                         <div className="space-y-4">
                             {filteredRegularizations?.map((reg) => (
                                 <div key={reg._id} className="border p-4 rounded shadow-sm mb-4 ">
-                                    <div  className='flex items-center justify-between '>
+                                    <div className='flex items-center justify-between '>
                                         <div className="flex items-center gap-4">
                                             <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
                                                 {reg?.userId?.firstName[0]}
@@ -440,6 +452,13 @@ export default function Approvals() {
                         />
                     )}
                 </>
+            )}
+            {/* Leave Details Sheet */}
+            {selectedEntry && !isRegularization(selectedEntry) && (
+                <LeaveDetails
+                    selectedLeave={selectedEntry as Leave}
+                    onClose={handleModalClose}
+                />
             )}
         </div>
     );

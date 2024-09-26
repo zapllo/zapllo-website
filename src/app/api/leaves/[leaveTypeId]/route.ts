@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: { leaveTyp
         const userId = await getDataFromToken(request); // Get user ID from token if authenticated
         const { leaveTypeId } = params; // Get the leaveTypeId from the URL params
 
-        // Fetch the user leave balances
+        // Fetch the user leave balances and populate leave type references
         const user = await User.findById(userId).populate('leaveBalances.leaveType');
 
         if (!user) {
@@ -20,10 +20,10 @@ export async function GET(request: NextRequest, { params }: { params: { leaveTyp
 
         // Find the user's balance for the specific leave type
         const leaveBalance = user.leaveBalances.find(
-            (balance) => String(balance.leaveType._id) === String(leaveTypeId)
+            (balance) => String(balance?.leaveType?._id) === String(leaveTypeId)
         );
 
-        if (!leaveBalance) {
+        if (!leaveBalance || !leaveBalance.leaveType) {
             return NextResponse.json({ success: false, message: 'No leave balance found for this leave type' });
         }
 
@@ -47,3 +47,4 @@ export async function GET(request: NextRequest, { params }: { params: { leaveTyp
         return NextResponse.json({ success: false, message: error.message });
     }
 }
+

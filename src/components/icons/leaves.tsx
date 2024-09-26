@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { Calendar, CalendarClock } from 'lucide-react'
+import { Calendar, CalendarClock, CalendarDays } from 'lucide-react'
 import React from 'react'
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 const Leaves = ({ selected }: Props) => {
     return (
-        <CalendarClock  className='h-3' />
+        <CalendarDays  className='h-3' />
 
     )
 }

@@ -10,7 +10,7 @@ export default function Settings({ }: Props) {
                 <h1 className='text-sm'>Leave Types</h1>
             </div>
             <Link href='/attendance/settings/leave-types'>
-                <div className='mb-2 cursor-pointer hover:bg-[#75517B]  my-4 mx-2 p-2 w-full m border rounded py-2'>
+                <div className='mb-2 cursor-pointer hover:bg-[#75517B]  my-4 mx-2 p-2 w-full  m border rounded py-2'>
                     <h1 className=' text-xs '>Leave Types</h1>
                 </div>
             </Link>
@@ -22,6 +22,9 @@ export default function Settings({ }: Props) {
                     <h1 className=' text-xs '>Register Faces</h1>
                 </div>
             </Link>
+            <div className='mb-2 cursor-pointer hover:bg-[#75517B]  my-4 mx-2 p-2 w-full m border rounded py-2'>
+                <h1 className=' text-xs '>Reminders</h1>
+            </div>
         </div>
     )
 }

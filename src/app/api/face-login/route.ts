@@ -79,20 +79,29 @@ export async function POST(request: NextRequest) {
         }
 
         if (matchFound) {
-            // Create a new login entry
-            const loginEntry = new LoginEntry({
+            const timestamp = new Date();
+
+            // Prepare loginEntry data
+            const loginEntryData: any = {
                 userId,
                 lat,
                 lng,
                 action,
-                timestamp: new Date(),
-            });
+                timestamp,
+            };
+            // Set loginTime or logoutTime based on the action
+            if (action === 'login') {
+                loginEntryData.loginTime = timestamp.toISOString();
+            } else if (action === 'logout') {
+                loginEntryData.logoutTime = timestamp.toISOString();
+            }
+            const loginEntry = new LoginEntry(loginEntryData);
 
             await loginEntry.save();
 
             return NextResponse.json({
                 success: true,
-                message: 'Face match found. Login successful.',
+                message: `Face match found. ${action === 'login' ? 'Login' : 'Logout'} successful.`,
                 confidence: matchConfidence,
                 lat,
                 lng,

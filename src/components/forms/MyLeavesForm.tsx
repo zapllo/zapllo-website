@@ -6,6 +6,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Paperclip, Mic } from 'lucide-react';
 import { FaTimes, FaUpload } from 'react-icons/fa';
 import CustomAudioPlayer from '../globals/customAudioPlayer';
+import Loader from '../ui/loader';
 
 interface LeaveFormProps {
     leaveTypes: any[]; // Leave types passed as prop
@@ -43,6 +44,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
     const audioURLRef = useRef<string | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [recording, setRecording] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
@@ -168,6 +170,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
         };
 
         try {
+            setLoading(true);
             const response = await fetch('/api/leaves', {
                 method: 'POST',
                 headers: {
@@ -183,9 +186,11 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
             } else {
                 console.error('Failed to submit leave request.');
             }
+            setLoading(false);
         } catch (error) {
             console.error('Error submitting leave request:', error);
         }
+        setLoading(false);
         onClose();
     };
 
@@ -325,7 +330,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                 <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
                     <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-[400px] shadow-lg w-full   max-w-lg p-6 rounded-lg">
                         <div className="flex justify-between mb-4">
-                            <Dialog.Title className="text-sm mb-4 font-medium">Submit Leave Request</Dialog.Title>
+                            <Dialog.Title className="text-md mb-4 font-medium">Submit Leave Request</Dialog.Title>
                             <Dialog.DialogClose className="-mt-4">X</Dialog.DialogClose>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4 ">
@@ -462,10 +467,10 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                             <div className="flex justify-end">
                                 <button
                                     type="submit"
-                                    className="bg-[#017A5B] w-full text-sm text-white px-4 py-2 rounded"
+                                    className="bg-[#017A5B] w-full text-sm text-white px-4 mt-4  py-2 rounded"
                                     disabled={!formData.leaveType || formData.leaveDays.length === 0 || error !== null}
                                 >
-                                    Submit Leave Request
+                                    {loading ? <Loader /> : 'Submit Leave Request'}
                                 </button>
                             </div>
                         </form>

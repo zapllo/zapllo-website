@@ -7,6 +7,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 
 import { Calendar, Camera, Clock, MapPin, MapPinIcon } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import format from 'date-fns';
 
 // Dynamically import Leaflet related components with `ssr: false`
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
@@ -15,15 +16,31 @@ const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import RegisterFace from '../settings/register-faces/page';
+import { toast, Toaster } from 'sonner';
+import RegularizationDetails from '@/components/sheets/regularizationDetails';
+import CustomDatePicker from '@/components/globals/date-picker';
+import { Button } from '@/components/ui/button';
 
 // Define interface for login entries
 interface LoginEntry {
-    userId: string;
+    _id: string;
+    userId: {
+        firstName: string;
+        lastName: string;
+        reportingManager: {
+            firstName: string;
+            lastName: string;
+        };
+    };
     lat: number;
     lng: number;
     timestamp: string;
     action: 'login' | 'logout' | 'regularization';
     approvalStatus?: 'Pending' | 'Approved' | 'Rejected'; // Add the approvalStatus field
+    loginTime: string;
+    logoutTime: string;
+    remarks: string;
+    notes?: string;
 }
 
 
@@ -45,6 +62,7 @@ export default function MyAttendance() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [attendanceLoading, setAttendanceLoading] = useState(false);
     const [mapModalOpen, setMapModalOpen] = useState(false);
     const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [activeTab, setActiveTab] = useState('thisMonth'); // Set default to 'thisMonth'
@@ -70,7 +88,9 @@ export default function MyAttendance() {
     const [isRegisterFaceModalOpen, setIsRegisterFaceModalOpen] = useState(false); // Modal for Registering Faces
     const [selectedImages, setSelectedImages] = useState<File[]>([]); // For image selection
     const [expandedDays, setExpandedDays] = useState<{ [date: string]: boolean }>({});
-
+    const [displayLoader, setDisplayLoader] = useState(false);
+    const [isDateSelected, setIsDateSelected] = useState<boolean>(false); // Track whether the user manually selects a date
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState<boolean>(false);
     // useEffect(() => {
     //     if (typeof window !== 'undefined') {
     //         // Dynamically set Leaflet icon options only after the window object is available
@@ -87,6 +107,7 @@ export default function MyAttendance() {
     useEffect(() => {
         const fetchLoginStatus = async () => {
             try {
+                setDisplayLoader(true)
                 const res = await fetch('/api/check-login-status');
                 const data = await res.json();
 
@@ -98,6 +119,8 @@ export default function MyAttendance() {
                 }
             } catch (error) {
                 console.error('Error fetching login status:', error);
+            } finally {
+                setDisplayLoader(false)
             }
         };
 
@@ -107,6 +130,7 @@ export default function MyAttendance() {
     useEffect(() => {
         const fetchLoginEntriesAndStatus = async () => {
             try {
+                setDisplayLoader(true)
                 // Fetch login entries
                 const resEntries = await fetch('/api/loginEntries');
                 const dataEntries = await resEntries.json();
@@ -121,6 +145,8 @@ export default function MyAttendance() {
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setDisplayLoader(false)
             }
         };
 
@@ -198,58 +224,58 @@ export default function MyAttendance() {
     };
 
     // Submit face login/logout
-    const handleSubmitLogin = async () => {
-        if (!capturedImage || !location) {
-            alert('Please capture an image and allow location access.');
-            return;
-        }
-        setIsLoading(true);
+    // const handleSubmitLogin = async () => {
+    //     if (!capturedImage || !location) {
+    //         alert('Please capture an image and allow location access.');
+    //         return;
+    //     }
+    //     setIsLoading(true);
 
-        try {
-            const formData = new FormData();
-            formData.append('files', dataURLtoBlob(capturedImage, 'captured_image.jpg'));
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append('files', dataURLtoBlob(capturedImage, 'captured_image.jpg'));
 
-            const uploadResponse = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
+    //         const uploadResponse = await fetch('/api/upload', {
+    //             method: 'POST',
+    //             body: formData,
+    //         });
 
-            const uploadData = await uploadResponse.json();
-            const imageUrl = uploadData.fileUrls[0];
+    //         const uploadData = await uploadResponse.json();
+    //         const imageUrl = uploadData.fileUrls[0];
 
-            if (!uploadResponse.ok) {
-                throw new Error('Image upload failed.');
-            }
+    //         if (!uploadResponse.ok) {
+    //             throw new Error('Image upload failed.');
+    //         }
 
-            const action = isLoggedIn ? 'logout' : 'login'; // Determine login or logout action
+    //         const action = isLoggedIn ? 'logout' : 'login'; // Determine login or logout action
 
-            const loginResponse = await fetch('/api/face-login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    imageUrl,
-                    lat: location.lat,
-                    lng: location.lng,
-                    action, // Send the action (login or logout)
-                }),
-            });
+    //         const loginResponse = await fetch('/api/face-login', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 imageUrl,
+    //                 lat: location.lat,
+    //                 lng: location.lng,
+    //                 action, // Send the action (login or logout)
+    //             }),
+    //         });
 
-            const loginData = await loginResponse.json();
+    //         const loginData = await loginResponse.json();
 
-            if (loginResponse.ok && loginData.success) {
-                setIsLoggedIn(action === 'login');
-                setIsModalOpen(false); // Close the modal on successful login/logout
-            } else {
-                throw new Error(loginData.error || 'Face recognition failed.');
-            }
-        } catch (err: any) {
-            alert(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    //         if (loginResponse.ok && loginData.success) {
+    //             setIsLoggedIn(action === 'login');
+    //             setIsModalOpen(false); // Close the modal on successful login/logout
+    //         } else {
+    //             throw new Error(loginData.error || 'Face recognition failed.');
+    //         }
+    //     } catch (err: any) {
+    //         alert(err.message);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -303,45 +329,79 @@ export default function MyAttendance() {
     };
 
     // Filter entries based on active tab
+
     const filterEntriesByTab = () => {
         const today = new Date();
         const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
         const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of previous month
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+
+        const normalizeDate = (date: Date) => {
+            return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        };
+
+        const todayNormalized = normalizeDate(today);
 
         switch (activeTab) {
             case 'today':
-                return loginEntries?.filter((entry) => isSameDay(new Date(entry?.timestamp), today));
+                return loginEntries?.filter((entry) => {
+                    const entryDate = normalizeDate(new Date(entry.timestamp));
+                    return entryDate.getTime() === todayNormalized.getTime();
+                });
             case 'yesterday':
                 const yesterday = new Date(today);
                 yesterday.setDate(today.getDate() - 1);
-                return loginEntries?.filter((entry) => isSameDay(new Date(entry?.timestamp), yesterday));
+                const yesterdayNormalized = normalizeDate(yesterday);
+                return loginEntries?.filter((entry) => {
+                    const entryDate = normalizeDate(new Date(entry.timestamp));
+                    return entryDate.getTime() === yesterdayNormalized.getTime();
+                });
             case 'thisWeek':
                 const thisWeekStart = new Date(today);
                 thisWeekStart.setDate(today.getDate() - today.getDay());
-                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), thisWeekStart, today));
+                return loginEntries?.filter((entry) => {
+                    const entryDate = normalizeDate(new Date(entry.timestamp));
+                    return entryDate >= normalizeDate(thisWeekStart) && entryDate <= todayNormalized;
+                });
             case 'lastWeek':
                 const lastWeekStart = new Date(today);
                 lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
                 const lastWeekEnd = new Date(today);
                 lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
-                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), lastWeekStart, lastWeekEnd));
+                return loginEntries?.filter((entry) => {
+                    const entryDate = normalizeDate(new Date(entry.timestamp));
+                    return entryDate >= normalizeDate(lastWeekStart) && entryDate <= normalizeDate(lastWeekEnd);
+                });
             case 'thisMonth':
-                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), thisMonthStart, today));
+                return loginEntries?.filter((entry) => {
+                    const entryDate = normalizeDate(new Date(entry.timestamp));
+                    return entryDate >= normalizeDate(thisMonthStart) && entryDate <= todayNormalized;
+                });
             case 'lastMonth':
-                return loginEntries?.filter((entry) => isWithinDateRange(new Date(entry?.timestamp), lastMonthStart, lastMonthEnd));
+                return loginEntries?.filter((entry) => {
+                    const entryDate = normalizeDate(new Date(entry.timestamp));
+                    return entryDate >= normalizeDate(lastMonthStart) && entryDate <= normalizeDate(lastMonthEnd);
+                });
             case 'allTime':
                 return loginEntries;
             case 'custom':
-                return loginEntries?.filter((entry) =>
-                    customDateRange.start && customDateRange.end
-                        ? isWithinDateRange(new Date(entry?.timestamp), customDateRange.start, customDateRange.end)
-                        : true
-                );
+                if (customDateRange.start && customDateRange.end) {
+                    const startNormalized = normalizeDate(customDateRange.start);
+                    const endNormalized = normalizeDate(customDateRange.end);
+                    return loginEntries?.filter((entry) => {
+                        const entryDate = normalizeDate(new Date(entry.timestamp));
+                        return entryDate >= startNormalized && entryDate <= endNormalized;
+                    });
+                } else {
+                    return loginEntries;
+                }
             default:
                 return loginEntries;
         }
     };
+
+
+    const filteredEntries = filterEntriesByTab();
 
     // Open map modal to show coordinates on Leaflet map
     const handleViewMap = (lat: number, lng: number) => {
@@ -368,13 +428,14 @@ export default function MyAttendance() {
 
         // Basic validation
         if (!regularizationDate || !regularizationLoginTime || !regularizationLogoutTime || !regularizationRemarks) {
-            alert('Please fill in all fields.');
+            toast.error('Please fill in all fields.');
             return;
         }
 
         setIsSubmittingRegularization(true);
 
         try {
+            setAttendanceLoading(true)
             const response = await fetch('/api/regularize', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -388,7 +449,7 @@ export default function MyAttendance() {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                alert('Regularization request submitted successfully.');
+                toast.success('Regularization request submitted successfully.');
                 // Refresh login entries
                 const resEntries = await fetch('/api/loginEntries', {
                     method: 'GET',
@@ -399,6 +460,7 @@ export default function MyAttendance() {
                 });
                 const dataEntries = await resEntries.json();
                 setLoginEntries(dataEntries.entries);
+                setAttendanceLoading(false)
 
                 // Reset form fields
                 setRegularizationDate('');
@@ -410,11 +472,13 @@ export default function MyAttendance() {
                 throw new Error(data.message || 'Failed to submit regularization request.');
             }
         } catch (error: any) {
-            alert(error.message);
+            toast.error(error.message);
         } finally {
             setIsSubmittingRegularization(false);
         }
     };
+
+    console.log(loginEntries, 'login entries')
 
     const handleRegisterFaces = () => {
         setIsRegisterFaceModalOpen(true);
@@ -431,7 +495,7 @@ export default function MyAttendance() {
                 },
                 (error) => {
                     console.error('Error fetching location:', error);
-                    alert('Unable to fetch location. Please allow location access.');
+                    toast.error('Unable to fetch location. Please allow location access.');
                 }
             );
         }
@@ -452,7 +516,7 @@ export default function MyAttendance() {
                     },
                     (error) => {
                         console.error('Error fetching location:', error);
-                        alert('Unable to fetch location. Please allow location access.');
+                        toast.error('Unable to fetch location. Please allow location access.');
                     }
                 );
             }
@@ -472,8 +536,8 @@ export default function MyAttendance() {
             setCapturedImage(imageSrc);
         }
 
-        if (!capturedImage || !location) {
-            alert('Please capture an image and ensure location is available.');
+        if (!imageSrc || !location) {
+            toast.error('Please capture an image and ensure location is available.');
             return;
         }
 
@@ -481,7 +545,7 @@ export default function MyAttendance() {
 
         try {
             const formData = new FormData();
-            formData.append('files', dataURLtoBlob(capturedImage, 'captured_image.jpg'));
+            formData.append('files', dataURLtoBlob(imageSrc, 'captured_image.jpg'));
 
             const uploadResponse = await fetch('/api/upload', {
                 method: 'POST',
@@ -519,7 +583,7 @@ export default function MyAttendance() {
                 throw new Error(loginData.error || 'Face recognition failed.');
             }
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setIsLoading(false);
         }
@@ -527,8 +591,8 @@ export default function MyAttendance() {
 
 
 
-    const filterDailyReportEntries = () => {
-        return loginEntries.filter((entry) => {
+    const filterDailyReportEntries = (entries: LoginEntry[]) => {
+        return entries.filter((entry) => {
             if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
                 return false;
             }
@@ -536,13 +600,29 @@ export default function MyAttendance() {
         });
     };
 
-    // Filter for "Regularization" tab (all regularization entries)
-    const filterRegularizationEntries = () => {
-        return loginEntries.filter((entry) => entry.action === 'regularization');
+    const filterRegularizationEntries = (entries: LoginEntry[]) => {
+        return entries.filter((entry) => entry.action === 'regularization');
+    };
+
+    function formatTimeToAMPM(timeString: string): string {
+        const [hours, minutes] = timeString.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hours), parseInt(minutes));
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    const [selectedRegularization, setSelectedRegularization] = useState<LoginEntry | null>(null);
+
+    const handleRegularizationClick = (regularization: LoginEntry) => {
+        setSelectedRegularization(regularization);
+    };
+
+    const handleSheetClose = () => {
+        setSelectedRegularization(null);
     };
 
     const renderRegularizationEntries = () => {
-        const regularizationEntries = filterRegularizationEntries();
+        const regularizationEntries = filterRegularizationEntries(filteredEntries);
 
         return (
             <>
@@ -551,23 +631,31 @@ export default function MyAttendance() {
                 ) : (
                     <ul className="space-y-4">
                         {regularizationEntries.map((entry, index) => (
-                            <li key={index} className="flex border justify-between items-center p-4 rounded shadow-md">
+                            <li key={index} onClick={() => handleRegularizationClick(entry)} className="flex cursor-pointer border text-xs justify-between items-center px-4 py-2 rounded shadow-md">
+                                {entry.userId && (
+                                    <div className="flex gap-2 justify-start">
+                                        <div className="h-6 w-6 rounded-full bg-[#75517b]">
+                                            <h1 className="text-center uppercase text-xs mt-1">
+                                                {entry.userId.firstName[0]}{entry.userId.lastName[0]}
+                                            </h1>
+                                        </div>
+                                        <h1 id="userName" className="col-span-3 text-sm">{`${entry.userId.firstName} ${entry.userId.lastName}`}</h1>
+                                    </div>
+                                )}
                                 <span>
-                                    {new Date(entry.timestamp).toLocaleString()} - <strong>{entry.action.toUpperCase()}</strong>
+                                    {`Login: ${formatTimeToAMPM(entry.loginTime)} - Logout: ${formatTimeToAMPM(entry.logoutTime)}`}
                                 </span>
 
                                 {/* Display approvalStatus */}
-                                <span className="ml-2 text-xs text-gray-400">
-                                    {`Approval Status: `}
-                                    <strong
-                                        className={
-                                            entry.approvalStatus === 'Approved'
-                                                ? 'text-green-500'
-                                                : entry.approvalStatus === 'Rejected'
-                                                    ? 'text-red-500'
-                                                    : 'text-yellow-500'
-                                        }
-                                    >
+                                <span className={
+                                    entry.approvalStatus === 'Approved'
+                                        ? 'bg-[#017a5b] px-2 py-1 rounded-xl'
+                                        : entry.approvalStatus === 'Rejected'
+                                            ? 'bg-red-600'
+                                            : 'bg-orange-800 px-2 py-1 rounded-xl'
+                                }>
+                                    {/* {`Approval Status: `} */}
+                                    <strong>
                                         {entry.approvalStatus}
                                     </strong>
                                 </span>
@@ -582,13 +670,17 @@ export default function MyAttendance() {
                         ))}
                     </ul>
                 )}
+                {selectedRegularization && (
+                    <RegularizationDetails selectedRegularization={selectedRegularization} onClose={handleSheetClose} />
+                )}
             </>
         );
     };
 
+    // Filter for Daily Report or Regularization
     const displayedEntries = activeAttendanceTab === 'dailyReport'
-        ? filterDailyReportEntries()
-        : filterRegularizationEntries();
+        ? filterDailyReportEntries(filteredEntries) // Filtered entries passed here
+        : filterRegularizationEntries(filteredEntries);
 
     const calculateHoursBetweenLoginLogout = (entries: LoginEntry[]) => {
         const login = entries.find((entry) => entry.action === 'login');
@@ -612,7 +704,7 @@ export default function MyAttendance() {
 
     // Calculate counts and hours based on filtered entries
     useEffect(() => {
-        const dailyReportEntries = filterDailyReportEntries();
+        const dailyReportEntries = filterDailyReportEntries(filteredEntries);
 
         const uniqueDays = new Set(dailyReportEntries.map(entry => new Date(entry.timestamp).toLocaleDateString()));
         const totalRegularized = dailyReportEntries.filter(entry => entry.action === 'regularization').length;
@@ -628,7 +720,7 @@ export default function MyAttendance() {
         setRegularizedCount(totalRegularized);
         setVerifiedCount(verifiedRegularized);
         setTotalHours(Number(totalHoursAcc.toFixed(2))); // Ensure that you're passing a number
-    }, [loginEntries, activeAttendanceTab]);
+    }, [filteredEntries, activeAttendanceTab]);
 
 
     const isToday = (someDate: Date) => {
@@ -645,7 +737,7 @@ export default function MyAttendance() {
         return entries.filter((entry) => isToday(new Date(entry.timestamp)));
     };
 
-    const todayEntries = filterTodayEntries(loginEntries);
+    const todayEntries = filterTodayEntries(filteredEntries);
 
 
     // Handle accordion toggling
@@ -655,6 +747,8 @@ export default function MyAttendance() {
             [date]: !prevState[date],
         }));
     };
+
+    // const groupedEntries = groupEntriesByDay(filteredEntries);
 
     // Filter approved entries and group them by day
     const filterApprovedEntries = (entries: LoginEntry[]) => {
@@ -667,11 +761,46 @@ export default function MyAttendance() {
     };
 
     // Grouped entries by day
-    const groupedEntries = groupEntriesByDay(filterApprovedEntries(loginEntries));
+    const groupedEntries = groupEntriesByDay(filterApprovedEntries(filteredEntries));
 
     // console.log(displayedEntries, 'loginEntries');
     return (
         <div className="container h-screen overflow-y-scroll rounded-lg p-4 shadow-lg">
+            <Toaster />
+            {displayLoader && (
+                <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+                    {/* <Toaster /> */}
+                    <div
+                        className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
+                        <div className="">
+                            <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
+
+                                <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
+                                <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
+                                    Loading...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {attendanceLoading && (
+                <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+                    {/* <Toaster /> */}
+                    <div
+                        className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
+                        <div className="">
+                            <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
+
+                                <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
+                                <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
+                                    Loading...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="login-section flex justify-center mb-6">
                 {hasRegisteredFaces ? (
                     <button
@@ -713,27 +842,20 @@ export default function MyAttendance() {
                 ) : (
                     <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-full mx-12">
                         {todayEntries.map((entry: LoginEntry, index: number) => {
-                            const date = new Date(entry.timestamp);
-                            const formattedDate = date.toLocaleDateString(); // Get the date string
-                            const formattedTime = date.toLocaleTimeString(); // Get the time string
-
+                            const date = new Date(entry.loginTime);
                             return (
                                 <div key={index} className="flex gap-4 justify-around w-full">
                                     <div>
-                                        <h1>{formattedDate}</h1> {/* Displaying the date */}
+                                        <h1 className='text-xs py-1'>Login: {entry.loginTime}</h1> {/* Displaying the date */}
                                     </div>
                                     <div>
-                                        <h2>{formattedTime}</h2> {/* Displaying the time */}
+                                        <h2 className='text-xs py-1'>Logout: {entry.logoutTime}</h2> {/* Displaying the time */}
                                     </div>
-                                    <div className={`p-2 text-xs border rounded text-white ${entry.action === 'login' ? 'bg-green-600' : 'bg-red-600'}`}>
-                                        <h1>
+                                    <div className={`px-2 py-1  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-600 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
+                                        <h1 className='text-xs'>
                                             {entry.action.toUpperCase()}
                                         </h1>
-
-
                                     </div>
-
-
                                     {/* Render map icon only if lat and lng are present */}
                                     {entry.lat && entry.lng && (
                                         <div>
@@ -802,13 +924,13 @@ export default function MyAttendance() {
                                     <div key={index} className="mb-4 ">
                                         <div
                                             onClick={() => toggleDayExpansion(date)}
-                                            className="w-full grid cursor-pointer grid-cols-3 gap-2 text-sm text-left border text-white px-4 py-4 rounded"
+                                            className="w-full grid cursor-pointer grid-cols-3 gap-2 text-xs text-left  border text-white px-4 py-2 rounded rounded-b-none"
                                         >
                                             <div className='flex gap-2'>
-                                                <Calendar className='h-5' />    {date}
+                                                <Calendar className='h-4' />    {date}
                                             </div>
                                             <div className='flex gap-2'>
-                                                <Clock className='h-5' /> {calculateHoursBetweenLoginLogout(groupedEntries[date])} hours
+                                                <Clock className='h-4' /> {calculateHoursBetweenLoginLogout(groupedEntries[date])} hours
                                             </div>
                                             <div className="flex justify-end">
                                                 <span
@@ -822,20 +944,20 @@ export default function MyAttendance() {
                                             </div>
                                         </div>
                                         {expandedDays[date] && (
-                                            <div className="p-4 border rounded">
+                                            <div className="p-4 border rounded rounded-t-none">
                                                 {groupedEntries[date].map((entry, index) => (
                                                     <div
                                                         key={index}
-                                                        className="flex justify-between items-center p-2  rounded mb-2"
+                                                        className="flex justify-between items-center p-2 text-xs  rounded mb-2"
                                                     >
-                                                        <span>{new Date(entry.timestamp).toLocaleTimeString()}</span>
-                                                        <span className={`text-xs border p-2 rounded ${entry.action === 'login' ? 'bg-green-600' : 'bg-red-800'}`}>
+                                                        <span>   {`Login: ${formatTimeToAMPM(entry.loginTime)} - Logout: ${formatTimeToAMPM(entry.logoutTime)}`}</span>
+                                                        <span className={`text-xs border h-fit w-fit px-2 py-1  rounded-2xl ${entry.action === 'login' ? 'bg-[#017a5b] ' : 'bg-[#8a3d17]'}`}>
                                                             {entry.action.toUpperCase()}
                                                         </span>
                                                         {entry.lat && entry.lng && (
                                                             <button
                                                                 onClick={() => handleViewMap(entry.lat, entry.lng)}
-                                                                className="underline text-blue-400"
+                                                                className="underline text-[#ffffff]"
                                                             >
                                                                 <MapPinIcon />
                                                             </button>
@@ -942,7 +1064,11 @@ export default function MyAttendance() {
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
                     <Dialog.Content className="fixed inset-0 flex justify-center items-center">
                         <div className="bg-[#1A1C20] p-6 rounded-lg max-w-md w-full">
-                            <h3 className="text-lg mb-4 text-white">Select Custom Date Range</h3>
+                            <div className='flex justify-between'>
+                                <h3 className="text-xs mb-4 text-white">Select Custom Date Range</h3>
+                                <Dialog.DialogClose className='h-2 scale-75'>X</Dialog.DialogClose>
+                            </div>
+
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
@@ -955,7 +1081,7 @@ export default function MyAttendance() {
                             >
                                 {/* Start Date Input */}
                                 <div>
-                                    <label htmlFor="start" className="block text-sm font-medium text-gray-200">
+                                    <label htmlFor="start" className="absolute -mt-2 bg-[#1a1c20] ml-2 text-xs  font-medium text-white -200">
                                         Start Date
                                     </label>
                                     <input
@@ -963,13 +1089,13 @@ export default function MyAttendance() {
                                         id="start"
                                         name="start"
                                         required
-                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        className="mt-1 block w-full p-2 text-xs  rounded"
                                     />
                                 </div>
 
                                 {/* End Date Input */}
-                                <div>
-                                    <label htmlFor="end" className="block text-sm font-medium text-gray-200">
+                                <div className='mt-2'>
+                                    <label htmlFor="end" className="absolute text-xs ml-2 bg-[#1a1c20] -mt-2  font-medium text-white">
                                         End Date
                                     </label>
                                     <input
@@ -977,7 +1103,7 @@ export default function MyAttendance() {
                                         id="end"
                                         name="end"
                                         required
-                                        className="mt-1 block w-full p-2 rounded-md bg-gray-700 text-white"
+                                        className="mt-1 block w-full p-2 text-xs  rounded"
                                     />
                                 </div>
 
@@ -985,7 +1111,7 @@ export default function MyAttendance() {
                                 <div>
                                     <button
                                         type="submit"
-                                        className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+                                        className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
                                     >
                                         Apply
                                     </button>
@@ -1003,28 +1129,55 @@ export default function MyAttendance() {
                     <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
                         <div className="bg-[#1A1C20] z-[100] p-6 rounded-lg max-w-lg w-full relative">
                             <div className="w-full flex mb-4 justify-between">
-                                <h3 className="text-sm font-medium mb-4 text-white">Apply Regularization</h3>
+                                <h3 className="text-md font-medium mb-4 text-white">Apply Regularization</h3>
                                 <Dialog.DialogClose className="">X</Dialog.DialogClose>
                             </div>
 
                             <form onSubmit={handleSubmitRegularization} className="space-y-4">
                                 {/* Date Input */}
-                                <div className="relative">
-                                    <label htmlFor="date" className="absolute bg-[#1A1C20] z-[100] ml-2 text-xs -mt-2 px-1 text-white o">
-                                        Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="date"
-                                        value={regularizationDate}
-                                        onChange={(e) => setRegularizationDate(e.target.value)}
-                                        required
-                                        className="w-full text-sm p-2 outline-none opacity-65 border rounded bg-transparent"
-                                    />
+                                <div className="relative mb-">
+                                    <Dialog.Root open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                                        <Dialog.DialogTrigger asChild>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsDatePickerOpen(true)}
+                                                className="rounded border w-full px-3 flex gap-1 py-2"
+                                            >
+                                                <Calendar className="h-5 text-sm" />
+                                                {regularizationDate ? (
+                                                    // Show the selected date if a date has been picked
+                                                    <h1 className='text-xs'>{regularizationDate}</h1>
+                                                ) : (
+                                                    <h1 className="text-xs">Select Date</h1>
+                                                )}
+                                            </button>
+                                        </Dialog.DialogTrigger>
+                                        <Dialog.Portal>
+                                            <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
+                                            <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
+                                                <div className="bg-[#1A1C20] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
+                                                    <div className="w-full flex mb-4 justify-between">
+                                                        <CustomDatePicker
+                                                            selectedDate={regularizationDate ? new Date(regularizationDate) : null}
+                                                            onDateChange={(newDate) => {
+                                                                // Manually extract the local date (year, month, day)
+                                                                const localDate = new Date(newDate.getTime() - newDate.getTimezoneOffset() * 60000)
+                                                                    .toISOString()
+                                                                    .split('T')[0];
+                                                                setRegularizationDate(localDate);
+                                                                setIsDatePickerOpen(false); // Close the picker after selecting the date
+                                                            }}
+                                                            onCloseDialog={() => setIsDatePickerOpen(false)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Dialog.Content>
+                                        </Dialog.Portal>
+                                    </Dialog.Root>
                                 </div>
 
                                 {/* Login Time Input */}
-                                <div className="relative">
+                                <div className="relative ">
                                     <label htmlFor="loginTime" className="absolute bg-[#1A1C20] ml-2 text-xs z-[100] -mt-2 px-1 text-white">
                                         Login Time
                                     </label>
@@ -1055,7 +1208,7 @@ export default function MyAttendance() {
 
                                 {/* Remarks Textarea */}
                                 <div className="relative">
-                                    <label htmlFor="remarks" className="absolute bg-[#1A1C20] z-[100] ml-2 text-xs -mt-2 px-1 text-white -400">
+                                    <label htmlFor="remarks" className="absolute bg-[#1A1C20] z-[100] ml-2 text-xs -mt-2 px-1 text-white">
                                         Remarks
                                     </label>
                                     <textarea
@@ -1083,6 +1236,7 @@ export default function MyAttendance() {
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
+
 
             {/* Register Faces Modal */}
             {/* Register Face Modal */}

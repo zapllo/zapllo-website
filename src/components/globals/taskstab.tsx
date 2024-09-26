@@ -36,6 +36,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import CustomAudioPlayer from "./customAudioPlayer";
 import Loader from "../ui/loader";
 import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
+import { BackgroundGradientAnimation } from "../ui/backgroundGradientAnimation";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -147,6 +148,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [repeatFilter, setRepeatFilter] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean | null>(false);
+  const [userLoading, setUserLoading] = useState<boolean | null>(false);
   const [isPro, setIsPro] = useState<boolean | null>(null);
   const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(null);
   const [dueDateFilter, setDueDateFilter] = useState<Date | null>(null);
@@ -645,9 +647,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   useEffect(() => {
     const getUserDetails = async () => {
       try {
+        setUserLoading(true);
         const userRes = await axios.get('/api/users/me');
         const userData = userRes.data.data;
         setUserDetails(userData);
+        setUserLoading(false)
       } catch (error) {
         console.error('Error fetching user details ', error);
       }
@@ -1043,6 +1047,25 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
   return (
     <div className="flex  overflow-x-hidden w-screen ">
+      <div>
+        {userLoading && (
+          <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+            {/* <Toaster /> */}
+            <div
+              className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
+              <div className="">
+                <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
+
+                  <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
+                  <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
+                    Loading...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <div className=" w-44    fixed   ">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[180px] mt-12 ">
           <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
