@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'; // Add this line
 import { NextRequest, NextResponse } from 'next/server';
 import LoginEntry from '@/models/loginEntryModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
