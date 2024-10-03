@@ -42,8 +42,12 @@ interface LoginEntry {
 
 
 // Helper function to group entries by day
-const groupEntriesByDay = (entries: LoginEntry[]) => {
-    return entries?.reduce((acc: { [date: string]: LoginEntry[] }, entry) => {
+const groupEntriesByDay = (entries: LoginEntry[] | undefined | null): { [date: string]: LoginEntry[] } => {
+    if (!entries || entries.length === 0) {
+        return {}; // Return an empty object if entries are undefined, null, or empty
+    }
+
+    return entries.reduce((acc: { [date: string]: LoginEntry[] }, entry) => {
         const date = new Date(entry.timestamp).toLocaleDateString(); // Group by date
         if (!acc[date]) {
             acc[date] = [];
@@ -52,6 +56,7 @@ const groupEntriesByDay = (entries: LoginEntry[]) => {
         return acc;
     }, {});
 };
+
 
 
 export default function MyAttendance() {
@@ -959,7 +964,7 @@ export default function MyAttendance() {
                                     </div>
                                 </div>
 
-                                {Object.keys(groupedEntries).map((date, index) => (
+                                {Object.keys(groupedEntries || {}).map((date, index) => (
                                     <div key={index} className="mb-4 ">
                                         <div
                                             onClick={() => toggleDayExpansion(date)}
