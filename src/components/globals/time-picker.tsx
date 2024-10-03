@@ -10,8 +10,8 @@ import Box from '@mui/material/Box';
 interface CustomTimePickerProps {
   selectedTime: string | null;
   onTimeChange: (time: string) => void;
-  onCancel?: () => void;
-  onAccept?: () => void;
+  onCancel: () => void; // Modify to make onCancel required
+  onAccept: () => void; // Modify to make onAccept required
   onBackToDatePicker: () => void;
 }
 
@@ -23,21 +23,26 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   onBackToDatePicker,
 }) => {
   const [selectedTimeValue, setSelectedTimeValue] = React.useState<Dayjs | null>(
-    selectedTime ? dayjs(`1970-01-01T${selectedTime}:00`) : dayjs('1970-01-01T12:00:00')
+    selectedTime ? dayjs(`1970-01-01T${selectedTime}:00`) : dayjs() // Default to the current tt
   );
 
   const handleTimeChange = (newValue: Dayjs | null) => {
     if (newValue) {
       setSelectedTimeValue(newValue);
-
-      // Format the time correctly as hh:mm A for 12-hour format
-      const formattedTime = newValue.format('HH:mm'); // Using 24-hour format for accuracy
-      onTimeChange(formattedTime); // Pass the correctly formatted time back to the parent component
     }
   };
 
+  const handleOkClick = () => {
+    if (selectedTimeValue) {
+      // Format the time as HH:mm (24-hour format) and pass it to the parent
+      const formattedTime = selectedTimeValue.format('HH:mm');
+      onTimeChange(formattedTime); // Set the time
+    }
+    onAccept(); // Close the modal
+  };
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', spaceY: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', border: 'none', borderColor: 'red', spaceY: 2 }}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <StaticTimePicker
           orientation="landscape"
@@ -46,62 +51,103 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
           displayStaticWrapperAs="mobile"
           ampm={true} // Enable 12-hour format with AM/PM
           sx={{
+            border: 'none',
             '& .MuiPickersLayout-root': {
               backgroundColor: 'transparent',
+              borderTop: 'none', // Remove top border in action buttons
+              borderBottom: 'none'
             },
             '& .MuiPickersToolbar-root': {
               backgroundColor: '#1A1C20',
               color: 'white',
+              border: 'none',
             },
             '& .MuiTypography-root.Mui-selected': {
               color: 'white', // Active AM/PM button typography is white
+              border: 'none',
             },
             '& .MuiTypography-root': {
               color: 'gray', // Inactive AM/PM button typography is gray
+              border: 'none',
             },
             '& .MuiPickersToolbar-content': {
               color: 'white',
+              border: 'none',
+            },
+            '& .MuiPickersLayout-contentWrapper': {
+              border: 'none',
             },
             '& .MuiTimeClock-root': {
               backgroundColor: '#1A1C20',
+              border: 'none',
+              borderColor: 'red',
             },
             '& .MuiClock-wrapper': {
               backgroundColor: 'white',
+              border: 'none',
             },
             '& .MuiClockNumber-root': {
               color: 'white',
+              border: 'none',
             },
             '& .MuiDialogActions-root': {
               backgroundColor: '#1A1C20',
+              borderTop: 'none', // Remove top border in action buttons
+              borderBottom: 'none'
+            },
+            '& .MuiTypography-h3': {
+              border: 'none', // Remove border around time typography
             },
             '& .MuiButtonBase-root': {
               color: 'white',
+              border: 'none',
             },
             '& .MuiSvgIcon-root': {
               color: 'white',
+              border: 'none',
             },
             '& .MuiClockPicker-root': {
               backgroundColor: 'transparent',
+              border: 'none',
             },
             '& .MuiPaper-root': {
               backgroundColor: 'transparent',
+              border: 'none',
             },
             '& .MuiBox-root': {
               border: 'none',
             },
+            '& .MuiClock-pin': {
+              backgroundColor: '#017a5b', // Set the dot (thumb) color to #017a5b
+              border: 'none',
+            },
+            '& .MuiDialogActions-root button:nth-of-type(1)': {
+              display: 'none', // Hide the Cancel button in the dialog
+              border: 'none',
+            },
+            '& .MuiClockPointer-root': {
+              backgroundColor: '#017a5b', // Set the clock hand color to #017a5b
+              border: 'none',
+            },
+            '& .MuiClockPointer-thumb': {
+              borderColor: '#017a5b', // Set the thumb (center point of the clock) to the same color
+              backgroundColor: '#017a5b', // Set the dot (thumb) color to #017a5b
+            },
+            '& .MuiClock-squareMask': {
+              border: 'none', // Remove the square mask border
+            },
           }}
         />
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 2 }}>
-         
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', border: 'none', mt: 2 }}>
           <button
-            onClick={onBackToDatePicker}
-            className="bg-gray-600 absolute -mt-[56px] text-xs hover:bg-gray-600 text-white rounded px-4 py-2"
+            onClick={onCancel} // Close the modal without saving the time
+            className="border absolute -mt-[58px] text-sm ml-6  text-white rounded px-4 py-2"
           >
-            Back to Date Picker
+            Cancel
           </button>
           <button
-            onClick={onAccept}
-            className="bg-green-600 absolute -mt-[56px] right-12 hover:bg-green-700 text-white rounded px-4 py-2"
+            onClick={handleOkClick} // Set the time and close the modal
+            className="bg-[#017a5b] absolute -mt-[58px]  right-12 hover:bg-[#017a5b] text-white rounded px-4 py-2 w-24 text-sm"
           >
             OK
           </button>

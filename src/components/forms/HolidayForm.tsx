@@ -70,7 +70,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
                         value={holidayName}
                         onChange={(e) => setHolidayName(e.target.value)}
                         required
-                        className='p-2 px-2 text-xs outline-none w-full'
+                        className='py-3 px-2 text-xs outline-none w-full'
                     />
                 </div>
 
@@ -83,13 +83,13 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
                             <button
                                 type="button"
                                 onClick={() => setIsDatePickerOpen(true)}
-                                className="rounded bg-black hover:bg-black px-3 flex gap-1 py-2 mt-4 w-full"
+                                className="rounded bg-[#121212] hover:bg-[#121212] px-3 flex gap-1 py-3 mt-4 w-full"
                             >
                                 {holidayDate ? (
                                     // Show the selected date if a date has been picked
                                     <h1 className='text-xs'>{holidayDate}</h1>
                                 ) : (
-                                    <h1 className="text-xs">Select Date</h1>
+                                    <h1 className="text-[10px] opacity-50 ">Select Date</h1>
                                 )}
                             </button>
                         </DialogTrigger>

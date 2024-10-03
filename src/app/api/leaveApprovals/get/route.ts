@@ -17,7 +17,19 @@ export async function GET(request: NextRequest) {
         // Get the leave requests for the team members
         const leaves = await Leave.find({ user: { $in: teamMembers.map(member => member._id) } })
             .populate('leaveType')
-            .populate('user');
+            .populate('user')
+            .populate({
+                path: 'approvedBy rejectedBy', // Populate both approvedBy and rejectedBy
+                select: 'firstName lastName',  // Select firstName and lastName
+            })
+            .populate({
+                path: 'user',
+                select: 'firstName lastName reportingManager',
+                populate: {
+                    path: 'reportingManager',
+                    select: 'firstName lastName'
+                }
+            })
 
         return NextResponse.json({ success: true, leaves });
     } catch (error: any) {

@@ -152,6 +152,12 @@ const InfoBar = (props: Props) => {
     else if (pathName === '/attendance/settings') {
       return 'Settings';
     }
+    else if (pathName === '/attendance/settings/leave-types') {
+      return 'Leave Types';
+    }
+    else if (pathName === '/attendance/settings/register-faces') {
+      return 'Register Faces';
+    }
     else if (pathName === '/attendance/my-leaves') {
       return 'My Leaves';
     }

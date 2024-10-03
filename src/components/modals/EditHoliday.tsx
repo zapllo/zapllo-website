@@ -44,9 +44,9 @@ const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ holiday, onHolidayU
                 <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
                     <form onSubmit={handleSubmit} className="bg-[#1A1C20] rounded-lg shadow-lg p-6 w-full max-w-lg">
                         <div className="flex justify-between mb-4">
-                            <Dialog.Title className="text-sm font-medium">Edit Holiday</Dialog.Title>
+                            <Dialog.Title className="text-md font-medium">Edit Holiday</Dialog.Title>
                             <Dialog.Close asChild>
-                                <button className="text-white text-sm">X</button>
+                                <button className="text-white h-8 text-sm">X</button>
                             </Dialog.Close>
                         </div>
 
@@ -66,7 +66,7 @@ const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ holiday, onHolidayU
                                 type="date"
                                 value={holidayDate.split('T')[0]} // Ensure correct date format
                                 onChange={(e) => setHolidayDate(e.target.value)}
-                                className='mt-4 p-2 outline-none rounded w-full'
+                                className='mt-4 p-2 outline-none text-sm  rounded w-full'
                                 required
                             />
                         </div>

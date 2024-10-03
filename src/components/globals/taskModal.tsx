@@ -574,6 +574,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setIsTimePickerOpen(false); // Close time picker
     };
 
+    // Handle closing the time picker without saving (Cancel)
+    const handleCancel = () => {
+        setIsTimePickerOpen(false); // Simply close the time picker modal
+        setIsDatePickerOpen(true)
+    };
+
+    // Handle saving the selected time and closing the time picker (OK)
+    const handleAccept = () => {
+        setIsTimePickerOpen(false); // Close the time picker modal after saving
+    };
+
 
     const handleSubmit = async () => {
         let fileUrls = [];
@@ -827,7 +838,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         )}
                         {isDatePickerOpen && (
                             <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                                <DialogContent className='scale-75'>
+                                <DialogContent className='scale-75 '>
                                     <CustomDatePicker
                                         selectedDate={dueDate ?? new Date()}
                                         onDateChange={handleDateChange}
@@ -840,13 +851,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                         {/* Time Picker Modal */}
                         {isTimePickerOpen && (
                             <Dialog open={isTimePickerOpen} onOpenChange={setIsTimePickerOpen}>
-                                <DialogContent>
+                                <DialogContent className='scale-75'>
                                     <CustomTimePicker
-                                        selectedTime={dueTime}
-                                        onTimeChange={handleTimeChange}
+                                        selectedTime={dueTime} // Pass the selected time
+                                        onTimeChange={handleTimeChange} // Update the time state when changed
+                                        onCancel={handleCancel} // Close the modal without saving (Cancel button)
+                                        onAccept={handleAccept} // Save and close the modal (OK button)
                                         onBackToDatePicker={() => {
-                                            setIsTimePickerOpen(false); // Close time picker
-                                            setIsDatePickerOpen(true);  // Open date picker
+                                            setIsTimePickerOpen(false); // Close the time picker
+                                            setIsDatePickerOpen(true); // Reopen the date picker
                                         }}
                                     />
                                 </DialogContent>

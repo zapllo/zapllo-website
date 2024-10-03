@@ -2,11 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Trash2, Edit2 } from 'lucide-react'; // Assuming you're using lucide-react for icons
+import { Trash2, Edit2 } from 'lucide-react';
 import HolidayFormModal from '../modals/EditHoliday'; // Import a component for the modal form
+import Loader from '../ui/loader';
+import { toast, Toaster } from 'sonner';
+import DeleteConfirmationDialog from '../modals/deleteConfirmationDialog'; // Import your delete confirmation modal
 
 interface Holiday {
-    _id: string; // Assuming holidays have an ID fieldh
+    _id: string;
     holidayName: string;
     holidayDate: string;
 }
@@ -17,6 +20,8 @@ const HolidayList: React.FC = () => {
     const [isDeleting, setIsDeleting] = useState<string | null>(null); // Store the ID of the holiday being deleted
     const [editHoliday, setEditHoliday] = useState<Holiday | null>(null); // Store the holiday being edited
     const [userRole, setUserRole] = useState<string | null>(null); // Store the user's role
+    const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false); // State to control the delete confirmation modal
+    const [holidayToDelete, setHolidayToDelete] = useState<Holiday | null>(null); // Store the holiday to be deleted
 
     const fetchHolidays = async () => {
         try {
@@ -43,9 +48,11 @@ const HolidayList: React.FC = () => {
         try {
             await axios.delete(`/api/holidays/${id}`);
             setHolidays(holidays.filter((holiday) => holiday._id !== id)); // Update state after deletion
-            setIsDeleting(null);
+            toast.success("Holiday deleted successfully");
         } catch (error) {
             console.error('Error deleting holiday:', error);
+            toast.error("Failed to delete holiday");
+        } finally {
             setIsDeleting(null);
         }
     };
@@ -60,7 +67,20 @@ const HolidayList: React.FC = () => {
                 holiday._id === updatedHoliday._id ? updatedHoliday : holiday
             )
         );
+        toast.success("Holiday updated successfully!");
         setEditHoliday(null); // Close the modal after updating
+    };
+
+    const handleDeleteClick = (holiday: Holiday) => {
+        setHolidayToDelete(holiday); // Set the selected holiday to delete
+        setDeleteConfirmationOpen(true); // Open the delete confirmation modal
+    };
+
+    const handleConfirmDelete = () => {
+        if (holidayToDelete) {
+            deleteHoliday(holidayToDelete._id); // Delete the holiday
+            setDeleteConfirmationOpen(false); // Close the modal after deletion
+        }
     };
 
     useEffect(() => {
@@ -69,32 +89,30 @@ const HolidayList: React.FC = () => {
     }, []);
 
     if (isLoading) {
-        return <p>Loading holidays...</p>;
+        return <Loader />;
     }
 
     return (
         <div className="container mx-auto p-6">
             <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
+            <Toaster />
             <table className="w-full rounded table-auto border-collapse border">
                 <thead className='bg-[#380e3d] '>
                     <tr>
-                        <th className=" px-4 text-xs text-start py-2">Name</th>
-                        <th className=" px-4 text-xs text-start py-2">Date</th>
-                        {/* Conditionally render Actions column if user is orgAdmin */}
-                        {userRole === 'orgAdmin' && <th className=" text-xs text-start px-4 py-2">Actions</th>}
+                        <th className="px-4 text-xs text-start py-2">Name</th>
+                        <th className="px-4 text-xs text-start py-2">Date</th>
+                        {userRole === 'orgAdmin' && <th className="text-xs text-start px-4 py-2">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {holidays.map((holiday) => (
                         <tr className='border-t' key={holiday._id}>
-                            <td className=" px-4 text-xs py-2">{holiday.holidayName}</td>
-                            <td className=" px-4 text-xs py-2">
+                            <td className="px-4 text-xs py-2">{holiday.holidayName}</td>
+                            <td className="px-4 text-xs py-2">
                                 {new Date(holiday.holidayDate).toLocaleDateString()}
-
                             </td>
-                            {/* Conditionally render edit and delete buttons if user is orgAdmin */}
                             {userRole === 'orgAdmin' && (
-                                <td className=" px-4 py-2">
+                                <td className="px-4 py-2">
                                     <button
                                         onClick={() => handleEditClick(holiday)}
                                         className="text-blue-500 hover:text-blue-700 mr-2"
@@ -102,7 +120,7 @@ const HolidayList: React.FC = () => {
                                         <Edit2 className="h-4 w-4" />
                                     </button>
                                     <button
-                                        onClick={() => deleteHoliday(holiday._id)}
+                                        onClick={() => handleDeleteClick(holiday)} // Trigger delete confirmation modal
                                         disabled={isDeleting === holiday._id}
                                         className="text-red-500 hover:text-red-700"
                                     >
@@ -115,7 +133,6 @@ const HolidayList: React.FC = () => {
                 </tbody>
             </table>
 
-            {/* Render the modal only if an edit holiday is selected */}
             {editHoliday && (
                 <HolidayFormModal
                     holiday={editHoliday}
@@ -123,6 +140,15 @@ const HolidayList: React.FC = () => {
                     onClose={() => setEditHoliday(null)} // Close the modal if canceled
                 />
             )}
+
+            {/* Render the delete confirmation modal */}
+            <DeleteConfirmationDialog
+                isOpen={deleteConfirmationOpen}
+                onClose={() => setDeleteConfirmationOpen(false)} // Close the delete confirmation modal
+                onConfirm={handleConfirmDelete} // Handle delete confirmation
+                title="Delete Holiday"
+                description={`Are you sure you want to delete the holiday "${holidayToDelete?.holidayName}"? This action cannot be undone.`}
+            />
         </div>
     );
 };

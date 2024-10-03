@@ -1,16 +1,20 @@
-// pages/approvals.tsx
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, startOfWeek, startOfMonth, endOfMonth, startOfDay, subDays } from 'date-fns';
 import LeaveApprovalModal from '@/components/modals/leaveApprovalModal';
 import RejectModal from '@/components/modals/rejectModal';
 import RegularizationApprovalModal from '@/components/modals/regularizationApprovalModal';
 import RegularizationRejectModal from '@/components/modals/rejectRegularizationModal';
 import LeaveDetails from '@/components/sheets/leaveDetails';
 import RegularizationDetails from '@/components/sheets/regularizationDetails';
+import { Calendar, CheckCheck, CheckCircle, Circle, Trash2, Users2, X } from 'lucide-react';
+import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
+import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
+import Loader from '@/components/ui/loader';
+import CustomDatePicker from '@/components/globals/date-picker';
 
 type LeaveType = {
     _id: string;
@@ -20,6 +24,12 @@ type LeaveType = {
 type User = {
     _id: string;
     firstName: string;
+    lastName: string;
+    reportingManager: {
+        firstName: string;
+        lastName: string;
+        _id: string;
+    };
 };
 
 interface LeaveDay {
@@ -33,28 +43,12 @@ interface Leave {
     leaveType: LeaveType;
     fromDate: string;
     toDate: string;
-    status: string;
+    status: 'Pending' | 'Approved' | 'Rejected'; // Explicitly define possible statuses
     leaveReason: string;
     appliedDays: number;
     leaveDays: LeaveDay[];
     remarks: string;
-    attachment?: string[]; // File attachment URLs
-    audioUrl?: string; // Audio URL
-    user: {
-        firstName: string;
-        lastName: string;
-        _id: string;
-    };
-    approvedBy?: {
-        firstName: string;
-        lastName: string;
-        _id: string;
-    };
-    rejectedBy?: {
-        firstName: string;
-        lastName: string;
-        _id: string;
-    };
+    user: User;
     updatedAt: string;
 }
 
@@ -68,21 +62,21 @@ interface Regularization {
             lastName: string;
         };
     };
-    action: 'regularization';
     timestamp: string;
     loginTime: string;
     logoutTime: string;
     remarks: string;
     approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
-    notes?: string;
-    approvedBy?: string;
-    approvedAt?: string;
-    updatedAt?: string;
 }
 
 // Type Guard to check if an entry is Regularization
 function isRegularization(entry: Leave | Regularization): entry is Regularization {
-    return (entry as Regularization).action === 'regularization';
+    return (entry as Regularization).loginTime !== undefined;
+}
+
+// Type Guard to check if an entry is Leave
+function isLeave(entry: Leave | Regularization): entry is Leave {
+    return (entry as Leave).leaveType !== undefined;
 }
 
 export default function Approvals() {
@@ -90,51 +84,221 @@ export default function Approvals() {
     const [regularizations, setRegularizations] = useState<Regularization[]>([]);
     const [filter, setFilter] = useState<'Leave' | 'Regularization'>('Leave'); // New filter state
     const [statusFilter, setStatusFilter] = useState<'Pending' | 'Approved' | 'Rejected' | 'All'>('All');
+    const [dateFilter, setDateFilter] = useState<'Today' | 'Yesterday' | 'ThisWeek' | 'ThisMonth' | 'LastMonth' | 'Custom' | 'AllTime'>('ThisMonth');
+    const [customDateRange, setCustomDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null });
+    const [isCustomModalOpen, setIsCustomModalOpen] = useState(false); // Custom Date Modal state
     const [selectedEntry, setSelectedEntry] = useState<Leave | Regularization | null>(null); // For triggering the modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false); // For triggering the reject modal
     const [remarks, setRemarks] = useState<string>(''); // For storing the rejection remarks
-    const [isLeaveDetailsOpen, setIsLeaveDetailsOpen] = useState(false); // Leave Detai
+    const [isLeaveDetailsOpen, setIsLeaveDetailsOpen] = useState(false); // Leave Detail sheet state
+    const [isRegularizationDetailsOpen, setIsRegularizationDetailsOpen] = useState(false); // Regularization Detail sheet state
+    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // State to control the modal
+    const [loading, setLoading] = useState(false); // State to control the modal
+    const [leaveIdToDelete, setLeaveIdToDelete] = useState<string | null>(null);
+    const [regularizationIdToDelete, setRegularizationIdToDelete] = useState<string | null>(null); // Store regularization ID
+    const [isStartPickerOpen, setIsStartPickerOpen] = useState(false); // For triggering the start date picker
+    const [isEndPickerOpen, setIsEndPickerOpen] = useState(false); // For triggering the end date picker
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const response = await axios.get('/api/users/me');  // Adjust this endpoint to fetch user data
+                if (response.data && response.data.data.role) {
+                    setCurrentUserRole(response.data.data.role);
+                }
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+            }
+        };
+
+        fetchUserRole();
+    }, []);
+
+    const openDeleteDialog = (leaveId: string) => {
+        setLeaveIdToDelete(leaveId); // Store the leave._id before opening the dialog
+        setRegularizationIdToDelete(null); // Ensure regularization ID is null
+        setIsDeleteDialogOpen(true); // Open the delete confirmation dialog
+    };
+
+    const openRegularizationDeleteDialog = (regularizationId: string) => {
+        setRegularizationIdToDelete(regularizationId); // Store the regularization._id
+        setLeaveIdToDelete(null); // Ensure leave ID is null
+        setIsDeleteDialogOpen(true); // Open the delete confirmation dialog
+    };
+
+    const handleDeleteLeave = async (leaveId: string) => {
+        try {
+            const response = await axios.delete(`/api/leaveApprovals/${leaveId}`);
+            if (response.data.success) {
+                // Refetch leaves or update the UI to remove the deleted leave
+                const updatedLeaves = await axios.get('/api/leaves/all');
+                setLeaves(updatedLeaves.data.leaves);
+            } else {
+                console.error(response.data.error);
+                alert(response.data.error || 'Failed to delete leave.');
+            }
+        } catch (error: any) {
+            console.error('Error deleting leave:', error);
+            alert(`Error deleting leave: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
+    const handleDeleteRegularization = async (regularizationId: string) => {
+        try {
+            const response = await axios.delete(`/api/regularization-approvals/${regularizationId}`);
+            if (response.data.success) {
+                // Refetch regularizations or update the UI to remove the deleted regularization
+                const updatedRegularizations = await axios.get('/api/regularization-approvals');
+                setRegularizations(updatedRegularizations.data.regularizations);
+            } else {
+                console.error(response.data.error);
+                alert(response.data.error || 'Failed to delete regularization.');
+            }
+        } catch (error: any) {
+            console.error('Error deleting regularization:', error);
+            alert(`Error deleting regularization: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
+    const confirmDelete = async () => {
+        try {
+            if (leaveIdToDelete) {
+                await handleDeleteLeave(leaveIdToDelete); // Handle leave deletion
+            } else if (regularizationIdToDelete) {
+                await handleDeleteRegularization(regularizationIdToDelete); // Handle regularization deletion
+            }
+            setIsDeleteDialogOpen(false); // Close the dialog after deletion
+        } catch (error) {
+            console.error('Error deleting entry:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchApprovals = async () => {
             try {
+                setLoading(true);
                 if (filter === 'Leave') {
                     const response = await axios.get('/api/leaveApprovals/get');
                     if (response.data.success) {
                         setLeaves(response.data.leaves);
+                    } else {
+                        console.error(response.data.error);
+                        alert(response.data.error || 'Failed to fetch leave approvals.');
                     }
                 } else if (filter === 'Regularization') {
                     const response = await axios.get('/api/regularization-approvals');
                     if (response.data.success) {
                         setRegularizations(response.data.regularizations);
+                    } else {
+                        console.error(response.data.error);
+                        alert(response.data.error || 'Failed to fetch regularization approvals.');
                     }
                 }
             } catch (error: any) {
                 console.error(`Error fetching ${filter} approvals:`, error.response?.data || error.message);
                 alert(`Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message}`);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchApprovals();
     }, [filter]);
 
-    console.log(leaves, 'leaves?');
-    console.log(regularizations, 'regularizations?');
+    // Separate filter functions for Leave and Regularization to maintain type integrity
+    const filterLeavesByDate = (leaves: Leave[]): Leave[] => {
+        const today = new Date();
+        const yesterday = subDays(today, 1);
+        const todayStart = startOfDay(today);
+        const weekStart = startOfWeek(today);
+        const thisMonthStart = startOfMonth(today);
+        const lastMonthStart = startOfMonth(new Date(today.getFullYear(), today.getMonth() - 1, 1));
+        const lastMonthEnd = endOfMonth(new Date(today.getFullYear(), today.getMonth() - 1, 1));
 
-    const handleApproval = (entry: Leave | Regularization) => {
+        return leaves.filter((leave) => {
+            const entryDate = new Date(leave.fromDate);
+
+            switch (dateFilter) {
+                case 'Today':
+                    return normalizeDate(entryDate).getTime() === todayStart.getTime();
+                case 'Yesterday':
+                    return normalizeDate(entryDate).getTime() === normalizeDate(yesterday).getTime();
+                case 'ThisWeek':
+                    return entryDate >= weekStart && entryDate <= today;
+                case 'ThisMonth':
+                    return entryDate >= thisMonthStart && entryDate <= today;
+                case 'LastMonth':
+                    return entryDate >= lastMonthStart && entryDate <= lastMonthEnd;
+                case 'Custom':
+                    if (customDateRange.start && customDateRange.end) {
+                        return entryDate >= customDateRange.start && entryDate <= customDateRange.end;
+                    }
+                    return true;
+                case 'AllTime':
+                    return true;
+                default:
+                    return true;
+            }
+        });
+    };
+
+    const filterRegularizationsByDate = (regularizations: Regularization[]): Regularization[] => {
+        const today = new Date();
+        const yesterday = subDays(today, 1);
+        const todayStart = startOfDay(today);
+        const weekStart = startOfWeek(today);
+        const thisMonthStart = startOfMonth(today);
+        const lastMonthStart = startOfMonth(new Date(today.getFullYear(), today.getMonth() - 1, 1));
+        const lastMonthEnd = endOfMonth(new Date(today.getFullYear(), today.getMonth() - 1, 1));
+
+        return regularizations.filter((reg) => {
+            const entryDate = new Date(reg.timestamp);
+
+            switch (dateFilter) {
+                case 'Today':
+                    return normalizeDate(entryDate).getTime() === todayStart.getTime();
+                case 'Yesterday':
+                    return normalizeDate(entryDate).getTime() === normalizeDate(yesterday).getTime();
+                case 'ThisWeek':
+                    return entryDate >= weekStart && entryDate <= today;
+                case 'ThisMonth':
+                    return entryDate >= thisMonthStart && entryDate <= today;
+                case 'LastMonth':
+                    return entryDate >= lastMonthStart && entryDate <= lastMonthEnd;
+                case 'Custom':
+                    if (customDateRange.start && customDateRange.end) {
+                        return entryDate >= customDateRange.start && entryDate <= customDateRange.end;
+                    }
+                    return true;
+                case 'AllTime':
+                    return true;
+                default:
+                    return true;
+            }
+        });
+    };
+
+    // Helper to normalize dates for filtering
+    const normalizeDate = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const handleCustomDateSubmit = (start: Date, end: Date) => {
+        setCustomDateRange({ start, end });
+        setIsCustomModalOpen(false); // Close the modal after date selection
+        setDateFilter('Custom');
+    };
+
+    const handleApproval = async (entry: Leave | Regularization, e: React.MouseEvent) => {
+        e.stopPropagation(); // Stop event from triggering parent handlers
         setSelectedEntry(entry);
         setIsModalOpen(true);
     };
 
-    const handleReject = (entry: Leave | Regularization) => {
+    const handleReject = (entry: Leave | Regularization, e: React.MouseEvent) => {
+        e.stopPropagation(); // Stop event from triggering parent handlers
         setSelectedEntry(entry);
         setIsRejectModalOpen(true); // Open the reject modal
-    };
-    // Function to handle clicking on a leave card
-    const handleLeaveClick = (leave: Leave) => {
-        setSelectedEntry(leave); // Set the clicked leave in state
-        setIsLeaveDetailsOpen(true); // Open the Leave Details sheet
     };
 
     const handleRejectSubmit = async () => {
@@ -143,48 +307,94 @@ export default function Approvals() {
             return;
         }
         try {
-            if (!selectedEntry) return; // Guard against null selectedEntry
+            if (!selectedEntry) return;
 
-            if (!isRegularization(selectedEntry)) {
-                // It's a Leave
-                const leave = selectedEntry as Leave;
-                const response = await axios.post(`/api/leaveApprovals/${leave._id}`, {
-                    leaveDays: leave.leaveDays,
-                    remarks,
-                    action: 'reject',
-                });
-                if (response.data.success) {
-                    // Refetch leaves
-                    const updatedLeaves = await axios.get('/api/leaveApprovals/get');
-                    setLeaves(updatedLeaves.data.leaves);
-                    setIsRejectModalOpen(false); // Close modal
-                    setSelectedEntry(null); // Clear selection
-                    setRemarks(''); // Clear remarks
-                } else {
-                    throw new Error(response.data.message || 'Failed to reject leave request.');
-                }
-            } else {
-                // It's a Regularization
-                const regularization = selectedEntry as Regularization;
-                const response = await axios.patch(`/api/regularization-approvals/${regularization._id}`, {
+            if (isLeave(selectedEntry)) {
+                // Handle rejection for Leave
+                const response = await axios.patch(`/api/leaveApprovals/${selectedEntry._id}`, {
                     action: 'reject',
                     notes: remarks,
                 });
+
                 if (response.data.success) {
-                    // Refetch regularizations
+                    const updatedLeaves = await axios.get('/api/leaves/all');
+                    setLeaves(updatedLeaves.data.leaves);
+                    setIsRejectModalOpen(false);
+                    setSelectedEntry(null);
+                    setRemarks('');  // Clear remarks
+                } else {
+                    throw new Error(response.data.message || 'Failed to reject leave request.');
+                }
+            } else if (isRegularization(selectedEntry)) {
+                // Handle rejection for Regularization
+                const response = await axios.patch(`/api/regularization-approvals/${selectedEntry._id}`, {
+                    action: 'reject',
+                    notes: remarks,
+                });
+
+                if (response.data.success) {
                     const updatedRegularizations = await axios.get('/api/regularization-approvals');
                     setRegularizations(updatedRegularizations.data.regularizations);
-                    setIsRejectModalOpen(false); // Close modal
-                    setSelectedEntry(null); // Clear selection
-                    setRemarks(''); // Clear remarks
+                    setIsRejectModalOpen(false);
+                    setSelectedEntry(null);
+                    setRemarks('');  // Clear remarks
                 } else {
                     throw new Error(response.data.message || 'Failed to reject regularization request.');
                 }
             }
         } catch (error: any) {
-            console.error('Error rejecting entry:', error.response?.data || error.message);
-            alert(error.message || 'An error occurred while rejecting the entry.');
+            console.error(`Error rejecting entry:`, error.response?.data || error.message);
+            alert(`Failed to reject entry: ${error.response?.data?.message || error.message}`);
         }
+    };
+
+    const handleApproveSubmit = async () => {
+        try {
+            if (!selectedEntry) return;
+
+            if (isLeave(selectedEntry)) {
+                // Handle approval for Leave
+                const response = await axios.patch(`/api/leaveApprovals/${selectedEntry._id}`, {
+                    action: 'approve',
+                });
+
+                if (response.data.success) {
+                    const updatedLeaves = await axios.get('/api/leaves/all');
+                    setLeaves(updatedLeaves.data.leaves);
+                    setIsModalOpen(false);
+                    setSelectedEntry(null);
+                } else {
+                    throw new Error(response.data.message || 'Failed to approve leave request.');
+                }
+            } else if (isRegularization(selectedEntry)) {
+                // Handle approval for Regularization
+                const response = await axios.patch(`/api/regularization-approvals/${selectedEntry._id}`, {
+                    action: 'approve',
+                });
+
+                if (response.data.success) {
+                    const updatedRegularizations = await axios.get('/api/regularization-approvals');
+                    setRegularizations(updatedRegularizations.data.regularizations);
+                    setIsModalOpen(false);
+                    setSelectedEntry(null);
+                } else {
+                    throw new Error(response.data.message || 'Failed to approve regularization request.');
+                }
+            }
+        } catch (error: any) {
+            console.error(`Error approving entry:`, error.response?.data || error.message);
+            alert(`Failed to approve entry: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
+    const handleLeaveClick = (leave: Leave) => {
+        setSelectedEntry(leave); // Set the clicked leave in state
+        setIsLeaveDetailsOpen(true); // Open the Leave Details sheet
+    };
+
+    const handleRegularizationClick = (regularization: Regularization) => {
+        setSelectedEntry(regularization); // Set the clicked regularization in state
+        setIsRegularizationDetailsOpen(true); // Open the Regularization Details sheet
     };
 
     const handleModalClose = () => {
@@ -192,25 +402,14 @@ export default function Approvals() {
         setIsRejectModalOpen(false); // Close reject modal as well
         setSelectedEntry(null);
         setIsLeaveDetailsOpen(false); // Close the Leave Details sheet
+        setIsRegularizationDetailsOpen(false); // Close the Regularization Details sheet
         setRemarks('');
     };
 
-    // Counts for tabs and statuses
-    const leaveCount = leaves.length;
-    const regularizationCount = regularizations.length;
-    const pendingLeaveCount = leaves.filter(leave => leave.status === 'Pending').length;
-    const approvedLeaveCount = leaves.filter(leave => leave.status === 'Approved').length;
-    const rejectedLeaveCount = leaves.filter(leave => leave.status === 'Rejected').length;
-
-    const pendingRegCount = regularizations.filter(reg => reg.approvalStatus === 'Pending').length;
-    const approvedRegCount = regularizations.filter(reg => reg.approvalStatus === 'Approved').length;
-    const rejectedRegCount = regularizations.filter(reg => reg.approvalStatus === 'Rejected').length;
-
     const handleModalSubmit = async () => {
-        setIsModalOpen(false);
-        setSelectedEntry(null);
-        // Refetch data based on the current filter
+        // This function can be used to refresh data after approval/rejection
         try {
+            setLoading(true);
             if (filter === 'Leave') {
                 const response = await axios.get('/api/leaveApprovals/get');
                 if (response.data.success) {
@@ -224,175 +423,294 @@ export default function Approvals() {
             }
         } catch (error: any) {
             console.error(`Error refetching ${filter} approvals:`, error.response?.data || error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
+    // Separate filtered arrays to maintain type integrity
     const filteredLeaves = statusFilter === 'All' ? leaves : leaves.filter(leave => leave.status === statusFilter);
     const filteredRegularizations = statusFilter === 'All' ? regularizations : regularizations.filter(reg => reg.approvalStatus === statusFilter);
 
+    // Apply date filters
+    const finalFilteredLeaves = filterLeavesByDate(filteredLeaves);
+    const finalFilteredRegularizations = filterRegularizationsByDate(filteredRegularizations);
+
+    if (loading) {
+        return (
+            <div className='mt-28 h-full w-full flex justify-center items-center'>
+                <Loader />
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto p-6">
-            {/* <h1 className="text-2xl font-bold mb-6">Approvals</h1> */}
+            {/* Date Filter Buttons */}
+            <div className="flex justify-center gap-4 mb-6">
+                <button
+                    onClick={() => setDateFilter('Today')}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'Today' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    Today
+                </button>
+                <button
+                    onClick={() => setDateFilter('Yesterday')}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'Yesterday' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    Yesterday
+                </button>
+                <button
+                    onClick={() => setDateFilter('ThisWeek')}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'ThisWeek' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    This Week
+                </button>
+                <button
+                    onClick={() => setDateFilter('ThisMonth')}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'ThisMonth' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    This Month
+                </button>
+                <button
+                    onClick={() => setDateFilter('LastMonth')}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'LastMonth' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    Last Month
+                </button>
+                <button
+                    onClick={() => setDateFilter('AllTime')}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'AllTime' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    All Time
+                </button>
+                <button
+                    onClick={() => setIsCustomModalOpen(true)}
+                    className={`px-4 text-xs h-8 rounded ${dateFilter === 'Custom' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                >
+                    Custom
+                </button>
+            </div>
 
             {/* Filter Buttons */}
             <div className="flex justify-center gap-4 mb-6">
                 <button
                     onClick={() => setFilter('Leave')}
-                    className={`px-4 text-xs h-8 rounded ${filter === 'Leave' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                    className={`px-4 text-xs py-2 rounded flex ${filter === 'Leave' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                 >
-                    Leave
+                    <Calendar className='h-4' />
+                    <h1 className='mt-[1px] ml-1'>Leave</h1>
                 </button>
                 <button
                     onClick={() => setFilter('Regularization')}
-                    className={`px-4 text-xs h-8 rounded ${filter === 'Regularization' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                    className={`px-4 text-xs py-2 rounded flex ${filter === 'Regularization' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                 >
-                    Regularization
+                    <Users2 className='h-4' />
+                    <h1 className='mt-[1px] ml-1'>Regularization</h1>
                 </button>
             </div>
-            {/* Status Filter Buttons with Counts */}
+
+            {/* Status Filter Buttons */}
             <div className="flex justify-center gap-4 mb-6">
                 {filter === 'Leave' ? (
                     <>
                         <button
                             onClick={() => setStatusFilter('All')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            All ({leaveCount})
+                            <HamburgerMenuIcon />
+                            All ({filteredLeaves.length})
                         </button>
                         <button
                             onClick={() => setStatusFilter('Pending')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            Pending ({pendingLeaveCount})
+                            <Circle className='h-4 text-red-500' />
+                            Pending ({filteredLeaves.filter(leave => leave.status === 'Pending').length})
                         </button>
                         <button
                             onClick={() => setStatusFilter('Approved')}
-                            className={`px-4 text-xs h-8 rounded  ${statusFilter === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            Approved ({approvedLeaveCount})
+                            <CheckCircle className='h-4 text-green-500' />
+                            Approved ({filteredLeaves.filter(leave => leave.status === 'Approved').length})
                         </button>
                         <button
                             onClick={() => setStatusFilter('Rejected')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            Rejected ({rejectedLeaveCount})
+                            <Cross1Icon className='h-4 text-red-500' />
+                            Rejected ({filteredLeaves.filter(leave => leave.status === 'Rejected').length})
                         </button>
                     </>
                 ) : (
                     <>
                         <button
                             onClick={() => setStatusFilter('All')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'All' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            All ({regularizationCount})
+                            <HamburgerMenuIcon />
+                            All ({filteredRegularizations.length})
                         </button>
                         <button
                             onClick={() => setStatusFilter('Pending')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'Pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            Pending ({pendingRegCount})
+                            <Circle className='h-4 text-red-500' />
+                            Pending ({filteredRegularizations.filter(reg => reg.approvalStatus === 'Pending').length})
                         </button>
                         <button
                             onClick={() => setStatusFilter('Approved')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'Approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            Approved ({approvedRegCount})
+                            <CheckCircle className='h-4 text-green-500' />
+                            Approved ({filteredRegularizations.filter(reg => reg.approvalStatus === 'Approved').length})
                         </button>
                         <button
                             onClick={() => setStatusFilter('Rejected')}
-                            className={`px-4 text-xs h-8 rounded ${statusFilter === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
+                            className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === 'Rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e] text-white'}`}
                         >
-                            Rejected ({rejectedRegCount})
+                            <Cross1Icon className='h-4 text-red-500' />
+                            Rejected ({filteredRegularizations.filter(reg => reg.approvalStatus === 'Rejected').length})
                         </button>
                     </>
                 )}
             </div>
 
-
             {/* Entries Display */}
             {filter === 'Leave' ? (
-                <>
-                    {filteredLeaves.length === 0 ? (
-                        <p className="text-gray-600">No leave requests found.</p>
-                    ) : (
-                        <div className="space-y-4">
-                            {filteredLeaves.map((leave) => (
-                                <div onClick={() => handleLeaveClick(leave)} key={leave._id} className="flex items-center cursor-pointer justify-between border p-4 rounded shadow-sm mb-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
-                                            {leave.user.firstName[0]}
-                                        </div>
-                                        <h3 className="text-md text-white">{leave.user.firstName}</h3>
-                                        <p className="text-sm text-white">
-                                            From: <span className="text-white">{format(new Date(leave.fromDate), 'MMM d, yyyy')}</span>
-                                            <span className="ml-4">To: <span className="text-white">{format(new Date(leave.toDate), 'MMM d, yyyy')}</span></span>
-                                        </p>
-                                    </div>
-
-                                    <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-600 text-white' :
-                                        leave.status === 'Approved' ? 'bg-green-800 text-white' :
-                                            leave.status === 'Rejected' ? 'bg-red-500 text-white' :
-                                                'bg-orange-800 text-white'}`}>
-                                        {leave.status}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </>
-            ) : (
-                <>
-                    {filteredRegularizations.length === 0 ? (
-                        <p className="text-gray-600">No regularization requests found.</p>
-                    ) : (
-                        <div className="space-y-4">
-                            {filteredRegularizations?.map((reg) => (
-                                <div key={reg._id} className="border p-4 rounded shadow-sm mb-4 ">
-                                    <div className='flex items-center justify-between '>
+                <div className="space-y-4 mb-12">
+                    {
+                        finalFilteredLeaves.length === 0 ? (
+                            <p className="text-gray-600">No leave requests found.</p>
+                        ) : (
+                            finalFilteredLeaves.map((leave) => (
+                                <div className="border cursor-pointer" key={leave._id}>
+                                    <div
+                                        className="flex items-center justify-between px-4 rounded shadow-sm py-2"
+                                        onClick={() => handleLeaveClick(leave)}
+                                    >
                                         <div className="flex items-center gap-4">
+                                            {/* User Profile Icon */}
                                             <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
-                                                {reg?.userId?.firstName[0]}
+                                                {leave.user.firstName[0]}
                                             </div>
-                                            <h3 className="text-md text-white">{reg?.userId?.firstName}</h3>
-                                            <p className="text-sm text-white">
-                                                Date: <span className="text-white">{format(new Date(reg?.timestamp), 'MMM d, yyyy')}</span>
-                                            </p>
+                                            <h3 className="text-md text-white">{leave.user.firstName}</h3>
+                                            <div className="flex gap-4">
+                                                <p className="text-sm text-gray-400">
+                                                    From: <span className="text-white">{format(new Date(leave.fromDate), 'MMM d, yyyy')}</span>
+                                                </p>
+                                                <p className="text-sm text-gray-400 ml-4">
+                                                    To: <span className="text-white">{format(new Date(leave.toDate), 'MMM d, yyyy')}</span>
+                                                </p>
+                                                <p className="text-sm text-gray-400 ml-4">
+                                                    Applied: <span className="text-white">{leave.appliedDays} Day(s)</span>
+                                                </p>
+                                                <p className="text-sm text-gray-400 ml-4">
+                                                    Approved: <span className="text-white">{leave.leaveDays.filter(day => day.status === 'Approved').length} Day(s)</span>
+                                                </p>
+                                            </div>
                                         </div>
-
-                                        <span className={`px-3 py-1 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-500 text-white' :
-                                            reg?.approvalStatus === 'Approved' ? 'bg-green-500 text-white' :
-                                                reg?.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' :
-                                                    'bg-gray-500 text-white'}`}>
-                                            {reg?.approvalStatus}
+                                        <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-800 text-white' : leave.status === 'Approved' ? 'bg-green-800 text-white' : leave.status === 'Rejected' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'}`}>
+                                            {leave.status}
                                         </span>
                                     </div>
-                                    <div className='flex gap-2 mt-2 justify-center w-full'>
-                                        {/* Approve Button */}
-                                        {reg.approvalStatus === 'Pending' && (
+                                    {/* Approve/Reject/Delete Buttons (shown only for orgAdmin and Pending leave status) */}
+                                    {currentUserRole === 'orgAdmin' && leave.status === 'Pending' && (
+                                        <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
                                             <button
-                                                onClick={() => handleApproval(reg)} // Opens the approval modal
-                                                className="bg-green-500 text-xs text-white px-4 py-2 rounded"
+                                                className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
+                                                onClick={(e) => handleApproval(leave, e)}
                                             >
+                                                <CheckCheck className="w-4 h-4 text-[#017a5b]" />
                                                 Approve
                                             </button>
-                                        )}
-
-                                        {/* Reject Button */}
-                                        {reg.approvalStatus === 'Pending' && (
                                             <button
-                                                onClick={() => handleReject(reg)} // Opens the reject modal
-                                                className="bg-red-500 text-xs text-white px-4 py-2 rounded"
+                                                className="bg-transparent border flex gap-2 text-white px-4 py-2 text-xs rounded"
+                                                onClick={(e) => handleReject(leave, e)}
                                             >
+                                                <X className="w-4 h-4 text-red-500" />
                                                 Reject
                                             </button>
-                                        )}
-                                    </div>
+                                            <button
+                                                className="text-red-500 px-4 py-1 text-xs rounded"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    openDeleteDialog(leave._id);
+                                                }}
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-
-                        </div>
+                            ))
+                        )
+                    }
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {finalFilteredRegularizations.length === 0 ? (
+                        <p className="text-gray-600">No regularization requests found.</p>
+                    ) : (
+                        finalFilteredRegularizations.map((reg) => (
+                            <div
+                                key={reg._id}
+                                className="border cursor-pointer"
+                                onClick={() => handleRegularizationClick(reg)}
+                            >
+                                <div className="flex items-center justify-between px-4 rounded shadow-sm py-2">
+                                    <div className="flex items-center gap-4">
+                                        {/* User Profile Icon */}
+                                        <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                                            {reg.userId.firstName[0]}
+                                        </div>
+                                        <h3 className="text-md text-white">{reg.userId.firstName}</h3>
+                                        <p className="text-sm text-gray-400">
+                                            Date: <span className="text-white">{format(new Date(reg.timestamp), 'MMM d, yyyy')}</span>
+                                        </p>
+                                    </div>
+                                    <span className={`px-3 py-1 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-800 text-white' : reg.approvalStatus === 'Approved' ? 'bg-green-800 text-white' : reg.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'}`}>
+                                        {reg.approvalStatus}
+                                    </span>
+                                </div>
+                                {reg.approvalStatus === 'Pending' && (
+                                    <div className="flex gap-2 ml-4 w-full mb-4 justify-center">
+                                        <button
+                                            className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent triggering sheet
+                                                handleApproval(reg, e);
+                                            }}
+                                        >
+                                            <CheckCheck className="w-4 h-4 text-[#017a5b]" />
+                                            Approve
+                                        </button>
+                                        <button
+                                            className="bg-transparent border flex gap-2 text-white px-4 py-2 text-xs rounded"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent triggering sheet
+                                                handleReject(reg, e);
+                                            }}
+                                        >
+                                            <X className="w-4 h-4 text-red-500" />
+                                            Reject
+                                        </button>
+                                        <button
+                                            className="bg-transparent flex gap-2 text-white px-4 py-2 text-xs rounded"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent triggering sheet
+                                                openRegularizationDeleteDialog(reg._id); // Open delete confirmation for Regularization
+                                            }}
+                                        >
+                                            <Trash2 className="w-4 h-4 text-red-500" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
                     )}
-                </>
+                </div>
             )}
 
             {/* Render the approval modal */}
@@ -400,38 +718,33 @@ export default function Approvals() {
                 <>
                     {!isRegularization(selectedEntry) ? (
                         <LeaveApprovalModal
-                            leaveId={(selectedEntry as Leave)._id}
-                            leaveDays={(selectedEntry as Leave).leaveDays}
-                            appliedDays={(selectedEntry as Leave).appliedDays}
-                            leaveReason={(selectedEntry as Leave).leaveReason}
+                            leaveId={selectedEntry._id}
+                            leaveDays={selectedEntry.leaveDays}
+                            appliedDays={selectedEntry.appliedDays}
+                            fromDate={selectedEntry.fromDate}
+                            toDate={selectedEntry.toDate}
+                            leaveReason={selectedEntry.leaveReason}
+                            leaveType={selectedEntry.leaveType.leaveType}
+                            user={selectedEntry.user}
+                            manager={selectedEntry.user.reportingManager}
                             onClose={handleModalClose}
-                            onSubmit={handleModalSubmit}
+                            onSubmit={handleApproveSubmit}
                         />
                     ) : (
                         <RegularizationApprovalModal
-                            regularizationId={(selectedEntry as Regularization)._id}
-                            timestamp={(selectedEntry as Regularization).timestamp}
-                            loginTime={(selectedEntry as Regularization).loginTime}
-                            logoutTime={(selectedEntry as Regularization).logoutTime}
-                            remarks={(selectedEntry as Regularization).remarks}
+                            regularizationId={selectedEntry._id}
+                            timestamp={selectedEntry.timestamp}
+                            loginTime={selectedEntry.loginTime}
+                            logoutTime={selectedEntry.logoutTime}
+                            remarks={selectedEntry.remarks}
                             onClose={handleModalClose}
-                            onSubmit={handleModalSubmit}
+                            onSubmit={handleApproveSubmit}
                         />
                     )}
                 </>
             )}
-            {/* // At the place where you render RegularizationDetails */}
-            {selectedEntry && isRegularization(selectedEntry) && (
-                <RegularizationDetails selectedRegularization={selectedEntry} onClose={handleModalClose} />
-            )}
 
-            {selectedEntry && !isRegularization(selectedEntry) && (
-                <LeaveDetails selectedLeave={selectedEntry} onClose={handleModalClose} />
-            )}
-
-
-
-            {/* Render the reject modal */}
+            {/* Reject Modal */}
             {selectedEntry && isRejectModalOpen && (
                 <>
                     {!isRegularization(selectedEntry) ? (
@@ -453,13 +766,121 @@ export default function Approvals() {
                     )}
                 </>
             )}
+
             {/* Leave Details Sheet */}
-            {selectedEntry && !isRegularization(selectedEntry) && (
-                <LeaveDetails
-                    selectedLeave={selectedEntry as Leave}
-                    onClose={handleModalClose}
-                />
+            {selectedEntry && isLeave(selectedEntry) && isLeaveDetailsOpen && (
+                <LeaveDetails selectedLeave={selectedEntry} onClose={handleModalClose} />
             )}
+
+            {/* Regularization Details Sheet */}
+            {selectedEntry && isRegularization(selectedEntry) && isRegularizationDetailsOpen && (
+                <RegularizationDetails selectedRegularization={selectedEntry} onClose={handleModalClose} />
+            )}
+
+            {/* Custom Date Range Modal */}
+            <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
+                <DialogContent className='w-[33.33%]'>
+                    <div className="flex justify-between">
+                        <DialogTitle className="text-md font-medium mb-4 text-white">Select Custom Date Range</DialogTitle>
+                        <DialogClose className="h-8 scale-75">X</DialogClose>
+                    </div>
+
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            if (customDateRange.start && customDateRange.end) {
+                                handleCustomDateSubmit(customDateRange.start, customDateRange.end);
+                            }
+                        }}
+                        className="space-y-4"
+                    >
+                        {/* Start Date Picker Button */}
+                        <div>
+                            <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">Start Date</h1>
+                            <button
+                                type="button"
+                                className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                onClick={() => setIsStartPickerOpen(true)} // Open start date picker
+                            >
+                                {customDateRange.start
+                                    ? new Date(customDateRange.start).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
+                                    : 'Select Start Date'}
+                            </button>
+                        </div>
+
+                        {/* End Date Picker Button */}
+                        <div>
+                            <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">End Date</h1>
+                            <button
+                                type="button"
+                                className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                onClick={() => setIsEndPickerOpen(true)} // Open end date picker
+                            >
+                                {customDateRange.end
+                                    ? new Date(customDateRange.end).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
+                                    : 'Select End Date'}
+                            </button>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div>
+                            <button
+                                type="submit"
+                                className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Start Date Picker Modal */}
+            <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
+                <DialogContent className='w-full scale-75'>
+                    <div className="flex justify-center">
+                        <CustomDatePicker
+                            selectedDate={customDateRange.start}
+                            onDateChange={(newDate) => {
+                                setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                                setIsStartPickerOpen(false); // Close picker after selecting the date
+                            }}
+                            onCloseDialog={() => setIsStartPickerOpen(false)}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* End Date Picker Modal */}
+            <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
+                <DialogContent className='w-full scale-75'>
+                    <div className="flex justify-center">
+                        <CustomDatePicker
+                            selectedDate={customDateRange.end}
+                            onDateChange={(newDate) => {
+                                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                                setIsEndPickerOpen(false); // Close picker after selecting the date
+                            }}
+                            onCloseDialog={() => setIsEndPickerOpen(false)}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <DeleteConfirmationDialog
+                isOpen={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onConfirm={confirmDelete} // Confirm delete action
+                title="Confirm Delete"
+                description={
+                    leaveIdToDelete
+                        ? "Are you sure you want to delete this leave request? This action cannot be undone."
+                        : regularizationIdToDelete
+                            ? "Are you sure you want to delete this regularization request? This action cannot be undone."
+                            : "Are you sure you want to delete this request? This action cannot be undone."
+                }
+            />
         </div>
     );
 }

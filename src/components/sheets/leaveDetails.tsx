@@ -84,7 +84,7 @@ const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) =
                         {/* Approved/Rejection Manager */}
                         {selectedLeave.approvedBy && (
                             <div className="flex items-center gap-4">
-                                <Label htmlFor="approvedBy" className="text-right text-xs">Approved By</Label>
+                                <Label htmlFor="approvedBy" className="text-right text-xs">Approved By </Label>
                                 {selectedLeave.approvedBy.firstName && (
                                     <div className="flex gap-2 justify-start">
                                         <div className="h-6 w-6 rounded-full bg-green-400">
@@ -195,16 +195,18 @@ const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) =
                             {selectedLeave.remarks ? (
                                 <div className="flex justify-between items-center p-2 rounded">
                                     {/* Display remark and approvedBy user */}
-                                    <div className="flex gap-2 items-start">
-                                        <div className="h-6 w-6 rounded-full bg-primary">
-                                            <h1 className="text-center uppercase text-xs mt-1">{selectedLeave.approvedBy?.firstName[0]}{selectedLeave.approvedBy?.lastName[0]}</h1>
+                                    {selectedLeave.approvedBy && (
+                                        <div className="flex gap-2 items-start">
+                                            <div className="h-6 w-6 rounded-full bg-primary">
+                                                <h1 className="text-center uppercase text-xs mt-1">{selectedLeave.approvedBy?.firstName[0]}{selectedLeave.approvedBy?.lastName[0]}</h1>
+                                            </div>
+                                            <div>
+                                                <h1 className="text-sm font-semibold">{`${selectedLeave.approvedBy?.firstName} ${selectedLeave.approvedBy?.lastName}`}</h1>
+                                                <p className="text-xs text-gray-500">{new Date(selectedLeave.updatedAt).toLocaleString()}</p>
+                                                <p className="text-xs max-w-[600px]">{selectedLeave.remarks}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h1 className="text-sm font-semibold">{`${selectedLeave.approvedBy?.firstName} ${selectedLeave.approvedBy?.lastName}`}</h1>
-                                            <p className="text-xs text-gray-500">{new Date(selectedLeave.updatedAt).toLocaleString()}</p>
-                                            <p className="text-xs max-w-[600px]">{selectedLeave.remarks}</p>
-                                        </div>
-                                    </div>
+                                    )}
                                     <div className='bg-[#017a5b] rounded px-2 py-1'>
                                         <p className="text-xs">{selectedLeave.status}</p>
                                     </div>

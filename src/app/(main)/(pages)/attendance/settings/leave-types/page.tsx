@@ -9,6 +9,7 @@ import { Edit2, Info, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
 import Loader from '@/components/ui/loader';
+import { toast, Toaster } from 'sonner';
 
 interface LeaveFormData {
     leaveType: string;
@@ -124,11 +125,13 @@ const LeaveTypes: React.FC = () => {
                 await axios.put(`/api/leaves/leaveType/${editLeaveId}`, formData);
                 setLoading(false);
                 setIsModalOpen(false);
+                toast.success("Leave Type updated successfully!");
                 fetchLeaveTypes();
             } else {
                 // POST request for creating a new leave type
                 await axios.post('/api/leaves/leaveType', formData);
                 setLoading(false);
+                toast.success("Leave Type created successfully!");
                 setIsModalOpen(false);
                 fetchLeaveTypes();
 
@@ -197,7 +200,7 @@ const LeaveTypes: React.FC = () => {
     return (
         <div className="container mx-auto p-6">
             {/* Tabs for filtering */}
-
+            <Toaster />
             {/* Add Leave Type Button */}
             <div className="flex gap-4 justify-center items-center mb-6">
                 {/* <h1 className="text-lg font-bold">Leave Types</h1> */}
@@ -257,7 +260,7 @@ const LeaveTypes: React.FC = () => {
                         <Dialog.Content className="fixed z-[100]   inset-0 flex items-center justify-center">
                             <div className="b rounded-lg bg-[#1A1C20] shadow-lg w-full max-w-lg p-6">
                                 <div className='flex w-full mb-4 justify-between'>
-                                    <Dialog.Title className="text-sm font-medium mb-4"> {isEdit ? 'Edit Leave Type' : 'New Leave Type'}</Dialog.Title>
+                                    <Dialog.Title className="text-md font-medium mb-4"> {isEdit ? 'Edit Leave Type' : 'New Leave Type'}</Dialog.Title>
                                     <Dialog.DialogClose className='-mt-4'>X</Dialog.DialogClose>
                                 </div>
                                 {loading ? <Loader /> : (
@@ -270,7 +273,7 @@ const LeaveTypes: React.FC = () => {
                                                 value={formData.leaveType}
                                                 onChange={handleInputChange}
                                                 // placeholder='Leave Type'
-                                                className="w-full text-sm p-2 outline-none border rounded bg-transparent"
+                                                className="w-full text-sm p-2 outline-none font-medium border rounded bg-transparent"
                                                 required
                                             />
                                         </div>
@@ -284,7 +287,7 @@ const LeaveTypes: React.FC = () => {
                                                 value={formData.description}
                                                 onChange={handleInputChange}
                                                 // placeholder='Description'
-                                                className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                                                className="w-full text-xs font-medium p-2 border bg-transparent outline-none rounded"
                                                 required
                                             />
                                         </div>

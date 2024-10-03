@@ -31,6 +31,58 @@ interface LeaveApprovalBody {
     action: 'approve' | 'reject';
 }
 
+// Helper function to format date
+const formatDate = (dateInput: string | Date): string => {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    const optionsDate: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: '2-digit' };
+    return new Intl.DateTimeFormat('en-GB', optionsDate).format(date);
+};
+
+// Helper function to send WhatsApp notification
+const sendLeaveApprovalWebhookNotification = async (
+    leave: any,
+    phoneNumber: string,
+    approvedFor: number,
+    templateName: string // Add this to make it dynamic
+) => {
+    const payload = {
+        phoneNumber,
+        templateName,  // Use the dynamic template name here
+        bodyVariables: [
+            leave.user.firstName,  // 1. User's first name
+            leave.user.reportingManager?.firstName,  // 2. Reporting Manager's first name
+            leave.leaveType.leaveType,  // 3. Leave type
+            formatDate(leave.fromDate),  // 4. From date
+            formatDate(leave.toDate),    // 5. To date
+            String(leave.appliedDays),   // 6. Applied days
+            String(approvedFor),         // 7. Number of days approved
+            leave.remarks || 'No remarks'  // 8. Leave remarks
+        ]
+    };
+
+    console.log('Sending WhatsApp payload:', payload);
+
+    try {
+        const response = await fetch('https://zapllo.com/api/webhook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            console.error('Webhook API error:', responseData);
+            throw new Error(`Webhook API error, response data: ${JSON.stringify(responseData)}`);
+        }
+
+        console.log('Leave approval Webhook notification sent successfully:', payload);
+    } catch (error) {
+        console.error('Error sending leave approval webhook notification:', error);
+    }
+};
+
 async function getNonDeductibleDaysInRange(
     startDate: Date,
     endDate: Date,
@@ -41,12 +93,10 @@ async function getNonDeductibleDaysInRange(
     let nonDeductibleDays: Date[] = [];
 
     if (includeHolidays) {
-        // Fetch holidays for the organization if includeHolidays is true
         const holidays = await Holiday.find({ organization, holidayDate: { $gte: startDate, $lte: endDate } });
-        nonDeductibleDays = holidays.map(holiday => holiday.holidayDate); // Array of holidays
+        nonDeductibleDays = holidays.map(holiday => holiday.holidayDate);
     }
 
-    // If includeWeekOffs is true, add weekends (Saturday and Sunday)
     if (includeWeekOffs) {
         let current = new Date(startDate);
         while (current <= endDate) {
@@ -61,149 +111,126 @@ async function getNonDeductibleDaysInRange(
 }
 
 export async function POST(request: NextRequest, { params }: { params: { leaveId: string } }) {
+    console.log('POST request received for leave approval/rejection');
     try {
         const body: LeaveApprovalBody = await request.json();
+        console.log('POST request body:', body);
+
         const { leaveDays, remarks, action } = body;
         const { leaveId } = params;
         const approvedBy = await getDataFromToken(request);
 
-        console.log(`Processing Leave Approval for Leave ID: ${leaveId}`);
-        console.log(`Action: ${action}`);
-
         // Fetch the leave request and populate the user and leaveType
         const leave = await Leave.findById(leaveId)
             .populate<{ user: IUser; leaveType: ILeaveType }>('user leaveType')
+            .populate({
+                path: 'user',
+                populate: { path: 'reportingManager', model: 'users', select: 'firstName lastName' }
+            })
             .exec();
 
         if (!leave) {
-            console.error('Leave not found.');
+            console.error('Leave not found for ID:', leaveId);
             return NextResponse.json({ success: false, error: 'Leave not found' });
         }
 
+        console.log('Leave found:', leave);
         const user = leave.user as any;
 
-        // Ensure leaveType exists and is fully populated
-        const leaveType = leave.leaveType as any;
-        if (!leaveType) {
-            console.error('Leave type not found.');
-            return NextResponse.json({ success: false, error: 'Leave type not found' });
+        try {
+            await user.populate('leaveBalances.leaveType');
+            console.log('User leave balances populated:', user.leaveBalances);
+        } catch (populateError) {
+            console.error('Error populating leave balances:', populateError);
+            return NextResponse.json({ success: false, error: 'Error populating leave balances' });
         }
 
-        // Re-fetch the user's leave balances to ensure we have the most recent data
-        await user.populate('leaveBalances.leaveType');
-
-        if (!user.leaveBalances || user.leaveBalances.length === 0) {
-            console.error('User leave balances not found.');
-            return NextResponse.json({ success: false, error: 'User leave balances not found' });
-        }
-
-        // Fetch non-deductible days (holidays, weekends)
-        const nonDeductibleDays = await getNonDeductibleDaysInRange(
-            new Date(leave.fromDate),
-            new Date(leave.toDate),
-            user.organization,
-            leaveType.includeHolidays,
-            leaveType.includeWeekOffs
-        );
-
-        console.log(`Non-deductible Days: ${nonDeductibleDays.map(date => date.toISOString()).join(', ')}`);
-
-        let totalApprovedDays = 0;
-
-        // Counters for approved and rejected days
+        let approvedFor = 0;
         let approvedDaysCount = 0;
         let rejectedDaysCount = 0;
 
-        // Map and update leave days status
-        leave.leaveDays = leave.leaveDays.map((day: any) => {
-            const updatedDay = leaveDays.find((d: LeaveDay) =>
-                isSameDay(new Date(d.date), new Date(day.date))
+        try {
+            const nonDeductibleDays = await getNonDeductibleDaysInRange(
+                new Date(leave.fromDate),
+                new Date(leave.toDate),
+                user.organization,
+                leave.leaveType.includeHolidays,
+                leave.leaveType.includeWeekOffs
             );
+            console.log('Non-deductible days:', nonDeductibleDays);
 
-            if (updatedDay) {
-                day.status = updatedDay.status;
-
-                // Count the approved and rejected days
-                if (updatedDay.status === 'Approved') {
-                    const isNonDeductible = nonDeductibleDays.some(nonDeductible =>
-                        isSameDay(nonDeductible, day.date)
-                    );
-                    if (!isNonDeductible) {
-                        const unit = day.unit as LeaveUnit;
-                        totalApprovedDays += unitMapping[unit];
+            // Update the leave days
+            leave.leaveDays = leave.leaveDays.map(day => {
+                const updatedDay = leaveDays.find(d => isSameDay(new Date(d.date), new Date(day.date)));
+                if (updatedDay) {
+                    day.status = updatedDay.status;
+                    if (updatedDay.status === 'Approved') {
+                        const isNonDeductible = nonDeductibleDays.some(nonDeductible =>
+                            isSameDay(nonDeductible, day.date)
+                        );
+                        if (!isNonDeductible) {
+                            const unit = day.unit as LeaveUnit;
+                            approvedFor += unitMapping[unit];
+                        }
+                        approvedDaysCount++;
+                    } else if (updatedDay.status === 'Rejected') {
+                        rejectedDaysCount++;
                     }
-
-                    approvedDaysCount++;
-                } else if (updatedDay.status === 'Rejected') {
-                    rejectedDaysCount++;
                 }
+                return day;
+            });
+        } catch (approvalError) {
+            console.error('Error updating leave days:', approvalError);
+            return NextResponse.json({ success: false, error: 'Error updating leave days' });
+        }
+
+        if (approvedDaysCount === leave.leaveDays.length) {
+            leave.status = 'Approved';
+            leave.approvedBy = approvedBy;
+            console.log('Leave fully approved.');
+
+            if (user.whatsappNo) {
+                console.log('WhatsApp number exists:', user.whatsappNo);
+                await sendLeaveApprovalWebhookNotification(
+                    leave,
+                    user.whatsappNo,
+                    approvedFor,
+                    'leaveapproval' // Full approval template
+                );
+            } else {
+                console.error('WhatsApp number is missing for user:', user._id);
             }
-            return day;
-        });
+        } else if (rejectedDaysCount === leave.leaveDays.length) {
+            leave.status = 'Rejected';
+            leave.rejectedBy = approvedBy;
+            console.log('Leave fully rejected.');
+        } else if (approvedDaysCount > 0 && rejectedDaysCount > 0) {
+            leave.status = 'Partially Approved';
+            leave.approvedBy = approvedBy;
+            leave.rejectedBy = approvedBy;
+            console.log('Leave partially approved.');
 
-        console.log(`Total Approved Days to Deduct: ${totalApprovedDays}`);
-        console.log(`Approved Days Count: ${approvedDaysCount}`);
-        console.log(`Rejected Days Count: ${rejectedDaysCount}`);
-
-        // Find the specific leave type in the user's leaveBalances array
-        const userLeaveBalance = user.leaveBalances.find(
-            (balance: any) => balance.leaveType && balance.leaveType._id.toString() === leave.leaveType._id.toString()
-        );
-
-        if (!userLeaveBalance) {
-            console.error('Leave type not found in user leave balances.');
-            return NextResponse.json({ success: false, error: 'Leave type not found in user leave balance' });
-        }
-
-        console.log(`Current Leave Balance for Leave Type ${userLeaveBalance.leaveType}: ${userLeaveBalance.balance}`);
-
-        // If the leave is being approved, update the user's leave balance for the correct leave type
-        if (action === 'approve') {
-            // Check if user has enough leave balance to deduct the approved days
-            if (userLeaveBalance.balance < totalApprovedDays) {
-                console.error('Insufficient leave balance.');
-                return NextResponse.json({ success: false, error: 'Insufficient leave balance' });
+            // Send WhatsApp notification for partial approval
+            if (user.whatsappNo) {
+                console.log('WhatsApp number exists:', user.whatsappNo);
+                await sendLeaveApprovalWebhookNotification(
+                    leave,
+                    user.whatsappNo,
+                    approvedFor,
+                    'partialapproval_v6' // Partial approval template
+                );
+            } else {
+                console.error('WhatsApp number is missing for user:', user._id);
             }
-
-            // Deduct the approved days from the user's leave balance
-            userLeaveBalance.balance -= totalApprovedDays;
-
-            console.log(`New Leave Balance for Leave Type ${userLeaveBalance.leaveType}: ${userLeaveBalance.balance}`);
-
-            // Save the updated user
-            await user.save();
-
-            console.log('User leave balance updated successfully.');
         }
 
-        // Determine overall leave status
-        const totalDays = leave.leaveDays.length;
-
-        if (approvedDaysCount === totalDays) {
-            leave.status = 'Approved'; // All days are approved
-            leave.approvedBy = approvedBy;  // Store the approving manager's ID
-        } else if (rejectedDaysCount === totalDays) {
-            leave.status = 'Rejected'; // All days are rejected
-            leave.rejectedBy = approvedBy;  // Store the rejecting manager's ID
-        } else {
-            leave.status = 'Partially Approved'; // Some days are approved, others are rejected
-            leave.approvedBy = approvedBy;  // Store the approving manager's ID
-            leave.rejectedBy = approvedBy;  // Store the rejecting manager's ID
-        }
-
-        // Store the manager's remarks
-        if (remarks) {
-            leave.remarks = remarks;
-        }
-
-        // Save the updated leave document
         await leave.save();
 
-        console.log('Leave document updated successfully.');
+        console.log('Leave saved after approval.');
 
-        return NextResponse.json({ success: true, totalApprovedDays });
+        return NextResponse.json({ success: true, approvedFor });
     } catch (error) {
-        console.error('Error updating leave approval:', error);
+        console.error('Error in leave approval/rejection flow:', error);
         return NextResponse.json({ success: false, error: 'Internal Server Error' });
     }
 }

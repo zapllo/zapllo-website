@@ -1270,7 +1270,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           setActiveTab('allTasks'); // Switch to the "All Tasks" tab
                                           setSelectedUserId(user); // Set the selected user ID
                                         }}
-                                          key={user._id} className="p-4 flex bg-[#] cursor-pointer flex-col gap-2">
+                                          key={user._id} className="p-4 flex bg-[#] hover:border-[#74517A]  cursor-pointer flex-col gap-2">
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">

@@ -182,7 +182,7 @@ const DashboardPage = () => {
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Automate Attendance</h1>
-              <p className='text-xs font-medium'>Track your Team's Attendance & Breaks</p>
+              <p className='text-xs font-medium'>Track your Team Attendance & Breaks</p>
               <div className='pt-2'>
                 <Link href='/attendance/my-attendance'>
                   <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Attendance</Button>

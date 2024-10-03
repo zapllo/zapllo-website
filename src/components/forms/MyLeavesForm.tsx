@@ -328,7 +328,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-50" />
                 <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
-                    <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-[400px] shadow-lg w-full   max-w-lg p-6 rounded-lg">
+                    <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-[420px] shadow-lg w-full   max-w-lg p-6 rounded-lg">
                         <div className="flex justify-between mb-4">
                             <Dialog.Title className="text-md mb-4 font-medium">Submit Leave Request</Dialog.Title>
                             <Dialog.DialogClose className="-mt-4">X</Dialog.DialogClose>
@@ -390,7 +390,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                         <select
                                             value={day.unit}
                                             onChange={(e) => handleUnitChange(day.date, e.target.value as LeaveDay['unit'])}
-                                            className="ml-2 p-2 border bg-transparent rounded text-sm"
+                                            className="ml-2 p-2 border bg-transparent outline-none rounded text-sm"
                                         >
                                             {availableUnits.map((unit) => (
                                                 <option key={unit} className='bg-[#1A1C20]' value={unit}>
@@ -464,10 +464,10 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                 <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
                             )}
 
-                            <div className="flex justify-end">
+                            <div className="flex justify-end ">
                                 <button
                                     type="submit"
-                                    className="bg-[#017A5B] w-full text-sm text-white px-4 mt-4  py-2 rounded"
+                                    className="bg-[#017A5B] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
                                     disabled={!formData.leaveType || formData.leaveDays.length === 0 || error !== null}
                                 >
                                     {loading ? <Loader /> : 'Submit Leave Request'}

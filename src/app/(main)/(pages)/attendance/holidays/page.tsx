@@ -39,10 +39,10 @@ const HolidayManager: React.FC = () => {
                 {/* Modal Content */}
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
-                    <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
-                        <div className="bg-[#1A1C20] rounded-lg shadow-lg p-6 w-full max-w-lg">
+                    <Dialog.Content className="fixed z-[50]  inset-0 flex items-center justify-center">
+                        <div className="bg-[#1A1C20] h-[230px] rounded-lg shadow-lg p-6 w-full max-w-lg">
                             <div className="flex justify-between mb-4">
-                                <Dialog.Title className="text-sm font-medium">Add New Holiday</Dialog.Title>
+                                <Dialog.Title className="text-md font-medium">Add New Holiday</Dialog.Title>
                                 <Dialog.Close asChild>
                                     <button className="text-white text-sm">X</button>
                                 </Dialog.Close>

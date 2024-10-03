@@ -1,21 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Webcam from 'react-webcam';
 import Loader from '@/components/ui/loader';
 import * as Dialog from '@radix-ui/react-dialog';
-
-import { Calendar, Camera, Clock, MapPin, MapPinIcon } from 'lucide-react';
+import Webcam from 'react-webcam';
+import { BookIcon, Calendar, CalendarClock, Camera, CheckCircle, Clock, MapPin, MapPinIcon, Users2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import format from 'date-fns';
-
+// const Webcam = dynamic(() => import('react-webcam'), { ssr: false });
 // Dynamically import Leaflet related components with `ssr: false`
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import RegisterFace from '../settings/register-faces/page';
 import { toast, Toaster } from 'sonner';
 import RegularizationDetails from '@/components/sheets/regularizationDetails';
 import CustomDatePicker from '@/components/globals/date-picker';
@@ -91,6 +88,9 @@ export default function MyAttendance() {
     const [displayLoader, setDisplayLoader] = useState(false);
     const [isDateSelected, setIsDateSelected] = useState<boolean>(false); // Track whether the user manually selects a date
     const [isDatePickerOpen, setIsDatePickerOpen] = useState<boolean>(false);
+    const [isStartPickerOpen, setIsStartPickerOpen] = useState(false); // For triggering the start date picker
+    const [isEndPickerOpen, setIsEndPickerOpen] = useState(false); // For triggering the end date picker
+
     // useEffect(() => {
     //     if (typeof window !== 'undefined') {
     //         // Dynamically set Leaflet icon options only after the window object is available
@@ -208,20 +208,20 @@ export default function MyAttendance() {
     };
 
     // Capture image and location
-    const captureImageAndLocation = () => {
-        const imageSrc = webcamRef.current?.getScreenshot();
-        if (imageSrc) {
-            setCapturedImage(imageSrc);
-        }
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                setLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                });
-            });
-        }
-    };
+    // const captureImageAndLocation = () => {
+    //     const imageSrc = webcamRef.current?.getScreenshot();
+    //     if (imageSrc) {
+    //         setCapturedImage(imageSrc);
+    //     }
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition((position) => {
+    //             setLocation({
+    //                 lat: position.coords.latitude,
+    //                 lng: position.coords.longitude,
+    //             });
+    //         });
+    //     }
+    // };
 
     // Submit face login/logout
     // const handleSubmitLogin = async () => {
@@ -499,33 +499,37 @@ export default function MyAttendance() {
                 }
             );
         }
-    }, []);
+    }, [isModalOpen]);
 
+    console.log(location, 'location')
 
     const handleModalChange = (isOpen: boolean) => {
         if (isOpen) {
-            setLocation(null); // Reset the location initially
-            // Set loading state while fetching the location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        setLocation({
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude,
-                        });
-                    },
-                    (error) => {
-                        console.error('Error fetching location:', error);
-                        toast.error('Unable to fetch location. Please allow location access.');
-                    }
-                );
+            // If location is not already fetched, fetch it when the modal opens
+            if (!location) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            setLocation({
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                            });
+                        },
+                        (error) => {
+                            console.error('Error fetching location:', error);
+                            toast.error('Unable to fetch location. Please allow location access.');
+                        }
+                    );
+                }
             }
+            setCapturedImage(null); // Reset the captured image when modal opens
+            console.log(location, 'location in the modal')
         } else {
             setCapturedImage(null);
-            setLocation(null);
         }
-        setIsModalOpen(isOpen);
+        setIsModalOpen(isOpen); // Handle modal state
     };
+
 
 
 
@@ -604,7 +608,11 @@ export default function MyAttendance() {
         return entries.filter((entry) => entry.action === 'regularization');
     };
 
-    function formatTimeToAMPM(timeString: string): string {
+    function formatTimeToAMPM(timeString: string | undefined): string {
+        if (!timeString) {
+            return ''; // Return an empty string or a placeholder if timeString is undefined
+        }
+
         const [hours, minutes] = timeString.split(':');
         const date = new Date();
         date.setHours(parseInt(hours), parseInt(minutes));
@@ -651,7 +659,7 @@ export default function MyAttendance() {
                                     entry.approvalStatus === 'Approved'
                                         ? 'bg-[#017a5b] px-2 py-1 rounded-xl'
                                         : entry.approvalStatus === 'Rejected'
-                                            ? 'bg-red-600'
+                                            ? 'bg-red-800 rounded-xl px-2 py-1'
                                             : 'bg-orange-800 px-2 py-1 rounded-xl'
                                 }>
                                     {/* {`Approval Status: `} */}
@@ -733,8 +741,12 @@ export default function MyAttendance() {
     };
 
     // Filter function to get today's login entries
+
     const filterTodayEntries = (entries: LoginEntry[]) => {
-        return entries.filter((entry) => isToday(new Date(entry.timestamp)));
+        return entries.filter((entry) => {
+            // Exclude regularization entries and only include login and logout actions
+            return isToday(new Date(entry.timestamp)) && (entry.action === 'login' || entry.action === 'logout');
+        });
     };
 
     const todayEntries = filterTodayEntries(filteredEntries);
@@ -842,16 +854,22 @@ export default function MyAttendance() {
                 ) : (
                     <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-full mx-12">
                         {todayEntries.map((entry: LoginEntry, index: number) => {
+                            const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                            const formattedLogoutTime = entry.logoutTime
+                                ? new Date(entry.logoutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+                                : null;
                             const date = new Date(entry.loginTime);
                             return (
                                 <div key={index} className="flex gap-4 justify-around w-full">
                                     <div>
-                                        <h1 className='text-xs py-1'>Login: {entry.loginTime}</h1> {/* Displaying the date */}
+                                        <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
                                     </div>
-                                    <div>
-                                        <h2 className='text-xs py-1'>Logout: {entry.logoutTime}</h2> {/* Displaying the time */}
-                                    </div>
-                                    <div className={`px-2 py-1  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-600 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
+                                    {entry.logoutTime && (
+                                        <div>
+                                            <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
+                                        </div>
+                                    )}
+                                    <div className={`px-2 py-1 h-6  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
                                         <h1 className='text-xs'>
                                             {entry.action.toUpperCase()}
                                         </h1>
@@ -859,7 +877,7 @@ export default function MyAttendance() {
                                     {/* Render map icon only if lat and lng are present */}
                                     {entry.lat && entry.lng && (
                                         <div>
-                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-gray-500 ml-2">
+                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ml-2">
                                                 <MapPin />
                                             </button>
                                         </div>
@@ -874,7 +892,7 @@ export default function MyAttendance() {
             <div className="apply-regularization-section flex justify-center mb-6">
                 <button
                     onClick={() => setIsRegularizationModalOpen(true)}
-                    className="bg-[#017A5B] text-white py-2 px-4 rounded text-sm"
+                    className="bg-[#017A5B] text-white py-2 px-4 rounded text-xs"
                 >
                     Apply Regularization
                 </button>
@@ -888,19 +906,22 @@ export default function MyAttendance() {
                 <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Month</button>
                 <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Last Month</button>
                 <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>All Time</button>
-                <button onClick={openCustomModal} className="px-4 py-2 rounded bg-transparent border text-xs">Custom</button>
+                <button onClick={openCustomModal} className={`px-4 py-2 rounded text-xs border ${customDateRange.start && customDateRange.end ? 'bg-[#7c3987] text-white' : 'bg-transparent'
+                    }`}>Custom</button>
             </div>
             <div className="flex justify-center gap-4 mt-2 mb-6">
                 <button
                     onClick={() => setActiveAttendanceTab('dailyReport')}
-                    className={`px-4 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
+                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
                 >
+                    <img src='/icons/report.png' className='invert-[100] h-4' />
                     Daily Report
                 </button>
                 <button
                     onClick={() => setActiveAttendanceTab('regularization')}
-                    className={`px-4 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
+                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
                 >
+                    <Users2 className='h-4' />
                     Regularization
                 </button>
             </div>
@@ -914,10 +935,28 @@ export default function MyAttendance() {
                         ) : (
                             <>
                                 <div className="flex justify-center mb-4 gap-4">
-                                    <div className="text-xs border px-4 py-1 ">Days: {daysCount}</div>
-                                    <div className="text-xs border px-4 py-1">Verified: {verifiedCount}</div>
-                                    <div className="text-xs border px-4 py-1">Regularized: {regularizedCount}</div>
-                                    <div className="text-xs border px-4 py-1">Hours: {totalHours}</div>
+                                    <div className="text-xs flex  border px-4 py-1 ">
+                                        <Calendar className='h-4 text-blue-500 mt-[1px]' />
+                                        <h1 className='text-xs mt-[3px] '>
+                                        </h1>Days: {daysCount}
+
+                                    </div>
+                                    <div className="text-xs flex border px-4 py-1">
+                                        <CheckCircle className='h-4 text-green-500 mt-[1px]' />
+                                        <h1 className='text-xs mt-[1px]'>  Verified: {verifiedCount}</h1>
+                                    </div>
+                                    <div className="text-xs flex  border px-4 py-1">
+                                        <CalendarClock className='h-4 text-white' />
+                                        <h1 className='mt-[1px]'>
+                                            Regularized: {regularizedCount}
+                                        </h1>
+                                    </div>
+                                    <div className="text-xs border flex px-4 py-1">
+                                        <Clock className='h-4 mt-[1px] text-orange-600' />
+                                        <h1 className='text-xs mt-[1px]'>
+                                            Hours: {totalHours}
+                                        </h1>
+                                    </div>
                                 </div>
 
                                 {Object.keys(groupedEntries).map((date, index) => (
@@ -1008,9 +1047,9 @@ export default function MyAttendance() {
                                 {/* Face Logging Animation (if capturedImage exists) */}
                                 {capturedImage && (
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        {/* Example face detection animation */}
+                                        {/* Example face detection animtion */}
                                         <div className="face-animation">
-                                            <div className="border-4 border-green-500 rounded-full p-4"></div>
+                                            <img src='/animations/facelogin.png' className='h-28 animate-ping' />
                                         </div>
                                     </div>
                                 )}
@@ -1025,7 +1064,7 @@ export default function MyAttendance() {
                             </button>
 
                             {/* Display Lat and Long */}
-                            <div className="text-center flex w-full justify-center text-xs text-gray-400">
+                            <div className="text-center flex w-full justify-center text-xs text-white -400">
                                 <p className='flex gap-2'>
                                     <MapPinIcon className='h-4' />
                                     {location ? `Lat: ${location.lat}, Long: ${location.lng}` : 'Fetching location...'}
@@ -1046,6 +1085,8 @@ export default function MyAttendance() {
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
                     <Dialog.Content className="fixed inset-0 flex justify-center items-center">
                         <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                            <Dialog.DialogClose className='text-black p-2 mt-4 ml-96'>X</Dialog.DialogClose>
+
                             {mapCoords && (
                                 <MapContainer center={[mapCoords.lat, mapCoords.lng]} zoom={13} scrollWheelZoom={false} style={{ height: '400px', width: '100%' }}>
                                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' />
@@ -1063,60 +1104,92 @@ export default function MyAttendance() {
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
                     <Dialog.Content className="fixed inset-0 flex justify-center items-center">
-                        <div className="bg-[#1A1C20] p-6 rounded-lg max-w-md w-full">
+                        <div className="bg-[#1A1C20] p-4 rounded-lg max-w-md w-full">
                             <div className='flex justify-between'>
-                                <h3 className="text-xs mb-4 text-white">Select Custom Date Range</h3>
-                                <Dialog.DialogClose className='h-2 scale-75'>X</Dialog.DialogClose>
+                                <h3 className="text-md mb-4 text-white">Select Custom Date Range</h3>
+                                <Dialog.DialogClose className='h-7 scale-75'>X</Dialog.DialogClose>
                             </div>
 
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
-                                    const form = e.target as HTMLFormElement;
-                                    const start = new Date(form.start.value);
-                                    const end = new Date(form.end.value);
-                                    handleCustomDateSubmit(start, end);
+                                    handleCustomDateSubmit(customDateRange.start as Date, customDateRange.end as Date);
                                 }}
                                 className="space-y-4"
                             >
-                                {/* Start Date Input */}
+                                {/* Start Date Button */}
                                 <div>
-                                    <label htmlFor="start" className="absolute -mt-2 bg-[#1a1c20] ml-2 text-xs  font-medium text-white -200">
-                                        Start Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="start"
-                                        name="start"
-                                        required
-                                        className="mt-1 block w-full p-2 text-xs  rounded"
-                                    />
+                                    <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">Start Date</h1>
+                                    <button
+                                        type="button"
+                                        className="  text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                        onClick={() => setIsStartPickerOpen(true)} // Open start date picker
+                                    >
+                                        {customDateRange.start
+                                            ? new Date(customDateRange.start).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
+                                            : 'Select Start Date'}
+                                    </button>
                                 </div>
 
-                                {/* End Date Input */}
-                                <div className='mt-2'>
-                                    <label htmlFor="end" className="absolute text-xs ml-2 bg-[#1a1c20] -mt-2  font-medium text-white">
-                                        End Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="end"
-                                        name="end"
-                                        required
-                                        className="mt-1 block w-full p-2 text-xs  rounded"
-                                    />
+                                {/* End Date Button */}
+                                <div>
+                                    <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">End Date</h1>
+                                    <button
+                                        type="button"
+                                        className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                        onClick={() => setIsEndPickerOpen(true)} // Open end date picker
+                                    >
+                                        {customDateRange.end
+                                            ? new Date(customDateRange.end).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
+                                            : 'Select End Date'}
+                                    </button>
                                 </div>
 
                                 {/* Submit Button */}
                                 <div>
-                                    <button
-                                        type="submit"
-                                        className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
-                                    >
+                                    <button type="submit" className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs">
                                         Apply
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
+
+            {/* Start Date Picker Modal */}
+            <Dialog.Root open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
+                    <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
+                        <div className="bg-[#1A1C20] p-4 z-[100] rounded-lg max-w-xl  scale-75 w-full">
+                            <CustomDatePicker
+                                selectedDate={customDateRange.start}
+                                onDateChange={(newDate) => {
+                                    setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                                    setIsStartPickerOpen(false); // Close picker after selecting the date
+                                }}
+                                onCloseDialog={() => setIsStartPickerOpen(false)}
+                            />
+                        </div>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
+
+            {/* End Date Picker Modal */}
+            <Dialog.Root open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
+                    <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
+                        <div className="bg-[#1A1C20] p-4 z-[100] rounded-lg scale-75 max-w-xl w-full">
+                            <CustomDatePicker
+                                selectedDate={customDateRange.end}
+                                onDateChange={(newDate) => {
+                                    setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                                    setIsEndPickerOpen(false); // Close picker after selecting the date
+                                }}
+                                onCloseDialog={() => setIsEndPickerOpen(false)}
+                            />
                         </div>
                     </Dialog.Content>
                 </Dialog.Portal>

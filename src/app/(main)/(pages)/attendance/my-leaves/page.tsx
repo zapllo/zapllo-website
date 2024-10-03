@@ -15,6 +15,8 @@ import MyLeaveForm from '@/components/forms/MyLeavesForm'; // Your form componen
 import LeaveDetails from '@/components/sheets/leaveDetails';
 import { CheckCircle, Circle, Info } from 'lucide-react';
 import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
+import Loader from '@/components/ui/loader';
+import CustomDatePicker from '@/components/globals/date-picker';
 
 interface LeaveType {
     allotedLeaves: number;
@@ -123,10 +125,13 @@ const MyLeaves: React.FC = () => {
     const [infoModalContent, setInfoModalContent] = useState<{ title: string; description: string; details: string } | null>(null);
     const [activeTab, setActiveTab] = useState('thisMonth'); // Set default to 'thisMonth'
     const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({
         start: null,
         end: null,
     });
+    const [isStartPickerOpen, setIsStartPickerOpen] = useState(false); // For triggering the start date picker
+    const [isEndPickerOpen, setIsEndPickerOpen] = useState(false); // For triggering the end date picker
 
     const normalizeDate = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -223,6 +228,7 @@ const MyLeaves: React.FC = () => {
 
     const fetchLeaveDetails = async (leaveTypes: LeaveType[]) => {
         try {
+            setLoading(true)
             const leaveDetailsMap: { [key: string]: LeaveDetails } = {};
 
             for (const leaveType of leaveTypes) {
@@ -233,6 +239,7 @@ const MyLeaves: React.FC = () => {
                         totalAllotedLeaves: response.data.data.allotedLeaves,
                         userLeaveBalance: response.data.data.userLeaveBalance,
                     };
+                    setLoading(false)
                 } else {
                     leaveDetailsMap[leaveType._id] = {
                         totalAllotedLeaves: 0,
@@ -249,9 +256,11 @@ const MyLeaves: React.FC = () => {
 
     const fetchUserLeaves = async () => {
         try {
+            setLoading(true)
             const response = await axios.get('/api/leaves');
             if (response.data.success) {
                 setLeaves(response.data.leaves);
+                setLoading(false)
             } else {
                 console.error('Error: No leaves found');
             }
@@ -292,16 +301,24 @@ const MyLeaves: React.FC = () => {
     const approvedCount = leaves.filter((leave) => leave.status === 'Approved').length;
     const rejectedCount = leaves.filter((leave) => leave.status === 'Rejected').length;
 
-    console.log(leaveDetails, 'leaveDetails')
+    console.log(leaveDetails, 'leaveDetails');
+
+    if (loading) {
+        return (
+            <div className='mt-32 flex justify-center items-center'>
+                <Loader />
+            </div>
+        )
+    }
 
     return (
-        <div className="container h-screen overflow-y-scroll scrollbar-hidet mx-auto p-6">
+        <div className="container h-screen  overflow-y-scroll scrollbar-hide t mx-auto p-6">
 
             <div className="flex items-center justify-center gap-4 mb-4">
                 <select
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className="border rounded px-3 outline-none text-xs py-2"
+                    className="border-2 rounded px-3 border-[#380E3D] outline-none text-xs py-2"
                 >
                     {[2022, 2023, 2024, 2025].map((year) => (
                         <option key={year} value={year}>
@@ -313,7 +330,7 @@ const MyLeaves: React.FC = () => {
                 <select
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                    className="border rounded px-3 outline-none text-xs py-2"
+                    className="border-2 border-[#380E3D] rounded px-3 outline-none text-xs py-2"
                 >
                     {months.map((month) => (
                         <option key={month.value} value={month.value}>
@@ -434,7 +451,6 @@ const MyLeaves: React.FC = () => {
                 </div>
             )}
 
-
             {infoModalContent && (
                 <Dialog open={isInfoModalOpen} onOpenChange={setIsInfoModalOpen}>
                     <DialogContent className='w-96'>
@@ -464,7 +480,6 @@ const MyLeaves: React.FC = () => {
                 </Dialog>
             )}
 
-            {/* Display Filtered Leaves */}
             {/* Display Filtered Leaves */}
             <div className="grid grid-cols-1 w-full mb-12 ">
                 {filteredLeaves?.length > 0 ? (
@@ -547,51 +562,50 @@ const MyLeaves: React.FC = () => {
                 )}
             </div>
             {selectedLeave && <LeaveDetails selectedLeave={selectedLeave} onClose={handleSheetClose} />}
-            {/* Custom Date Range Modal */}
+
             {/* Custom Date Range Modal */}
             <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
                 <DialogContent className='w-96'>
                     <div className="flex justify-between">
-                        <DialogTitle className="text-xs mb-4 text-white">Select Custom Date Range</DialogTitle>
-                        <DialogClose className="h-2 scale-75">X</DialogClose>
+                        <DialogTitle className="text-md mb-4 font-medium text-white">Select Custom Date Range</DialogTitle>
+                        <DialogClose className="h-8 scale-75">X</DialogClose>
                     </div>
 
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            const form = e.target as HTMLFormElement;
-                            const start = new Date(form.start.value);
-                            const end = new Date(form.end.value);
-                            handleCustomDateSubmit(start, end);
+                            if (customDateRange.start && customDateRange.end) {
+                                handleCustomDateSubmit(customDateRange.start, customDateRange.end);
+                            }
                         }}
                         className="space-y-4"
                     >
-                        {/* Start Date Input */}
+                        {/* Start Date Button */}
                         <div>
-                            <label htmlFor="start" className="absolute -mt-2 bg-[#1a1c20] ml-2 text-xs font-medium text-white">
-                                Start Date
-                            </label>
-                            <input
-                                type="date"
-                                id="start"
-                                name="start"
-                                required
-                                className="mt-1 block w-full p-2 text-xs rounded"
-                            />
+                            <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">Start Date</h1>
+                            <button
+                                type="button"
+                                className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                onClick={() => setIsStartPickerOpen(true)} // Open start date picker
+                            >
+                                {customDateRange.start
+                                    ? new Date(customDateRange.start).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
+                                    : 'Select Start Date'}
+                            </button>
                         </div>
 
-                        {/* End Date Input */}
-                        <div className="mt-2">
-                            <label htmlFor="end" className="absolute text-xs ml-2 bg-[#1a1c20] -mt-2 font-medium text-white">
-                                End Date
-                            </label>
-                            <input
-                                type="date"
-                                id="end"
-                                name="end"
-                                required
-                                className="mt-1 block w-full p-2 text-xs rounded"
-                            />
+                        {/* End Date Button */}
+                        <div>
+                            <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">End Date</h1>
+                            <button
+                                type="button"
+                                className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                onClick={() => setIsEndPickerOpen(true)} // Open end date picker
+                            >
+                                {customDateRange.end
+                                    ? new Date(customDateRange.end).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
+                                    : 'Select End Date'}
+                            </button>
                         </div>
 
                         {/* Submit Button */}
@@ -604,6 +618,37 @@ const MyLeaves: React.FC = () => {
                             </button>
                         </div>
                     </form>
+                </DialogContent>
+            </Dialog>
+            {/* Start Date Picker Modal */}
+            <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
+                <DialogContent className='w-full scale-75'>
+                    <div className="flex justify-between">
+                        <CustomDatePicker
+                            selectedDate={customDateRange.start}
+                            onDateChange={(newDate) => {
+                                setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                                setIsStartPickerOpen(false); // Close picker after selecting the date
+                            }}
+                            onCloseDialog={() => setIsStartPickerOpen(false)}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* End Date Picker Modal */}
+            <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
+                <DialogContent className='w-full scale-75'>
+                    <div className="flex justify-between">
+                        <CustomDatePicker
+                            selectedDate={customDateRange.end}
+                            onDateChange={(newDate) => {
+                                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                                setIsEndPickerOpen(false); // Close picker after selecting the date
+                            }}
+                            onCloseDialog={() => setIsEndPickerOpen(false)}
+                        />
+                    </div>
                 </DialogContent>
             </Dialog>
         </div >

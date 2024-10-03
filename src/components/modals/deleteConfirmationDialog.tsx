@@ -18,7 +18,8 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
     title = "Confirm Delete",
     description = "Are you sure you want to delete this item? This action cannot be undone."
 }) => {
-    return (
+      console.log('isOpen in Dialog:', isOpen); // Log to confirm the isOpen prop is being passed correctly
+    return (    
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed z-[100] inset-0 bg-black opacity-50" />

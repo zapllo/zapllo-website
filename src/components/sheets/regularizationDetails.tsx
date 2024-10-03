@@ -36,8 +36,10 @@ function formatTimeToAMPM(timeString: string): string {
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
+
 const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({ selectedRegularization, onClose }) => {
     if (!selectedRegularization) return null;
+    console.log(selectedRegularization, 'selected regularization object')
 
     return (
         <Sheet open={!!selectedRegularization} onOpenChange={onClose}>
@@ -75,10 +77,10 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({ selectedR
                                     <div className="flex gap-2 justify-start">
                                         <div className="h-6 w-6 rounded-full bg-primary">
                                             <h1 className="text-center uppercase text-xs mt-1">
-                                                {selectedRegularization.userId.reportingManager.firstName[0]}{selectedRegularization.userId.reportingManager.lastName[0]}
+                                                {selectedRegularization.userId?.reportingManager?.firstName[0]}{selectedRegularization.userId.reportingManager?.lastName[0]}
                                             </h1>
                                         </div>
-                                        <h1 id="userName" className="col-span-3  text-sm">{`${selectedRegularization.userId.reportingManager.firstName} ${selectedRegularization.userId.reportingManager.lastName}`}</h1>
+                                        <h1 id="userName" className="col-span-3  text-sm">{`${selectedRegularization.userId.reportingManager?.firstName} ${selectedRegularization.userId.reportingManager?.lastName}`}</h1>
                                     </div>
                                 )}
                             </div>
@@ -162,7 +164,7 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({ selectedR
                                     {/* Display remark and approvedBy user */}
                                     <div className="flex gap-2 items-start">
                                         <div className="h-6 w-6 rounded-full bg-primary">
-                                            <h1 className="text-center uppercase text-xs mt-1">{selectedRegularization.userId?.reportingManager.firstName[0]}{selectedRegularization.userId.reportingManager?.lastName[0]}</h1>
+                                            <h1 className="text-center uppercase text-xs mt-1">{selectedRegularization.userId?.reportingManager?.firstName[0]}{selectedRegularization.userId.reportingManager?.lastName[0]}</h1>
                                         </div>
                                         <div>
                                             <h1 className="text-sm font-semibold">{`${selectedRegularization.userId.reportingManager?.firstName} ${selectedRegularization.userId.reportingManager?.lastName}`}</h1>

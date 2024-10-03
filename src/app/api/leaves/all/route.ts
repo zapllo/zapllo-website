@@ -22,14 +22,22 @@ export async function GET(request: NextRequest) {
         // Fetch all leaves for users in the same organization
         const organizationId = user.organization;
 
-        // First populate 'user' and then filter leaves by the organization of the user
+        // First populate 'user' and their reporting manager, then filter leaves by the organization of the user
         const leaves = await Leave.find({})
             .populate({
                 path: 'user',
                 match: { organization: organizationId }, // Filter users by organization
-                select: 'firstName lastName organization', // Select necessary fields
+                select: 'firstName lastName organization reportingManager', // Select necessary fields
+                populate: {
+                    path: 'reportingManager', // Populate reporting manager details
+                    select: 'firstName lastName' // Select firstName and lastName of the reporting manager
+                }
             })
             .populate('leaveType', 'leaveType') // Populate leaveType details
+            .populate({
+                path: 'approvedBy rejectedBy', // Populate both approvedBy and rejectedBy
+                select: 'firstName lastName',  // Select firstName and lastName
+            })
             .exec();
 
         // Filter out any leaves where the user doesn't match the organization

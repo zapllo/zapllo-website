@@ -442,7 +442,7 @@ const AttendanceDashboard: React.FC = () => {
         </div>
       </div>
       <div className=" flex gap-2">
-        <h2 className="text-lg font-semibold">Monthly Report</h2>
+        <h2 className="text-lg font-semibold mt-1">Monthly Report</h2>
         <div className="flex items-center  space-x-4">
           {/* Month selector */}
           <select
@@ -461,10 +461,10 @@ const AttendanceDashboard: React.FC = () => {
 
       {/* Summary */}
       <div className="mb-4 flex w-full justify-center space-x-2">
-        <span className="border text-sm bg-blue-900 text-white p-2 rounded">Total Days: {workingDays}</span>
-        <span className="border text-sm bg-yellow-600 text-white p-2 rounded">Working: {presentCount + leaveCount}</span>
-        <span className="border text-sm bg-green-700 text-white p-2 rounded">Week Offs: {totalDays - workingDays}</span>
-        <span className="border text-sm bg-red-700 text-white p-2 rounded">Holidays: {holidayCount}</span>
+        <span className="border text-xs bg-blue-900 text-white p-2 rounded">Total Days: {workingDays}</span>
+        <span className="border text-xs bg-yellow-600 text-white p-2 rounded">Working: {presentCount + leaveCount}</span>
+        <span className="border text-xs bg-green-700 text-white p-2 rounded">Week Offs: {totalDays - workingDays}</span>
+        <span className="border text-xs bg-red-700 text-white p-2 rounded">Holidays: {holidayCount}</span>
       </div>
 
       {/* Monthly Attendance Report */}
@@ -488,9 +488,9 @@ const AttendanceDashboard: React.FC = () => {
                 parseInt(selectedAttendanceDate.split('-')[1]) - 1
               ).map((day, index) => {
                 const dayString = day.toISOString().split('T')[0];
-                const isPresent = attendance.some(entry => entry.date === dayString && entry.present);
-                const isLeave = leaves.some(leave => leave.fromDate <= dayString && leave.toDate >= dayString);
-                const isHoliday = holidays.some(holiday => holiday.holidayDate === dayString);
+                const isPresent = attendance?.some(entry => entry.date === dayString && entry.present);
+                const isLeave = leaves?.some(leave => leave.fromDate <= dayString && leave.toDate >= dayString);
+                const isHoliday = holidays?.some(holiday => holiday.holidayDate === dayString);
                 const isAbsent = !isPresent && !isLeave && !isHoliday;
 
                 return (

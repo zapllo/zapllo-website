@@ -39,8 +39,18 @@ export async function GET(request: NextRequest) {
             userId: { $in: organizationUserIds },
             action: 'regularization',
         })
-            .populate('userId', 'firstName lastName email'); // Populate user details if needed
+            .populate('userId', 'firstName lastName email reportingManager') // Populate user and reporting manager fields
+            .populate({
+                path: 'userId',
+                select: 'firstName lastName email reportingManager',
+                populate: {
+                    path: 'reportingManager',
+                    model: 'users', // Ensure the correct model is populated
+                    select: 'firstName lastName', // Select firstName and lastName only
+                },
+            });
 
+        // Respond with success and the pending regularizations data
         return NextResponse.json(
             { success: true, regularizations: pendingRegularizations },
             { status: 200 }
