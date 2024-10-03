@@ -596,7 +596,7 @@ export default function MyAttendance() {
 
 
     const filterDailyReportEntries = (entries: LoginEntry[]) => {
-        return entries.filter((entry) => {
+        return entries?.filter((entry) => {
             if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
                 return false;
             }
@@ -605,7 +605,7 @@ export default function MyAttendance() {
     };
 
     const filterRegularizationEntries = (entries: LoginEntry[]) => {
-        return entries.filter((entry) => entry.action === 'regularization');
+        return entries?.filter((entry) => entry.action === 'regularization');
     };
 
     function formatTimeToAMPM(timeString: string | undefined): string {
@@ -691,8 +691,8 @@ export default function MyAttendance() {
         : filterRegularizationEntries(filteredEntries);
 
     const calculateHoursBetweenLoginLogout = (entries: LoginEntry[]) => {
-        const login = entries.find((entry) => entry.action === 'login');
-        const logout = entries.find((entry) => entry.action === 'logout');
+        const login = entries?.find((entry) => entry.action === 'login');
+        const logout = entries?.find((entry) => entry.action === 'logout');
 
         if (login && logout) {
             const loginTime = new Date(login.timestamp).getTime();
@@ -714,13 +714,13 @@ export default function MyAttendance() {
     useEffect(() => {
         const dailyReportEntries = filterDailyReportEntries(filteredEntries);
 
-        const uniqueDays = new Set(dailyReportEntries.map(entry => new Date(entry.timestamp).toLocaleDateString()));
-        const totalRegularized = dailyReportEntries.filter(entry => entry.action === 'regularization').length;
-        const verifiedRegularized = dailyReportEntries.filter(entry => entry.approvalStatus === 'Approved').length;
+        const uniqueDays = new Set(dailyReportEntries?.map(entry => new Date(entry.timestamp).toLocaleDateString()));
+        const totalRegularized = dailyReportEntries?.filter(entry => entry.action === 'regularization').length;
+        const verifiedRegularized = dailyReportEntries?.filter(entry => entry.approvalStatus === 'Approved').length;
 
         let totalHoursAcc = 0;
         uniqueDays.forEach(day => {
-            const entriesForDay = dailyReportEntries.filter(entry => new Date(entry.timestamp).toLocaleDateString() === day);
+            const entriesForDay = dailyReportEntries?.filter(entry => new Date(entry.timestamp).toLocaleDateString() === day);
             totalHoursAcc += parseFloat(calculateHoursBetweenLoginLogout(entriesForDay));
         });
 
@@ -743,7 +743,7 @@ export default function MyAttendance() {
     // Filter function to get today's login entries
 
     const filterTodayEntries = (entries: LoginEntry[]) => {
-        return entries.filter((entry) => {
+        return entries?.filter((entry) => {
             // Exclude regularization entries and only include login and logout actions
             return isToday(new Date(entry.timestamp)) && (entry.action === 'login' || entry.action === 'logout');
         });
@@ -764,7 +764,7 @@ export default function MyAttendance() {
 
     // Filter approved entries and group them by day
     const filterApprovedEntries = (entries: LoginEntry[]) => {
-        return entries.filter((entry) => {
+        return entries?.filter((entry) => {
             if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
                 return false;
             }
