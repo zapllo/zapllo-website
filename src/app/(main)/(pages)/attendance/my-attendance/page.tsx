@@ -154,7 +154,7 @@ export default function MyAttendance() {
     }, [isLoggedIn]);
 
     const handleFaceRegistrationSubmit = async () => {
-        if (selectedImages.length !== 3) {
+        if (selectedImages?.length !== 3) {
             alert('Please upload exactly 3 images.');
             return;
         }
@@ -634,7 +634,7 @@ export default function MyAttendance() {
 
         return (
             <>
-                {regularizationEntries.length === 0 ? (
+                {regularizationEntries?.length === 0 ? (
                     <p className="text-center text-gray-600">No Regularization Entries found!</p>
                 ) : (
                     <ul className="space-y-4">
@@ -843,7 +843,7 @@ export default function MyAttendance() {
 
 
             <div className="last-two-days-entries p-4 w-full justify-center flex mb-6">
-                {todayEntries.length === 0 ? (
+                {todayEntries?.length === 0 ? (
                     <div className='bg-[#1a1c20] w-1/2 rounded p-4'>
                         <div className='flex w-full justify-center'>
                             <img src='/animations/not found.gif' className='h-40 ' />
@@ -930,7 +930,7 @@ export default function MyAttendance() {
             <div className="entries-list mb-36">
                 {activeAttendanceTab === 'dailyReport' ? (
                     <>
-                        {Object.keys(groupedEntries).length === 0 ? (
+                        {Object.keys(groupedEntries)?.length === 0 ? (
                             <p className="text-center text-gray-600">No Entries for the selected time frame!</p>
                         ) : (
                             <>
@@ -1329,7 +1329,7 @@ export default function MyAttendance() {
                             />
 
                             <div className="grid grid-cols-3 gap-4 mb-4">
-                                {selectedImages.length > 0 &&
+                                {selectedImages?.length > 0 &&
                                     selectedImages.map((file, index) => (
                                         <div key={index}>
                                             <img
