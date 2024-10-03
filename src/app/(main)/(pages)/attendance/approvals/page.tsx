@@ -311,7 +311,7 @@ export default function Approvals() {
 
             if (isLeave(selectedEntry)) {
                 // Handle rejection for Leave
-                const response = await axios.patch(`/api/leaveApprovals/${selectedEntry._id}`, {
+                const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
                     action: 'reject',
                     notes: remarks,
                 });
@@ -327,7 +327,7 @@ export default function Approvals() {
                 }
             } else if (isRegularization(selectedEntry)) {
                 // Handle rejection for Regularization
-                const response = await axios.patch(`/api/regularization-approvals/${selectedEntry._id}`, {
+                const response = await axios.post(`/api/regularization-approvals/${selectedEntry._id}`, {
                     action: 'reject',
                     notes: remarks,
                 });
@@ -354,7 +354,7 @@ export default function Approvals() {
 
             if (isLeave(selectedEntry)) {
                 // Handle approval for Leave
-                const response = await axios.patch(`/api/leaveApprovals/${selectedEntry._id}`, {
+                const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
                     action: 'approve',
                 });
 
@@ -368,7 +368,7 @@ export default function Approvals() {
                 }
             } else if (isRegularization(selectedEntry)) {
                 // Handle approval for Regularization
-                const response = await axios.patch(`/api/regularization-approvals/${selectedEntry._id}`, {
+                const response = await axios.post(`/api/regularization-approvals/${selectedEntry._id}`, {
                     action: 'approve',
                 });
 
