@@ -7,6 +7,8 @@ import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Assuming this function extracts user data from token
 
+export const dynamic = 'force-dynamic'; // Add this line
+
 export async function POST(request: NextRequest) {
     await connectDB();
 

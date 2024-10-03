@@ -6,6 +6,8 @@ import Holiday from '@/models/holidayModel'; // Import the Holiday model
 import User, { IUser } from '@/models/userModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 
+export const dynamic = 'force-dynamic'; // Add this line
+
 export async function GET(req: NextRequest) {
 
     await connectDB();

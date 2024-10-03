@@ -4,6 +4,8 @@ import LoginEntry from '@/models/loginEntryModel';
 import User from '@/models/userModel';
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Your custom token extraction function
 
+export const dynamic = 'force-dynamic'; // Add this line
+
 export async function GET(request: NextRequest) {
     try {
         // Extract manager's userId from the token

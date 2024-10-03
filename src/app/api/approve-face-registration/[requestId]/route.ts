@@ -3,6 +3,8 @@ import FaceRegistrationRequest from '@/models/faceRegistrationRequest';
 import User from '@/models/userModel'; // Assuming you have the User model
 import connectDB from '@/lib/db'; // Utility function for MongoDB connection
 
+export const dynamic = 'force-dynamic'; // Add this line
+
 // POST: Approve or reject face registration request
 export async function POST(req: NextRequest, { params }: { params: { requestId: string } }) {
     try {
