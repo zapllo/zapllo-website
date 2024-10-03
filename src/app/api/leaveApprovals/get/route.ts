@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'; // Add this line at the top
 import { getDataFromToken } from "@/helper/getDataFromToken";
 import Leave from "@/models/leaveModel";
 import User from "@/models/userModel";

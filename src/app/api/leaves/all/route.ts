@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'; // Add this line at the top
 import { NextRequest, NextResponse } from 'next/server';
 import Leave from '@/models/leaveModel';
 import User from '@/models/userModel';
