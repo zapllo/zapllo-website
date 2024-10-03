@@ -43,7 +43,7 @@ interface LoginEntry {
 
 // Helper function to group entries by day
 const groupEntriesByDay = (entries: LoginEntry[]) => {
-    return entries.reduce((acc: { [date: string]: LoginEntry[] }, entry) => {
+    return entries?.reduce((acc: { [date: string]: LoginEntry[] }, entry) => {
         const date = new Date(entry.timestamp).toLocaleDateString(); // Group by date
         if (!acc[date]) {
             acc[date] = [];
@@ -853,7 +853,7 @@ export default function MyAttendance() {
                     </div>
                 ) : (
                     <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-full mx-12">
-                        {todayEntries.map((entry: LoginEntry, index: number) => {
+                        {todayEntries?.map((entry: LoginEntry, index: number) => {
                             const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                             const formattedLogoutTime = entry.logoutTime
                                 ? new Date(entry.logoutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
