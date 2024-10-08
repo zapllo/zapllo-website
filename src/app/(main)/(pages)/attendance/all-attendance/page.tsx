@@ -372,7 +372,15 @@ export default function AllAttendance() {
       {filter === 'Attendance' && (
         <Accordion2 type="multiple" className="space-y-4">
           {Object.keys(groupedEntries).length === 0 ? (
-            <p className="text-gray-600">No attendance records found.</p>
+            <div className='flex w-full justify-center '>
+              <div className="mt-8 ml-4">
+                <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                <h1 className="text-center font-bold text-md mt-2 ">
+                  No Attendance Records Found
+                </h1>
+                <p className="text-center text-sm ">The list is currently empty for the selected filters</p>
+              </div>
+            </div>
           ) : (
             Object.keys(groupedEntries).map((userId) => (
               <AccordionItem2 key={userId} value={userId}>
@@ -417,7 +425,15 @@ export default function AllAttendance() {
       {filter === 'Regularization' && (
         <div className="space-y-4">
           {filteredRegularizations.length === 0 ? (
-            <p className="text-gray-600">No regularization records found.</p>
+            <div className='flex w-full justify-center '>
+              <div className="mt-8 ml-4">
+                <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                <h1 className="text-center font-bold text-md mt-2 ">
+                  No Regularization Entries Found
+                </h1>
+                <p className="text-center text-sm ">The list is currently empty for the selected filters</p>
+              </div>
+            </div>
           ) : (
             filteredRegularizations.map((entry) => (
               <div className="border cursor-pointer" key={entry._id}>
@@ -436,10 +452,10 @@ export default function AllAttendance() {
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs ${entry.approvalStatus === 'Pending'
-                        ? 'bg-yellow-800 text-white'
-                        : entry.approvalStatus === 'Approved'
-                          ? 'bg-green-800 text-white'
-                          : 'bg-red-500 text-white'
+                      ? 'bg-yellow-800 text-white'
+                      : entry.approvalStatus === 'Approved'
+                        ? 'bg-green-800 text-white'
+                        : 'bg-red-500 text-white'
                       }`}
                   >
                     {entry.approvalStatus}

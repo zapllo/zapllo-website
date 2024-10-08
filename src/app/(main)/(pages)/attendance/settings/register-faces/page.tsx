@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import Loader from '@/components/ui/loader'; // Assuming you have a Loader component
 import * as Dialog from '@radix-ui/react-dialog';
-import { CheckCheck, Circle, Trash2 } from 'lucide-react';
+import { CheckCheck, Circle, Cross, Trash2 } from 'lucide-react';
 import { endOfMonth, startOfDay, startOfMonth, startOfWeek, subDays } from 'date-fns';
 import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
 import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
+import { toast, Toaster } from 'sonner';
 
 interface IUser {
   _id: string;
@@ -135,6 +136,7 @@ export default function RegisterFace() {
 
         if (registerResponse.ok) {
           console.log('Face details registered successfully:', registerData);
+          toast.success('Face details registered successfully');
         } else {
           console.error('Error registering face details:', registerData.error);
         }
@@ -151,9 +153,11 @@ export default function RegisterFace() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
+
         const response = await fetch('/api/face-registration-request');
         const data = await response.json();
         if (response.ok) {
+          console.log('Requests:', data.requests); // Check the response data here
           setRequests(data.requests);
         } else {
           setError(data.message);
@@ -180,6 +184,8 @@ export default function RegisterFace() {
 
       const data = await response.json();
       if (response.ok) {
+        toast.success("Face Approved successfully!")
+
         setRequests((prevRequests) =>
           prevRequests.filter((request) => request._id !== requestId)
         );
@@ -205,6 +211,7 @@ export default function RegisterFace() {
         setRequests((prevRequests) =>
           prevRequests.filter((request) => request._id !== requestId)
         );
+        toast.success("Face deleted successfully!");
       } else {
         setError(data.message);
       }
@@ -266,7 +273,7 @@ export default function RegisterFace() {
 
   return (
     <div className="container mx-auto p-6">
-
+      <Toaster />
 
       {/* Date Filters */}
       <div className="flex justify-center gap-4 mb-2">
@@ -310,7 +317,7 @@ export default function RegisterFace() {
       <Dialog.Root>
         <Dialog.Trigger asChild>
           <div className="flex justify-center mb-2 w-full">
-            <button className="bg-[#017A5B] text-white text-sm py-2 px-4 rounded w-fit mt-2 ml-2">
+            <button className="bg-[#017A5B] text-white text-xs py-2 px-4 rounded w-fit mt-2 ml-2">
               Register Faces
             </button>
           </div>
@@ -428,13 +435,22 @@ export default function RegisterFace() {
         </button>
       </div>
       {/* Request Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-hide">
         {loading ? (
           <Loader />
         ) : error ? (
           <p className="text-red-500">{error}</p>
-        ) : filteredRequests.length === 0 ? (
-          <p className="text-center text-gray-600">No requests found</p>
+        ) : filteredByStatus.length === 0 ? (
+          // Display this message when there are no requests based on filters
+          <div className='flex w-full justify-center'>
+            <div className="mt-8 ml-4">
+              <img src='/animations/notfound.gif' className="h-56 ml-8" alt="No requests found" />
+              <h1 className="text-center font-bold text-md mt-2">
+                No Face Registration Requests Found
+              </h1>
+              <p className="text-center text-sm">The list is currently empty for the selected filters</p>
+            </div>
+          </div>
         ) : (
           <table className="min-w-full table-auto border  text-white">
             <thead>
@@ -469,32 +485,36 @@ export default function RegisterFace() {
                       ))}
                     </div>
                   </td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-2 flex text-right">
                     {request.status === 'pending' && (
-                      <div className="space-x-2">
-                        <button
-                          onClick={() => handleStatusChange(request._id, 'approved')}
-                          className="bg-green-500 text-white py-2 px-4 rounded"
-                          disabled={updating}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleStatusChange(request._id, 'rejected')}
-                          className="bg-red-500 text-white py-2 px-4 rounded"
-                          disabled={updating}
-                        >
-                          Reject
-                        </button>
+                      <div className="space-x-2 flex">
+                        <div>
+                          <button
+                            onClick={() => handleStatusChange(request._id, 'approved')}
+                            className="bg-transparent flex gap-2 border text-white py-2 px-4 rounded"
+                            disabled={updating}
+                          >
+                            <CheckCheck className='text-green-700 h-4' /> Approve
+                          </button>
+                        </div>
+                        <div>
+                          <button
+                            onClick={() => handleStatusChange(request._id, 'rejected')}
+                            className="border flex gap-2 bg-transparent text-white py-2 px-4 rounded"
+                            disabled={updating}
+                          >
+                            <Cross1Icon className='text-red-500 h-4' /> Reject
+                          </button>
+                        </div>
                       </div>
                     )}
                     {/* Delete Button */}
                     <button
                       onClick={() => openDeleteDialog(request._id)}
-                      className=" text-white flex justify-start py-2 px-4 rounded mt-2"
+                      className=" text-white flex justify-start py-2 px-4 rounded "
                       disabled={updating}
                     >
-                      <Trash2 className='text-red-500 h-5' />
+                      <Trash2 className='text-red-500 h-4' />
                     </button>
                     <DeleteConfirmationDialog
                       isOpen={isDeleteDialogOpen}

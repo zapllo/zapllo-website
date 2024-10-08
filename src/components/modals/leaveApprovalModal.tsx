@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X } from 'lucide-react';
+import Loader from '../ui/loader';
 
 interface LeaveDay {
     date: string;
@@ -45,6 +46,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
     );
     const [approvedDaysCount, setApprovedDaysCount] = useState<number>(0); // State for approved days count
     const [remarks, setRemarks] = useState<string>(''); // State for remarks
+    const [loading, setLoading] = useState<boolean>(false)
 
     // Calculate the initial number of approved days
     useEffect(() => {
@@ -65,6 +67,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
     // Submit the approval/rejection data to the backend    
     const handleSubmit = async () => {
         console.log('Submitting data:', approvalData);
+        setLoading(true);
         try {
             const response = await axios.post(`/api/leaveApprovals/${leaveId}`, {
                 leaveDays: approvalData,
@@ -73,6 +76,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
             });
             if (response.data.success) {
                 onSubmit(); // Proceed if successful
+                setLoading(false);
             } else {
                 console.error('API Error:', response.data.error);
             }
@@ -176,7 +180,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
                     <button
                         onClick={handleSubmit}
                         className="bg-[#017a5b] text-white px-4 py-2 text-xs w-full rounded-md">
-                        Submit
+                        {loading ? <Loader /> : "Submit"}
                     </button>
                 </div>
             </div>

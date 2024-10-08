@@ -18,7 +18,7 @@ type LeaveBalance = {
 };
 
 type User = {
-  _id: string;
+  userId: string;
   firstName: string;
   lastName: string;
   leaveBalances: LeaveBalance[];

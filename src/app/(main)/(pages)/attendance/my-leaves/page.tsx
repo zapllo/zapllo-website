@@ -402,7 +402,7 @@ const MyLeaves: React.FC = () => {
                             <select
                                 value={selectedLeaveType}
                                 onChange={(e) => setSelectedLeaveType(e.target.value)}
-                                className="border rounded text-xs outline-none px-3 py-2"
+                                className="border-2 rounded text-xs border-[#380e3d]  outline-none px-3 py-2"
                             >
                                 <option value="">Leave Type</option>
                                 {leaveTypes.map((type) => (

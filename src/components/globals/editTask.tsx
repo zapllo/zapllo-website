@@ -94,7 +94,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         description: '',
         priority: 'Medium',
         category: '',
+        categoryName: '',
         assignedUser: '',
+        assignedUserFirstName: '',
         repeat: false,
         repeatType: 'Daily',
         dueDate: new Date(),
@@ -137,7 +139,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     const [categoryOpen, setCategoryOpen] = useState<boolean>(false); // State for popover open/close
     const [newCategory, setNewCategory] = useState('');
     const [searchCategoryQuery, setSearchCategoryQuery] = useState<string>(''); // State for search query
-
+    const [isMonthlyDaysModalOpen, setIsMonthlyDaysModalOpen] = useState(false);
 
 
 
@@ -190,7 +192,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 description: task.description || '',
                 priority: task.priority || 'Medium',
                 category: task.category?._id || '',
+                categoryName: task.category.name,
                 assignedUser: task.assignedUser._id || '',
+                assignedUserFirstName: task.assignedUser.firstName,
                 repeat: task.repeat || false,
                 repeatType: task.repeatType || 'Daily',
                 dueDate: task.dueDate ? new Date(task.dueDate) : new Date(), // Ensure dueDate is a Date object
@@ -219,22 +223,27 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, type } = e.target;
+        const { name, value, type } = e.target;
 
         if (type === 'checkbox') {
-            // Assert that e.target is an HTMLInputElement
+            // Handle checkbox change
             const input = e.target as HTMLInputElement;
             setFormData(prevState => ({
                 ...prevState,
-                [name]: input.checked // Checkbox elements use 'checked'
+                [name]: input.checked
             }));
         } else {
-            // For other types of elements, use 'value'
+            // Handle other input types
             const input = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
             setFormData(prevState => ({
                 ...prevState,
-                [name]: input.value // Other elements use 'value'
+                [name]: input.value
             }));
+
+            // Trigger modal when `repeatType` changes to "Monthly"
+            if (name === 'repeatType' && input.value === 'Monthly') {
+                setIsMonthlyDaysModalOpen(true);
+            }
         }
     };
 
@@ -362,39 +371,44 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     };
 
 
+    // const handleCloseMonthlyDaysModal = (selectedDays: number[]) => {
+    //     setFormData(prevState => ({
+    //         ...prevState,
+    //         dates: selectedDays,
+    //     }));
+    //     setIsMonthlyDaysModalOpen(false);
+    // };
 
 
 
+    console.log(formData, 'formdata')
     if (!open) return null; // Render nothing if the dialog is not open
 
     return (
         <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#1A1C20] border max-h-screen h-[500px] overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-1/2 shadow-lg">
                 <div className='flex w-full justify-between'>
-                    <h2 className="text-sm font-semibold mb-4">Edit Task</h2>
-                    <h1 className='cursor-pointer' onClick={onClose}>X</h1>
+                    <h2 className="text-lg font-medium mb-4">Edit Task</h2>
+                    <h1 className='cursor-pointer  text-lg' onClick={onClose}>X</h1>
                 </div>
-                <label className="block mb-2">
-                    Title:
-                    <input
-                        type="text"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        className="w-full p-2 border bg-transparent outline-none rounded mt-1"
-                    />
-                </label>
-                <label className="block mb-2">
-                    Description:
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full bg-transparent outline-none p-2 border rounded mt-1"
-                        rows={4}
-                    />
-                </label>
-                <div className="grid gap-2 grid-cols-2">
+
+                <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="w-full p-2 border bg-transparent outline-none rounded "
+                />
+
+                <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    className="w-full bg-transparent outline-none p-2 border rounded mt-2"
+                    rows={4}
+                />
+
+                <div className="grid gap-2 grid-cols-2 mt-2">
                     <div className='flex justify-between gap-2 w-full'>
                         {/* <div className='w-full'>
                             <label className="block mb-2">
@@ -419,7 +433,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                                 className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
                                 onClick={handleOpen}
                             >
-                                {popoverInputValue ? popoverInputValue : <h1 className='flex gap-2'>
+                                {formData ? formData.assignedUserFirstName : <h1 className='flex gap-2'>
                                     <User className='h-4' /> Select User </h1>}
                                 <CaretDownIcon />
                             </button>
@@ -444,7 +458,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                             className="p-2 text-xs flex border-2   bg-transparent justify-between w-full text-start  rounded"
                             onClick={handleCategoryOpen}
                         >
-                            {popoverCategoryInputValue ? popoverCategoryInputValue : <h1 className='flex gap-2'>
+                            {formData ? formData.categoryName : <h1 className='flex gap-2'>
                                 <Tag className='h-4' /> Select Category </h1>}
                             <CaretDownIcon />
                         </button>
@@ -486,14 +500,14 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 </div>
                 <div className='w-full flex justify-between'>
                     <div className="block mb-2">
-                        <div className="flex gap-2   w-full rounded-lg mt-1">
-                            <h1 className='text-xs mt-2' >Priority:</h1>
+                        <div className="flex gap-2 border px-4 py-4  w-full rounded mt-1">
+                            <h1 className='text-xs ' >Priority:</h1>
 
-                            <div className='mt-2'>
+                            <div className=''>
                                 {['High', 'Medium', 'Low'].map((level) => (
                                     <label
                                         key={level}
-                                        className={`px-4 py-2 text-xs border border-[#505356] font-semibold cursor-pointer ${formData.priority === level
+                                        className={`px-4 py-1 text-xs border border-[#505356] font-medium cursor-pointer ${formData.priority === level
                                             ? 'bg-[#017A5B] text-white'
                                             : 'bg-[#282D32] text-gray-300 hover:bg-gray-600'
                                             }`}
@@ -567,27 +581,29 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
                 {formData.repeatType === 'Monthly' && formData.repeat && (
                     <div>
-                        <DaysSelectModal
-                            isOpen={isDateTimeModalOpen}
-                            onOpenChange={setIsDateTimeModalOpen}
-                            selectedDays={formData.dates}
-                            setSelectedDays={(update) => setFormData(prev => ({
-                                ...prev,
-                                dates: typeof update === 'function' ? update(prev.dates) : update  // Handles both function and direct state
-                            }))}
-                        />
+                        {isMonthlyDaysModalOpen && (
+                            <DaysSelectModal
+                                isOpen={isMonthlyDaysModalOpen}
+                                onOpenChange={setIsMonthlyDaysModalOpen}
+                                selectedDays={formData.dates}
+                                setSelectedDays={(update) => setFormData(prev => ({
+                                    ...prev,
+                                    dates: typeof update === 'function' ? update(prev.dates) : update  // Handles both function and direct state
+                                }))}
+                            />
+                        )}
                     </div>
                 )}
-                <div className='flex gap-2 mt-2'>
+                <div className='flex gap-2 '>
                     <label className="block mb-2">
                         <Button
                             type="button"
                             onClick={() => setIsDateTimeModalOpen(true)}
-                            className=" border-2 rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
+                            className=" border-2 text-xs rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
                         >
                             <Calendar className='h-5 text-sm' />
-                            {formData.dueDate
-                                ? `${formData.dueDate} `
+                            {formData.dueDate.toLocaleDateString()
+                                ? `${formData.dueDate.toLocaleString()} `
                                 : <h1 className='text-xs'>
                                     Select Date & Time
                                 </h1>
@@ -671,11 +687,12 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 )}
                 <div className='flex    gap-4'>
                     <div className='flex mt-4  gap-2'>
-                        <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter(link => link).length > 0 ? 'border-[#017A5B]' : ''}`}>
+                        <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${formData.links.length > 0 ? 'border-[#017A5B]' : ''
+                            }`} >
                             <Link className='h-5 text-center m-auto mt-1' />
                         </div>
-                        {links.filter(link => link).length > 0 && (
-                            <span className="text-xs mt-2 text">{links.filter(link => link).length} Links</span> // Display the count of non-empty links
+                        {links.map(link => link).length > 0 && (
+                            <span className="text-xs mt-2 text">{links.length} Links</span> // Display the count of non-empty links
                         )}
                     </div>
 
@@ -897,9 +914,6 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         </div>
                     </DialogContent>
                 </Dialog>
-
-
-
 
                 <div className="flex justify-end mt-4">
 

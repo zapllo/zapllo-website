@@ -160,12 +160,13 @@ export default function MyAttendance() {
 
     const handleFaceRegistrationSubmit = async () => {
         if (selectedImages?.length !== 3) {
-            alert('Please upload exactly 3 images.');
+            toast.info('Please upload exactly 3 images.');
             return;
         }
 
         try {
             // Upload the images first
+            setIsLoading(true);
             const formData = new FormData();
             selectedImages.forEach((file) => formData.append('files', file));
 
@@ -192,7 +193,8 @@ export default function MyAttendance() {
 
             const faceRegistrationData = await faceRegistrationResponse.json();
             if (faceRegistrationResponse.ok && faceRegistrationData.success) {
-                alert('Face registration request submitted successfully and is pending approval.');
+                setIsLoading(false);
+                toast.success('Face registration request submitted successfully and is pending approval.');
                 setIsRegisterFaceModalOpen(false);
                 setSelectedImages([]); // Reset images
             } else {
@@ -782,7 +784,7 @@ export default function MyAttendance() {
 
     // console.log(displayedEntries, 'loginEntries');
     return (
-        <div className="container h-screen overflow-y-scroll rounded-lg p-4 shadow-lg">
+        <div className="container h-screen overflow-y-scroll scrollbar-hide rounded-lg p-4 shadow-lg">
             <Toaster />
             {displayLoader && (
                 <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
@@ -940,23 +942,24 @@ export default function MyAttendance() {
                         ) : (
                             <>
                                 <div className="flex justify-center mb-4 gap-4">
-                                    <div className="text-xs flex  border px-4 py-1 ">
+                                    <div className="text-xs flex  border px-4 py-2 ">
                                         <Calendar className='h-4 text-blue-500 mt-[1px]' />
-                                        <h1 className='text-xs mt-[3px] '>
-                                        </h1>Days: {daysCount}
+                                        <h1 className='text-xs mt-[1px] '>
+                                            Days: {daysCount}
+                                        </h1>
 
                                     </div>
-                                    <div className="text-xs flex border px-4 py-1">
+                                    <div className="text-xs flex border px-4 py-2">
                                         <CheckCircle className='h-4 text-green-500 mt-[1px]' />
                                         <h1 className='text-xs mt-[1px]'>  Verified: {verifiedCount}</h1>
                                     </div>
-                                    <div className="text-xs flex  border px-4 py-1">
+                                    <div className="text-xs flex  border px-4 py-2">
                                         <CalendarClock className='h-4 text-white' />
                                         <h1 className='mt-[1px]'>
                                             Regularized: {regularizedCount}
                                         </h1>
                                     </div>
-                                    <div className="text-xs border flex px-4 py-1">
+                                    <div className="text-xs border flex px-4 py-2">
                                         <Clock className='h-4 mt-[1px] text-orange-600' />
                                         <h1 className='text-xs mt-[1px]'>
                                             Hours: {totalHours}
@@ -1320,17 +1323,20 @@ export default function MyAttendance() {
             {/* Register Face Modal */}
             <Dialog.Root open={isRegisterFaceModalOpen} onOpenChange={setIsRegisterFaceModalOpen}>
                 <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-                    <Dialog.Content className="fixed inset-0 flex justify-center items-center">
+                    <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
+                    <Dialog.Content className="fixed inset-0  z-[100] flex justify-center items-center">
                         <div className="bg-[#121212] p-6 rounded-lg max-w-md w-full">
-                            <h3 className="text-lg mb-4">Register Faces (Upload 3 Images)</h3>
+                            <div className='flex justify-between'>
+                                <h3 className="text-md mb-4">Register Faces (Upload 3 Images)</h3>
+                                <Dialog.DialogClose>X</Dialog.DialogClose>
+                            </div>
 
                             <input
                                 type="file"
                                 accept="image/*"
                                 multiple
                                 onChange={handleImageUpload}
-                                className="block w-full mb-4"
+                                className="block w-full outline-none text-xs mb-4"
                             />
 
                             <div className="grid grid-cols-3 gap-4 mb-4">
@@ -1348,9 +1354,10 @@ export default function MyAttendance() {
 
                             <button
                                 onClick={handleFaceRegistrationSubmit}
-                                className="bg-green-500 text-white py-2 px-4 rounded w-full"
+                                className="bg-[#017a5b] text-sm text-white py-2 px-4 rounded w-full"
                             >
-                                Submit Face Registration
+
+                                {isLoading ? <Loader /> : "Submit Face Registration"}
                             </button>
                         </div>
                     </Dialog.Content>

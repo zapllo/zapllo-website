@@ -18,13 +18,15 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Fetch tasks where the user's organization field matches the authenticated user's organization field
         const tasks = await Task.find({
             organization: authenticatedUser.organization
-        }).populate('user assignedUser').populate({
-            path: 'category',
-            select: 'name', // Only include the category name
-        });
+        })
+            .populate('user', 'firstName lastName')  // Populate only firstName and lastName of the user
+            .populate('assignedUser', 'firstName lastName')  // Populate only firstName and lastName of the assignedUser
+            .populate({
+                path: 'category',
+                select: 'name', // Only include the category name
+            });
 
         return NextResponse.json({
             message: "Tasks fetched successfully",

@@ -13,6 +13,7 @@ import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui
 import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
 import Loader from '@/components/ui/loader';
 import CustomDatePicker from '@/components/globals/date-picker';
+import { toast } from 'sonner';
 
 type LeaveType = {
     _id: string;
@@ -28,7 +29,7 @@ type LeaveBalance = {
 };
 
 type User = {
-    _id: string;
+    userId: string;
     firstName: string;
     lastName: string;
     leaveBalances: LeaveBalance[];
@@ -133,7 +134,7 @@ export default function AllLeaves() {
         setSelectedUser(user);
         setIsEditModalOpen(true);
     };
-
+    console.log(selectedUser, 'selectedUser')
     const handleLeaveModalSubmit = async (updatedLeaveBalances: LeaveBalance[]) => {
         if (!selectedUser) return;
 
@@ -143,14 +144,15 @@ export default function AllLeaves() {
         }));
 
         try {
-            console.log(selectedUser._id, formattedBalances, 'Sending data to the backend');
+            console.log(selectedUser.userId, formattedBalances, 'Sending data to the backend');
             await axios.post('/api/leaveBalances/update', {
-                userIdToUpdate: selectedUser._id,
+                userIdToUpdate: selectedUser.userId,
                 leaveBalances: formattedBalances,
             });
 
             const response = await axios.get('/api/leaves/getAllUsersBalances');
             if (response.data.success) {
+                toast.success("Balance updated successfully!")
                 setUsers(response.data.data.users);
             }
 
@@ -193,6 +195,7 @@ export default function AllLeaves() {
         try {
             const response = await axios.delete(`/api/leaveApprovals/${leaveId}`);
             if (response.data.success) {
+                toast.success("Leave Request deleted successfully!")
                 const updatedLeaves = await axios.get('/api/leaves/all');
                 setLeaves(updatedLeaves.data.leaves);
             } else {
@@ -226,6 +229,7 @@ export default function AllLeaves() {
                 action: 'reject',
             });
             if (response.data.success) {
+                toast.success("Leave Request rejected successfully")
                 const updatedLeaves = await axios.get('/api/leaves/all');
                 setLeaves(updatedLeaves.data.leaves);
                 setIsRejectModalOpen(false);
@@ -443,7 +447,15 @@ export default function AllLeaves() {
 
                     {/* Leave Cards */}
                     {filteredLeaves.length === 0 ? (
-                        <p className="text-gray-600">No leave requests found.</p>
+                        <div className='flex w-full justify-center '>
+                            <div className="mt-8 ml-4">
+                                <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                                <h1 className="text-center font-bold text-md mt-2 ">
+                                    No Leaves Found
+                                </h1>
+                                <p className="text-center text-sm ">The list is currently empty for the selected filters</p>
+                            </div>
+                        </div>
                     ) : (
                         <div className="space-y-4 mb-12">
                             {filteredLeaves.map((leave) => (
@@ -478,14 +490,14 @@ export default function AllLeaves() {
                                         </div>
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs ${leave.status === 'Pending'
-                                                    ? 'bg-yellow-800 text-white'
-                                                    : leave.status === 'Approved'
-                                                        ? 'bg-green-800 text-white'
-                                                        : leave.status === 'Rejected'
-                                                            ? 'bg-red-800 text-white'
-                                                            : leave.status === 'Partially Approved'
-                                                                ? 'bg-red-900 text-white'
-                                                                : 'bg-gray-500 text-white'
+                                                ? 'bg-yellow-800 text-white'
+                                                : leave.status === 'Approved'
+                                                    ? 'bg-green-800 text-white'
+                                                    : leave.status === 'Rejected'
+                                                        ? 'bg-red-800 text-white'
+                                                        : leave.status === 'Partially Approved'
+                                                            ? 'bg-red-900 text-white'
+                                                            : 'bg-gray-500 text-white'
                                                 }`}
                                         >
                                             {leave.status}
@@ -671,7 +683,7 @@ export default function AllLeaves() {
                         </thead>
                         <tbody>
                             {filteredUsers.map((user) => (
-                                <tr className="text-xs" key={user._id}>
+                                <tr className="text-xs" key={user.userId}>
                                     <td className="border-t px-4 py-2">
                                         {user.firstName} {user.lastName}
                                     </td>

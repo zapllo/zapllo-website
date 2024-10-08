@@ -96,50 +96,61 @@ const HolidayList: React.FC = () => {
         <div className="container mx-auto p-6">
             <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
             <Toaster />
-            <table className="w-full rounded table-auto border-collapse border">
-                <thead className='bg-[#380e3d] '>
-                    <tr>
-                        <th className="px-4 text-xs text-start py-2">Name</th>
-                        <th className="px-4 text-xs text-start py-2">Date</th>
-                        {userRole === 'orgAdmin' && <th className="text-xs text-start px-4 py-2">Actions</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {holidays.map((holiday) => (
-                        <tr className='border-t' key={holiday._id}>
-                            <td className="px-4 text-xs py-2">{holiday.holidayName}</td>
-                            <td className="px-4 text-xs py-2">
-                                {new Date(holiday.holidayDate).toLocaleDateString()}
-                            </td>
-                            {userRole === 'orgAdmin' && (
-                                <td className="px-4 py-2">
-                                    <button
-                                        onClick={() => handleEditClick(holiday)}
-                                        className="text-blue-500 hover:text-blue-700 mr-2"
-                                    >
-                                        <Edit2 className="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteClick(holiday)} // Trigger delete confirmation modal
-                                        disabled={isDeleting === holiday._id}
-                                        className="text-red-500 hover:text-red-700"
-                                    >
-                                        {isDeleting === holiday._id ? 'Deleting...' : <Trash2 className="h-4 w-4" />}
-                                    </button>
-                                </td>
-                            )}
+            {holidays.length > 0 ? (
+                <table className="w-full rounded table-auto border-collapse border">
+                    <thead className='bg-[#380e3d] '>
+                        <tr>
+                            <th className="px-4 text-xs text-start py-2">Name</th>
+                            <th className="px-4 text-xs text-start py-2">Date</th>
+                            {userRole === 'orgAdmin' && <th className="text-xs text-start px-4 py-2">Actions</th>}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {editHoliday && (
-                <HolidayFormModal
-                    holiday={editHoliday}
-                    onHolidayUpdated={handleHolidayUpdated}
-                    onClose={() => setEditHoliday(null)} // Close the modal if canceled
-                />
-            )}
+                    </thead>
+                    <tbody>
+                        {holidays.map((holiday) => (
+                            <tr className='border-t' key={holiday._id}>
+                                <td className="px-4 text-xs py-2">{holiday.holidayName}</td>
+                                <td className="px-4 text-xs py-2">
+                                    {new Date(holiday.holidayDate).toLocaleDateString()}
+                                </td>
+                                {userRole === 'orgAdmin' && (
+                                    <td className="px-4 py-2">
+                                        <button
+                                            onClick={() => handleEditClick(holiday)}
+                                            className="text-blue-500 hover:text-blue-700 mr-2"
+                                        >
+                                            <Edit2 className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteClick(holiday)} // Trigger delete confirmation modal
+                                            disabled={isDeleting === holiday._id}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (<div className='flex w-full justify-center '>
+                < div className="mt-8 ml-4">
+                    <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                    <h1 className="text-center font-bold text-md mt-2 ">
+                        No Holidays Found
+                    </h1>
+                    <p className="text-center text-sm ">The list is currently empty </p>
+                </div>
+            </div >)}
+            {
+                editHoliday && (
+                    <HolidayFormModal
+                        holiday={editHoliday}
+                        onHolidayUpdated={handleHolidayUpdated}
+                        onClose={() => setEditHoliday(null)} // Close the modal if canceled
+                    />
+                )
+            }
 
             {/* Render the delete confirmation modal */}
             <DeleteConfirmationDialog
@@ -149,7 +160,7 @@ const HolidayList: React.FC = () => {
                 title="Delete Holiday"
                 description={`Are you sure you want to delete the holiday "${holidayToDelete?.holidayName}"? This action cannot be undone.`}
             />
-        </div>
+        </div >
     );
 };
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogOverlay, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogOverlay, DialogContent, DialogClose } from "@/components/ui/dialog";
 import BillingSidebar from '../sidebar/billingSidebar';
 import { Wallet } from "lucide-react";
 import axios from 'axios';
@@ -210,7 +210,10 @@ export default function Billing() {
                             <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
                                 <DialogOverlay />
                                 <DialogContent>
-                                    <h2 className="text-xl font-bold">Recharge Wallet</h2>
+                                    <div className='flex justify-between'>
+                                        <h2 className="text-md font-bold">Recharge Wallet</h2>
+                                        <DialogClose>X</DialogClose>
+                                    </div>
                                     <div className="mt-4">
                                         <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount:</label>
                                         <input

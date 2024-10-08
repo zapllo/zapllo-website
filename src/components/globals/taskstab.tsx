@@ -1071,7 +1071,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
             <TabsTrigger value="all" className="flex justify-start gap-2">
               <div className="flex justify-start ml-4 w-full gap-2">
-                <HomeIcon />
+                <HomeIcon  />
                 <h1 className="mt-auto text-xs">Dashboard</h1>
               </div>
             </TabsTrigger>
@@ -1083,13 +1083,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
             </TabsTrigger>
             <TabsTrigger value="delegatedTasks" className="flex justify-start w-full gap-2">
               <div className="flex justify-start w-full ml-4 gap-2">
-                <img src="/icons/delegated.png" className="h-[15px]" alt="Delegated Tasks Icon" />
+                <img src="/icons/delegated.png" className="h-[16px]" alt="Delegated Tasks Icon" />
                 <h1 className="text-xs">Delegated Tasks</h1>
               </div>
             </TabsTrigger>
             <TabsTrigger value="allTasks" className="flex justify-start w-full gap-2 ">
               <div className="flex justify-start w-full gap-2 ml-4">
-                <img src="/icons/all.png" className="h-4" alt="All Tasks Icon" />
+                <img src="/icons/all.png" className="h-5" alt="All Tasks Icon" />
                 <h1 className="text-xs">All Tasks</h1>
               </div>
             </TabsTrigger>

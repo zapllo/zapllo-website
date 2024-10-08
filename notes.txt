@@ -8,6 +8,23 @@
 
 
 
+UI Changes:
+
+Finish the Checkout Page
+
+1. Text-xs for my leaves card - approval status (and the approval buttons to the left - text-start).
+2. Double check all the approval buttons in all the cards (All leaves, my leaves, all attendance).
+3. Register Face modal - UI.
+4. Illustrations everywhere where no entries are present.  (Don't render table if no entries are present)
+5. Register faces page (Hide scrollbar and check for misalignments).
+6. Edit task modal (make it look like the task modal).
+
+Fixes:
+
+1. Resolve S3 bucket issue (Fix).
+2. Replace Alerts with toasts everywhere - Approval modals (Fix).
+3. Separate Trial for Leaves & Attendance (Add a new trial field to the organization) and conditionally render the trial and leaves buttons on the sidebar according to the trial start.
+
 
 sendgrid /XL7Mju?U_$xS-97
 recovery 5RWNDFCJRGD9262E5JQBKPTQ

@@ -149,83 +149,76 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         let approvedDaysCount = 0;
         let rejectedDaysCount = 0;
 
-        try {
-            const nonDeductibleDays = await getNonDeductibleDaysInRange(
-                new Date(leave.fromDate),
-                new Date(leave.toDate),
-                user.organization,
-                leave.leaveType.includeHolidays,
-                leave.leaveType.includeWeekOffs
-            );
-            console.log('Non-deductible days:', nonDeductibleDays);
+        if (leaveDays) {
+            try {
+                const nonDeductibleDays = await getNonDeductibleDaysInRange(
+                    new Date(leave.fromDate),
+                    new Date(leave.toDate),
+                    user.organization,
+                    leave.leaveType.includeHolidays,
+                    leave.leaveType.includeWeekOffs
+                );
+                console.log('Non-deductible days:', nonDeductibleDays);
 
-            // Update the leave days
-            leave.leaveDays = leave.leaveDays.map(day => {
-                const updatedDay = leaveDays.find(d => isSameDay(new Date(d.date), new Date(day.date)));
-                if (updatedDay) {
-                    day.status = updatedDay.status;
-                    if (updatedDay.status === 'Approved') {
-                        const isNonDeductible = nonDeductibleDays.some(nonDeductible =>
-                            isSameDay(nonDeductible, day.date)
-                        );
-                        if (!isNonDeductible) {
-                            const unit = day.unit as LeaveUnit;
-                            approvedFor += unitMapping[unit];
+                // Update the leave days based on action
+                leave.leaveDays = leave.leaveDays.map(day => {
+                    const updatedDay = leaveDays.find(d => isSameDay(new Date(d.date), new Date(day.date)));
+                    if (updatedDay) {
+                        day.status = updatedDay.status;
+                        if (updatedDay.status === 'Approved') {
+                            const isNonDeductible = nonDeductibleDays.some(nonDeductible =>
+                                isSameDay(nonDeductible, day.date)
+                            );
+                            if (!isNonDeductible) {
+                                const unit = day.unit as LeaveUnit;
+                                approvedFor += unitMapping[unit];
+                            }
+                            approvedDaysCount++;
+                        } else if (updatedDay.status === 'Rejected') {
+                            rejectedDaysCount++;
                         }
-                        approvedDaysCount++;
-                    } else if (updatedDay.status === 'Rejected') {
-                        rejectedDaysCount++;
                     }
-                }
-                return day;
-            });
-        } catch (approvalError) {
-            console.error('Error updating leave days:', approvalError);
-            return NextResponse.json({ success: false, error: 'Error updating leave days' });
+                    return day;
+                });
+            } catch (approvalError) {
+                console.error('Error updating leave days:', approvalError);
+                return NextResponse.json({ success: false, error: 'Error updating leave days' });
+            }
+        } else {
+            console.error('Leave days data is missing or undefined');
+            return NextResponse.json({ success: false, error: 'Leave days data is missing or undefined' });
         }
 
+        // Determine and set leave status based on counts
         if (approvedDaysCount === leave.leaveDays.length) {
             leave.status = 'Approved';
             leave.approvedBy = approvedBy;
-            console.log('Leave fully approved.');
-
             if (user.whatsappNo) {
-                console.log('WhatsApp number exists:', user.whatsappNo);
                 await sendLeaveApprovalWebhookNotification(
                     leave,
                     user.whatsappNo,
                     approvedFor,
-                    'leaveapproval' // Full approval template
+                    'leaveapproval'
                 );
-            } else {
-                console.error('WhatsApp number is missing for user:', user._id);
             }
         } else if (rejectedDaysCount === leave.leaveDays.length) {
             leave.status = 'Rejected';
             leave.rejectedBy = approvedBy;
-            console.log('Leave fully rejected.');
         } else if (approvedDaysCount > 0 && rejectedDaysCount > 0) {
             leave.status = 'Partially Approved';
             leave.approvedBy = approvedBy;
             leave.rejectedBy = approvedBy;
-            console.log('Leave partially approved.');
-
-            // Send WhatsApp notification for partial approval
             if (user.whatsappNo) {
-                console.log('WhatsApp number exists:', user.whatsappNo);
                 await sendLeaveApprovalWebhookNotification(
                     leave,
                     user.whatsappNo,
                     approvedFor,
-                    'partialapproval_v6' // Partial approval template
+                    'partialapproval_v6'
                 );
-            } else {
-                console.error('WhatsApp number is missing for user:', user._id);
             }
         }
 
         await leave.save();
-
         console.log('Leave saved after approval.');
 
         return NextResponse.json({ success: true, approvedFor });
@@ -234,3 +227,4 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         return NextResponse.json({ success: false, error: 'Internal Server Error' });
     }
 }
+

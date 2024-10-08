@@ -15,6 +15,7 @@ import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui
 import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
 import Loader from '@/components/ui/loader';
 import CustomDatePicker from '@/components/globals/date-picker';
+import { toast, Toaster } from 'sonner';
 
 type LeaveType = {
     _id: string;
@@ -137,11 +138,11 @@ export default function Approvals() {
                 setLeaves(updatedLeaves.data.leaves);
             } else {
                 console.error(response.data.error);
-                alert(response.data.error || 'Failed to delete leave.');
+                toast.error(response.data.error || 'Failed to delete leave.');
             }
         } catch (error: any) {
             console.error('Error deleting leave:', error);
-            alert(`Error deleting leave: ${error.response?.data?.message || error.message}`);
+            toast.error(`Error deleting leave: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -154,11 +155,11 @@ export default function Approvals() {
                 setRegularizations(updatedRegularizations.data.regularizations);
             } else {
                 console.error(response.data.error);
-                alert(response.data.error || 'Failed to delete regularization.');
+                toast.error(response.data.error || 'Failed to delete regularization.');
             }
         } catch (error: any) {
             console.error('Error deleting regularization:', error);
-            alert(`Error deleting regularization: ${error.response?.data?.message || error.message}`);
+            toast.error(`Error deleting regularization: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -185,7 +186,7 @@ export default function Approvals() {
                         setLeaves(response.data.leaves);
                     } else {
                         console.error(response.data.error);
-                        alert(response.data.error || 'Failed to fetch leave approvals.');
+                        toast.error(response.data.error || 'Failed to fetch leave approvals.');
                     }
                 } else if (filter === 'Regularization') {
                     const response = await axios.get('/api/regularization-approvals');
@@ -193,12 +194,12 @@ export default function Approvals() {
                         setRegularizations(response.data.regularizations);
                     } else {
                         console.error(response.data.error);
-                        alert(response.data.error || 'Failed to fetch regularization approvals.');
+                        toast.error(response.data.error || 'Failed to fetch regularization approvals.');
                     }
                 }
             } catch (error: any) {
                 console.error(`Error fetching ${filter} approvals:`, error.response?.data || error.message);
-                alert(`Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message}`);
+                toast.error(`Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message}`);
             } finally {
                 setLoading(false);
             }
@@ -301,91 +302,116 @@ export default function Approvals() {
         setIsRejectModalOpen(true); // Open the reject modal
     };
 
-    const handleRejectSubmit = async () => {
-        if (!remarks) {
-            alert('Please enter remarks for rejection.');
-            return;
-        }
-        try {
-            if (!selectedEntry) return;
+    // const handleRejectSubmit = async () => {
+    //     if (!remarks) {
+    //         toast.error('Please enter remarks for rejection.');
+    //         return;
+    //     }
+    //     try {
+    //         // setLoading(true);
+    //         if (!selectedEntry) return;
 
-            if (isLeave(selectedEntry)) {
-                // Handle rejection for Leave
-                const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
-                    action: 'reject',
-                    notes: remarks,
-                });
+    //         if (isLeave(selectedEntry)) {
+    //             // Handle rejection for Leave
+    //             const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
+    //                 action: 'reject',
+    //                 notes: remarks,
+    //             });
 
-                if (response.data.success) {
-                    const updatedLeaves = await axios.get('/api/leaves/all');
-                    setLeaves(updatedLeaves.data.leaves);
-                    setIsRejectModalOpen(false);
-                    setSelectedEntry(null);
-                    setRemarks('');  // Clear remarks
-                } else {
-                    throw new Error(response.data.message || 'Failed to reject leave request.');
-                }
-            } else if (isRegularization(selectedEntry)) {
-                // Handle rejection for Regularization
-                const response = await axios.post(`/api/regularization-approvals/${selectedEntry._id}`, {
-                    action: 'reject',
-                    notes: remarks,
-                });
+    //             if (response.data.success) {
+    //                 setLoading(false);
+    //                 const updatedLeaves = await axios.get('/api/leaves/all');
+    //                 setLeaves(updatedLeaves.data.leaves);
+    //                 toast.success("Leave Rejected successfully!");
+    //                 setIsRejectModalOpen(false);
+    //                 setSelectedEntry(null);
+    //                 setRemarks('');  // Clear remarks
+    //             } else {
+    //                 throw new Error(response.data.message || 'Failed to reject leave request.');
+    //             }
+    //         } else if (isRegularization(selectedEntry)) {
+    //             // Handle rejection for Regularization
+    //             const response = await axios.post(`/api/regularization-approvals/${selectedEntry._id}`, {
+    //                 action: 'reject',
+    //                 notes: remarks,
+    //             });
 
-                if (response.data.success) {
-                    const updatedRegularizations = await axios.get('/api/regularization-approvals');
-                    setRegularizations(updatedRegularizations.data.regularizations);
-                    setIsRejectModalOpen(false);
-                    setSelectedEntry(null);
-                    setRemarks('');  // Clear remarks
-                } else {
-                    throw new Error(response.data.message || 'Failed to reject regularization request.');
-                }
-            }
-        } catch (error: any) {
-            console.error(`Error rejecting entry:`, error.response?.data || error.message);
-            alert(`Failed to reject entry: ${error.response?.data?.message || error.message}`);
-        }
-    };
+    //             if (response.data.success) {
+    //                 const updatedRegularizations = await axios.get('/api/regularization-approvals');
+    //                 setRegularizations(updatedRegularizations.data.regularizations);
+    //                 setIsRejectModalOpen(false);
+    //                 setSelectedEntry(null);
+    //                 setRemarks('');  // Clear remarks
+    //             } else {
+    //                 throw new Error(response.data.message || 'Failed to reject regularization request.');
+    //             }
+    //         }
+    //     } catch (error: any) {
+    //         console.error(`Error rejecting entry:`, error.response?.data || error.message);
+    //         toast.error(`Failed to reject entry: ${error.response?.data?.message || error.message}`);
+    //     }
+    // };
 
     const handleApproveSubmit = async () => {
+        if (!selectedEntry || !isLeave(selectedEntry)) return;
+
+        const leaveDays = selectedEntry.leaveDays.map(day => ({
+            date: day.date,
+            unit: day.unit,
+            status: 'Approved'
+        }));
+
         try {
-            if (!selectedEntry) return;
+            const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
+                action: 'approve',
+                leaveDays,
+            });
 
-            if (isLeave(selectedEntry)) {
-                // Handle approval for Leave
-                const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
-                    action: 'approve',
-                });
-
-                if (response.data.success) {
-                    const updatedLeaves = await axios.get('/api/leaves/all');
-                    setLeaves(updatedLeaves.data.leaves);
-                    setIsModalOpen(false);
-                    setSelectedEntry(null);
-                } else {
-                    throw new Error(response.data.message || 'Failed to approve leave request.');
-                }
-            } else if (isRegularization(selectedEntry)) {
-                // Handle approval for Regularization
-                const response = await axios.post(`/api/regularization-approvals/${selectedEntry._id}`, {
-                    action: 'approve',
-                });
-
-                if (response.data.success) {
-                    const updatedRegularizations = await axios.get('/api/regularization-approvals');
-                    setRegularizations(updatedRegularizations.data.regularizations);
-                    setIsModalOpen(false);
-                    setSelectedEntry(null);
-                } else {
-                    throw new Error(response.data.message || 'Failed to approve regularization request.');
-                }
+            if (response.data.success) {
+                toast.success("Leave approved successfully!");
+                setIsModalOpen(false);
+                setSelectedEntry(null);
+                handleModalSubmit(); // Refresh data
+            } else {
+                throw new Error(response.data.message || 'Failed to approve leave request.');
             }
         } catch (error: any) {
             console.error(`Error approving entry:`, error.response?.data || error.message);
-            alert(`Failed to approve entry: ${error.response?.data?.message || error.message}`);
+            toast.error(`Failed to approve entry: ${error.response?.data?.message || error.message}`);
         }
     };
+
+    const handleRejectSubmit = async () => {
+        if (!selectedEntry || !isLeave(selectedEntry)) return;
+
+        const leaveDays = selectedEntry.leaveDays.map(day => ({
+            date: day.date,
+            unit: day.unit,
+            status: 'Rejected'
+        }));
+
+        try {
+            const response = await axios.post(`/api/leaveApprovals/${selectedEntry._id}`, {
+                action: 'reject',
+                leaveDays,
+                remarks,
+            });
+
+            if (response.data.success) {
+                toast.success("Leave rejected successfully!");
+                setIsRejectModalOpen(false);
+                setSelectedEntry(null);
+                setRemarks('');
+                handleModalSubmit(); // Refresh data
+            } else {
+                throw new Error(response.data.message || 'Failed to reject leave request.');
+            }
+        } catch (error: any) {
+            console.error(`Error rejecting entry:`, error.response?.data || error.message);
+            toast.error(`Failed to reject entry: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
 
     const handleLeaveClick = (leave: Leave) => {
         setSelectedEntry(leave); // Set the clicked leave in state
@@ -447,6 +473,7 @@ export default function Approvals() {
     return (
         <div className="container mx-auto p-6">
             {/* Date Filter Buttons */}
+            <Toaster />
             <div className="flex justify-center gap-4 mb-6">
                 <button
                     onClick={() => setDateFilter('Today')}
@@ -582,7 +609,15 @@ export default function Approvals() {
                 <div className="space-y-4 mb-12">
                     {
                         finalFilteredLeaves.length === 0 ? (
-                            <p className="text-gray-600">No leave requests found.</p>
+                            <div className='flex w-full justify-center '>
+                                <div className="mt-8 ml-4">
+                                    <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                                    <h1 className="text-center font-bold text-md mt-2 ">
+                                        No Leaves Found
+                                    </h1>
+                                    <p className="text-center text-sm ">The list is currently empty for the selected filters</p>
+                                </div>
+                            </div>
                         ) : (
                             finalFilteredLeaves.map((leave) => (
                                 <div className="border cursor-pointer" key={leave._id}>
@@ -611,7 +646,7 @@ export default function Approvals() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-800 text-white' : leave.status === 'Approved' ? 'bg-green-800 text-white' : leave.status === 'Rejected' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'}`}>
+                                        <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-800 text-white' : leave.status === 'Approved' ? 'bg-green-800 text-white' : leave.status === 'Rejected' ? 'bg-red-800 text-white' : 'bg-gray-500 text-white'}`}>
                                             {leave.status}
                                         </span>
                                     </div>
@@ -651,7 +686,15 @@ export default function Approvals() {
             ) : (
                 <div className="space-y-4">
                     {finalFilteredRegularizations.length === 0 ? (
-                        <p className="text-gray-600">No regularization requests found.</p>
+                        <div className='flex w-full justify-center '>
+                            <div className="mt-8 ml-4">
+                                <img src='/animations/notfound.gif' className="h-56 ml-8" />
+                                <h1 className="text-center font-bold text-md mt-2 ">
+                                    No Regularization Entries Found
+                                </h1>
+                                <p className="text-center text-sm ">The list is currently empty for the selected filters</p>
+                            </div>
+                        </div>
                     ) : (
                         finalFilteredRegularizations.map((reg) => (
                             <div
@@ -675,7 +718,7 @@ export default function Approvals() {
                                     </span>
                                 </div>
                                 {reg.approvalStatus === 'Pending' && (
-                                    <div className="flex gap-2 ml-4 w-full mb-4 justify-center">
+                                    <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
                                         <button
                                             className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
                                             onClick={(e) => {
