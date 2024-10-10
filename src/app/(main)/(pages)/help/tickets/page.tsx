@@ -10,12 +10,14 @@ import { X, Eye } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
 import { FaUpload } from 'react-icons/fa'
+import { toast, Toaster } from 'sonner'
 
 type Ticket = {
     _id: string;
     category: string;
     subcategory: string;
     subject: string;
+    status: string;
     description: string;
     fileUrl?: string[]; // Add fileUrl
     user: { name: string }; // Assuming user has a 'name' field
@@ -142,6 +144,7 @@ export default function Tickets() {
             if (response.ok) {
                 const newTicket = await response.json();
                 setTickets([...tickets, newTicket]);
+                toast.success("Ticket Raised successfully!")
                 setCategory('');
                 setSubcategory('');
                 setSubject('');
@@ -164,6 +167,7 @@ export default function Tickets() {
     return (
         <div className="flex mt-24">
             <ChecklistSidebar />
+            <Toaster />
             <div className="flex-1 p-4">
                 <div className="w-full -ml-2  mx-auto">
                     <div className="gap-2 flex mb-6 w-full">
@@ -317,6 +321,9 @@ export default function Tickets() {
                                                         Subject
                                                     </th>
                                                     <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
+                                                        Status
+                                                    </th>
+                                                    <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
                                                         Created At
                                                     </th>
                                                     <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
@@ -332,6 +339,9 @@ export default function Tickets() {
                                                         </td>
                                                         <td className='px-6 py-4 whitespace-nowrap text-sm text-white -500'>
                                                             {ticket.subject}
+                                                        </td>
+                                                        <td className={`px-6 py-4 whitespace-nowrap text-sm   -500 ${ticket.status === "Pending" ? "text-red-800" : ticket.status === "In Resolution" ? "text-blue-400" : ticket.status === "Closed" ? "text-green-700" : "text-yellow-400"}`}>
+                                                            {ticket.status}
                                                         </td>
                                                         <td className='px-6 py-4 whitespace-nowrap text-sm text-white -500'>
                                                             {new Date(ticket.createdAt).toLocaleDateString()}

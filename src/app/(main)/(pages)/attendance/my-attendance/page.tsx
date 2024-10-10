@@ -824,7 +824,7 @@ export default function MyAttendance() {
                 {hasRegisteredFaces ? (
                     <button
                         onClick={handleLoginLogout}
-                        className={`bg-${isLoggedIn ? 'red-500' : '[#017a5b]'} -500 text-white py-2 px-4 rounded text-sm`}
+                        className={`bg-${isLoggedIn ? 'red-800' : '[#017a5b]'} -500 text-white py-2 px-4 rounded text-sm`}
                     >
                         {isLoggedIn ? 'Logout' : 'Login'}
                     </button>
@@ -868,9 +868,11 @@ export default function MyAttendance() {
                             const date = new Date(entry.loginTime);
                             return (
                                 <div key={index} className="flex gap-4 justify-around w-full">
-                                    <div>
-                                        <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
-                                    </div>
+                                    {entry.loginTime && (
+                                        <div>
+                                            <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
+                                        </div>
+                                    )}
                                     {entry.logoutTime && (
                                         <div>
                                             <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
@@ -1073,7 +1075,7 @@ export default function MyAttendance() {
 
                             {/* Display Lat and Long */}
                             <div className="text-center flex w-full justify-center text-xs text-white -400">
-                                <p className='flex gap-2'>
+                                <p className='flex gap-2 text-sm'>
                                     <MapPinIcon className='h-4' />
                                     {location ? `Lat: ${location.lat}, Long: ${location.lng}` : 'Fetching location...'}
                                 </p>

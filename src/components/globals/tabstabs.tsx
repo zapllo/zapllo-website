@@ -383,6 +383,9 @@ export default function TeamTabs() {
                   >
                     <option className="text-xs" value="member">Team Member</option>
                     <option className="text-xs" value="manager">Manager</option>
+                    {loggedInUserRole === "orgAdmin" && (
+                      <option className="text-xs" value="orgAdmin">Admin</option>
+                    )}
                   </select>
                   <div>
                     {newMember.role !== 'orgAdmin' && (

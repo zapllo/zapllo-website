@@ -620,9 +620,9 @@ export default function Approvals() {
                             </div>
                         ) : (
                             finalFilteredLeaves.map((leave) => (
-                                <div className="border cursor-pointer" key={leave._id}>
+                                <div className="border hover:border-[#75517B] cursor-pointer" key={leave._id}>
                                     <div
-                                        className="flex items-center justify-between px-4 rounded shadow-sm py-2"
+                                        className="flex items-center justify-between   px-4 rounded shadow-sm py-3"
                                         onClick={() => handleLeaveClick(leave)}
                                     >
                                         <div className="flex items-center gap-4">
@@ -646,7 +646,7 @@ export default function Approvals() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-sm ${leave.status === 'Pending' ? 'bg-yellow-800 text-white' : leave.status === 'Approved' ? 'bg-green-800 text-white' : leave.status === 'Rejected' ? 'bg-red-800 text-white' : 'bg-gray-500 text-white'}`}>
+                                        <span className={`px-3 py-1 rounded-full text-xs ${leave.status === 'Pending' ? 'bg-yellow-800 text-white' : leave.status === 'Approved' ? 'bg-green-800 text-white' : leave.status === 'Rejected' ? 'bg-red-800 text-white' : 'bg-gray-500 text-white'}`}>
                                             {leave.status}
                                         </span>
                                     </div>
@@ -699,7 +699,7 @@ export default function Approvals() {
                         finalFilteredRegularizations.map((reg) => (
                             <div
                                 key={reg._id}
-                                className="border cursor-pointer"
+                                className="border cursor-pointer hover:border-[#75517B]"
                                 onClick={() => handleRegularizationClick(reg)}
                             >
                                 <div className="flex items-center justify-between px-4 rounded shadow-sm py-2">
@@ -713,7 +713,7 @@ export default function Approvals() {
                                             Date: <span className="text-white">{format(new Date(reg.timestamp), 'MMM d, yyyy')}</span>
                                         </p>
                                     </div>
-                                    <span className={`px-3 py-1 rounded-full text-sm ${reg.approvalStatus === 'Pending' ? 'bg-yellow-800 text-white' : reg.approvalStatus === 'Approved' ? 'bg-green-800 text-white' : reg.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'}`}>
+                                    <span className={`px-3 py-1 rounded-full text-xs ${reg.approvalStatus === 'Pending' ? 'bg-yellow-800 text-white' : reg.approvalStatus === 'Approved' ? 'bg-green-800 text-white' : reg.approvalStatus === 'Rejected' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'}`}>
                                         {reg.approvalStatus}
                                     </span>
                                 </div>

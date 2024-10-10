@@ -22,6 +22,8 @@ const MenuOptions = (props: Props) => {
   const pathName = usePathname();
   const [role, setRole] = useState("");
   const router = useRouter();
+  const [leavesTrialExpires, setLeavesTrialExpires] = useState(Date());
+  const [attendanceTrialExpires, setAttendanceTrialExpires] = useState(Date());
 
   const logout = async () => {
     try {
@@ -41,9 +43,25 @@ const MenuOptions = (props: Props) => {
     getUserDetails();
   }, []);
 
+  const fetchTrialStatus = async () => {
+    const response = await axios.get('/api/organization/getById');
+    const { leavesTrialExpires, attendanceTrialExpires } = response.data.data;
+    setLeavesTrialExpires(leavesTrialExpires && new Date(leavesTrialExpires) > new Date() ? leavesTrialExpires : null);
+    setAttendanceTrialExpires(attendanceTrialExpires && new Date(attendanceTrialExpires) > new Date() ? attendanceTrialExpires : null);
+  };
+
+  useEffect(() => {
+    fetchTrialStatus();
+  }, []);
+
+
   const filteredMenuOptions = menuOptions.filter(menuItem => {
+    if (menuItem.name === "Leaves & Attendance") {
+      return leavesTrialExpires || attendanceTrialExpires;
+    }
     return role !== 'member' && role !== 'manager' || menuItem.name !== 'Billing';
   });
+
 
   return (
     <nav className="dark:bg-[#380E3D] z-[50] h-screen fixed border-r border-[#4F2F51] overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-14">

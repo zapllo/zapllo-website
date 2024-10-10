@@ -54,6 +54,16 @@ const organizationSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  leavesTrialExpires: {
+    type: Date,
+  },
+  country: {
+    type: String,
+    required: true,
+  },
+  attendanceTrialExpires: {
+    type: Date,
+  },
 
 }, { timestamps: true });
 

@@ -147,7 +147,10 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
                         <div key={index} className="flex justify-between items-center mb-2 border p-3 rounded-md">
                             <span className="text-xs">{new Date(day.date).toDateString()} ({day.unit})</span>
                             <select
-                                className="text-xs outline-none border rounded-md p-2"
+                                className={`text-xs outline-none border rounded-md p-2 ${day.status === 'Approved' ? 'border-[#017a5b]' :
+                                        day.status === 'Rejected' ? 'border-red-500' :
+                                            'border-gray-300'
+                                    }`}
                                 value={day.status}
                                 onChange={(e) => handleStatusChange(day.date, e.target.value as 'Approved' | 'Rejected')}
                             >

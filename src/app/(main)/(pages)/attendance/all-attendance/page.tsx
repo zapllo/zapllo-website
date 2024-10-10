@@ -436,7 +436,7 @@ export default function AllAttendance() {
             </div>
           ) : (
             filteredRegularizations.map((entry) => (
-              <div className="border cursor-pointer" key={entry._id}>
+              <div className="border hover:border-[#75517B] cursor-pointer" key={entry._id}>
                 <div
                   onClick={() => handleRegularizationClick(entry)}
                   className="flex items-center justify-between px-4 rounded shadow-sm py-2"
@@ -462,7 +462,7 @@ export default function AllAttendance() {
                   </span>
                 </div>
                 {entry.approvalStatus === 'Pending' && (
-                  <div className="flex gap-2 ml-4 w-full mb-4 justify-center">
+                  <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
                     <button
                       className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
                       onClick={(e) => handleApproval(entry, e)}

@@ -256,7 +256,7 @@ const MyLeaves: React.FC = () => {
 
     const fetchUserLeaves = async () => {
         try {
-            setLoading(true)
+            // setLoading(true)
             const response = await axios.get('/api/leaves');
             if (response.data.success) {
                 setLeaves(response.data.leaves);
@@ -486,7 +486,7 @@ const MyLeaves: React.FC = () => {
                     filteredLeaves?.map((leave) => (
                         <div
                             key={leave._id}
-                            className="flex items-center  cursor-pointer justify-between border p-4 rounded shadow-sm mb-4"
+                            className="flex hover:border-[#75517B] items-center  cursor-pointer justify-between border p-4 rounded shadow-sm mb-4"
                             onClick={() => handleLeaveClick(leave)}
                         >
                             {/* User Profile Icon */}

@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { IconChecklist } from '@tabler/icons-react'
 import { X } from 'lucide-react' // Import X icon for removing files
 import Loader from '@/components/ui/loader'
+import { toast, Toaster } from 'sonner'
 
 type Ticket = {
     _id: string;
@@ -92,7 +93,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
 
                 const response = await axios.post(`/api/tickets/${params.id}/comments`, { comment, fileUrls })
                 console.log('Comment response:', response.data) // Add this line
-
+                toast.success("Comment submitted successfully");
                 setComment('')
                 setFiles([])
                 const updatedTicketResponse = await axios.get(`/api/tickets/${params.id}`)
@@ -112,6 +113,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
     return (
         <div className="flex mt-24">
             <ChecklistSidebar />
+            <Toaster />
             <div className="flex-1   p-4">
                 <div className="w-full  -ml-2 max-w-8xl mx-auto">
                     <div className="gap-2 flex  w-full">
@@ -120,7 +122,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                 <Loader />
                             ) : (
                                 <div className='p-6   overflow-y-scroll h-screen scrollbar-hide ml-52  -mt-12 space-y-4'>
-                                    <Link href='/dashboard/tickets'>
+                                    <Link href='/help/tickets'>
                                         <div className='flex gap-2 mb-8 font-medium text-xl cursor-pointer'>
                                             <ArrowLeft className='h-7 rounded-full border-white border w-7 hover:bg-[#75517B]' />
                                             <h1>Back To My Tickets</h1>

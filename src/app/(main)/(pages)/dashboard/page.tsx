@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import Loader from '@/components/ui/loader'
 import { Progress } from '@/components/ui/progress'
 import axios from 'axios'
+import { formatDistanceToNow } from 'date-fns'
 import { CalendarMinus, Globe, Home, Megaphone } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -14,8 +15,39 @@ import React, { useEffect, useState } from 'react'
 const DashboardPage = () => {
   const [progress, setProgress] = useState<boolean[]>([]);
   const [userId, setUserId] = useState("");
+  const [leavesTrialExpires, setLeavesTrialExpires] = useState(Date());
+  const [attendanceTrialExpires, setAttendanceTrialExpires] = useState(Date());
   const [role, setRole] = useState<string | null>(null); // Track the user's role
   const router = useRouter();
+  const [leavesRemainingTime, setLeavesRemainingTime] = useState('');
+  const [attendanceRemainingTime, setAttendanceRemainingTime] = useState('');
+
+  useEffect(() => {
+    if (leavesTrialExpires) {
+      const calculateLeavesRemainingTime = () => {
+        const now = new Date();
+        const distance = formatDistanceToNow(new Date(leavesTrialExpires), { addSuffix: true });
+        setLeavesRemainingTime(distance);
+      };
+      calculateLeavesRemainingTime();
+      const leavesInterval = setInterval(calculateLeavesRemainingTime, 1000 * 60); // Update every minute
+      return () => clearInterval(leavesInterval);
+    }
+  }, [leavesTrialExpires]);
+
+  useEffect(() => {
+    if (attendanceTrialExpires) {
+      const calculateAttendanceRemainingTime = () => {
+        const now = new Date();
+        const distance = formatDistanceToNow(new Date(attendanceTrialExpires), { addSuffix: true });
+        setAttendanceRemainingTime(distance);
+      };
+      calculateAttendanceRemainingTime();
+      const attendanceInterval = setInterval(calculateAttendanceRemainingTime, 1000 * 60); // Update every minute
+      return () => clearInterval(attendanceInterval);
+    }
+  }, [attendanceTrialExpires]);
+
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -57,6 +89,31 @@ const DashboardPage = () => {
     const progressPercentage = (completedCount / progress.length) * 100;
     return Math.round(progressPercentage); // Round to the nearest integer
   };
+
+
+  const fetchTrialStatus = async () => {
+    const response = await axios.get('/api/organization/getById');
+    const { leavesTrialExpires, attendanceTrialExpires } = response.data.data;
+    setLeavesTrialExpires(leavesTrialExpires && new Date(leavesTrialExpires) > new Date() ? leavesTrialExpires : null);
+    setAttendanceTrialExpires(attendanceTrialExpires && new Date(attendanceTrialExpires) > new Date() ? attendanceTrialExpires : null);
+  };
+
+  useEffect(() => {
+    fetchTrialStatus();
+  }, []);
+
+
+  const startTrial = async (product: string) => {
+    try {
+      const trialDate = new Date();
+      trialDate.setDate(trialDate.getDate() + 7); // Set trial for 7 days
+      await axios.post('/api/organization/start-trial', { product, trialExpires: trialDate });
+      // fetchTrialStatus(); // Refresh the trial status after starting the trial
+    } catch (error) {
+      console.error('Error starting trial:', error);
+    }
+  };
+
 
 
   return (
@@ -162,10 +219,20 @@ const DashboardPage = () => {
               </div>
               <h1 className='text-lg font-medium'>Automate Leaves</h1>
               <p className='text-xs font-medium'>Manage your Employee Leaves & Holidays</p>
-              <div className='pt-2'>
-                <Link href='/attendance/my-leaves'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Leaves</Button>
-                </Link>
+              <div className=''>
+                {leavesTrialExpires ? (
+                  <>
+                     <p className='text-xs text-red-600 py-2'>
+                      Expires {leavesRemainingTime}
+                    </p>
+                    <Link href='/attendance/my-leaves'>
+                      <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Leaves</Button>
+                    </Link>
+                 
+                  </>
+                ) : (
+                  <Button onClick={() => startTrial('leaves')} className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Start Trial</Button>
+                )}
 
               </div>
             </div>
@@ -183,11 +250,20 @@ const DashboardPage = () => {
               </div>
               <h1 className='text-lg font-medium'>Automate Attendance</h1>
               <p className='text-xs font-medium'>Track your Team Attendance & Breaks</p>
-              <div className='pt-2'>
-                <Link href='/attendance/my-attendance'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Attendance</Button>
-                </Link>
+              <div className='pt-'>
+                {attendanceTrialExpires ? (
+                  <>
+                    <p className='text-xs py-2 text-red-600 '>
+                      Expires {attendanceRemainingTime}
+                    </p>
+                    <Link href='/attendance/my-attendance'>
+                      <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Attendance</Button>
+                    </Link>
 
+                  </>
+                ) : (
+                  <Button onClick={() => startTrial('attendance')} className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Start Trial</Button>
+                )}
               </div>
             </div>
           </div>
@@ -230,7 +306,7 @@ const DashboardPage = () => {
 
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

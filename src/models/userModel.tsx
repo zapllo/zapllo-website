@@ -40,7 +40,7 @@ export interface IUser extends Document {
 
 // Define the schema
 const userSchema: Schema<IUser> = new mongoose.Schema({
-    whatsappNo: { type: String, required: true, unique: true },
+    whatsappNo: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },

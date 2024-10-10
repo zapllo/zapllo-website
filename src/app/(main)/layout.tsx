@@ -48,7 +48,12 @@ const Layout = (props: Props) => {
     const [trialExpires, setTrialExpires] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState('');
     const [userLoading, setUserLoading] = useState<boolean | null>(false);
+    const [sidebarUpdateTrigger, setSidebarUpdateTrigger] = useState(false);
 
+    const refreshSidebar = () => {
+        // Toggle sidebarUpdateTrigger to refresh sidebar component
+        setSidebarUpdateTrigger(prev => !prev);
+    };
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -166,7 +171,7 @@ const Layout = (props: Props) => {
             </>
             <div className={`flex overflow-hidden ${isVisible ? 'mt-10' : ''}  dark:bg-[#201124] scrollbar-hide h-full w-full `}>
 
-                <MenuOptions />
+                <MenuOptions  />
                 <div className='w-full overflow-hidden please h-screen '>
                     <InfoBar />
                     <div className=' ml-16 '>

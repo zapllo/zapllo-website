@@ -84,7 +84,8 @@ export default function LoginPage() {
                     </p>
                     <div className="my-8">
                         <LabelInputContainer className="mb-4">
-                            <Label htmlFor="email">Email Address</Label>
+                            <h1 className="text-xs absolute ml-2 bg-[#000101] ">Email address</h1>
+
                             <Input
                                 id="email"
                                 type="email"
@@ -95,7 +96,7 @@ export default function LoginPage() {
                             />
                         </LabelInputContainer>
                         <LabelInputContainer className="mb-4">
-                            <Label htmlFor="password">Password</Label>
+                            <h1 className="text-xs absolute ml-2 bg-[#000101] ">Password</h1>
                             <Input
                                 id="password"
                                 placeholder="••••••••"
@@ -124,17 +125,19 @@ export default function LoginPage() {
                         </div>
                         <p className="text-xs text-center mt-2">
                             By clicking continue, you agree to our{" "}
-                            <a href="/terms" className="underline">
+                            <a href="/terms" className="underline text-blue-400">
                                 Terms of Service
                             </a>{" "}
                             and{" "}
-                            <a href="/privacypolicy" className="underline">
+                            <a href="/privacypolicy" className="underline text-blue-400">
                                 Privacy Policy
                             </a>.
                         </p>
                         <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
                         <div className="flex justify-center gap-2">
-                            <Home selected />
+                            <div className="mt-[6px] scale-125">
+                                <Home selected />
+                            </div>
                             <Link href='/'>
                                 <h1 className="hover:underline cursor-pointer">Back to Home</h1>
                             </Link>

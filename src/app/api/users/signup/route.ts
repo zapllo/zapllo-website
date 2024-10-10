@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
       role,
       categories = [], // Default to empty array if not provided
       reportingManagerId,
+      country, // New field
     } = reqBody;
 
     // Check if a user with the provided email already exists
@@ -161,6 +162,7 @@ export async function POST(request: NextRequest) {
         teamSize,
         description,
         trialExpires,
+        country, // New field
       });
 
       const savedTempOrganization = await tempOrganization.save();

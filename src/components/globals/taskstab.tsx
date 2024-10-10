@@ -37,6 +37,7 @@ import CustomAudioPlayer from "./customAudioPlayer";
 import Loader from "../ui/loader";
 import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
 import { BackgroundGradientAnimation } from "../ui/backgroundGradientAnimation";
+import CustomDatePicker from "./date-picker";
 
 
 type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
@@ -140,8 +141,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customStartDate, setCustomStartDate] = useState<string>("");
-  const [customEndDate, setCustomEndDate] = useState<string>("");
+  const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
+  const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
+
+  // State to control which date picker is open: 'start', 'end', or null
+  const [datePickerType, setDatePickerType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchEmployeeQuery, setSearchEmployeeQuery] = useState<string>("");
   // State variables for filters
@@ -183,10 +187,27 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
   // Add this state to the component
-  const [taskStatusFilter, setTaskStatusFilter] = useState<string | null>(null);
+  const [taskStatusFilter, setTaskStatusFilter] = useState<string | null>("pending");
   const [selectedUserId, setSelectedUserId] = useState<User | null>(null);
 
 
+
+  // Handlers to open date pickers
+  const openStartDatePicker = () => setDatePickerType('start');
+  const openEndDatePicker = () => setDatePickerType('end');
+
+  // Handler to close date pickers
+  const closeDatePicker = () => setDatePickerType(null);
+
+  // Handler to set selected dates
+  const handleDateChange = (date: Date) => {
+    if (datePickerType === 'start') {
+      setCustomStartDate(date);
+    } else if (datePickerType === 'end') {
+      setCustomEndDate(date);
+    }
+    closeDatePicker();
+  };
 
   const handleDeleteClick = (id: string) => {
     setDeleteEntryId(id);
@@ -436,10 +457,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     const completionDate = task.completionDate ? new Date(task.completionDate) : null;
     const now = new Date();
 
-    // 1. Filter by selected user if a user card was clicked (critical filter applied first)
-    if (selectedUserId && selectedUserId._id) {
-      isFiltered = task.assignedUser?._id === selectedUserId._id;
-    }
+
     // Apply "Assigned To" filter
     if (assignedToFilter && task.assignedUser?._id !== assignedToFilter) {
       isFiltered = false;
@@ -477,11 +495,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     if (activeTab === "myTasks") {
       isFiltered = task.assignedUser?._id === currentUser?._id;
     } else if (activeTab === "delegatedTasks") {
-      isFiltered = (task.user._id === currentUser?._id && task.assignedUser._id !== currentUser?._id) || task.assignedUser._id === currentUser?._id;
+      isFiltered = (task.user._id === currentUser?._id && task.assignedUser?._id !== currentUser?._id) || task.assignedUser?._id === currentUser?._id;
     } else if (activeTab === "allTasks") {
-      isFiltered = task.user.organization === currentUser?.organization;
+      return tasks;
     }
 
+
+    // 1. Filter by selected user if a user card was clicked (critical filter applied first)
+    if (selectedUserId && selectedUserId._id) {
+      isFiltered = task.assignedUser?._id === selectedUserId._id;
+    }
     // Skip task if it doesn't match the active tab filter
     if (!isFiltered) return false;
 
@@ -1071,7 +1094,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
             <TabsTrigger value="all" className="flex justify-start gap-2">
               <div className="flex justify-start ml-4 w-full gap-2">
-                <HomeIcon  />
+                <HomeIcon />
                 <h1 className="mt-auto text-xs">Dashboard</h1>
               </div>
             </TabsTrigger>
@@ -1084,13 +1107,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
             <TabsTrigger value="delegatedTasks" className="flex justify-start w-full gap-2">
               <div className="flex justify-start w-full ml-4 gap-2">
                 <img src="/icons/delegated.png" className="h-[16px]" alt="Delegated Tasks Icon" />
-                <h1 className="text-xs">Delegated Tasks</h1>
+                <h1 className="text-xs mt-1">Delegated Tasks</h1>
               </div>
             </TabsTrigger>
             <TabsTrigger value="allTasks" className="flex justify-start w-full gap-2 ">
               <div className="flex justify-start w-full gap-2 ml-4">
                 <img src="/icons/all.png" className="h-5" alt="All Tasks Icon" />
-                <h1 className="text-xs">All Tasks</h1>
+                <h1 className="text-xs mt-1">All Tasks</h1>
               </div>
             </TabsTrigger>
           </TabsList>
@@ -1129,45 +1152,80 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                               {activeDateFilter === "custom" && (
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                  <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96">
+                                  <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96 relative">
+                                    {/* Close Button */}
                                     <div className="w-full flex justify-between">
-                                      <h3 className="text-md text-white font-semibold mb-4">Select Date Range</h3>
-                                      <h1 className="cursor-pointer" onClick={() => setActiveDateFilter("today")}>X</h1>
-                                    </div>
-
-                                    <div className="flex gap-2">
-                                      <div className="space-y-1">
-                                        <label className="text-sm">Start Date</label>
-                                        <input
-                                          type="date"
-                                          value={customStartDate}
-                                          onChange={(e) => setCustomStartDate(e.target.value)}
-                                          className="border px-2 py-1"
-                                        />
-                                      </div>
-                                      <div className="space-y-1">
-                                        <label className="text-sm ">End Date</label>
-
-                                        <input
-                                          type="date"
-                                          value={customEndDate}
-                                          onChange={(e) => setCustomEndDate(e.target.value)}
-                                          className="border px-2 py-1"
-                                        />
-                                      </div>
-
-                                    </div>
-                                    <div className="flex justify-end gap-4 mt-4">
-
+                                      <h3 className="text-md text-white font-semibold ">Select Date Range</h3>
                                       <button
-                                        onClick={() => setActiveDateFilter(undefined)} // This will close the modal
-                                        className="px-4 py-1 bg-[#007A5A] text-white rounded "
+                                        className="cursor-pointer text-white text-lg"
+                                        onClick={() => setActiveDateFilter(undefined)}
+                                      >
+                                        &times;
+                                      </button>
+                                    </div>
+
+                                    {/* Date Selection Buttons */}
+                                    <div className="flex flex-col mt-4 gap-4">
+                                      {/* Start Date Button */}
+                                      <div className="space-y-1">
+                                        <label className="text-sm text-gray-300">Start Date</label>
+                                        <button
+                                          onClick={openStartDatePicker}
+                                          className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
+                                        >
+                                          <span className="flex gap-1">
+                                            <Calendar className="h-5" />
+                                            {customStartDate
+                                              ? new Date(customStartDate).toLocaleDateString()
+                                              : 'Select Start Date'}
+                                          </span>
+
+
+                                        </button>
+                                      </div>
+
+                                      {/* End Date Button */}
+                                      <div className="space-y-1">
+                                        <label className="text-sm text-gray-300">End Date</label>
+                                        <button
+                                          onClick={openEndDatePicker}
+                                          className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
+                                        >
+                                          <span className="flex gap-1">
+                                            <Calendar className="h-5" />
+                                            {customEndDate
+                                              ? new Date(customEndDate).toLocaleDateString()
+                                              : 'Select End Date'}
+                                          </span>
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    {/* Done Button */}
+                                    <div className="flex justify-end gap-4 mt-6">
+                                      <button
+                                        onClick={() => setActiveDateFilter(undefined)} // Closes the modal
+                                        className="px-4 py-2 bg-[#007A5A] text-white rounded hover:bg-[#005f43]"
                                       >
                                         Done
                                       </button>
                                     </div>
-                                  </div>
 
+                                    {/* Custom Date Picker Modal */}
+                                    {datePickerType && (
+                                      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-60">
+                                        <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-1/2 scale-75">
+                                          <CustomDatePicker
+                                            selectedDate={
+                                              datePickerType === 'start' ? customStartDate : customEndDate
+                                            }
+                                            onDateChange={handleDateChange}
+                                            onCloseDialog={closeDatePicker}
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               )}
                             </TabsList3>
@@ -1496,7 +1554,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                       }
 
                                       return (
-                                        <Card key={user._id} className="p-4 flex bg-[#] flex-col gap-2">
+                                        <Card key={user._id} className="p-4 flex bg-[#] flex-col  gap-2">
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">
@@ -1560,8 +1618,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <div className="flex  flex-col ">
                                 {customStartDate && customEndDate && (
                                   <div className="flex gap-8 p-2 justify-center w-full">
-                                    <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
-                                    <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
+                                    <h1 className="text-xs  text-center text-white">Start Date: {customStartDate.toLocaleDateString()}</h1>
+                                    <h1 className="text-xs text-center text-white">End Date: {customStartDate.toLocaleDateString()}</h1>
                                   </div>
                                 )}
                                 <div className="flex -ml-52 mt-4 flex-col ">
@@ -1638,7 +1696,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
 
@@ -1648,7 +1706,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
 
@@ -1658,7 +1716,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* In Progress Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inProgress")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
 
@@ -1668,7 +1726,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Completed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("completed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
 
@@ -1678,7 +1736,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
 
@@ -1688,7 +1746,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
 
@@ -1851,8 +1909,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
                               <div className="flex gap-8 p-2 justify-center w-full">
-                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
-                                <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
+                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate.toLocaleDateString()}</h1>
+                                <h1 className="text-xs text-center text-white">End Date: {customStartDate.toLocaleDateString()}</h1>
                               </div>
                             )}
                             <div className="flex mt-4 -ml-52 flex-col ">
@@ -1931,7 +1989,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
 
@@ -1941,7 +1999,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
 
@@ -1951,7 +2009,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* In Progress Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inProgress")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
 
@@ -1961,7 +2019,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Completed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("completed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
 
@@ -1971,7 +2029,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
 
@@ -1981,7 +2039,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
 
@@ -2013,7 +2071,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
                                           <div className="flex text-xs mt-[10px]">
                                             <User2 className="h-4" />
-                                            {task.assignedUser.firstName}
+                                            {task?.assignedUser?.firstName}
                                           </div>
                                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
@@ -2128,8 +2186,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
                               <div className="flex gap-8 p-2 justify-center w-full">
-                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate}</h1>
-                                <h1 className="text-xs text-center text-white">End Date: {customStartDate}</h1>
+                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate.toLocaleDateString()}</h1>
+                                <h1 className="text-xs text-center text-white">End Date: {customStartDate.toLocaleDateString()}</h1>
                               </div>
                             )}
                             <div className="flex -ml-52  mt-4 flex-col ">
@@ -2220,61 +2278,61 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
 
-                                  Overdue ({allTasksOverdueCount})
+                                  Overdue ({overdueTasks})
                                 </Button>
 
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
 
-                                  Pending ({allTasksPendingCount})
+                                  Pending ({pendingTasks})
                                 </Button>
 
                                 {/* In Progress Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inProgress")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
 
-                                  In Progress ({allTasksInProgressCount})
+                                  In Progress ({inProgressTasks})
                                 </Button>
 
                                 {/* Completed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("completed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
 
-                                  Completed ({allTasksCompletedCount})
+                                  Completed ({completedTasks})
                                 </Button>
 
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
 
-                                  In Time ({allTasksInTimeCount})
+                                  In Time ({inTimeTasks})
                                 </Button>
 
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border-2" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
 
-                                  Delayed ({allTasksDelayedCount})
+                                  Delayed ({delayedTasks})
                                 </Button>
                               </div>
                               {filteredTasks!.length > 0 ? (
@@ -2286,9 +2344,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     >
                                       <div className=" items-center gap-4">
                                         <div>
-                                          <p className="font-medium text-sm text-white">{task.title}</p>
+                                          <p className="font-medium text-sm text-white">{task?.title}</p>
                                           <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                            {task.user.firstName}
+                                            {task?.user?.firstName}
                                           </span></p>
                                         </div>
                                         <div className="flex gap-2">
@@ -2296,28 +2354,28 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
                                             <h1 className="mt-[1.5px]">
-                                              {formatTaskDate(task.dueDate)}
+                                              {formatTaskDate(task?.dueDate)}
                                             </h1>
                                           </div>
                                           <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
                                           <div className="flex text-xs mt-[10px]">
                                             <User2 className="h-4" />
-                                            {task.assignedUser.firstName}
+                                            {task?.assignedUser?.firstName}
                                           </div>
                                           <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
 
                                           <div className="flex text-xs mt-[11px]">
                                             <TagIcon className="h-4" />
-                                            {task.category?.name}
+                                            {task?.category?.name}
                                           </div>
 
                                           {task.repeat ? (
                                             <div className="flex items-center">
                                               <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
 
-                                              {task.repeatType && (
+                                              {task?.repeatType && (
                                                 <h1 className="flex mt-[11px] text-xs">
-                                                  <Repeat className="h-4 " />  {task.repeatType}
+                                                  <Repeat className="h-4 " />  {task?.repeatType}
                                                 </h1>
                                               )}
                                             </div>
@@ -2334,7 +2392,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                             </div>
                                             <h1 className="mt-auto">
-                                              {task.status}
+                                              {task?.status}
                                             </h1>
                                           </div>
                                         </div>

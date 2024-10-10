@@ -7,6 +7,7 @@ import { Paperclip, Mic } from 'lucide-react';
 import { FaTimes, FaUpload } from 'react-icons/fa';
 import CustomAudioPlayer from '../globals/customAudioPlayer';
 import Loader from '../ui/loader';
+import { toast, Toaster } from 'sonner';
 
 interface LeaveFormProps {
     leaveTypes: any[]; // Leave types passed as prop
@@ -181,6 +182,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
             if (response.ok) {
                 const data = await response.json();
+                toast.success("Leave Request submitted successfully");
                 console.log('Leave request submitted successfully:', data);
                 onClose(); // Close the modal on successful submission
             } else {
@@ -325,6 +327,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
     return (
         <Dialog.Root open onOpenChange={onClose}>
+            <Toaster />
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-50" />
                 <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">

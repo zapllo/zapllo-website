@@ -207,12 +207,12 @@ export default function Profile({ }: Props) {
                             <h1 className='text-sm'>Tutorials</h1>
                         </div>
                     </Link>
-                    <Link href='/dashboard/tickets'>
+                    <Link href='/help/tickets'>
                         <div className='border-b p-2 mt-2 h-10 rounded-lg'>
                             <h1 className='text-sm'>My Tickets</h1>
                         </div>
                     </Link>
-                    <Link href='/dashboard/tickets'>
+                    <Link href='/help/tickets'>
                         <div className=' p-2 mt-2 h-10 '>
                             <h1 className='text-sm'>Raise a Ticket</h1>
                         </div>

@@ -459,7 +459,7 @@ export default function AllLeaves() {
                     ) : (
                         <div className="space-y-4 mb-12">
                             {filteredLeaves.map((leave) => (
-                                <div key={leave._id} className="border cursor-pointer">
+                                <div key={leave._id} className="border hover:border-[#75517B] cursor-pointer">
                                     <div
                                         className="flex items-center justify-between  px-4 rounded shadow-sm py-2 "
                                         onClick={() => setSelectedLeaveForDetails(leave)}
