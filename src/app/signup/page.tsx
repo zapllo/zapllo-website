@@ -43,6 +43,9 @@ export default function SignupPage() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [emailError, setEmailError] = useState<string>('');
+
 
   // Handle category selection
   const handlenOnCategorySelect = (category: string) => {
@@ -61,9 +64,10 @@ export default function SignupPage() {
 
   // Toggle show/hide password
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
-  // Handler to receive selected country from CountryDrop
-  // Handle country selection from CountryDrop
+
+  // Handler to receive selected country code from CountryDrop
   const handleCountrySelect = (countryCode: string) => {
     setOrganization({ ...organization, country: countryCode });
   };
@@ -105,7 +109,12 @@ export default function SignupPage() {
         router.push("/login"); // Redirect after signup
       }
     } catch (error: any) {
-      toast.error("Signup failed: " + (error.response?.data?.error || error.message)); // Display error toast
+      if (error.response?.status === 400 && error.response?.data?.error.includes("email")) {
+        setEmailError(error.response.data.error);
+        toast.error("This Email is already registered");
+      } else {
+        toast.error("Signup failed, Please Fill out all Fields ");
+      }
       console.error("Signup failed:", error);
     } finally {
       setLoading(false);
@@ -123,7 +132,7 @@ export default function SignupPage() {
           {showOrganizationForm ? (
             <ArrowLeft
               onClick={() => setShowOrganizationForm(false)}
-              className="cursor-pointer"
+              className="cursor-pointer border rounded-full border-white h-7 hover:bg-white hover:text-black w-7"
             />
           ) : (
             <h1></h1>
@@ -132,7 +141,7 @@ export default function SignupPage() {
             <img src="/logo.png" className="h-7" alt="Logo" />
           </div>
           <p className="text-neutral-600 text-sm font-bold text-center max-w-sm mt-2 dark:text-neutral-300">
-            Get Started
+          Let’s get started by filling up the form below
           </p>
           {showOrganizationForm ? (
             <div className="my-8">
@@ -169,11 +178,16 @@ export default function SignupPage() {
                   <option value="" disabled>
                     Select Industry
                   </option>
-                  <option value="Retail">Retail</option>
+                  <option value="Retail/E-Commerce">Retail/E-Commerce</option>
                   <option value="Technology">Technology</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Finance">Finance</option>
+                  <option value="Service Provider">Service Provider</option>
+                  <option value="Healthcare(Doctors/Clinics/Physicians/Hospital)">Healthcare(Doctors/Clinics/Physicians/Hospital)</option>
+                  <option value="Logistics">Logistics</option>
+                  <option value="Financial Consultants">Financial Consultants</option>
+                  <option value="Trading">Trading</option>
                   <option value="Education">Education</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Real Estate/Construction/Interior/Architects">Real Estate/Construction/Interior/Architects</option>
                   <option value="Other">Other</option>
                 </select>
               </LabelInputContainer>
@@ -192,12 +206,11 @@ export default function SignupPage() {
                   <option value="" disabled>
                     Select Team Size
                   </option>
-                  <option value="1-5">1-5</option>
-                  <option value="5-10">5-10</option>
-                  <option value="10-15">10-15</option>
-                  <option value="15-20">15-20</option>
-                  <option value="20-25">20-25</option>
-                  <option value="25+">25+</option>
+                  <option value="1-10">1-10</option>
+                  <option value="11-20">11-20</option>
+                  <option value="21-30">21-30</option>
+                  <option value="31-50">31-50</option>
+                  <option value="51+">51+</option>
                 </select>
               </LabelInputContainer>
               <LabelInputContainer className="mb-8">
@@ -211,7 +224,7 @@ export default function SignupPage() {
                       description: e.target.value,
                     })
                   }
-                  placeholder="Describe your company..."
+                  // placeholder="Describe your company..."
                   className="w-full h-24 p-2 border rounded-md"
                 />
               </LabelInputContainer>
@@ -234,7 +247,7 @@ export default function SignupPage() {
                   ))}
                 </div>
                 <span className="text-sm pt-5">
-                  Don&apos;t worry, you can change these later
+                  Don&apos;t worry, you can add and change these categories later
                 </span>
               </LabelInputContainer>
 
@@ -328,6 +341,7 @@ export default function SignupPage() {
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
                   placeholder="example@gmail.com"
                 />
+
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
                 <h1 className="text-xs absolute ml-2 bg-[#000101]">Password</h1>
@@ -338,7 +352,7 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setUser({ ...user, password: e.target.value })
                   }
-                  placeholder="••••••••"
+                // placeholder="••••••••"
                 />
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
@@ -351,18 +365,18 @@ export default function SignupPage() {
                 <h1 className="text-xs absolute ml-2 bg-[#000101]">Confirm Password</h1>
                 <Input
                   id="confirmPassword"
-                  type={showPassword ? "text" : "password"}
+                  type={showConfirmPassword ? "text" : "password"}
                   value={user.confirmPassword}
                   onChange={(e) =>
                     setUser({ ...user, confirmPassword: e.target.value })
                   }
-                  placeholder="••••••••"
+                // placeholder="••••••••"
                 />
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-                  onClick={togglePasswordVisibility}
+                  onClick={toggleConfirmPasswordVisibility}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </div>
               </LabelInputContainer>
               <CountryDrop
@@ -373,7 +387,7 @@ export default function SignupPage() {
                 <h1 className="text-xs absolute ml-2 bg-[#000101]">Whatsapp No</h1>
                 <Input
                   id="whatsappNo"
-                  type="number"
+                  type="text"
                   value={user.whatsappNo}
                   onChange={(e) =>
                     setUser({ ...user, whatsappNo: e.target.value })

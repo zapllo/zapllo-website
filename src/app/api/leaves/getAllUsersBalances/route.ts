@@ -5,6 +5,8 @@ import connectDB from '@/lib/db';
 import mongoose, { Document, Types } from 'mongoose';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 
+export const dynamic = 'force-dynamic';
+
 export interface ILeaveBalance {
     leaveType: Types.ObjectId | ILeaveType; // It can be an ObjectId or populated ILeaveType
     balance: number;

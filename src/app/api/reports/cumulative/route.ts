@@ -1,9 +1,9 @@
 import LoginEntry from '@/models/loginEntryModel';
 import Leave from '@/models/leaveModel';
 import User from '@/models/userModel';
-import Holiday from '@/models/holidayModel'; // Assuming you have a Holiday model
+import Holiday from '@/models/holidayModel';
 import { NextRequest, NextResponse } from 'next/server';
-import { startOfMonth, endOfMonth, eachDayOfInterval, isWeekend } from 'date-fns';
+import { eachDayOfInterval, isWeekend } from 'date-fns';
 import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import { getDataFromToken } from '@/helper/getDataFromToken';
@@ -21,20 +21,19 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message: 'User organization not found' }, { status: 404 });
     }
 
-    const { period, managerId, employeeId } = await request.json();
+    const { startDate, endDate, managerId, employeeId } = await request.json();
+    if (!startDate || !endDate) {
+        return NextResponse.json({ success: false, message: 'Missing date range' }, { status: 400 });
+    }
 
-    let startDate, endDate;
-    if (period === 'thisMonth') {
-        startDate = startOfMonth(new Date());
-        endDate = endOfMonth(new Date());
-    } else {
-        startDate = new Date(period.start);
-        endDate = new Date(period.end);
+    const parsedStartDate = new Date(startDate);
+    const parsedEndDate = new Date(endDate);
+
+    if (isNaN(parsedStartDate.getTime()) || isNaN(parsedEndDate.getTime())) {
+        return NextResponse.json({ success: false, message: 'Invalid date range' }, { status: 400 });
     }
 
     const userFilter: { [key: string]: any } = { organization: loggedInUser.organization };
-
-
     if (employeeId) {
         userFilter._id = new mongoose.Types.ObjectId(employeeId);
     } else if (managerId) {
@@ -42,15 +41,13 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        // Fetch users based on filters
         const organizationUsers = await User.find(userFilter).select('_id reportingManager firstName lastName');
         const organizationUserIds = organizationUsers.map(user => user._id);
 
-        // Fetch login entries
         const loginEntries = await LoginEntry.aggregate([
             {
                 $match: {
-                    timestamp: { $gte: startDate, $lte: endDate },
+                    timestamp: { $gte: parsedStartDate, $lte: parsedEndDate },
                     userId: { $in: organizationUserIds }
                 }
             },
@@ -69,9 +66,7 @@ export async function POST(request: NextRequest) {
                     as: 'user'
                 }
             },
-            {
-                $unwind: '$user'
-            },
+            { $unwind: '$user' },
             {
                 $lookup: {
                     from: 'users',
@@ -80,20 +75,14 @@ export async function POST(request: NextRequest) {
                     as: 'reportingManager'
                 }
             },
-            {
-                $unwind: {
-                    path: '$reportingManager',
-                    preserveNullAndEmptyArrays: true
-                }
-            }
+            { $unwind: { path: '$reportingManager', preserveNullAndEmptyArrays: true } }
         ]);
 
-        // Fetch leave entries
         const leaves = await Leave.aggregate([
             {
                 $match: {
-                    fromDate: { $gte: startDate },
-                    toDate: { $lte: endDate },
+                    fromDate: { $gte: parsedStartDate },
+                    toDate: { $lte: parsedEndDate },
                     user: { $in: organizationUserIds }
                 }
             },
@@ -105,22 +94,18 @@ export async function POST(request: NextRequest) {
             }
         ]);
 
-        // Fetch holidays within the selected period
         const holidays = await Holiday.find({
-            holidayDate: { $gte: startDate, $lte: endDate },
+            holidayDate: { $gte: parsedStartDate, $lte: parsedEndDate },
             organization: loggedInUser.organization
         });
 
-        // Calculate total weekdays (excluding weekends)
-        const allDaysInPeriod = eachDayOfInterval({ start: startDate, end: endDate });
+        const allDaysInPeriod = eachDayOfInterval({ start: parsedStartDate, end: parsedEndDate });
         const weekdaysInPeriod = allDaysInPeriod.filter(day => !isWeekend(day));
         const totalDays = weekdaysInPeriod.length;
 
-        // Calculate working days and week offs
         const workingDays = loginEntries.length + leaves.length;
         const weekOffs = allDaysInPeriod.filter(isWeekend).length;
 
-        // Combine login entries and leave entries into the report
         const report = loginEntries.map(entry => {
             const leave = leaves.find(l => l._id.equals(entry._id));
             return {

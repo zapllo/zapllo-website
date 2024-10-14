@@ -79,6 +79,7 @@ export default function TeamTabs() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     // Update newMember's reportingManagerId when selectedManager changes
@@ -167,6 +168,7 @@ export default function TeamTabs() {
   const handleCreateUser = async () => {
     setLoading(true); // Start loader
     try {
+      setErrorMessage(""); // Clear any existing error message
       const response = await axios.post('/api/users/signup', newMember);
 
       const data: APIResponse<User> = response.data;
@@ -176,6 +178,7 @@ export default function TeamTabs() {
         setUsers([...users, data.user]);
         // Close the modal
         setIsModalOpen(false);
+        setErrorMessage(""); // Clear any existing error message
         // Clear the new member form
         setNewMember({
           email: "",
@@ -189,17 +192,26 @@ export default function TeamTabs() {
         toast.success("New member added successfully!");
 
       } else {
-        // Display error toast
-        toast.error(data.error);
+        // Display error toast for existing email
+        if (data.error === "A user with this email already exists.") {
+          // toast.error("This email is already associated with an account. Please use a different email.");
+          setErrorMessage("This email is already registered");
+        } else {
+          toast.error(data.error);
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user:", error);
-      toast.error("Error creating user. Please try again.");
+      if (error.response && error.response.data && error.response.data.error) {
+        setErrorMessage(error.response.data.error); // Display specific server error message
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false); // Stop loader
     }
   };
-
+  console.log(errorMessage, 'errorrr')
 
 
   const clearFields = () => {
@@ -367,8 +379,16 @@ export default function TeamTabs() {
                     className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
 
                     value={newMember.email}
-                    onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                    onChange={(e) => {
+                      setNewMember({ ...newMember, email: e.target.value });
+                      if (errorMessage) {
+                        setErrorMessage(""); // Clear error message when email is modified
+                      }
+                    }}
                   />
+                  {errorMessage && (
+                    <p className="text-red-500 text-xs ml-1 -my-3  ">{errorMessage}</p>
+                  )}
                   <input
                     placeholder="Password"
                     className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"

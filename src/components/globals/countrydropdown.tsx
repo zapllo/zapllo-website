@@ -1,4 +1,6 @@
-'use client'
+// CountryDrop.tsx
+
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { getData } from 'country-list';
 import Flag from 'react-world-flags';
@@ -77,7 +79,11 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
                         filteredOptions.map((option) => (
                             <div
                                 key={option.code}
-                                onClick={() => handleSelect(option)}
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevents the event from bubbling up
+                                    handleSelect(option);
+                                }}
+
                                 className="cursor-pointer text-sm p-2 hover:bg-[#201024] flex items-center"
                             >
                                 {option.code && (
@@ -96,8 +102,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
 };
 
 interface CountryDropProps {
-    selectedCountry: string;
-    onCountrySelect: (country: string) => void;
+    selectedCountry: string; // Country code
+    onCountrySelect: (countryCode: string) => void; // Expecting country code
 }
 
 const CountryDrop: React.FC<CountryDropProps> = ({ selectedCountry, onCountrySelect }) => {
@@ -109,23 +115,30 @@ const CountryDrop: React.FC<CountryDropProps> = ({ selectedCountry, onCountrySel
         const formattedCountries = countryData.map((country) => ({
             label: country.name,
             name: country.name,
-            value: country.code,
-            code: country.code
+            value: country.code, // Country code
+            code: country.code // Country code
         }));
         setCountries(formattedCountries);
 
-        // Set default country based on selectedCountry prop or default to 'India'
+        // Set default country based on selectedCountry prop or default to 'IN' (India)
         const defaultCountry = formattedCountries.find(country => country.value === selectedCountry) ||
-            formattedCountries.find(country => country.name === 'India');
-        if (defaultCountry) {
+            formattedCountries.find(country => country.value === 'IN'); // Use country code for India
+
+        // Only set default if selectedCountry is not already set
+        if (defaultCountry && selectedCountry !== defaultCountry.value) {
             setSelectedOption(defaultCountry);
-            onCountrySelect(defaultCountry.name);
+            onCountrySelect(defaultCountry.value); // Pass country code
+        } else if (selectedCountry) {
+            const currentCountry = formattedCountries.find(country => country.value === selectedCountry);
+            if (currentCountry) {
+                setSelectedOption(currentCountry);
+            }
         }
     }, [selectedCountry, onCountrySelect]);
 
     const handleCountrySelect = (option: Option) => {
         setSelectedOption(option);
-        onCountrySelect(option.name);
+        onCountrySelect(option.value); // Pass country code
     };
 
     return (

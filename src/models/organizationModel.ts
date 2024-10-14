@@ -4,7 +4,7 @@ const organizationSchema = new mongoose.Schema({
   companyName: {
     type: String,
     required: true,
-    unique: true,
+    unique: false,
   },
   industry: {
     type: String,

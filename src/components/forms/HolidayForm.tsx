@@ -6,6 +6,8 @@ import axios from 'axios';
 import CustomDatePicker from '../globals/date-picker';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 import { toast, Toaster } from 'sonner';
+import { Calendar } from 'lucide-react';
+import Loader from '../ui/loader';
 
 interface HolidayFormProps {
     onHolidayCreated: () => void; // Callback to trigger after a holiday is created
@@ -48,23 +50,22 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
         }
     };
 
-    // Function to format the date to a readable format (e.g., "20 Sep 2023")
+    // Function to format the date to "dd-mm-yyyy"
     const formatDate = (dateString: string | null): string => {
         if (!dateString) return 'Select Date';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-        });
+        const day = String(date.getDate()).padStart(2, '0'); // Get day and pad to two digits
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Get month (0-11) and pad to two digits
+        const year = date.getFullYear(); // Get full year
+        return `${day}-${month}-${year}`; // Return formatted date
     };
 
     return (
-        <div>
+        <div className='z-[100]'>
             <Toaster />
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label className='absolute text-xs -mt-[8px] bg-[#1A1C20] ml-1'>Holiday Name</label>
+                    <label className='absolute z-[100] text-xs -mt-[8px] bg-[#1A1C20] ml-1'>Holiday Name</label>
                     <input
                         type="text"
                         value={holidayName}
@@ -83,17 +84,25 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
                             <button
                                 type="button"
                                 onClick={() => setIsDatePickerOpen(true)}
-                                className="rounded bg-[#121212] hover:bg-[#121212] px-3 flex gap-1 py-3 mt-4 w-full"
+                                className="rounded bg-[#121212] hover:bg-[#121212] px-1 flex gap-1 py-3 mt-4 w-full"
                             >
                                 {holidayDate ? (
                                     // Show the selected date if a date has been picked
-                                    <h1 className='text-xs'>{holidayDate}</h1>
+                                    <div className='flex gap-1'>
+                                        <Calendar className='h-5' />
+                                        <h1 className='text-[12px] opacity-50 mt-1 '>{formatDate(holidayDate)}</h1>
+                                    </div>
                                 ) : (
-                                    <h1 className="text-[10px] opacity-50 ">Select Date</h1>
+                                    <div className='flex gap-1'>
+                                        <Calendar className='h-5' />
+                                        <h1 className="text-[12px] opacity-50 mt-1  ">Select Date</h1>
+
+                                    </div>
                                 )}
                             </button>
                         </DialogTrigger>
                         <DialogContent className="">
+
                             <div className="absolute z-[100] inset-0 bg-black -900 bg-opacity-50 rounded-xl flex justify-center items-center">
                                 <div
                                     className="bg-[#1A1C20] z-[100] h-[510px] max-h-screen scale-75 text-[#D0D3D3] w-[100%] rounded-lg p-8">
@@ -116,7 +125,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
 
                 <div className='w-full flex justify-center'>
                     <button type="submit" className='bg-[#017A5B] px-4 mt-4 py-2 text-sm rounded' disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : 'Save Holiday'}
+                        {isSubmitting ? <Loader /> : 'Save Holiday'}
                     </button>
                 </div>
             </form >

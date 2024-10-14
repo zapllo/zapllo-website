@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ error: "User already exists" }, { status: 400 });
+      return NextResponse.json({ error: "A user with this email already exists." }, { status: 400 });
     }
 
     // Hash the password using bcryptjs

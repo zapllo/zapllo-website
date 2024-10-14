@@ -5,10 +5,10 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
 import Script from "next/script";
 
-const inter = Lato({ weight: "400", subsets:['latin'] });
+const inter = Lato({ weight: "400", subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Zapllo - Automate and Upgrade your Workflow by 10x",
+  title: "Zapllo - Automate and Upgrade your Business by 10x",
   description: "Supercharge your Workflow with Zapllo and unleash the power of AI and Automation. Book your free demo now.",
 };
 

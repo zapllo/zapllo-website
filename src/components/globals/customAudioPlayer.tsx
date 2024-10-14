@@ -21,13 +21,12 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
     useEffect(() => {
         if (audioRef.current && audioSrc) {
             audioRef.current.src = audioSrc;
-            // Load the audio when the src changes
             audioRef.current.load();
             setIsPlaying(false);
             setCurrentTime(0);
             setDuration(0);
         }
-    }, [audioSrc]);
+    }, [audioBlob, audioUrl]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -101,7 +100,7 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
                             ></div>
                         </div>
                         <div className="text-white text-sm">
-                            <span>{formatTime(currentTime)}</span> 
+                            <span>{formatTime(currentTime)}</span>
                         </div>
                         <button
                             onClick={handlePlayPause}

@@ -1,6 +1,7 @@
 'use client';
 
 import CustomDatePicker from '@/components/globals/date-picker';
+import { startOfWeek, endOfWeek, subWeeks, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/ui/dialog';
 import axios from 'axios';
@@ -100,6 +101,9 @@ interface AttendanceEntry {
   total: number;
 }
 
+let startDate: Date | undefined;
+let endDate: Date | undefined;
+
 
 const AttendanceDashboard: React.FC = () => {
   const [attendance, setAttendance] = useState<AttendanceEntry[]>([]);
@@ -124,12 +128,34 @@ const AttendanceDashboard: React.FC = () => {
   const monthOptions = generateMonthOptions(); // Generate months dynamically
   const [selectedDate, setSelectedDate] = useState<string>(Date());
   const [isDateSelected, setIsDateSelected] = useState<boolean>(false); // Track whether the user manually selects a date
-  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<string>('2024-09');
+  const currentYear = new Date().getFullYear();
+  const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0'); // Formats month as two digits
+  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<string>(`${currentYear}-${currentMonth}`);
   const [dailyReport, setDailyReport] = useState<ReportEntry[]>([]);
   const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   const [weekOffs, setWeekOffs] = useState<number>(0);
   const [attendanceLoading, setAttendanceLoading] = useState<boolean | null>(false);
+  const [totalDailyDays, setTotalDailyDays] = useState(1); // Total days for daily report (default 1)
+  const [holidaysDaily, setHolidaysDaily] = useState(0);   // Number of holidays in the daily report
+  const [weekOffsDaily, setWeekOffsDaily] = useState(0);   // Number of week offs (0 or 1)
+  const [dailytotalCount, setDailyTotalCount] = useState<number>(0);
+  const [dailypresentCount, setDailyPresentCount] = useState<number>(0);
+  const [dailyonLeaveCount, setDailyOnLeaveCount] = useState<number>(0);
+  const [dailyabsentCount, setDailyAbsentCount] = useState<number>(0);
 
+
+
+
+  useEffect(() => {
+    const computeCounts = () => {
+      setDailyTotalCount(dailyReport.length);
+      setDailyPresentCount(dailyReport.filter(entry => entry.status === 'Present').length);
+      setDailyOnLeaveCount(dailyReport.filter(entry => entry.status === 'On Leave').length);
+      setDailyAbsentCount(dailyReport.filter(entry => entry.status === 'Absent').length);
+    };
+
+    computeCounts();
+  }, [dailyReport]);
 
 
   useEffect(() => {
@@ -157,28 +183,51 @@ const AttendanceDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchCumulativeReport = async () => {
-      setAttendanceLoading(true)
+      let startDate: Date;
+      let endDate: Date;
+
+      if (period === 'thisMonth') {
+        startDate = startOfMonth(new Date());
+        endDate = endOfMonth(new Date());
+      } else if (period === 'lastMonth') {
+        startDate = startOfMonth(subMonths(new Date(), 1));
+        endDate = endOfMonth(subMonths(new Date(), 1));
+      } else if (period === 'thisWeek') {
+        startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
+        endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
+      } else if (period === 'lastWeek') {
+        startDate = startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 });
+        endDate = endOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 });
+      } else {
+        console.error("Invalid period specified.");
+        return;
+      }
+
       try {
         const res = await fetch('/api/reports/cumulative', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ period, managerId, employeeId }), // Now including managerId
+          body: JSON.stringify({
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+            managerId,
+            employeeId,
+          }),
         });
-        const { report, totalDays, workingDays, holidays, weekOffs } = await res.json();
-
-        setReport(report);
-        setTotalCumulativeDays(totalDays);
-        setWorkingDays(workingDays);
-        setHolidaysCumulative(holidays.length);
-        setWeekOffs(weekOffs);
-        setAttendanceLoading(false)
+        const data = await res.json();
+        setReport(data.report);
+        setTotalCumulativeDays(data.totalDays);
+        setWorkingDays(data.workingDays);
+        setHolidaysCumulative(data.holidays.length);
+        setWeekOffs(data.weekOffs);
       } catch (error) {
         console.error('Error fetching cumulative report:', error);
       }
     };
 
+
     if (period) fetchCumulativeReport();
-  }, [managerId, period, employeeId]); // Trigger on changes in period or managerId
+  }, [managerId, period, employeeId]);
 
   // Fetch attendance, leave, and holiday data for the entire organization
   useEffect(() => {
@@ -331,6 +380,7 @@ const AttendanceDashboard: React.FC = () => {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                 /> */}
+
                 <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                   <DialogTrigger>
                     <Button
@@ -339,12 +389,10 @@ const AttendanceDashboard: React.FC = () => {
                       className=" rounded  border-2 border-[#380e3d] bg-[#121212] hover:bg-[#121212] px-3 flex gap-1 py-2"
                     >
                       <Calendar className="h-5 text-sm" />
-                      {isDateSelected ? (
-                        // Show the selected date if the user has interacted
-                        <h1 className='text-xs'> {format(selectedDate, 'PPP')}</h1>
-                      ) : (
-                        <h1 className="text-xs">Select Date</h1>
-                      )}
+
+                      {/* // Show the selected date if the user has interacted */}
+                      <h1 className='text-xs'> {format(selectedDate, 'PPP')}</h1>
+
                       {/* <h1 className="text-xs">Select Date & Time</h1> */}
                     </Button>
                   </DialogTrigger>
@@ -357,11 +405,23 @@ const AttendanceDashboard: React.FC = () => {
                     />
                   </DialogContent>
                 </Dialog>
-
-
-
               </div>
             </div>
+            <div className="flex justify-center space-x-4 mb-4">
+              <div className="flex gap-2 items-center  text-white border p-2 text-xs  rounded">
+                All: {dailytotalCount}
+              </div>
+              <div className="flex flex-col items-center text-green-400 border p-2 text-xs  rounded">
+                Present : {dailypresentCount}
+              </div>
+              <div className="flex flex-col items-center text-yellow-400   border p-2 text-xs  rounded">
+                On Leave : {dailyonLeaveCount}
+              </div>
+              <div className="flex flex-col items-center text-red-500 border p-2 text-xs  rounded">
+              Absent : {dailyabsentCount}
+              </div>
+            </div>
+
             <table className="table-auto border w-full border-collapse">
               <thead className='bg-[#380e3d] rounded'>
                 <tr className="text-xs border-t ">
@@ -373,7 +433,7 @@ const AttendanceDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {dailyReport.map((entry: ReportEntry, index) => (
+                {dailyReport.map((entry, index) => (
                   <tr key={index} className='border-t'>
                     <td className=" px-4 text-xs py-2">{entry.user}</td>
                     <td
@@ -401,20 +461,22 @@ const AttendanceDashboard: React.FC = () => {
 
               <div>
                 <select
-                  className="border-[#380e3d] border-2 text-xs rounded-lg p-2"
+                  className="border-[#380e3d] border-2 outline-none text-xs rounded-lg p-2"
                   onChange={(e) => setPeriod(e.target.value)}
                 >
+                  <option value="thisWeek">This Week</option>
+                  <option value="lastWeek">Last Week</option>
                   <option value="thisMonth">This Month</option>
                   <option value="lastMonth">Last Month</option>
                 </select>
               </div>
 
             </div>
-            <div className="flex space-x-4 mb-2 mt-2">
-              <span className=" border p-2  text-xs">Total Days: {totalCumulativeDays}</span>
-              <span className="border p-2 text-xs">Working: {workingDays}</span>
-              <span className="border p-2 text-xs">Week Offs: {weekOffs}</span>
-              <span className="border p-2 text-xs">Holidays: {holidaysCumulative}</span>
+            <div className="flex space-x-4 justify-center mb-2 mt-2">
+              <span className="border text-xs text-blue-400 text-= p-2 rounded">Total Days: {totalCumulativeDays}</span>
+              <span className="border text-xs text-yellow-400  p-2 rounded">Working: {workingDays}</span>
+              <span className="border text-xs text-green-400  p-2 rounded">Week Offs: {weekOffs}</span>
+              <span className="border text-xs text-red-500  p-2 rounded">Holidays: {holidaysCumulative}</span>
             </div>
             <table className="table-auto border  w-full border-collapse">
               <thead className='bg-[#380e3d] rounded'>
@@ -486,25 +548,27 @@ const AttendanceDashboard: React.FC = () => {
               {generateWeekdaysInMonth(
                 parseInt(selectedAttendanceDate.split('-')[0]),
                 parseInt(selectedAttendanceDate.split('-')[1]) - 1
-              ).map((day, index) => {
-                const dayString = day.toISOString().split('T')[0];
-                const isPresent = attendance?.some(entry => entry.date === dayString && entry.present);
-                const isLeave = leaves?.some(leave => leave.fromDate <= dayString && leave.toDate >= dayString);
-                const isHoliday = holidays?.some(holiday => holiday.holidayDate === dayString);
-                const isAbsent = !isPresent && !isLeave && !isHoliday;
+              )
+                .filter(day => day <= new Date()) // Only include dates up to today
+                .map((day, index) => {
+                  const dayString = day.toISOString().split('T')[0];
+                  const isPresent = attendance?.some(entry => entry.date === dayString && entry.present);
+                  const isLeave = leaves?.some(leave => leave.fromDate <= dayString && leave.toDate >= dayString);
+                  const isHoliday = holidays?.some(holiday => holiday.holidayDate === dayString);
+                  const isAbsent = !isPresent && !isLeave && !isHoliday;
 
-                return (
-                  <tr key={index} className="border-b">
-                    <td className="px-4 py-2 text-xs">{day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
-                    <td className="px-4 py-2 text-xs">{day.toLocaleDateString('en-US', { weekday: 'short' })}</td>
-                    <td className="px-4 py-2 text-xs">{isPresent ? 1 : 0}</td>
-                    <td className="px-4 py-2 text-xs">{isLeave ? 1 : 0}</td>
-                    <td className="px-4 py-2 text-xs">{isAbsent ? 1 : 0}</td>
-                    <td className="px-4 py-2 text-xs">{isHoliday ? 1 : 0}</td>
-                    <td className="px-4 py-2 text-xs">1</td>
-                  </tr>
-                );
-              })}
+                  return (
+                    <tr key={index} className="border-b">
+                      <td className="px-4 py-2 text-xs">{day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
+                      <td className="px-4 py-2 text-xs">{day.toLocaleDateString('en-US', { weekday: 'short' })}</td>
+                      <td className="px-4 py-2 text-xs">{isPresent ? 1 : 0}</td>
+                      <td className="px-4 py-2 text-xs">{isLeave ? 1 : 0}</td>
+                      <td className="px-4 py-2 text-xs">{isAbsent ? 1 : 0}</td>
+                      <td className="px-4 py-2 text-xs">{isHoliday ? 1 : 0}</td>
+                      <td className="px-4 py-2 text-xs">1</td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

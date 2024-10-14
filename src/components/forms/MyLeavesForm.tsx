@@ -3,11 +3,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Paperclip, Mic } from 'lucide-react';
+import { Paperclip, Mic, Calendar } from 'lucide-react';
 import { FaTimes, FaUpload } from 'react-icons/fa';
 import CustomAudioPlayer from '../globals/customAudioPlayer';
 import Loader from '../ui/loader';
 import { toast, Toaster } from 'sonner';
+import CustomDatePicker from '../globals/date-picker';
+import { useAnimation, motion } from 'framer-motion';
 
 interface LeaveFormProps {
     leaveTypes: any[]; // Leave types passed as prop
@@ -27,6 +29,17 @@ interface LeaveFormData {
     leaveReason: string;
     leaveDays: LeaveDay[];
 }
+
+
+const unitMapping: Record<LeaveDay['unit'], number> = {
+    'Full Day': 1,
+    '1st Half': 0.5,
+    '2nd Half': 0.5,
+    '1st Quarter': 0.25,
+    '2nd Quarter': 0.25,
+    '3rd Quarter': 0.25,
+    '4th Quarter': 0.25,
+};
 
 const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
     const [formData, setFormData] = useState<LeaveFormData>({
@@ -51,6 +64,33 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
     const analyserRef = useRef<AnalyserNode | null>(null);
     const [files, setFiles] = useState<File[]>([]); // State to manage file uploads
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [totalAppliedDays, setTotalAppliedDays] = useState<number>(0); // State to store total applied days
+    const [isFromDatePickerOpen, setIsFromDatePickerOpen] = useState(false); // Manage From Date Picker
+    const [isToDatePickerOpen, setIsToDatePickerOpen] = useState(false); // Manage To Date Picker
+    const controls = useAnimation();
+
+    const modalVariants = {
+        hidden: {
+            opacity: 0,
+            y: '100%',
+        },
+        visible: {
+            opacity: 1,
+            y: '0%',
+            transition: {
+                type: 'spring',
+                stiffness: 300,
+                damping: 40,
+            },
+        },
+    };
+
+    // Trigger the animation when the component mounts
+    useEffect(() => {
+        controls.start('visible');
+    }, [controls]);
+
+
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -325,16 +365,35 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
         mediaRecorderRef.current?.stop();
     };
 
+    const calculateTotalAppliedDays = () => {
+        let totalDays = 0;
+
+        for (const leaveDay of formData.leaveDays) {
+            totalDays += unitMapping[leaveDay.unit]; // Use the unit mapping to calculate total days
+        }
+
+        return totalDays;
+    };
+
+
+    useEffect(() => {
+        // Calculate and update total applied days whenever leaveDays change
+        const totalDays = calculateTotalAppliedDays();
+        setTotalAppliedDays(totalDays);
+    }, [formData.leaveDays]);
+
+
+
     return (
         <Dialog.Root open onOpenChange={onClose}>
             <Toaster />
             <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-50" />
-                <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
-                    <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-[420px] shadow-lg w-full   max-w-lg p-6 rounded-lg">
+                <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
+                <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+                    <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md p-6 rounded-lg">
                         <div className="flex justify-between mb-4">
                             <Dialog.Title className="text-md mb-4 font-medium">Submit Leave Request</Dialog.Title>
-                            <Dialog.DialogClose className="-mt-4">X</Dialog.DialogClose>
+                            <Dialog.DialogClose className="-mt-4"><img src='/icons/cross.png' className='h-5 hover:bg-[#121212] rounded-full' /></Dialog.DialogClose>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4 ">
                             <div className='relative'>
@@ -356,32 +415,62 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
                             {/* Display Allotted Leaves and Balance */}
                             {allotedLeaves !== null && userLeaveBalance !== null && (
-                                <div className="mt-2 flex justify-between text-xs text-white bg-[#282d32] p-2 rounded">
+                                <div className="mt-2 flex justify-between text-xs text-white bg-[#121212] p-2 rounded">
                                     <p>Total Allotted Leaves: {allotedLeaves}</p>
                                     <p>Remaining Balance: {userLeaveBalance}</p>
                                 </div>
                             )}
 
                             <div className="flex justify-between space-x-4">
-                                <div className="relative b w-full">
-                                    <label className="absolute bg-[#1A1C20] ml-2 z-[100] text-xs -mt-2 px-1">From Date</label>
-                                    <input
-                                        type="date"
-                                        name="fromDate"
-                                        value={formData.fromDate}
-                                        onChange={handleInputChange}
-                                        className="w-full text-sm p-2 outline-none opacity-65 border rounded bg-transparent"
-                                    />
+                                <div className="relative w-full">
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsFromDatePickerOpen(true)}
+                                        className="w-full text-sm p-2 outline-none border rounded bg-[#1A1C20] flex gap-1 mt-auto text-gray-300"
+                                    >
+                                        <Calendar className='h-5' />   {formData.fromDate ? new Date(formData.fromDate).toLocaleDateString() : <h1 className='mt-'>Start Date</h1>}
+                                    </button>
+                                    {isFromDatePickerOpen && (
+                                        <div className="fixed inset-0  bg-black/50 opacity- z-[10]" >
+
+                                            <div className="bg-[#1A1C20] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
+                                                <CustomDatePicker
+                                                    selectedDate={formData.fromDate ? new Date(formData.fromDate) : null}
+                                                    onDateChange={(date) => {
+                                                        setFormData({ ...formData, fromDate: date.toISOString().split('T')[0] });
+                                                        setIsFromDatePickerOpen(false);
+                                                    }}
+                                                    onCloseDialog={() => setIsFromDatePickerOpen(false)}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="relative w-full">
-                                    <label className="absolute bg-[#1A1C20] ml-2 text-xs z-[100] -mt-2 px-1">To Date</label>
-                                    <input
-                                        type="date"
-                                        name="toDate"
-                                        value={formData.toDate}
-                                        onChange={handleInputChange}
-                                        className="w-full text-sm p-2 outline-none border opacity-65 rounded bg-transparent"
-                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsToDatePickerOpen(true)}
+                                        className="w-full text-sm flex gap-1 p-2 outline-none border rounded bg-[#1A1C20] text-gray-300"
+                                    >
+                                        <Calendar className='h-5' />  {formData.toDate ? new Date(formData.toDate).toLocaleDateString() : <h1 className='mt-'>End Date</h1>}
+                                    </button>
+                                    {isToDatePickerOpen && (
+                                        <div className="fixed inset-0  bg-black/50 opacity- z-[10]" >
+
+                                            <div className="bg-[#1A1C20] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
+                                                <CustomDatePicker
+                                                    selectedDate={formData.toDate ? new Date(formData.toDate) : null}
+                                                    onDateChange={(date) => {
+                                                        setFormData({ ...formData, toDate: date.toISOString().split('T')[0] });
+                                                        setIsToDatePickerOpen(false);
+                                                    }}
+                                                    onCloseDialog={() => setIsToDatePickerOpen(false)}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -404,7 +493,9 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     </div>
                                 ))}
                             </div>
-
+                            <div className="mt-2 flex justify-end text-xs text-white bg-[#121212] p-2 rounded">
+                                <p>Leave Application for : {totalAppliedDays} day(s)</p>
+                            </div>
                             <div >
                                 <div className='relative'>
                                     <label className="absolute bg-[#1A1C20] ml-2 text-xs -mt-2 px-1">Leave Reason</label>
@@ -479,8 +570,8 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                         </form>
                     </div>
                 </Dialog.Content>
-            </Dialog.Portal>
-        </Dialog.Root>
+            </Dialog.Portal >
+        </Dialog.Root >
     );
 };
 

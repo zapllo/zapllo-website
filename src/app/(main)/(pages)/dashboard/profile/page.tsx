@@ -202,7 +202,7 @@ export default function Profile({ }: Props) {
                     <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
                         <h1 className='text-sm'>Support</h1>
                     </div>
-                    <Link href='/tutorials'>
+                    <Link href='/help/tutorials'>
                         <div className='border-b p-2 mt-2 h-10 '>
                             <h1 className='text-sm'>Tutorials</h1>
                         </div>

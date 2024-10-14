@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react';
 import HolidayForm from '@/components/forms/HolidayForm'; // Ensure you have this component to create holidays
 import HolidayList from '@/components/lists/HolidayList'; // Ensure you have this component to display holidays
 import { toast, Toaster } from 'sonner';
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 
 const HolidayManager: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // Control the modal state
@@ -25,26 +26,26 @@ const HolidayManager: React.FC = () => {
 
             {/* Dialog Root */}
             <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <div className='flex ml-6'>
+                <div className='flex justify-start ml-5'>
                     <Dialog.Trigger asChild>
                         <button
-                            className="bg-[#017A5B] text-white text-xs px-2 py-2  rounded-md flex items-center gap-2"
+                            className="hover:bg-[#017A5B] border-2 border-[#380e3d] text-white text-xs px-2 py-2  rounded flex items-center gap-2"
                             onClick={() => setIsModalOpen(true)}
                         >
-                            <Plus className="h-4 w-4" /> Add New Holiday
+                            <PlusCircledIcon className="h-4 w-4" /> Add New Holiday
                         </button>
                     </Dialog.Trigger>
                 </div>
 
                 {/* Modal Content */}
                 <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
+                    <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
                     <Dialog.Content className="fixed z-[50]  inset-0 flex items-center justify-center">
-                        <div className="bg-[#1A1C20] h-[230px] rounded-lg shadow-lg p-6 w-full max-w-lg">
+                        <div className="bg-[#1A1C20] h-[235px] rounded-lg shadow-lg p-6 w-full max-w-lg">
                             <div className="flex justify-between mb-4">
-                                <Dialog.Title className="text-md font-medium">Add New Holiday</Dialog.Title>
+                                <Dialog.Title className="text-md font-medium mb-2">Add New Holiday</Dialog.Title>
                                 <Dialog.Close asChild>
-                                    <button className="text-white text-sm">X</button>
+                                    <img src='/icons/cross.png' className='h-5 mb-2 cursor-pointer hover:bg-[#121212]  rounded-full' />
                                 </Dialog.Close>
                             </div>
 

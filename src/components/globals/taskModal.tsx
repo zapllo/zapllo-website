@@ -650,7 +650,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             >
                 <div className='flex justify-between'>
                     <h2 className="text-lg font-bold mb-4 -mt-4  ">Assign New Task</h2>
-                    <img className='cursor-pointer -mt-2 h-4' src='/icons/x.png' onClick={closeModal} />
+                    <img className='cursor-pointer -mt-4 hover:bg-[#121212] rounded-full h-6' src='/icons/cross.png' onClick={closeModal} />
                 </div>
 
                 <form className="text-sm space-y-2 overflow-y-scroll scrollbar-hide h-full max-h-4xl">
@@ -911,6 +911,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     {audioBlob && (
                         <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
                     )}
+
                     <div>
 
                     </div>

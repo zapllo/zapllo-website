@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const s3 = new S3Client({
@@ -9,12 +9,21 @@ const s3 = new S3Client({
   },
 });
 
-// Handle file and audio upload
-export async function POST(request: Request) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
+    const contentLength = request.headers.get('content-length');
+    const maxSize = 50 * 1024 * 1024; // 50 MB limit
+
+    if (contentLength && parseInt(contentLength) > maxSize) {
+      return NextResponse.json(
+        { error: 'File size exceeds limit' },
+        { status: 413 }
+      );
+    }
+
     const formData = await request.formData();
-    const files = formData.getAll('files'); // Get all files
-    const audio = formData.get('audio'); // Get audio if it exists
+    const files = formData.getAll('files') as File[]; // Specify File[] type
+    const audio = formData.get('audio') as File | null; // Specify File or null type
 
     if (!files.length && !audio) {
       return NextResponse.json({ error: 'No files or audio uploaded' }, { status: 400 });
@@ -23,16 +32,15 @@ export async function POST(request: Request) {
     const fileUrls: string[] = [];
     let audioUrl: string | null = null;
 
-    // Upload files to S3
     for (const file of files) {
-      const arrayBuffer = await (file as File).arrayBuffer();
+      const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
       const uploadParams = {
         Bucket: process.env.AWS_S3_BUCKET_NAME!,
-        Key: `uploads/${Date.now()}-${(file as File).name}`,
+        Key: `uploads/${Date.now()}-${file.name}`,
         Body: buffer,
-        ContentType: (file as File).type,
+        ContentType: file.type,
       };
 
       const command = new PutObjectCommand(uploadParams);
@@ -42,16 +50,15 @@ export async function POST(request: Request) {
       fileUrls.push(fileUrl);
     }
 
-    // Upload audio to S3
     if (audio) {
-      const audioBuffer = await (audio as File).arrayBuffer();
+      const audioBuffer = await audio.arrayBuffer();
       const buffer = Buffer.from(audioBuffer);
 
       const audioUploadParams = {
         Bucket: process.env.AWS_S3_BUCKET_NAME!,
-        Key: `uploads/audio/${Date.now()}-${(audio as File).name}`,
+        Key: `uploads/audio/${Date.now()}-${audio.name}`,
         Body: buffer,
-        ContentType: (audio as File).type,
+        ContentType: audio.type,
       };
 
       const audioCommand = new PutObjectCommand(audioUploadParams);

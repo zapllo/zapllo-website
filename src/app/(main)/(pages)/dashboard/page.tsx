@@ -21,6 +21,7 @@ const DashboardPage = () => {
   const router = useRouter();
   const [leavesRemainingTime, setLeavesRemainingTime] = useState('');
   const [attendanceRemainingTime, setAttendanceRemainingTime] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // Global loading state
 
   useEffect(() => {
     if (leavesTrialExpires) {
@@ -96,6 +97,7 @@ const DashboardPage = () => {
     const { leavesTrialExpires, attendanceTrialExpires } = response.data.data;
     setLeavesTrialExpires(leavesTrialExpires && new Date(leavesTrialExpires) > new Date() ? leavesTrialExpires : null);
     setAttendanceTrialExpires(attendanceTrialExpires && new Date(attendanceTrialExpires) > new Date() ? attendanceTrialExpires : null);
+    setIsLoading(false); // Data fetched, stop showing the global loader
   };
 
   useEffect(() => {
@@ -131,7 +133,7 @@ const DashboardPage = () => {
                 <Progress value={calculateProgress()} className='' />
               </div>
               <div className='flex justify-start mt-3'>
-                <Link href='/help/checklist' >
+                <Link href='/dashboard/checklist' >
                   <Button className='bg-[#7C3886] mt-12 hover:bg-[#7C3886]'>
                     Checklist
                   </Button>
@@ -222,13 +224,13 @@ const DashboardPage = () => {
               <div className=''>
                 {leavesTrialExpires ? (
                   <>
-                     <p className='text-xs text-red-600 py-2'>
-                      Expires {leavesRemainingTime}
+                    <p className='text-xs text-red-600 py-2'>
+                      Free Trial  Expires {leavesRemainingTime}
                     </p>
                     <Link href='/attendance/my-leaves'>
                       <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Leaves</Button>
                     </Link>
-                 
+
                   </>
                 ) : (
                   <Button onClick={() => startTrial('leaves')} className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Start Trial</Button>
@@ -254,7 +256,7 @@ const DashboardPage = () => {
                 {attendanceTrialExpires ? (
                   <>
                     <p className='text-xs py-2 text-red-600 '>
-                      Expires {attendanceRemainingTime}
+                     Free Trial Expires {attendanceRemainingTime}
                     </p>
                     <Link href='/attendance/my-attendance'>
                       <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Attendance</Button>

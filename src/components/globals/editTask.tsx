@@ -620,23 +620,22 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 </div>
                 {isDateTimeModalOpen && (
                     <Dialog open={isDateTimeModalOpen} onOpenChange={() => setIsDateTimeModalOpen(false)}>
-                        <DialogContent>
-                            <div className='w-full flex justify-between'>
-                                <DialogTitle className='text-center'>Select Due Date & Time</DialogTitle>
-                                <DialogClose onClick={() => setIsDateTimeModalOpen(false)}>X</DialogClose>
-                            </div>
+                        <DialogContent className='scale-75'>
+
 
                             <DialogDescription>
-                                <div className="flex flex-col w-full py-4 space-y-4">
+                                <div className="flex flex-col w-full  ">
                                     <AnimatePresence>
                                         {isDatePickerVisible ? (
                                             <motion.div
                                                 key="date-picker"
                                                 initial={{ opacity: 0, scale: 0.9 }}
+                                                className=''
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 exit={{ opacity: 0, scale: 0.9 }}
                                                 transition={{ duration: 0.3, ease: 'linear' }}
                                             >
+
                                                 <CustomDatePicker
                                                     selectedDate={formData.dueDate ?? new Date()}
                                                     onDateChange={(date: Date) => {

@@ -1109,7 +1109,6 @@ export default function MyAttendance() {
             </Dialog.Root>
 
             {/* Custom Date Range Modal */}
-            {/* Custom Date Range Modal */}
             <Dialog.Root open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
@@ -1117,7 +1116,9 @@ export default function MyAttendance() {
                         <div className="bg-[#1A1C20] p-4 rounded-lg max-w-md w-full">
                             <div className='flex justify-between'>
                                 <h3 className="text-md mb-4 text-white">Select Custom Date Range</h3>
-                                <Dialog.DialogClose className='h-7 scale-75'>X</Dialog.DialogClose>
+                                <Dialog.DialogClose className='h-7 scale-75'>
+                                    <img src='/icons/cross.png' className='h-7 hover:bg-[#121212] rounded-full' />
+                                </Dialog.DialogClose>
                             </div>
 
                             <form
@@ -1125,36 +1126,52 @@ export default function MyAttendance() {
                                     e.preventDefault();
                                     handleCustomDateSubmit(customDateRange.start as Date, customDateRange.end as Date);
                                 }}
-                                className="space-y-4"
+                                className="  space-y-4"
                             >
-                                {/* Start Date Button */}
-                                <div>
-                                    <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">Start Date</h1>
-                                    <button
-                                        type="button"
-                                        className="  text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                                        onClick={() => setIsStartPickerOpen(true)} // Open start date picker
-                                    >
-                                        {customDateRange.start
-                                            ? new Date(customDateRange.start).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
-                                            : 'Select Start Date'}
-                                    </button>
-                                </div>
+                                <div className='flex justify-between gap-2'>
+                                    {/* Start Date Button */}
+                                    <div className='w-full'>
+                                        {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">Start Date</h1> */}
+                                        <button
+                                            type="button"
+                                            className="  text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                            onClick={() => setIsStartPickerOpen(true)} // Open start date picker
+                                        >
+                                            {customDateRange.start
+                                                ? <div className='flex gap-1'>
+                                                    <Calendar className='h-4' />
 
-                                {/* End Date Button */}
-                                <div>
-                                    <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">End Date</h1>
-                                    <button
-                                        type="button"
-                                        className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                                        onClick={() => setIsEndPickerOpen(true)} // Open end date picker
-                                    >
-                                        {customDateRange.end
-                                            ? new Date(customDateRange.end).toLocaleDateString('en-GB') // Format date as dd/mm/yyyy
-                                            : 'Select End Date'}
-                                    </button>
-                                </div>
+                                                    {new Date(customDateRange.start).toLocaleDateString('en-GB')}
+                                                </div>
+                                                : <div className='flex gap-1'>
+                                                    <Calendar className='h-4' />
+                                                    <h1 className='text-xs'>Start Date</h1>
+                                                </div>}
+                                        </button>
+                                    </div>
 
+                                    {/* End Date Button */}
+                                    <div className='w-full'>
+                                        {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">End Date</h1> */}
+                                        <button
+                                            type="button"
+                                            className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                                            onClick={() => setIsEndPickerOpen(true)} // Open end date picker
+                                        >
+                                            {customDateRange.end
+                                                ?
+                                                <div className='flex gap-1'>
+                                                    <Calendar className='h-4' />
+                                                    {new Date(customDateRange.end).toLocaleDateString('en-GB')}
+                                                </div>
+
+                                                : <div className='flex gap-1'>
+                                                    <Calendar className='h-4' />
+                                                    <h1 className='text-xs'>End Date</h1>
+                                                </div>}
+                                        </button>
+                                    </div>
+                                </div>
                                 {/* Submit Button */}
                                 <div>
                                     <button type="submit" className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs">
