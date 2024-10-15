@@ -10,46 +10,47 @@ const organizationSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: [
-      "Retail",
+      "Retail/E-Commerce",
       "Technology",
-      "Healthcare",
-      "Finance",
+      "Service Provider",
+      "Healthcare(Doctors/Clinics/Physicians/Hospital)",
+      "Logistics",
+      "Financial Consultants",
+      "Trading",
       "Education",
+      "Manufacturing",
+      "Real Estate/Construction/Interior/Architects",
       "Other",
-    ], // Add more options as needed
+    ], // Updated industry options
   },
   teamSize: {
     type: String,
     required: true,
-    enum: ["1-5", "5-10", "10-15", "15-20", "20-25", "25+"], // Adjust ranges as needed
+    enum: ["1-10", "11-20", "21-30", "31-50", "51+"], // Updated team size ranges
   },
   description: {
     type: String,
     required: true,
   },
-  categories:
-    [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "categories",
-      },
-    ],
+  categories: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "categories",
+    },
+  ],
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
   ],
-
   isPro: {
     type: Boolean,
     default: false,
   },
-
   subscriptionExpires: {
     type: Date,
   },
-
   trialExpires: {
     type: Date,
     required: true,
@@ -64,7 +65,6 @@ const organizationSchema = new mongoose.Schema({
   attendanceTrialExpires: {
     type: Date,
   },
-
 }, { timestamps: true });
 
 // Model for organizations
