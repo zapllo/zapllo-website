@@ -1,17 +1,82 @@
 import { useEffect, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import DashboardAnalytics from "@/components/globals/dashboardAnalytics";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, FileWarning, User as UserIcon, User, Search, Bell, User2, Clock, Repeat, Circle, CheckCircle, Calendar, Flag, FlagIcon, Edit, Delete, Trash, PersonStanding, TagIcon, FilterIcon, CircleAlert, Check, FileIcon, FileCodeIcon, FileTextIcon, Grid2X2, Tag, Repeat1Icon, RepeatIcon, ArrowLeft, Plus, Link, Copy, CopyIcon, GlobeIcon, File, Mic, TagsIcon, Paperclip, Image, Files, X, Play } from "lucide-react";
-import { IconBrandTeams, IconClock, IconCopy, IconProgress, IconProgressBolt, IconProgressCheck } from "@tabler/icons-react";
+import {
+  CheckCheck,
+  FileWarning,
+  User as UserIcon,
+  User,
+  Search,
+  Bell,
+  User2,
+  Clock,
+  Repeat,
+  Circle,
+  CheckCircle,
+  Calendar,
+  Flag,
+  FlagIcon,
+  Edit,
+  Delete,
+  Trash,
+  PersonStanding,
+  TagIcon,
+  FilterIcon,
+  CircleAlert,
+  Check,
+  FileIcon,
+  FileCodeIcon,
+  FileTextIcon,
+  Grid2X2,
+  Tag,
+  Repeat1Icon,
+  RepeatIcon,
+  ArrowLeft,
+  Plus,
+  Link,
+  Copy,
+  CopyIcon,
+  GlobeIcon,
+  File,
+  Mic,
+  TagsIcon,
+  Paperclip,
+  Image,
+  Files,
+  X,
+  Play,
+} from "lucide-react";
+import {
+  IconBrandTeams,
+  IconClock,
+  IconCopy,
+  IconProgress,
+  IconProgressBolt,
+  IconProgressCheck,
+} from "@tabler/icons-react";
 import { PersonIcon, PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTitle } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogTitle,
+} from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import axios from "axios";
 import EditTaskDialog from "./editTask";
@@ -22,10 +87,10 @@ import HomeIcon from "../icons/homeIcon";
 import TasksIcon from "../icons/tasksIcon";
 import { Tabs2, TabsList2, TabsTrigger2 } from "../ui/tabs2";
 import { Tabs3, TabsList3, TabsTrigger3 } from "../ui/tabs3";
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 import { toast, Toaster } from "sonner";
-import WaveSurfer from 'wavesurfer.js';
+import WaveSurfer from "wavesurfer.js";
 import { TaskSummary } from "./taskSummary";
 import { MyTasksSummary } from "./myTasksSummary";
 import { DelegatedTasksSummary } from "./delegatedTasksSummary";
@@ -39,9 +104,16 @@ import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
 import { BackgroundGradientAnimation } from "../ui/backgroundGradientAnimation";
 import CustomDatePicker from "./date-picker";
 
-
-type DateFilter = "today" | "yesterday" | "thisWeek" | "lastWeek" | "thisMonth" | "lastMonth" | "thisYear" | "allTime" | "custom";
-
+type DateFilter =
+  | "today"
+  | "yesterday"
+  | "thisWeek"
+  | "lastWeek"
+  | "thisMonth"
+  | "lastMonth"
+  | "thisYear"
+  | "allTime"
+  | "custom";
 
 // Define the User interface
 interface User {
@@ -54,12 +126,11 @@ interface User {
 }
 
 interface Reminder {
-  type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
-  value: number | undefined;  // Make value required
-  date: Date | undefined;     // Make date required
+  type: "minutes" | "hours" | "days" | "specific"; // Added 'specific'
+  value: number | undefined; // Make value required
+  date: Date | undefined; // Make date required
   sent: boolean;
 }
-
 
 // Define the Task interface
 interface Task {
@@ -68,7 +139,7 @@ interface Task {
   user: User;
   description: string;
   assignedUser: User;
-  category: { _id: string; name: string; }; // Update category type here
+  category: { _id: string; name: string }; // Update category type here
   priority: string;
   repeatType: string;
   repeat: boolean;
@@ -81,8 +152,8 @@ interface Task {
   attachment?: string[];
   links?: string[];
   reminder: {
-    email?: Reminder | null;  // Use the updated Reminder type
-    whatsapp?: Reminder | null;  // Use the updated Reminder type
+    email?: Reminder | null; // Use the updated Reminder type
+    whatsapp?: Reminder | null; // Use the updated Reminder type
   } | null;
   status: string;
   comments: Comment[];
@@ -94,8 +165,6 @@ interface DateRange {
   endDate?: Date;
 }
 
-
-
 interface Comment {
   _id: string;
   userId: string; // Assuming a user ID for the commenter
@@ -104,7 +173,7 @@ interface Comment {
   createdAt: string; // Date/time when the comment was added
   status: string;
   fileUrl?: string[]; // Optional array of URLs
-  tag?: 'In Progress' | 'Completed' | 'Reopen'; // Optional tag with specific values
+  tag?: "In Progress" | "Completed" | "Reopen"; // Optional tag with specific values
 }
 
 interface Category {
@@ -127,17 +196,22 @@ interface TaskStatusCounts {
   [key: string]: number;
 }
 
-
-
-export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabProps) {
+export default function TasksTab({
+  tasks,
+  currentUser,
+  onTaskUpdate,
+}: TasksTabProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageOrVideo, setImageOrVideo] = useState<File | null>(null);
   const [otherFile, setOtherFile] = useState<File | null>(null);
 
-  const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>("thisWeek");
-  const [activeDashboardTab, setActiveDashboardTab] = useState<string>("employee-wise");
+  const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>(
+    "thisWeek"
+  );
+  const [activeDashboardTab, setActiveDashboardTab] =
+    useState<string>("employee-wise");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,7 +228,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [loading, setLoading] = useState<boolean | null>(false);
   const [userLoading, setUserLoading] = useState<boolean | null>(false);
   const [isPro, setIsPro] = useState<boolean | null>(null);
-  const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(null);
+  const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(
+    null
+  );
   const [dueDateFilter, setDueDateFilter] = useState<Date | null>(null);
   // State variables for modal
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -165,17 +241,18 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const router = useRouter();
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [assignedByFilter, setAssignedByFilter] = useState<string[]>([]);
-  const [assignedToFilter, setAssignedToFilter] = useState<string>(''); // New state for "Assigned To"
+  const [assignedToFilter, setAssignedToFilter] = useState<string>(""); // New state for "Assigned To"
   const [frequencyFilter, setFrequencyFilter] = useState<string[]>([]);
   const [priorityFilterModal, setPriorityFilterModal] = useState<string[]>([]);
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
-  const [selectedTaskCategory, setSelectedTaskCategory] = useState<Category | null>(null);
+  const [selectedTaskCategory, setSelectedTaskCategory] =
+    useState<Category | null>(null);
   const [copied, setCopied] = useState(false);
   const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [audioURL, setAudioURL] = useState('');
+  const [audioURL, setAudioURL] = useState("");
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -187,23 +264,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
   // Add this state to the component
-  const [taskStatusFilter, setTaskStatusFilter] = useState<string | null>("pending");
+  const [taskStatusFilter, setTaskStatusFilter] = useState<string | null>(
+    "pending"
+  );
   const [selectedUserId, setSelectedUserId] = useState<User | null>(null);
 
-
-
   // Handlers to open date pickers
-  const openStartDatePicker = () => setDatePickerType('start');
-  const openEndDatePicker = () => setDatePickerType('end');
+  const openStartDatePicker = () => setDatePickerType("start");
+  const openEndDatePicker = () => setDatePickerType("end");
 
   // Handler to close date pickers
   const closeDatePicker = () => setDatePickerType(null);
 
   // Handler to set selected dates
   const handleDateChange = (date: Date) => {
-    if (datePickerType === 'start') {
+    if (datePickerType === "start") {
       setCustomStartDate(date);
-    } else if (datePickerType === 'end') {
+    } else if (datePickerType === "end") {
       setCustomEndDate(date);
     }
     closeDatePicker();
@@ -223,29 +300,28 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     setTaskStatusFilter(null); // Reset task status filter
   };
 
-
   // Render clear button based on the presence of any applied filters
-  const areFiltersApplied = categoryFilter.length > 0 || assignedByFilter.length > 0 || frequencyFilter.length > 0 || priorityFilterModal.length > 0;
-
+  const areFiltersApplied =
+    categoryFilter.length > 0 ||
+    assignedByFilter.length > 0 ||
+    frequencyFilter.length > 0 ||
+    priorityFilterModal.length > 0;
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete('/api/tasks/delete', {
+      await axios.delete("/api/tasks/delete", {
         data: { id: selectedTask?._id },
       });
       setIsDeleteDialogOpen(false);
       setSelectedTask(null);
       await onTaskUpdate();
       // Optionally, handle success (e.g., show a message, update state)
-      console.log('Task deleted successfully');
-
+      console.log("Task deleted successfully");
     } catch (error: any) {
       // Handle error (e.g., show an error message)
-      console.error('Failed to delete task:', error.message);
+      console.error("Failed to delete task:", error.message);
     }
   };
-
-
 
   useEffect(() => {
     if (audioBlob) {
@@ -258,7 +334,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Type assertion
+      const AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext; // Type assertion
       const audioContext = new AudioContext();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
@@ -270,7 +347,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          const blob = new Blob([event.data], { type: 'audio/wav' });
+          const blob = new Blob([event.data], { type: "audio/wav" });
           setAudioBlob(blob);
           const audioURL = URL.createObjectURL(blob);
           audioURLRef.current = audioURL;
@@ -287,7 +364,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       // Real-time waveform visualization
       const canvas = canvasRef.current;
       if (canvas) {
-        const canvasCtx = canvas.getContext('2d');
+        const canvasCtx = canvas.getContext("2d");
         if (canvasCtx) {
           const drawWaveform = () => {
             if (analyserRef.current) {
@@ -295,15 +372,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
               analyserRef.current.getByteTimeDomainData(dataArray);
               canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
               canvasCtx.lineWidth = 2;
-              canvasCtx.strokeStyle = 'green';
+              canvasCtx.strokeStyle = "green";
               canvasCtx.beginPath();
 
-              const sliceWidth = canvas.width * 1.0 / bufferLength;
+              const sliceWidth = (canvas.width * 1.0) / bufferLength;
               let x = 0;
 
               for (let i = 0; i < bufferLength; i++) {
                 const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
-                const y = v * canvas.height / 2; // Convert to canvas height
+                const y = (v * canvas.height) / 2; // Convert to canvas height
 
                 if (i === 0) {
                   canvasCtx.moveTo(x, y);
@@ -325,7 +402,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
       mediaRecorderRef.current = mediaRecorder;
     } catch (error) {
-      console.error('Error accessing microphone:', error);
+      console.error("Error accessing microphone:", error);
     }
   };
 
@@ -344,10 +421,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   useEffect(() => {
     const fetchCategoryOfSelectedTask = async (selectedTaskCategoryId: any) => {
       try {
-        const response = await fetch('/api/category/getById', {
-          method: 'POST',
+        const response = await fetch("/api/category/getById", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ categoryId: selectedTaskCategoryId }),
         });
@@ -359,7 +436,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
           console.error(result.error);
         }
       } catch (error: any) {
-        console.error('Failed to fetch category:', error.message);
+        console.error("Failed to fetch category:", error.message);
       }
     };
 
@@ -370,7 +447,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
   const getDateRange = (filter: DateFilter) => {
     const today = new Date();
-    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
     let startDate, endDate;
 
@@ -433,7 +514,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     return { startDate, endDate };
   };
 
-
   const filterTasksByDate = (tasks: Task[], dateRange: DateRange) => {
     const { startDate, endDate } = dateRange;
     if (!startDate || !endDate) {
@@ -441,22 +521,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       return [];
     }
 
-
     return tasks.filter((task) => {
       const taskDueDate = new Date(task.dueDate);
       return taskDueDate >= startDate && taskDueDate < endDate;
     });
   };
 
-  const dateRange = getDateRange((activeDateFilter || "thisWeek") as DateFilter);  // Cast to DateFilter
+  const dateRange = getDateRange(
+    (activeDateFilter || "thisWeek") as DateFilter
+  ); // Cast to DateFilter
 
-
-  const filteredTasks = tasks?.filter(task => {
+  const filteredTasks = tasks?.filter((task) => {
     let isFiltered = true;
     const dueDate = new Date(task.dueDate);
-    const completionDate = task.completionDate ? new Date(task.completionDate) : null;
+    const completionDate = task.completionDate
+      ? new Date(task.completionDate)
+      : null;
     const now = new Date();
-
 
     // Apply "Assigned To" filter
     if (assignedToFilter && task.assignedUser?._id !== assignedToFilter) {
@@ -468,8 +549,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     // 2. Apply date range filter
     if (dateRange && dateRange.startDate && dateRange.endDate) {
       const taskDueDate = new Date(task.dueDate);
-      if (taskDueDate < dateRange.startDate || taskDueDate > dateRange.endDate) {
-        return false;  // Skip task if it doesn't fall within the date range
+      if (
+        taskDueDate < dateRange.startDate ||
+        taskDueDate > dateRange.endDate
+      ) {
+        return false; // Skip task if it doesn't fall within the date range
       }
     }
 
@@ -483,9 +567,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     } else if (taskStatusFilter === "completed") {
       isFiltered = task.status === "Completed";
     } else if (taskStatusFilter === "inTime") {
-      isFiltered = task.status === "Completed" && completionDate !== null && completionDate <= dueDate;
+      isFiltered =
+        task.status === "Completed" &&
+        completionDate !== null &&
+        completionDate <= dueDate;
     } else if (taskStatusFilter === "delayed") {
-      isFiltered = task.status === "Completed" && completionDate !== null && completionDate > dueDate;
+      isFiltered =
+        task.status === "Completed" &&
+        completionDate !== null &&
+        completionDate > dueDate;
     }
 
     // Skip task if it doesn't match the status filter
@@ -495,11 +585,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     if (activeTab === "myTasks") {
       isFiltered = task.assignedUser?._id === currentUser?._id;
     } else if (activeTab === "delegatedTasks") {
-      isFiltered = (task.user._id === currentUser?._id && task.assignedUser?._id !== currentUser?._id) || task.assignedUser?._id === currentUser?._id;
+      isFiltered =
+        (task.user._id === currentUser?._id &&
+          task.assignedUser?._id !== currentUser?._id) ||
+        task.assignedUser?._id === currentUser?._id;
     } else if (activeTab === "allTasks") {
       return tasks;
     }
-
 
     // 1. Filter by selected user if a user card was clicked (critical filter applied first)
     if (selectedUserId && selectedUserId._id) {
@@ -531,34 +623,33 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     // 9. Apply search query filter
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
-      isFiltered = (
+      isFiltered =
         task.title.toLowerCase().includes(lowerCaseQuery) ||
         task.description.toLowerCase().includes(lowerCaseQuery) ||
         task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
         task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
         task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
         task.assignedUser.lastName.toLowerCase().includes(lowerCaseQuery) ||
-        task.status.toLowerCase().includes(lowerCaseQuery)
-      );
+        task.status.toLowerCase().includes(lowerCaseQuery);
     }
 
     return isFiltered;
   });
 
-
-
-
-  console.log(tasks, 'tasks to check if category.name is present')
+  console.log(tasks, "tasks to check if category.name is present");
 
   const filterTasks = (tasks: Task[], activeTab: string): Task[] => {
-    return tasks?.filter(task => {
+    return tasks?.filter((task) => {
       let isFiltered = true;
 
       // Filter based on active tab
       if (activeTab === "myTasks") {
         isFiltered = task?.assignedUser?._id === currentUser?._id;
       } else if (activeTab === "delegatedTasks") {
-        isFiltered = (task.user?._id === currentUser?._id && task.assignedUser?._id !== currentUser?._id) || task.assignedUser?._id === currentUser?._id;
+        isFiltered =
+          (task.user?._id === currentUser?._id &&
+            task.assignedUser?._id !== currentUser?._id) ||
+          task.assignedUser?._id === currentUser?._id;
       } else if (activeTab === "allTasks") {
         isFiltered = task.user?.organization === currentUser?.organization;
       }
@@ -599,11 +690,12 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   const delegatedTasksByDate = filterTasksByDate(delegatedTasks, dateRange);
   const allTasksByDate = filterTasksByDate(allTasks, dateRange);
 
-
   const countStatuses = (tasks: Task[]): TaskStatusCounts => {
     return tasks.reduce<TaskStatusCounts>((counts, task) => {
       const dueDate = new Date(task.dueDate);
-      const completionDate = task.completionDate ? new Date(task.completionDate) : null;
+      const completionDate = task.completionDate
+        ? new Date(task.completionDate)
+        : null;
       const now = new Date();
 
       // Count overdue tasks
@@ -632,7 +724,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   // const delegatedTasks = filterTasks(tasks || [], "delegatedTasks");
   // const allTasks = filterTasks(tasks || [], "allTasks");
 
-
   // // Filter tasks for each tab based on the active date range
   // const myTasksByDate = filterTasksByDate(myTasks, dateRange);
   // const delegatedTasksByDate = filterTasksByDate(delegatedTasks, dateRange);
@@ -652,7 +743,8 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   // Count statuses for delegated tasks
   const delegatedTasksCounts = countStatuses(delegatedTasksByDate);
   const delegatedTasksPendingCount = delegatedTasksCounts["Pending"] || 0;
-  const delegatedTasksInProgressCount = delegatedTasksCounts["In Progress"] || 0;
+  const delegatedTasksInProgressCount =
+    delegatedTasksCounts["In Progress"] || 0;
   const delegatedTasksCompletedCount = delegatedTasksCounts["Completed"] || 0;
   const delegatedTasksOverdueCount = delegatedTasksCounts["Overdue"] || 0;
   const delegatedTasksInTimeCount = delegatedTasksCounts["In Time"] || 0;
@@ -671,12 +763,12 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     const getUserDetails = async () => {
       try {
         setUserLoading(true);
-        const userRes = await axios.get('/api/users/me');
+        const userRes = await axios.get("/api/users/me");
         const userData = userRes.data.data;
         setUserDetails(userData);
-        setUserLoading(false)
+        setUserLoading(false);
       } catch (error) {
-        console.error('Error fetching user details ', error);
+        console.error("Error fetching user details ", error);
       }
     };
 
@@ -686,16 +778,16 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users/organization');
+        const response = await fetch("/api/users/organization");
         const result = await response.json();
 
         if (response.ok) {
           setUsers(result.data);
         } else {
-          console.error('Error fetching users:', result.error);
+          console.error("Error fetching users:", result.error);
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users:", error);
       }
     };
 
@@ -707,10 +799,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   // Fetch categories from the server
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/category/get', {
-        method: 'GET',
+      const response = await fetch("/api/category/get", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
       const result = await response.json();
@@ -726,9 +818,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
   };
 
   useEffect(() => {
-
     fetchCategories();
-
   }, []);
 
   const handleUpdateTaskStatus = async () => {
@@ -737,24 +827,24 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     if (files && files.length > 0) {
       // Upload files to S3 and get the URLs
       const formData = new FormData();
-      files.forEach(file => formData.append('files', file));
+      files.forEach((file) => formData.append("files", file));
 
       try {
-        const s3Response = await fetch('/api/upload', {
-          method: 'POST',
+        const s3Response = await fetch("/api/upload", {
+          method: "POST",
           body: formData,
         });
 
         if (s3Response.ok) {
           const s3Data = await s3Response.json();
-          console.log('S3 Data:', s3Data); // Log the response from S3
+          console.log("S3 Data:", s3Data); // Log the response from S3
           fileUrl = s3Data.fileUrls;
         } else {
-          console.error('Failed to upload files to S3');
+          console.error("Failed to upload files to S3");
           return;
         }
       } catch (error) {
-        console.error('Error uploading files:', error);
+        console.error("Error uploading files:", error);
         return;
       }
     }
@@ -768,10 +858,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     };
 
     try {
-      const response = await fetch('/api/tasks/update', {
-        method: 'PATCH',
+      const response = await fetch("/api/tasks/update", {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
@@ -786,17 +876,15 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         setIsCompleteDialogOpen(false);
         setIsReopenDialogOpen(false);
         setSelectedTask(null);
-        setComment('');
+        setComment("");
         setLoading(false);
       } else {
-        console.error('Error updating task:', result.error);
+        console.error("Error updating task:", result.error);
       }
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
     }
-  }
-
-
+  };
 
   if (tasks === null) {
     return (
@@ -827,22 +915,19 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       dateTime.getMonth() === now.getMonth() &&
       dateTime.getFullYear() === now.getFullYear()
     ) {
-      const hours = ('0' + dateTime.getHours()).slice(-2);
-      const minutes = ('0' + dateTime.getMinutes()).slice(-2);
+      const hours = ("0" + dateTime.getHours()).slice(-2);
+      const minutes = ("0" + dateTime.getMinutes()).slice(-2);
       return `Today at ${hours}:${minutes}`;
     }
 
     // Display date if older than today
-    const day = ('0' + dateTime.getDate()).slice(-2);
-    const month = ('0' + (dateTime.getMonth() + 1)).slice(-2);
+    const day = ("0" + dateTime.getDate()).slice(-2);
+    const month = ("0" + (dateTime.getMonth() + 1)).slice(-2);
     const year = dateTime.getFullYear();
     return `${day}-${month}-${year}`;
   };
 
-  const handleDelete = async (taskId: string) => {
-
-  };
-
+  const handleDelete = async (taskId: string) => {};
 
   const handleEditClick = () => {
     setTaskToEdit(selectedTask);
@@ -854,83 +939,144 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     onTaskUpdate();
   };
 
-
   const getUserTaskStats = (userId: any) => {
-    const userTasks = tasks.filter(task => task.assignedUser?._id === userId);
-    const overdueTasks = userTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
-    const completedTasks = userTasks.filter(task => task.status === 'Completed').length;
-    const inProgressTasks = userTasks.filter(task => task.status === 'In Progress').length;
-    const pendingTasks = userTasks.filter(task => task.status === 'Pending').length;
+    const userTasks = tasks.filter((task) => task.assignedUser?._id === userId);
+    const overdueTasks = userTasks.filter(
+      (task) =>
+        new Date(task.dueDate) < new Date() && task.status !== "Completed"
+    ).length;
+    const completedTasks = userTasks.filter(
+      (task) => task.status === "Completed"
+    ).length;
+    const inProgressTasks = userTasks.filter(
+      (task) => task.status === "In Progress"
+    ).length;
+    const pendingTasks = userTasks.filter(
+      (task) => task.status === "Pending"
+    ).length;
 
     return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
   };
 
-
   const getCategoryTaskStats = (categoryId: string) => {
     // Filter tasks where the category._id matches the given categoryId
-    const categoryTasks = tasks.filter(task => task?.category?._id === categoryId);
+    const categoryTasks = tasks.filter(
+      (task) => task?.category?._id === categoryId
+    );
 
     // Calculate task stats
-    const overdueTasks = categoryTasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
-    const completedTasks = categoryTasks.filter(task => task.status === 'Completed').length;
-    const inProgressTasks = categoryTasks.filter(task => task.status === 'In Progress').length;
-    const pendingTasks = categoryTasks.filter(task => task.status === 'Pending').length;
+    const overdueTasks = categoryTasks.filter(
+      (task) =>
+        new Date(task.dueDate) < new Date() && task.status !== "Completed"
+    ).length;
+    const completedTasks = categoryTasks.filter(
+      (task) => task.status === "Completed"
+    ).length;
+    const inProgressTasks = categoryTasks.filter(
+      (task) => task.status === "In Progress"
+    ).length;
+    const pendingTasks = categoryTasks.filter(
+      (task) => task.status === "Pending"
+    ).length;
 
     return { overdueTasks, completedTasks, inProgressTasks, pendingTasks };
   };
 
   const getTotalTaskStats = () => {
-    const overdueTasks = tasks.filter(task => new Date(task.dueDate) < new Date() && task.status !== 'Completed').length;
-    const completedTasks = tasks.filter(task => task.status === 'Completed').length;
-    const inProgressTasks = tasks.filter(task => task.status === 'In Progress').length;
-    const pendingTasks = tasks.filter(task => task.status === 'Pending').length;
-    const delayedTasks = tasks.filter(task => task.status === 'Completed' && new Date(task.completionDate) > new Date(task.dueDate)).length;
-    const inTimeTasks = tasks.filter(task => task.status === 'Completed' && new Date(task.completionDate) <= new Date(task.dueDate)).length;
+    const overdueTasks = tasks.filter(
+      (task) =>
+        new Date(task.dueDate) < new Date() && task.status !== "Completed"
+    ).length;
+    const completedTasks = tasks.filter(
+      (task) => task.status === "Completed"
+    ).length;
+    const inProgressTasks = tasks.filter(
+      (task) => task.status === "In Progress"
+    ).length;
+    const pendingTasks = tasks.filter(
+      (task) => task.status === "Pending"
+    ).length;
+    const delayedTasks = tasks.filter(
+      (task) =>
+        task.status === "Completed" &&
+        new Date(task.completionDate) > new Date(task.dueDate)
+    ).length;
+    const inTimeTasks = tasks.filter(
+      (task) =>
+        task.status === "Completed" &&
+        new Date(task.completionDate) <= new Date(task.dueDate)
+    ).length;
 
-    return { overdueTasks, completedTasks, inProgressTasks, pendingTasks, delayedTasks, inTimeTasks };
+    return {
+      overdueTasks,
+      completedTasks,
+      inProgressTasks,
+      pendingTasks,
+      delayedTasks,
+      inTimeTasks,
+    };
   };
 
-  {/**Task Summary */ }
+  {
+    /**Task Summary */
+  }
 
-  const { overdueTasks, completedTasks, inProgressTasks, pendingTasks, delayedTasks, inTimeTasks } = getTotalTaskStats();
-
+  const {
+    overdueTasks,
+    completedTasks,
+    inProgressTasks,
+    pendingTasks,
+    delayedTasks,
+    inTimeTasks,
+  } = getTotalTaskStats();
 
   const getCategoryReportTaskStats = (categoryId: any) => {
-    const categoryTasks = filteredTasks?.filter(task => task.category === categoryId);
+    const categoryTasks = filteredTasks?.filter(
+      (task) => task.category === categoryId
+    );
     return {
-      overdueTasks: categoryTasks?.filter(task => task.status === 'Overdue').length,
-      completedTasks: categoryTasks?.filter(task => task.status === 'Completed').length,
-      inProgressTasks: categoryTasks?.filter(task => task.status === 'In Progress').length,
-      pendingTasks: categoryTasks?.filter(task => task.status === 'Pending').length
+      overdueTasks: categoryTasks?.filter((task) => task.status === "Overdue")
+        .length,
+      completedTasks: categoryTasks?.filter(
+        (task) => task.status === "Completed"
+      ).length,
+      inProgressTasks: categoryTasks?.filter(
+        (task) => task.status === "In Progress"
+      ).length,
+      pendingTasks: categoryTasks?.filter((task) => task.status === "Pending")
+        .length,
     };
   };
   const formatTaskDate = (dateInput: string | Date): string => {
     // Convert the input to a Date object if it's a string
-    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    const date =
+      typeof dateInput === "string" ? new Date(dateInput) : dateInput;
 
     const optionsDate: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      month: 'long',
-      day: 'numeric',
+      weekday: "short",
+      month: "long",
+      day: "numeric",
     };
     const optionsTime: Intl.DateTimeFormatOptions = {
-      hour: 'numeric',
-      minute: 'numeric',
+      hour: "numeric",
+      minute: "numeric",
       hour12: true,
     };
 
-    return `${date.toLocaleDateString(undefined, optionsDate)} - ${date.toLocaleTimeString(undefined, optionsTime)}`;
+    return `${date.toLocaleDateString(
+      undefined,
+      optionsDate
+    )} - ${date.toLocaleTimeString(undefined, optionsTime)}`;
   };
-
 
   const handleCopy = (link: string) => {
     setCopied(true);
-    toast.success('Link copied!'); // Optional: Show a notification
+    toast.success("Link copied!"); // Optional: Show a notification
   };
 
-
-  const sortedComments = selectedTask?.comments?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
+  const sortedComments = selectedTask?.comments?.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -938,7 +1084,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       const reader = new FileReader();
       reader.onload = (event) => {
         const result = event.target?.result;
-        if (typeof result === 'string') {
+        if (typeof result === "string") {
           const img = document.createElement("img");
           img.src = result;
           img.style.maxWidth = "100%";
@@ -950,7 +1096,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
       reader.readAsDataURL(file);
     }
   };
-
 
   const handleRemoveFile = (index: number) => {
     // Remove the file and preview at the given index
@@ -964,9 +1109,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     URL.revokeObjectURL(filePreviews[index]);
   };
 
-
-
-  const handleImageOrVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageOrVideoUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedFiles = event.target.files;
 
     if (selectedFiles && selectedFiles.length > 0) {
@@ -989,7 +1134,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
     }
   };
 
-  const handleOtherFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOtherFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedFile = event.target.files?.[0];
 
     if (selectedFile) {
@@ -997,25 +1144,25 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
       // Upload file to S3 and get the URL
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append("file", selectedFile);
 
       try {
-        const s3Response = await fetch('/api/upload', {
-          method: 'POST',
+        const s3Response = await fetch("/api/upload", {
+          method: "POST",
           body: formData,
         });
 
         if (s3Response.ok) {
           const s3Data = await s3Response.json();
-          console.log('S3 File Data:', s3Data);
+          console.log("S3 File Data:", s3Data);
           const fileUrl = s3Data.fileUrl;
 
           // Do something with the file URL, e.g., set it in state
         } else {
-          console.error('Failed to upload file to S3');
+          console.error("Failed to upload file to S3");
         }
       } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
       }
     }
   };
@@ -1065,8 +1212,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
   const handleFileRemove = (file: File) => {
     setImageOrVideo(null);
-  }
-
+  };
 
   return (
     <div className="flex  overflow-x-hidden w-screen ">
@@ -1074,12 +1220,13 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         {userLoading && (
           <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
             {/* <Toaster /> */}
-            <div
-              className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
+            <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
               <div className="">
                 <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
-
-                  <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
+                  <img
+                    src="/logo/loader.png"
+                    className="h-[15%] animate-pulse"
+                  />
                   <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
                     Loading...
                   </p>
@@ -1090,7 +1237,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
         )}
       </div>
       <div className=" w-44    fixed   ">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[180px] mt-12 ">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-[180px] mt-12 "
+        >
           <TabsList className="flex gap-y-6 mt-4 h-24  text-center">
             <TabsTrigger value="all" className="flex justify-start gap-2">
               <div className="flex justify-start ml-4 w-full gap-2">
@@ -1098,21 +1249,38 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                 <h1 className="mt-auto text-xs">Dashboard</h1>
               </div>
             </TabsTrigger>
-            <TabsTrigger value="myTasks" className="flex justify-start w-full gap-2">
+            <TabsTrigger
+              value="myTasks"
+              className="flex justify-start w-full gap-2"
+            >
               <div className="flex justify-start ml-4 w-full gap-2">
                 <TasksIcon />
                 <h1 className="mt-auto text-xs">My Tasks</h1>
               </div>
             </TabsTrigger>
-            <TabsTrigger value="delegatedTasks" className="flex justify-start w-full gap-2">
+            <TabsTrigger
+              value="delegatedTasks"
+              className="flex justify-start w-full gap-2"
+            >
               <div className="flex justify-start w-full ml-4 gap-2">
-                <img src="/icons/delegated.png" className="h-[16px]" alt="Delegated Tasks Icon" />
+                <img
+                  src="/icons/delegated.png"
+                  className="h-[16px]"
+                  alt="Delegated Tasks Icon"
+                />
                 <h1 className="text-xs mt-1">Delegated Tasks</h1>
               </div>
             </TabsTrigger>
-            <TabsTrigger value="allTasks" className="flex justify-start w-full gap-2 ">
+            <TabsTrigger
+              value="allTasks"
+              className="flex justify-start w-full gap-2 "
+            >
               <div className="flex justify-start w-full gap-2 ml-4">
-                <img src="/icons/all.png" className="h-5" alt="All Tasks Icon" />
+                <img
+                  src="/icons/all.png"
+                  className="h-5"
+                  alt="All Tasks Icon"
+                />
                 <h1 className="text-xs mt-1">All Tasks</h1>
               </div>
             </TabsTrigger>
@@ -1130,22 +1298,67 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                     <div className=" scrollbar-hide  mt-6">
                       <div className="flex   w-full justify-center ">
                         <div className="justify-center ml-12  w-full flex ">
-                          <Tabs3 defaultValue={activeDateFilter} onValueChange={setActiveDateFilter} className="-mt-1">
+                          <Tabs3
+                            defaultValue={activeDateFilter}
+                            onValueChange={setActiveDateFilter}
+                            className="-mt-1"
+                          >
                             <TabsList3 className="flex gap-4">
-                              <TabsTrigger3 className="flex gap-2 text-xs" value="today">Today</TabsTrigger3>
-                              <TabsTrigger3 value="yesterday" className="flex gap-2 text-xs">Yesterday</TabsTrigger3>
-                              <TabsTrigger3 value="thisWeek" className="text-xs">This Week</TabsTrigger3>
-                              <TabsTrigger3 value="lastWeek" className="text-xs">Last Week</TabsTrigger3>
-                              <TabsTrigger3 value="thisMonth" className="text-xs">This Month</TabsTrigger3>
-                              <TabsTrigger3 value="lastMonth" className="text-xs">Last Month</TabsTrigger3>
-                              <TabsTrigger3 value="thisYear" className="text-xs">This Year</TabsTrigger3>
-                              <TabsTrigger3 value="allTime" className="text-xs">All Time</TabsTrigger3>
+                              <TabsTrigger3
+                                className="flex gap-2 text-xs"
+                                value="today"
+                              >
+                                Today
+                              </TabsTrigger3>
+                              <TabsTrigger3
+                                value="yesterday"
+                                className="flex gap-2 text-xs"
+                              >
+                                Yesterday
+                              </TabsTrigger3>
+                              <TabsTrigger3
+                                value="thisWeek"
+                                className="text-xs"
+                              >
+                                This Week
+                              </TabsTrigger3>
+                              <TabsTrigger3
+                                value="lastWeek"
+                                className="text-xs"
+                              >
+                                Last Week
+                              </TabsTrigger3>
+                              <TabsTrigger3
+                                value="thisMonth"
+                                className="text-xs"
+                              >
+                                This Month
+                              </TabsTrigger3>
+                              <TabsTrigger3
+                                value="lastMonth"
+                                className="text-xs"
+                              >
+                                Last Month
+                              </TabsTrigger3>
+                              <TabsTrigger3
+                                value="thisYear"
+                                className="text-xs"
+                              >
+                                This Year
+                              </TabsTrigger3>
+                              <TabsTrigger3 value="allTime" className="text-xs">
+                                All Time
+                              </TabsTrigger3>
                               <Button
                                 onClick={() => {
                                   setActiveDateFilter("custom"); // Set directly to "custom"
                                 }}
-                                className={`text-xs bg-[#28152e] hover:bg-[#28152e] text-muted-foreground h-6 ${activeDateFilter === "custom" || (customStartDate && customEndDate) ? "bg-[#7C3987] text-white" : ""
-                                  }`}
+                                className={`text-xs bg-[#28152e] hover:bg-[#28152e] text-muted-foreground h-6 ${
+                                  activeDateFilter === "custom" ||
+                                  (customStartDate && customEndDate)
+                                    ? "bg-[#7C3987] text-white"
+                                    : ""
+                                }`}
                               >
                                 Custom
                               </Button>
@@ -1155,59 +1368,72 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96 relative">
                                     {/* Close Button */}
                                     <div className="w-full flex justify-between">
-                                      <h3 className="text-md text-white font-semibold ">Select Date Range</h3>
+                                      <h3 className="text-md mb-4 text-white ">
+                                        Select Date Range
+                                      </h3>
                                       <button
                                         className="cursor-pointer text-white text-lg"
-                                        onClick={() => setActiveDateFilter(undefined)}
+                                        onClick={() =>
+                                          setActiveDateFilter(undefined)
+                                        }
                                       >
                                         &times;
                                       </button>
                                     </div>
 
                                     {/* Date Selection Buttons */}
-                                    <div className="flex flex-col mt-4 gap-4">
+                                    <div className="flex justify-between gap-2">
                                       {/* Start Date Button */}
-                                      <div className="space-y-1">
-                                        <label className="text-sm text-gray-300">Start Date</label>
+                                      <div className="w-full">
+                                        {/* <label className="text-sm text-gray-300">Start Date</label> */}
                                         <button
+                                          type="button"
                                           onClick={openStartDatePicker}
-                                          className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
+                                          // className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
+                                          className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
                                         >
-                                          <span className="flex gap-1">
-                                            <Calendar className="h-5" />
+                                          <div className="flex gap-1">
+                                            <Calendar className="h-4" />
                                             {customStartDate
-                                              ? new Date(customStartDate).toLocaleDateString()
-                                              : 'Select Start Date'}
-                                          </span>
-
-
+                                              ? new Date(
+                                                  customStartDate
+                                                ).toLocaleDateString()
+                                              : "Start Date"}
+                                          </div>
                                         </button>
                                       </div>
 
                                       {/* End Date Button */}
-                                      <div className="space-y-1">
-                                        <label className="text-sm text-gray-300">End Date</label>
+                                      <div className="w-full">
+                                        {/* <label className="text-sm text-gray-300">End Date</label> */}
                                         <button
+                                          type="button"
                                           onClick={openEndDatePicker}
-                                          className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
+                                          // className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
+                                          className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
                                         >
-                                          <span className="flex gap-1">
-                                            <Calendar className="h-5" />
+                                          <div className="flex gap-1">
+                                            <Calendar className="h-4" />
                                             {customEndDate
-                                              ? new Date(customEndDate).toLocaleDateString()
-                                              : 'Select End Date'}
-                                          </span>
+                                              ? new Date(
+                                                  customEndDate
+                                                ).toLocaleDateString()
+                                              : "End Date"}
+                                          </div>
                                         </button>
                                       </div>
                                     </div>
 
-                                    {/* Done Button */}
+                                    {/* Submit Button */}
                                     <div className="flex justify-end gap-4 mt-6">
                                       <button
-                                        onClick={() => setActiveDateFilter(undefined)} // Closes the modal
-                                        className="px-4 py-2 bg-[#007A5A] text-white rounded hover:bg-[#005f43]"
+                                        onClick={() =>
+                                          setActiveDateFilter(undefined)
+                                        } // Closes the modal
+                                        // className="px-4 py-2 bg-[#007A5A] text-white rounded hover:bg-[#005f43]"
+                                        className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
                                       >
-                                        Done
+                                        Apply
                                       </button>
                                     </div>
 
@@ -1217,7 +1443,9 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                         <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-1/2 scale-75">
                                           <CustomDatePicker
                                             selectedDate={
-                                              datePickerType === 'start' ? customStartDate : customEndDate
+                                              datePickerType === "start"
+                                                ? customStartDate
+                                                : customEndDate
                                             }
                                             onDateChange={handleDateChange}
                                             onCloseDialog={closeDatePicker}
@@ -1231,7 +1459,6 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </TabsList3>
                           </Tabs3>
                         </div>
-
                       </div>
                       <div>
                         {activeTab === "all" ? (
@@ -1250,7 +1477,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </div>
                             {/* <DashboardAnalytics /> */}
                             <div className="flex gap-4 ml-24  w-full justify-center">
-                              <Tabs2 defaultValue={activeDashboardTab} onValueChange={setActiveDashboardTab} className="gap-4">
+                              <Tabs2
+                                defaultValue={activeDashboardTab}
+                                onValueChange={setActiveDashboardTab}
+                                className="gap-4"
+                              >
                                 <TabsList2 className="flex gap-4">
                                   {userDetails?.role === "orgAdmin" && (
                                     <>
@@ -1268,116 +1499,188 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                       </TabsTrigger2>
                                     </>
                                   )}
-                                  <TabsTrigger2 value="my-report" className="text-xs">My Report </TabsTrigger2>
-                                  <TabsTrigger2 value="delegatedTasks" className="tabs-trigger text-xs">Delegated</TabsTrigger2>
+                                  <TabsTrigger2
+                                    value="my-report"
+                                    className="text-xs"
+                                  >
+                                    My Report{" "}
+                                  </TabsTrigger2>
+                                  <TabsTrigger2
+                                    value="delegatedTasks"
+                                    className="tabs-trigger text-xs"
+                                  >
+                                    Delegated
+                                  </TabsTrigger2>
                                 </TabsList2>
                               </Tabs2>
                             </div>
                             {activeDashboardTab === "employee-wise" && (
                               <div className="">
                                 <div className="flex p-2 m-2 justify-center">
-
                                   {/* <h1 className="font-medium ">Employee-wise </h1> */}
                                   <input
                                     type="text"
                                     placeholder="Search Employee"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) =>
+                                      setSearchQuery(e.target.value)
+                                    }
                                     className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
                                   />
-
-
                                 </div>
                                 <div className="grid w-[80%] ml-56 gap-4">
                                   {users
-                                    .filter(user => {
+                                    .filter((user) => {
                                       const query = searchQuery.toLowerCase();
                                       return (
-                                        user.firstName.toLowerCase().includes(query) ||
-                                        user.lastName.toLowerCase().includes(query)
+                                        user.firstName
+                                          .toLowerCase()
+                                          .includes(query) ||
+                                        user.lastName
+                                          .toLowerCase()
+                                          .includes(query)
                                       );
                                     })
-                                    .filter(user => {
+                                    .filter((user) => {
                                       // Fetch task stats for the user
-                                      const { overdueTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+                                      const {
+                                        overdueTasks,
+                                        inProgressTasks,
+                                        pendingTasks,
+                                      } = getUserTaskStats(user._id);
 
                                       // Only include users with at least one relevant task count
-                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
+                                      return (
+                                        overdueTasks > 0 ||
+                                        pendingTasks > 0 ||
+                                        inProgressTasks > 0
+                                      );
                                     })
-                                    .map(user => {
-                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+                                    .map((user) => {
+                                      const {
+                                        overdueTasks,
+                                        completedTasks,
+                                        inProgressTasks,
+                                        pendingTasks,
+                                      } = getUserTaskStats(user._id);
 
-                                      const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
-                                      const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
-                                        return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+                                      const totalTasks =
+                                        overdueTasks +
+                                        completedTasks +
+                                        inProgressTasks +
+                                        pendingTasks;
+                                      const getCompletionPercentage = (
+                                        completedTasks: any,
+                                        totalTasks: any
+                                      ) => {
+                                        return totalTasks === 0
+                                          ? 0
+                                          : (completedTasks / totalTasks) * 100;
                                       };
-                                      const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
+                                      const completionPercentage =
+                                        getCompletionPercentage(
+                                          completedTasks,
+                                          totalTasks
+                                        );
 
                                       // Determine the color based on the traffic light logic
                                       let pathColor;
                                       if (completionPercentage < 50) {
-                                        pathColor = '#FF0000'; // Red for less than 50%
-                                      } else if (completionPercentage >= 50 && completionPercentage < 80) {
-                                        pathColor = '#FFA500'; // Orange for 50%-79%
+                                        pathColor = "#FF0000"; // Red for less than 50%
+                                      } else if (
+                                        completionPercentage >= 50 &&
+                                        completionPercentage < 80
+                                      ) {
+                                        pathColor = "#FFA500"; // Orange for 50%-79%
                                       } else {
-                                        pathColor = '#008000'; // Green for 80% and above
+                                        pathColor = "#008000"; // Green for 80% and above
                                       }
 
                                       return (
-                                        <Card onClick={() => {
-                                          setActiveTab('allTasks'); // Switch to the "All Tasks" tab
-                                          setSelectedUserId(user); // Set the selected user ID
-                                        }}
-                                          key={user._id} className="p-4 flex bg-[#] hover:border-[#74517A]  cursor-pointer flex-col gap-2">
+                                        <Card
+                                          onClick={() => {
+                                            setActiveTab("allTasks"); // Switch to the "All Tasks" tab
+                                            setSelectedUserId(user); // Set the selected user ID
+                                          }}
+                                          key={user._id}
+                                          className="p-4 flex bg-[#] hover:border-[#74517A]  cursor-pointer flex-col gap-2"
+                                        >
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">
-                                                {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
+                                                {`${user?.firstName?.slice(
+                                                  0,
+                                                  1
+                                                )}`}
+                                                {`${user?.lastName?.slice(
+                                                  0,
+                                                  1
+                                                )}`}
                                               </h1>
                                             </div>
-                                            <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
+                                            <h2 className="text-sm mt-1 font-medium">
+                                              {user.firstName} {user.lastName}
+                                            </h2>
                                           </div>
 
                                           {/* <p className="text-xs"> {user.email}</p> */}
                                           <div className="flex gap-2 ] text-xs mt-1">
                                             <div className="flex font-medium ">
                                               <CircleAlert className="text-red-500 h-4" />
-                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                              <p className="text-xs">
+                                                Overdue: {overdueTasks}
+                                              </p>
                                             </div>
-                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+                                            <h1 className="text-[#6C636E] text-xs">
+                                              |
+                                            </h1>
 
                                             <div className="flex gap-2  font-medium">
                                               <Circle className="text-red-400 h-4" />
-                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                              <p className="text-xs">
+                                                Pending: {pendingTasks}
+                                              </p>
                                             </div>
-                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+                                            <h1 className="text-[#6C636E] text-xs">
+                                              |
+                                            </h1>
 
                                             <div className="flex gap-2 font-medium">
                                               <IconProgress className="text-orange-600 h-4" />
-                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                              <p className="text-xs">
+                                                In Progress: {inProgressTasks}
+                                              </p>
                                             </div>
-                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+                                            <h1 className="text-[#6C636E] text-xs">
+                                              |
+                                            </h1>
 
                                             <div className="flex gap-2 font-medium">
                                               <CheckCircle className="text-green-600 h-4" />
-                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                              <p className="text-xs">
+                                                Completed: {completedTasks}
+                                              </p>
                                             </div>
                                           </div>
-                                          <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
+                                          <div
+                                            className="ml-auto  -mt-12"
+                                            style={{ width: 40, height: 40 }}
+                                          >
                                             <div className="">
                                               <CircularProgressbar
                                                 value={completionPercentage}
-                                                text={`${Math.round(completionPercentage)}%`}
+                                                text={`${Math.round(
+                                                  completionPercentage
+                                                )}%`}
                                                 styles={buildStyles({
-                                                  textSize: '24px',
+                                                  textSize: "24px",
                                                   pathColor: pathColor, // Dynamic path color
-                                                  textColor: '#ffffff',
-                                                  trailColor: '#6C636E', // Trail color should be lighter for better contrast
-                                                  backgroundColor: '#3e98c7',
+                                                  textColor: "#ffffff",
+                                                  trailColor: "#6C636E", // Trail color should be lighter for better contrast
+                                                  backgroundColor: "#3e98c7",
                                                 })}
                                               />
                                             </div>
-
                                           </div>
                                         </Card>
                                       );
@@ -1392,48 +1695,77 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     type="text"
                                     placeholder="Search Category"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) =>
+                                      setSearchQuery(e.target.value)
+                                    }
                                     className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A]  bg-transparent rounded-md "
                                   />
-
                                 </div>
                                 <div className="grid gap-4 ml-56 w-[80%]">
                                   {categories
-                                    .filter(category => {
+                                    .filter((category) => {
                                       const query = searchQuery.toLowerCase();
-                                      return category?.name.toLowerCase().includes(query);
+                                      return category?.name
+                                        .toLowerCase()
+                                        .includes(query);
                                     })
-                                    .filter(category => {
+                                    .filter((category) => {
                                       // Fetch task stats for the category
-                                      const { overdueTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+                                      const {
+                                        overdueTasks,
+                                        inProgressTasks,
+                                        pendingTasks,
+                                      } = getCategoryTaskStats(category._id);
 
                                       // Only include categories with at least one relevant task count
-                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
-                                    })
-                                    .map(category => {
-                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
                                       return (
-                                        <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
+                                        overdueTasks > 0 ||
+                                        pendingTasks > 0 ||
+                                        inProgressTasks > 0
+                                      );
+                                    })
+                                    .map((category) => {
+                                      const {
+                                        overdueTasks,
+                                        completedTasks,
+                                        inProgressTasks,
+                                        pendingTasks,
+                                      } = getCategoryTaskStats(category._id);
+                                      return (
+                                        <Card
+                                          key={category._id}
+                                          className="p-4 flex bg-transparent flex-col gap-2"
+                                        >
                                           <div className="flex gap-2">
                                             <TagsIcon className="h-5" />
-                                            <h2 className="text-sm font-medium">{category?.name}</h2>
+                                            <h2 className="text-sm font-medium">
+                                              {category?.name}
+                                            </h2>
                                           </div>
                                           <div className="flex gap-4 mt-2">
                                             <div className="flex gap-1 font-">
                                               <CircleAlert className="text-red-500 h-4" />
-                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                              <p className="text-xs">
+                                                Overdue: {overdueTasks}
+                                              </p>
                                             </div>
                                             <div className="flex gap-1 font-">
                                               <Circle className="text-red-400 h-4" />
-                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                              <p className="text-xs">
+                                                Pending: {pendingTasks}
+                                              </p>
                                             </div>
                                             <div className="flex gap-1 font-">
                                               <IconProgress className="text-orange-600 h-4" />
-                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                              <p className="text-xs">
+                                                In Progress: {inProgressTasks}
+                                              </p>
                                             </div>
                                             <div className="flex gap-1 font-">
                                               <CheckCircle className="text-green-600 h-4" />
-                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                              <p className="text-xs">
+                                                Completed: {completedTasks}
+                                              </p>
                                             </div>
                                           </div>
                                         </Card>
@@ -1443,167 +1775,259 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               </div>
                             )}
 
-                            {activeDashboardTab === "my-report" && userDetails && (
-                              <div className="">
-                                <div className="flex p-2 m-2 justify-center">
-                                  <input
-                                    type="text"
-                                    placeholder="Search Category"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A] bg-transparent rounded-md"
-                                  />
-                                </div>
-                                <div className="grid gap-4 ml-56 w-[80%]">
-                                  {categories
-                                    .filter(category => {
-                                      const query = searchQuery.toLowerCase();
-                                      return category?.name.toLowerCase().includes(query);
-                                    })
-                                    .filter(category => {
-                                      // Fetch task stats for the category
-                                      const { overdueTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+                            {activeDashboardTab === "my-report" &&
+                              userDetails && (
+                                <div className="">
+                                  <div className="flex p-2 m-2 justify-center">
+                                    <input
+                                      type="text"
+                                      placeholder="Search Category"
+                                      value={searchQuery}
+                                      onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                      }
+                                      className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A] bg-transparent rounded-md"
+                                    />
+                                  </div>
+                                  <div className="grid gap-4 ml-56 w-[80%]">
+                                    {categories
+                                      .filter((category) => {
+                                        const query = searchQuery.toLowerCase();
+                                        return category?.name
+                                          .toLowerCase()
+                                          .includes(query);
+                                      })
+                                      .filter((category) => {
+                                        // Fetch task stats for the category
+                                        const {
+                                          overdueTasks,
+                                          inProgressTasks,
+                                          pendingTasks,
+                                        } = getCategoryTaskStats(category._id);
 
-                                      // Only include categories with at least one relevant task count
-                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
-                                    })
-                                    .map(category => {
-                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getCategoryTaskStats(category._id);
+                                        // Only include categories with at least one relevant task count
+                                        return (
+                                          overdueTasks > 0 ||
+                                          pendingTasks > 0 ||
+                                          inProgressTasks > 0
+                                        );
+                                      })
+                                      .map((category) => {
+                                        const {
+                                          overdueTasks,
+                                          completedTasks,
+                                          inProgressTasks,
+                                          pendingTasks,
+                                        } = getCategoryTaskStats(category._id);
 
-                                      return (
-                                        <Card key={category._id} className="p-4 flex bg-transparent flex-col gap-2">
-                                          <div className="flex gap-2">
-                                            <TagsIcon className="h-5" />
-                                            <h2 className="text-sm font-medium">{category?.name}</h2>
-                                          </div>
-                                          <div className="flex gap-4 mt-2">
-                                            <div className="flex gap-1 font-medium">
-                                              <CircleAlert className="text-red-500 h-4" />
-                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                        return (
+                                          <Card
+                                            key={category._id}
+                                            className="p-4 flex bg-transparent flex-col gap-2"
+                                          >
+                                            <div className="flex gap-2">
+                                              <TagsIcon className="h-5" />
+                                              <h2 className="text-sm font-medium">
+                                                {category?.name}
+                                              </h2>
                                             </div>
-                                            <div className="flex gap-1 font-medium">
-                                              <Circle className="text-red-400 h-4" />
-                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                            <div className="flex gap-4 mt-2">
+                                              <div className="flex gap-1 font-medium">
+                                                <CircleAlert className="text-red-500 h-4" />
+                                                <p className="text-xs">
+                                                  Overdue: {overdueTasks}
+                                                </p>
+                                              </div>
+                                              <div className="flex gap-1 font-medium">
+                                                <Circle className="text-red-400 h-4" />
+                                                <p className="text-xs">
+                                                  Pending: {pendingTasks}
+                                                </p>
+                                              </div>
+                                              <div className="flex gap-1 font-medium">
+                                                <IconProgress className="text-orange-600 h-4" />
+                                                <p className="text-xs">
+                                                  In Progress: {inProgressTasks}
+                                                </p>
+                                              </div>
+                                              <div className="flex gap-1 font-medium">
+                                                <CheckCircle className="text-green-600 h-4" />
+                                                <p className="text-xs">
+                                                  Completed: {completedTasks}
+                                                </p>
+                                              </div>
                                             </div>
-                                            <div className="flex gap-1 font-medium">
-                                              <IconProgress className="text-orange-600 h-4" />
-                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
-                                            </div>
-                                            <div className="flex gap-1 font-medium">
-                                              <CheckCircle className="text-green-600 h-4" />
-                                              <p className="text-xs">Completed: {completedTasks}</p>
-                                            </div>
-                                          </div>
-                                        </Card>
-                                      );
-                                    })}
+                                          </Card>
+                                        );
+                                      })}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
 
                             {activeDashboardTab === "delegatedTasks" && (
                               <div className="">
                                 <div className="flex p-2 m-2 justify-center">
-
                                   {/* <h1 className="font-medium ">Employee-wise </h1> */}
                                   <input
                                     type="text"
                                     placeholder="Search Employee"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) =>
+                                      setSearchQuery(e.target.value)
+                                    }
                                     className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
                                   />
                                   {/* // Add this block below the search input in MyTasks, DelegatedTasks, and AllTasks */}
-
-
-
                                 </div>
                                 <div className="grid w-[80%] ml-56 gap-4">
                                   {users
-                                    .filter(user => {
+                                    .filter((user) => {
                                       const query = searchQuery.toLowerCase();
                                       return (
-                                        user.firstName.toLowerCase().includes(query) ||
-                                        user.lastName.toLowerCase().includes(query)
+                                        user.firstName
+                                          .toLowerCase()
+                                          .includes(query) ||
+                                        user.lastName
+                                          .toLowerCase()
+                                          .includes(query)
                                       );
                                     })
-                                    .filter(user => {
+                                    .filter((user) => {
                                       // Fetch task stats for the user
-                                      const { overdueTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+                                      const {
+                                        overdueTasks,
+                                        inProgressTasks,
+                                        pendingTasks,
+                                      } = getUserTaskStats(user._id);
 
                                       // Only include users with at least one relevant task count
-                                      return overdueTasks > 0 || pendingTasks > 0 || inProgressTasks > 0;
+                                      return (
+                                        overdueTasks > 0 ||
+                                        pendingTasks > 0 ||
+                                        inProgressTasks > 0
+                                      );
                                     })
-                                    .map(user => {
-                                      const { overdueTasks, completedTasks, inProgressTasks, pendingTasks } = getUserTaskStats(user._id);
+                                    .map((user) => {
+                                      const {
+                                        overdueTasks,
+                                        completedTasks,
+                                        inProgressTasks,
+                                        pendingTasks,
+                                      } = getUserTaskStats(user._id);
 
-                                      const totalTasks = overdueTasks + completedTasks + inProgressTasks + pendingTasks;
-                                      const getCompletionPercentage = (completedTasks: any, totalTasks: any) => {
-                                        return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+                                      const totalTasks =
+                                        overdueTasks +
+                                        completedTasks +
+                                        inProgressTasks +
+                                        pendingTasks;
+                                      const getCompletionPercentage = (
+                                        completedTasks: any,
+                                        totalTasks: any
+                                      ) => {
+                                        return totalTasks === 0
+                                          ? 0
+                                          : (completedTasks / totalTasks) * 100;
                                       };
-                                      const completionPercentage = getCompletionPercentage(completedTasks, totalTasks);
+                                      const completionPercentage =
+                                        getCompletionPercentage(
+                                          completedTasks,
+                                          totalTasks
+                                        );
 
                                       // Determine the color based on the traffic light logic
                                       let pathColor;
                                       if (completionPercentage < 50) {
-                                        pathColor = '#FF0000'; // Red for less than 50%
-                                      } else if (completionPercentage >= 50 && completionPercentage < 80) {
-                                        pathColor = '#FFA500'; // Orange for 50%-79%
+                                        pathColor = "#FF0000"; // Red for less than 50%
+                                      } else if (
+                                        completionPercentage >= 50 &&
+                                        completionPercentage < 80
+                                      ) {
+                                        pathColor = "#FFA500"; // Orange for 50%-79%
                                       } else {
-                                        pathColor = '#008000'; // Green for 80% and above
+                                        pathColor = "#008000"; // Green for 80% and above
                                       }
 
                                       return (
-                                        <Card key={user._id} className="p-4 flex bg-[#] flex-col  gap-2">
+                                        <Card
+                                          key={user._id}
+                                          className="p-4 flex bg-[#] flex-col  gap-2"
+                                        >
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">
-                                                {`${user?.firstName?.slice(0, 1)}`}{`${user?.lastName?.slice(0, 1)}`}
+                                                {`${user?.firstName?.slice(
+                                                  0,
+                                                  1
+                                                )}`}
+                                                {`${user?.lastName?.slice(
+                                                  0,
+                                                  1
+                                                )}`}
                                               </h1>
                                             </div>
-                                            <h2 className="text-sm mt-1 font-medium">{user.firstName} {user.lastName}</h2>
+                                            <h2 className="text-sm mt-1 font-medium">
+                                              {user.firstName} {user.lastName}
+                                            </h2>
                                           </div>
 
                                           {/* <p className="text-xs"> {user.email}</p> */}
                                           <div className="flex gap-2 ] text-xs mt-1">
                                             <div className="flex font-medium ">
                                               <CircleAlert className="text-red-500 h-4" />
-                                              <p className="text-xs">Overdue: {overdueTasks}</p>
+                                              <p className="text-xs">
+                                                Overdue: {overdueTasks}
+                                              </p>
                                             </div>
-                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+                                            <h1 className="text-[#6C636E] text-xs">
+                                              |
+                                            </h1>
 
                                             <div className="flex gap-2  font-medium">
                                               <Circle className="text-red-400 h-4" />
-                                              <p className="text-xs">Pending: {pendingTasks}</p>
+                                              <p className="text-xs">
+                                                Pending: {pendingTasks}
+                                              </p>
                                             </div>
-                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+                                            <h1 className="text-[#6C636E] text-xs">
+                                              |
+                                            </h1>
 
                                             <div className="flex gap-2 font-medium">
                                               <IconProgress className="text-orange-600 h-4" />
-                                              <p className="text-xs">In Progress: {inProgressTasks}</p>
+                                              <p className="text-xs">
+                                                In Progress: {inProgressTasks}
+                                              </p>
                                             </div>
-                                            <h1 className="text-[#6C636E] text-xs">|</h1>
+                                            <h1 className="text-[#6C636E] text-xs">
+                                              |
+                                            </h1>
 
                                             <div className="flex gap-2 font-medium">
                                               <CheckCircle className="text-green-600 h-4" />
-                                              <p className="text-xs">Completed: {completedTasks}</p>
+                                              <p className="text-xs">
+                                                Completed: {completedTasks}
+                                              </p>
                                             </div>
                                           </div>
-                                          <div className="ml-auto  -mt-12" style={{ width: 40, height: 40 }}>
+                                          <div
+                                            className="ml-auto  -mt-12"
+                                            style={{ width: 40, height: 40 }}
+                                          >
                                             <div className="">
                                               <CircularProgressbar
                                                 value={completionPercentage}
-                                                text={`${Math.round(completionPercentage)}%`}
+                                                text={`${Math.round(
+                                                  completionPercentage
+                                                )}%`}
                                                 styles={buildStyles({
-                                                  textSize: '24px',
+                                                  textSize: "24px",
                                                   pathColor: pathColor, // Dynamic path color
-                                                  textColor: '#ffffff',
-                                                  trailColor: '#6C636E', // Trail color should be lighter for better contrast
-                                                  backgroundColor: '#3e98c7',
+                                                  textColor: "#ffffff",
+                                                  trailColor: "#6C636E", // Trail color should be lighter for better contrast
+                                                  backgroundColor: "#3e98c7",
                                                 })}
                                               />
                                             </div>
-
                                           </div>
                                         </Card>
                                       );
@@ -1618,8 +2042,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               <div className="flex  flex-col ">
                                 {customStartDate && customEndDate && (
                                   <div className="flex gap-8 p-2 justify-center w-full">
-                                    <h1 className="text-xs  text-center text-white">Start Date: {customStartDate.toLocaleDateString()}</h1>
-                                    <h1 className="text-xs text-center text-white">End Date: {customStartDate.toLocaleDateString()}</h1>
+                                    <h1 className="text-xs  text-center text-white">
+                                      Start Date:{" "}
+                                      {customStartDate.toLocaleDateString()}
+                                    </h1>
+                                    <h1 className="text-xs text-center text-white">
+                                      End Date:{" "}
+                                      {customStartDate.toLocaleDateString()}
+                                    </h1>
                                   </div>
                                 )}
                                 <div className="flex -ml-52 mt-4 flex-col ">
@@ -1636,27 +2066,41 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                       type="text"
                                       placeholder="Search Task"
                                       value={searchQuery}
-                                      onChange={(e) => setSearchQuery(e.target.value)}
+                                      onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                      }
                                       className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
-
                                   </div>
-                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-4 text-sm"><FilterIcon className="h-4" /> Filter</Button>
+                                  <Button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-4 text-sm"
+                                  >
+                                    <FilterIcon className="h-4" /> Filter
+                                  </Button>
                                 </div>
                                 {areFiltersApplied && (
-                                  <Button onClick={clearFilters} className="bg-transparent hover:bg-transparent mt-4 h-8">
+                                  <Button
+                                    onClick={clearFilters}
+                                    className="bg-transparent hover:bg-transparent mt-4 h-8"
+                                  >
                                     <FilterIcon className="h-4" /> Clear
                                   </Button>
                                 )}
                               </div>
                               <div className="applied-filters gap-2 mb-2 -ml-2 text-xs flex w-full justify-center">
-
                                 {categoryFilter.length > 0 && (
                                   <div className="flex border px-2 py-1 gap-2">
                                     <h3>Categories:</h3>
                                     <ul className="flex gap-2 ">
-                                      {categoryFilter.map(id => (
-                                        <li className="flex gap-2" key={id}>{categories.find(category => category._id === id)?.name} </li>
+                                      {categoryFilter.map((id) => (
+                                        <li className="flex gap-2" key={id}>
+                                          {
+                                            categories.find(
+                                              (category) => category._id === id
+                                            )?.name
+                                          }{" "}
+                                        </li>
                                       ))}
                                     </ul>
                                   </div>
@@ -1665,8 +2109,19 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex px-2 py-1 border gap-2">
                                     <h3>Assigned By:</h3>
                                     <ul>
-                                      {assignedByFilter.map(id => (
-                                        <li key={id}>{users.find(user => user._id === id)?.firstName} {users.find(user => user._id === id)?.lastName}</li>
+                                      {assignedByFilter.map((id) => (
+                                        <li key={id}>
+                                          {
+                                            users.find(
+                                              (user) => user._id === id
+                                            )?.firstName
+                                          }{" "}
+                                          {
+                                            users.find(
+                                              (user) => user._id === id
+                                            )?.lastName
+                                          }
+                                        </li>
                                       ))}
                                     </ul>
                                   </div>
@@ -1675,7 +2130,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex px-2 py-1 border gap-2">
                                     <h3>Frequency:</h3>
                                     <ul className="flex gap-2">
-                                      {frequencyFilter.map(freq => (
+                                      {frequencyFilter.map((freq) => (
                                         <li key={freq}>{freq}</li>
                                       ))}
                                     </ul>
@@ -1685,7 +2140,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex gap-2 border py-1 px-2">
                                     <h3>Priority:</h3>
                                     <ul>
-                                      {priorityFilterModal.map(priority => (
+                                      {priorityFilterModal.map((priority) => (
                                         <li key={priority}>{priority}</li>
                                       ))}
                                     </ul>
@@ -1696,65 +2151,86 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "overdue"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
-
                                   Overdue ({myTasksOverdueCount})
                                 </Button>
 
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "pending"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
-
                                   Pending ({myTasksPendingCount})
                                 </Button>
 
                                 {/* In Progress Filter */}
                                 <Button
-                                  onClick={() => setTaskStatusFilter("inProgress")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  onClick={() =>
+                                    setTaskStatusFilter("inProgress")
+                                  }
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inProgress"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
-
                                   In Progress ({myTasksInProgressCount})
                                 </Button>
 
                                 {/* Completed Filter */}
                                 <Button
-                                  onClick={() => setTaskStatusFilter("completed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  onClick={() =>
+                                    setTaskStatusFilter("completed")
+                                  }
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "completed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
-
                                   Completed ({myTasksCompletedCount})
                                 </Button>
 
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inTime"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
-
                                   In Time ({myTasksInTimeCount})
                                 </Button>
 
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "delayed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
-
                                   Delayed ({myTasksDelayedCount})
                                 </Button>
                               </div>
                               {filteredTasks && filteredTasks.length > 0 ? (
-
                                 filteredTasks?.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
@@ -1763,25 +2239,33 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     >
                                       <div className=" items-center gap-4">
                                         <div>
-                                          <p className="font-medium text-sm text-white">{task.title}</p>
-                                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                            {task?.user?.firstName}
-                                          </span></p>
+                                          <p className="font-medium text-sm text-white">
+                                            {task.title}
+                                          </p>
+                                          <p className="text-[#E0E0E0] text-xs">
+                                            Assigned by{" "}
+                                            <span className="text-[#007A5A] font-bold">
+                                              {task?.user?.firstName}
+                                            </span>
+                                          </p>
                                         </div>
                                         <div className="flex gap-2">
-
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
                                             <h1 className="mt-[1.5px]">
                                               {formatTaskDate(task.dueDate)}
                                             </h1>
                                           </div>
-                                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto  text-[#E0E0E066] ">
+                                            |
+                                          </h1>
                                           <div className="flex text-xs mt-[10px]">
                                             <User2 className="h-4" />
                                             {task.assignedUser.firstName}
                                           </div>
-                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">
+                                            |
+                                          </h1>
 
                                           <div className="flex text-xs mt-[11px]">
                                             <TagIcon className="h-4" />
@@ -1790,11 +2274,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                           {task.repeat ? (
                                             <div className="flex items-center">
-                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">
+                                                |
+                                              </h1>
 
                                               {task.repeatType && (
                                                 <h1 className="flex mt-[11px] text-xs">
-                                                  <Repeat className="h-4 " />  {task.repeatType}
+                                                  <Repeat className="h-4 " />{" "}
+                                                  {task.repeatType}
                                                 </h1>
                                               )}
                                             </div>
@@ -1803,26 +2290,28 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           {/* <div className="flex mt-auto">
                         <TagIcon className="h-5" />
                       </div> */}
-                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">
+                                            |
+                                          </h1>
 
                                           <div className="flex text-xs">
                                             <div className="mt-[11px]">
                                               <IconProgressBolt className="h-4  " />
-
                                             </div>
                                             <h1 className="mt-auto">
                                               {task.status}
                                             </h1>
                                           </div>
                                         </div>
-
                                       </div>
                                       <div className="">
                                         <div className="flex ">
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             <Button
                                               onClick={() => {
-                                                setStatusToUpdate("In Progress");
+                                                setStatusToUpdate(
+                                                  "In Progress"
+                                                );
                                                 setIsDialogOpen(true);
                                               }}
                                               className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
@@ -1840,33 +2329,53 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
                                               <CheckCircle className="h-4 rounded-full text-green-400" />
-                                              <h1 className="text-xs">Completed</h1>
+                                              <h1 className="text-xs">
+                                                Completed
+                                              </h1>
                                             </Button>
-
-
                                           </div>
                                         </div>
 
-                                        <div className="flex justify-end mt-4">
-
-                                        </div>
+                                        <div className="flex justify-end mt-4"></div>
                                       </div>
                                     </Card>
 
-                                    {selectedTask && selectedTask._id === task._id && (
-                                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                                        setIsDialogOpen={setIsDialogOpen}
-                                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                                        formatDate={formatDate}
-                                        sortedComments={sortedComments}
-                                        users={users}
-                                        handleDeleteClick={handleDeleteClick}
-                                        handleDeleteConfirm={handleDeleteConfirm}
-                                        categories={categories}
-                                        setIsEditDialogOpen={setIsEditDialogOpen}
-                                        isEditDialogOpen={isEditDialogOpen}
-                                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
-                                    )}
+                                    {selectedTask &&
+                                      selectedTask._id === task._id && (
+                                        <TaskDetails
+                                          setIsReopenDialogOpen={
+                                            setIsReopenDialogOpen
+                                          }
+                                          selectedTask={selectedTask}
+                                          formatTaskDate={formatTaskDate}
+                                          handleDelete={handleDelete}
+                                          handleEditClick={handleEditClick}
+                                          onTaskUpdate={onTaskUpdate}
+                                          setSelectedTask={setSelectedTask}
+                                          handleUpdateTaskStatus={
+                                            handleUpdateTaskStatus
+                                          }
+                                          handleCopy={handleCopy}
+                                          setIsDialogOpen={setIsDialogOpen}
+                                          setIsCompleteDialogOpen={
+                                            setIsCompleteDialogOpen
+                                          }
+                                          formatDate={formatDate}
+                                          sortedComments={sortedComments}
+                                          users={users}
+                                          handleDeleteClick={handleDeleteClick}
+                                          handleDeleteConfirm={
+                                            handleDeleteConfirm
+                                          }
+                                          categories={categories}
+                                          setIsEditDialogOpen={
+                                            setIsEditDialogOpen
+                                          }
+                                          isEditDialogOpen={isEditDialogOpen}
+                                          onClose={() => setSelectedTask(null)}
+                                          setStatusToUpdate={setStatusToUpdate}
+                                        />
+                                      )}
                                   </div>
                                 ))
                               ) : (
@@ -1875,13 +2384,18 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                 // >
                                 <div>
-                                  <div className='flex w-full justify-center '>
+                                  <div className="flex w-full justify-center ">
                                     <div className="mt-8">
-                                      <img src='/animations/notfound.gif' className="h-56" />
+                                      <img
+                                        src="/animations/notfound.gif"
+                                        className="h-56"
+                                      />
                                       <h1 className="text-center font-bold text-md mt-2 ml-4">
                                         No Tasks Found
                                       </h1>
-                                      <p className="text-center text-sm ml-4">The list is currently empty</p>
+                                      <p className="text-center text-sm ml-4">
+                                        The list is currently empty
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
@@ -1903,14 +2417,17 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </div>
                           </div>
                         ) : activeTab === "delegatedTasks" ? (
-
-
-
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
                               <div className="flex gap-8 p-2 justify-center w-full">
-                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate.toLocaleDateString()}</h1>
-                                <h1 className="text-xs text-center text-white">End Date: {customStartDate.toLocaleDateString()}</h1>
+                                <h1 className="text-xs  text-center text-white">
+                                  Start Date:{" "}
+                                  {customStartDate.toLocaleDateString()}
+                                </h1>
+                                <h1 className="text-xs text-center text-white">
+                                  End Date:{" "}
+                                  {customStartDate.toLocaleDateString()}
+                                </h1>
                               </div>
                             )}
                             <div className="flex mt-4 -ml-52 flex-col ">
@@ -1925,31 +2442,46 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                       type="text"
                                       placeholder="Search Task"
                                       value={searchQuery}
-                                      onChange={(e) => setSearchQuery(e.target.value)}
+                                      onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                      }
                                       className="px-3 py-2 text-xs border outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
-
                                   </div>
-                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                  <Button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"
+                                  >
+                                    <FilterIcon className="h-4" /> Filter
+                                  </Button>
                                   {areFiltersApplied && (
                                     <Button
                                       type="button"
                                       className="bg-transparent hover:bg-red-500 mt-4 h-8 gap-2 flex border"
                                       onClick={clearFilters}
                                     >
-                                      <img src='/icons/clear.png' className="h-3" />    Clear
+                                      <img
+                                        src="/icons/clear.png"
+                                        className="h-3"
+                                      />{" "}
+                                      Clear
                                     </Button>
                                   )}
                                 </div>
                               </div>
                               <div className="applied-filters gap-2 mb-2 text-xs flex w-full ml-24 justify-center">
-
                                 {categoryFilter.length > 0 && (
                                   <div className="flex border px-2 py-1 gap-2">
                                     <h3>Categories:</h3>
                                     <ul className="flex gap-2 ">
-                                      {categoryFilter.map(id => (
-                                        <li className="flex gap-2" key={id}>{categories.find(category => category._id === id)?.name} </li>
+                                      {categoryFilter.map((id) => (
+                                        <li className="flex gap-2" key={id}>
+                                          {
+                                            categories.find(
+                                              (category) => category._id === id
+                                            )?.name
+                                          }{" "}
+                                        </li>
                                       ))}
                                     </ul>
                                   </div>
@@ -1958,8 +2490,19 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex px-2 py-1 border gap-2">
                                     <h3>Assigned By:</h3>
                                     <ul>
-                                      {assignedByFilter.map(id => (
-                                        <li key={id}>{users.find(user => user._id === id)?.firstName} {users.find(user => user._id === id)?.lastName}</li>
+                                      {assignedByFilter.map((id) => (
+                                        <li key={id}>
+                                          {
+                                            users.find(
+                                              (user) => user._id === id
+                                            )?.firstName
+                                          }{" "}
+                                          {
+                                            users.find(
+                                              (user) => user._id === id
+                                            )?.lastName
+                                          }
+                                        </li>
                                       ))}
                                     </ul>
                                   </div>
@@ -1968,7 +2511,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex px-2 py-1 border gap-2">
                                     <h3>Frequency:</h3>
                                     <ul className="flex gap-2">
-                                      {frequencyFilter.map(freq => (
+                                      {frequencyFilter.map((freq) => (
                                         <li key={freq}>{freq}</li>
                                       ))}
                                     </ul>
@@ -1978,7 +2521,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex gap-2 border py-1 px-2">
                                     <h3>Priority:</h3>
                                     <ul>
-                                      {priorityFilterModal.map(priority => (
+                                      {priorityFilterModal.map((priority) => (
                                         <li key={priority}>{priority}</li>
                                       ))}
                                     </ul>
@@ -1989,60 +2532,82 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "overdue"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
-
                                   Overdue ({delegatedTasksOverdueCount})
                                 </Button>
 
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "pending"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
-
                                   Pending ({delegatedTasksPendingCount})
                                 </Button>
 
                                 {/* In Progress Filter */}
                                 <Button
-                                  onClick={() => setTaskStatusFilter("inProgress")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  onClick={() =>
+                                    setTaskStatusFilter("inProgress")
+                                  }
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inProgress"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
-
                                   In Progress ({delegatedTasksInProgressCount})
                                 </Button>
 
                                 {/* Completed Filter */}
                                 <Button
-                                  onClick={() => setTaskStatusFilter("completed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  onClick={() =>
+                                    setTaskStatusFilter("completed")
+                                  }
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "completed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
-
                                   Completed ({delegatedTasksCompletedCount})
                                 </Button>
 
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inTime"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
-
                                   In Time ({delegatedTasksInTimeCount})
                                 </Button>
 
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "delayed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
-
                                   Delayed ({delegatedTasksDelayedCount})
                                 </Button>
                               </div>
@@ -2055,25 +2620,33 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     >
                                       <div className=" items-center gap-4">
                                         <div>
-                                          <p className="font-medium text-sm text-white">{task.title}</p>
-                                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                            {task.user.firstName}
-                                          </span></p>
+                                          <p className="font-medium text-sm text-white">
+                                            {task.title}
+                                          </p>
+                                          <p className="text-[#E0E0E0] text-xs">
+                                            Assigned by{" "}
+                                            <span className="text-[#007A5A] font-bold">
+                                              {task.user.firstName}
+                                            </span>
+                                          </p>
                                         </div>
                                         <div className="flex gap-2">
-
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
                                             <h1 className="mt-[1.5px]">
                                               {formatTaskDate(task.dueDate)}
                                             </h1>
                                           </div>
-                                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto  text-[#E0E0E066] ">
+                                            |
+                                          </h1>
                                           <div className="flex text-xs mt-[10px]">
                                             <User2 className="h-4" />
                                             {task?.assignedUser?.firstName}
                                           </div>
-                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">
+                                            |
+                                          </h1>
 
                                           <div className="flex text-xs mt-[11px]">
                                             <TagIcon className="h-4" />
@@ -2082,11 +2655,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                           {task.repeat ? (
                                             <div className="flex items-center">
-                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">
+                                                |
+                                              </h1>
 
                                               {task.repeatType && (
                                                 <h1 className="flex mt-[11px] text-xs">
-                                                  <Repeat className="h-4 " />  {task.repeatType}
+                                                  <Repeat className="h-4 " />{" "}
+                                                  {task.repeatType}
                                                 </h1>
                                               )}
                                             </div>
@@ -2095,26 +2671,28 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           {/* <div className="flex mt-auto">
                       <TagIcon className="h-5" />
                     </div> */}
-                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">
+                                            |
+                                          </h1>
 
                                           <div className="flex text-xs">
                                             <div className="mt-[11px]">
                                               <IconProgressBolt className="h-4  " />
-
                                             </div>
                                             <h1 className="mt-auto">
                                               {task.status}
                                             </h1>
                                           </div>
                                         </div>
-
                                       </div>
                                       <div className="">
                                         <div className="flex ">
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             <Button
                                               onClick={() => {
-                                                setStatusToUpdate("In Progress");
+                                                setStatusToUpdate(
+                                                  "In Progress"
+                                                );
                                                 setIsDialogOpen(true);
                                               }}
                                               className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
@@ -2132,41 +2710,67 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
                                               <CheckCircle className="h-4 rounded-full text-green-400" />
-                                              <h1 className="text-xs">Completed</h1>
+                                              <h1 className="text-xs">
+                                                Completed
+                                              </h1>
                                             </Button>
                                           </div>
                                         </div>
 
-                                        <div className="flex justify-end mt-4">
-
-                                        </div>
+                                        <div className="flex justify-end mt-4"></div>
                                       </div>
                                     </Card>
 
-                                    {selectedTask && selectedTask._id === task._id && (
-                                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                                        setIsDialogOpen={setIsDialogOpen}
-                                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                                        formatDate={formatDate}
-                                        sortedComments={sortedComments}
-                                        users={users}
-                                        handleDeleteClick={handleDeleteClick}
-                                        handleDeleteConfirm={handleDeleteConfirm}
-                                        categories={categories}
-                                        setIsEditDialogOpen={setIsEditDialogOpen}
-                                        isEditDialogOpen={isEditDialogOpen}
-                                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
-                                    )}
-
+                                    {selectedTask &&
+                                      selectedTask._id === task._id && (
+                                        <TaskDetails
+                                          setIsReopenDialogOpen={
+                                            setIsReopenDialogOpen
+                                          }
+                                          selectedTask={selectedTask}
+                                          formatTaskDate={formatTaskDate}
+                                          handleDelete={handleDelete}
+                                          handleEditClick={handleEditClick}
+                                          onTaskUpdate={onTaskUpdate}
+                                          setSelectedTask={setSelectedTask}
+                                          handleUpdateTaskStatus={
+                                            handleUpdateTaskStatus
+                                          }
+                                          handleCopy={handleCopy}
+                                          setIsDialogOpen={setIsDialogOpen}
+                                          setIsCompleteDialogOpen={
+                                            setIsCompleteDialogOpen
+                                          }
+                                          formatDate={formatDate}
+                                          sortedComments={sortedComments}
+                                          users={users}
+                                          handleDeleteClick={handleDeleteClick}
+                                          handleDeleteConfirm={
+                                            handleDeleteConfirm
+                                          }
+                                          categories={categories}
+                                          setIsEditDialogOpen={
+                                            setIsEditDialogOpen
+                                          }
+                                          isEditDialogOpen={isEditDialogOpen}
+                                          onClose={() => setSelectedTask(null)}
+                                          setStatusToUpdate={setStatusToUpdate}
+                                        />
+                                      )}
                                   </div>
                                 ))
                               ) : (
                                 <div className="mt-8 ml-36">
-                                  <img src='/animations/notfound.gif' className="h-56 ml-[41%]" />
+                                  <img
+                                    src="/animations/notfound.gif"
+                                    className="h-56 ml-[41%]"
+                                  />
                                   <h1 className="text-center font-bold text-md mt-2 ml-4">
                                     No Tasks Found
                                   </h1>
-                                  <p className="text-center text-sm ml-4">The list is currently empty</p>
+                                  <p className="text-center text-sm ml-4">
+                                    The list is currently empty
+                                  </p>
                                 </div>
                               )}
                               <FilterModal
@@ -2186,12 +2790,17 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           <div className="flex    flex-col ">
                             {customStartDate && customEndDate && (
                               <div className="flex gap-8 p-2 justify-center w-full">
-                                <h1 className="text-xs  text-center text-white">Start Date: {customStartDate.toLocaleDateString()}</h1>
-                                <h1 className="text-xs text-center text-white">End Date: {customStartDate.toLocaleDateString()}</h1>
+                                <h1 className="text-xs  text-center text-white">
+                                  Start Date:{" "}
+                                  {customStartDate.toLocaleDateString()}
+                                </h1>
+                                <h1 className="text-xs text-center text-white">
+                                  End Date:{" "}
+                                  {customStartDate.toLocaleDateString()}
+                                </h1>
                               </div>
                             )}
                             <div className="flex -ml-52  mt-4 flex-col ">
-
                               {/* <div className=" ml-[125px]  w-full flex justify-center text-xs gap-4"> */}
                               {/* <TaskSummary
                                   overdueTasks={allTasksOverdueCount}
@@ -2209,27 +2818,38 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                       type="text"
                                       placeholder="Search Task"
                                       value={searchQuery}
-                                      onChange={(e) => setSearchQuery(e.target.value)}
+                                      onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                      }
                                       className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
-
                                   </div>
 
-                                  <Button onClick={() => setIsModalOpen(true)} className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"><FilterIcon className="h-4" /> Filter</Button>
+                                  <Button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"
+                                  >
+                                    <FilterIcon className="h-4" /> Filter
+                                  </Button>
                                   {areFiltersApplied && (
-                                    <Button onClick={clearFilters} className="bg-transparent hover:bg-transparent mt-4 h-8">
+                                    <Button
+                                      onClick={clearFilters}
+                                      className="bg-transparent hover:bg-transparent mt-4 h-8"
+                                    >
                                       <FilterIcon className="h-4" /> Clear
                                     </Button>
                                   )}
                                 </div>
-
                               </div>
                               {/* Display applied filters */}
                               <div className="applied-filters gap-2 mb-2 text-xs flex w-full ml-24 justify-center">
                                 <div>
                                   {selectedUserId && (
                                     <div className="flex border px-2 py-1 gap-2">
-                                      <h1>Assigned To: {selectedUserId.firstName} {selectedUserId.lastName}</h1>
+                                      <h1>
+                                        Assigned To: {selectedUserId.firstName}{" "}
+                                        {selectedUserId.lastName}
+                                      </h1>
                                     </div>
                                   )}
                                 </div>
@@ -2237,8 +2857,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex border px-2 py-1 gap-2">
                                     <h3>Categories:</h3>
                                     <ul className="flex gap-2 ">
-                                      {categoryFilter.map(id => (
-                                        <li className="flex gap-2" key={id}>{categories.find(category => category._id === id)?.name} </li>
+                                      {categoryFilter.map((id) => (
+                                        <li className="flex gap-2" key={id}>
+                                          {
+                                            categories.find(
+                                              (category) => category._id === id
+                                            )?.name
+                                          }{" "}
+                                        </li>
                                       ))}
                                     </ul>
                                   </div>
@@ -2247,8 +2873,19 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex px-2 py-1 border gap-2">
                                     <h3>Assigned By:</h3>
                                     <ul>
-                                      {assignedByFilter.map(id => (
-                                        <li key={id}>{users.find(user => user._id === id)?.firstName} {users.find(user => user._id === id)?.lastName}</li>
+                                      {assignedByFilter.map((id) => (
+                                        <li key={id}>
+                                          {
+                                            users.find(
+                                              (user) => user._id === id
+                                            )?.firstName
+                                          }{" "}
+                                          {
+                                            users.find(
+                                              (user) => user._id === id
+                                            )?.lastName
+                                          }
+                                        </li>
                                       ))}
                                     </ul>
                                   </div>
@@ -2257,7 +2894,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex px-2 py-1 border gap-2">
                                     <h3>Frequency:</h3>
                                     <ul className="flex gap-2">
-                                      {frequencyFilter.map(freq => (
+                                      {frequencyFilter.map((freq) => (
                                         <li key={freq}>{freq}</li>
                                       ))}
                                     </ul>
@@ -2267,7 +2904,7 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <div className="flex gap-2 border py-1 px-2">
                                     <h3>Priority:</h3>
                                     <ul>
-                                      {priorityFilterModal.map(priority => (
+                                      {priorityFilterModal.map((priority) => (
                                         <li key={priority}>{priority}</li>
                                       ))}
                                     </ul>
@@ -2278,60 +2915,82 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "overdue"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
-
                                   Overdue ({overdueTasks})
                                 </Button>
 
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "pending"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
-
                                   Pending ({pendingTasks})
                                 </Button>
 
                                 {/* In Progress Filter */}
                                 <Button
-                                  onClick={() => setTaskStatusFilter("inProgress")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  onClick={() =>
+                                    setTaskStatusFilter("inProgress")
+                                  }
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inProgress"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
-
                                   In Progress ({inProgressTasks})
                                 </Button>
 
                                 {/* Completed Filter */}
                                 <Button
-                                  onClick={() => setTaskStatusFilter("completed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  onClick={() =>
+                                    setTaskStatusFilter("completed")
+                                  }
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "completed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
-
                                   Completed ({completedTasks})
                                 </Button>
 
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inTime"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
-
                                   In Time ({inTimeTasks})
                                 </Button>
 
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed" ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]" : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "}`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "delayed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
-
                                   Delayed ({delayedTasks})
                                 </Button>
                               </div>
@@ -2344,25 +3003,33 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     >
                                       <div className=" items-center gap-4">
                                         <div>
-                                          <p className="font-medium text-sm text-white">{task?.title}</p>
-                                          <p className="text-[#E0E0E0] text-xs">Assigned by <span className="text-[#007A5A] font-bold">
-                                            {task?.user?.firstName}
-                                          </span></p>
+                                          <p className="font-medium text-sm text-white">
+                                            {task?.title}
+                                          </p>
+                                          <p className="text-[#E0E0E0] text-xs">
+                                            Assigned by{" "}
+                                            <span className="text-[#007A5A] font-bold">
+                                              {task?.user?.firstName}
+                                            </span>
+                                          </p>
                                         </div>
                                         <div className="flex gap-2">
-
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
                                             <h1 className="mt-[1.5px]">
                                               {formatTaskDate(task?.dueDate)}
                                             </h1>
                                           </div>
-                                          <h1 className="mt-auto  text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto  text-[#E0E0E066] ">
+                                            |
+                                          </h1>
                                           <div className="flex text-xs mt-[10px]">
                                             <User2 className="h-4" />
                                             {task?.assignedUser?.firstName}
                                           </div>
-                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">
+                                            |
+                                          </h1>
 
                                           <div className="flex text-xs mt-[11px]">
                                             <TagIcon className="h-4" />
@@ -2371,11 +3038,14 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
 
                                           {task.repeat ? (
                                             <div className="flex items-center">
-                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">|</h1>
+                                              <h1 className="mt-auto text-[#E0E0E066] mx-2">
+                                                |
+                                              </h1>
 
                                               {task?.repeatType && (
                                                 <h1 className="flex mt-[11px] text-xs">
-                                                  <Repeat className="h-4 " />  {task?.repeatType}
+                                                  <Repeat className="h-4 " />{" "}
+                                                  {task?.repeatType}
                                                 </h1>
                                               )}
                                             </div>
@@ -2384,26 +3054,28 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                           {/* <div className="flex mt-auto">
                       <TagIcon className="h-5" />
                     </div> */}
-                                          <h1 className="mt-auto text-[#E0E0E066] ">|</h1>
+                                          <h1 className="mt-auto text-[#E0E0E066] ">
+                                            |
+                                          </h1>
 
                                           <div className="flex text-xs">
                                             <div className="mt-[11px]">
                                               <IconProgressBolt className="h-4  " />
-
                                             </div>
                                             <h1 className="mt-auto">
                                               {task?.status}
                                             </h1>
                                           </div>
                                         </div>
-
                                       </div>
                                       <div className="">
                                         <div className="flex ">
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             <Button
                                               onClick={() => {
-                                                setStatusToUpdate("In Progress");
+                                                setStatusToUpdate(
+                                                  "In Progress"
+                                                );
                                                 setIsDialogOpen(true);
                                               }}
                                               className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
@@ -2421,38 +3093,64 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                               className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
                                             >
                                               <CheckCircle className="h-4 rounded-full text-green-400" />
-                                              <h1 className="text-xs">Completed</h1>
+                                              <h1 className="text-xs">
+                                                Completed
+                                              </h1>
                                             </Button>
                                           </div>
                                         </div>
 
-                                        <div className="flex justify-end mt-4">
-
-                                        </div>
+                                        <div className="flex justify-end mt-4"></div>
                                       </div>
                                     </Card>
-                                    {selectedTask && selectedTask._id === task._id && (
-                                      <TaskDetails setIsReopenDialogOpen={setIsReopenDialogOpen} selectedTask={selectedTask} formatTaskDate={formatTaskDate} handleDelete={handleDelete} handleEditClick={handleEditClick} onTaskUpdate={onTaskUpdate} setSelectedTask={setSelectedTask} handleUpdateTaskStatus={handleUpdateTaskStatus} handleCopy={handleCopy}
-                                        setIsDialogOpen={setIsDialogOpen}
-                                        setIsCompleteDialogOpen={setIsCompleteDialogOpen}
-                                        formatDate={formatDate}
-                                        sortedComments={sortedComments}
-                                        users={users}
-                                        categories={categories}
-                                        handleDeleteClick={handleDeleteClick}
-                                        handleDeleteConfirm={handleDeleteConfirm}
-                                        setIsEditDialogOpen={setIsEditDialogOpen}
-                                        isEditDialogOpen={isEditDialogOpen}
-                                        onClose={() => setSelectedTask(null)} setStatusToUpdate={setStatusToUpdate} />
-                                    )}
+                                    {selectedTask &&
+                                      selectedTask._id === task._id && (
+                                        <TaskDetails
+                                          setIsReopenDialogOpen={
+                                            setIsReopenDialogOpen
+                                          }
+                                          selectedTask={selectedTask}
+                                          formatTaskDate={formatTaskDate}
+                                          handleDelete={handleDelete}
+                                          handleEditClick={handleEditClick}
+                                          onTaskUpdate={onTaskUpdate}
+                                          setSelectedTask={setSelectedTask}
+                                          handleUpdateTaskStatus={
+                                            handleUpdateTaskStatus
+                                          }
+                                          handleCopy={handleCopy}
+                                          setIsDialogOpen={setIsDialogOpen}
+                                          setIsCompleteDialogOpen={
+                                            setIsCompleteDialogOpen
+                                          }
+                                          formatDate={formatDate}
+                                          sortedComments={sortedComments}
+                                          users={users}
+                                          categories={categories}
+                                          handleDeleteClick={handleDeleteClick}
+                                          handleDeleteConfirm={
+                                            handleDeleteConfirm
+                                          }
+                                          setIsEditDialogOpen={
+                                            setIsEditDialogOpen
+                                          }
+                                          isEditDialogOpen={isEditDialogOpen}
+                                          onClose={() => setSelectedTask(null)}
+                                          setStatusToUpdate={setStatusToUpdate}
+                                        />
+                                      )}
                                   </div>
                                 ))
                               ) : (
                                 <div className="ml-52">
-                                  <h1 className="text-center font-bold text-md mt-12"> {/**All */}
+                                  <h1 className="text-center font-bold text-md mt-12">
+                                    {" "}
+                                    {/**All */}
                                     No Tasks Found
                                   </h1>
-                                  <p className="text-center text-sm">The list is currently empty</p>
+                                  <p className="text-center text-sm">
+                                    The list is currently empty
+                                  </p>
                                 </div>
                               )}
                               <FilterModal
@@ -2468,10 +3166,10 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                               />
                             </div>
                           </div>
-                        ) : <h1>Oops Wrong Tab Selected!</h1>
-                        }
+                        ) : (
+                          <h1>Oops Wrong Tab Selected!</h1>
+                        )}
                       </div>
-
 
                       {/** Completed Modal */}
 
@@ -2480,10 +3178,19 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
                           <DialogContent className="bg-[#1A1D21] rounded-lg p-6 mx-auto max-w-2xl">
                             <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">Task Update</DialogTitle>
-                              <DialogClose onClick={() => setIsCompleteDialogOpen(false)}>X</DialogClose>
+                              <DialogTitle className="text-sm">
+                                Task Update
+                              </DialogTitle>
+                              <DialogClose
+                                onClick={() => setIsCompleteDialogOpen(false)}
+                              >
+                                X
+                              </DialogClose>
                             </div>
-                            <p className="text-xs -mt-2">Please add a note before marking the task as completed</p>
+                            <p className="text-xs -mt-2">
+                              Please add a note before marking the task as
+                              completed
+                            </p>
                             <div className="mt-2">
                               <Label className="text-sm">Comment</Label>
                               <textarea
@@ -2492,27 +3199,31 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
                               />
 
-                              <div className='flex mb-4  mt-4 gap-4'>
+                              <div className="flex mb-4  mt-4 gap-4">
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
                                   onClick={triggerImageOrVideoUpload}
                                 >
                                   <Files className="h-5 text-center m-auto mt-1" />
-
                                 </div>
-                                <h1 className="text-xs mt-2">Attach a File (All File Types Accepted)</h1>
+                                <h1 className="text-xs mt-2">
+                                  Attach a File (All File Types Accepted)
+                                </h1>
 
                                 <input
                                   ref={imageInputRef}
                                   type="file"
-                                  style={{ display: 'none' }}
+                                  style={{ display: "none" }}
                                   onChange={handleImageOrVideoUpload}
                                 />
                               </div>
                               <div className="file-previews">
                                 {filePreviews.map((preview, index) => (
-                                  <div key={index} className="file-preview-item relative inline-block">
-                                    {files[index].type.startsWith('image/') ? (
+                                  <div
+                                    key={index}
+                                    className="file-preview-item relative inline-block"
+                                  >
+                                    {files[index].type.startsWith("image/") ? (
                                       <img
                                         src={preview}
                                         alt={`Preview ${index}`}
@@ -2526,24 +3237,25 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     <button
                                       type="button"
                                       onClick={() => handleRemoveFile(index)}
-                                      className='absolute top-2 right-1 bg-red-600 text-white rounded-full p-1'
+                                      className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
                                     >
-                                      <X className='h-3 w-3' />
+                                      <X className="h-3 w-3" />
                                     </button>
                                   </div>
                                 ))}
                               </div>
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
-
-                              <Button onClick={handleUpdateTaskStatus} className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]">
+                              <Button
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
+                              >
                                 {loading ? <Loader /> : "Update Task"}
                               </Button>
                             </div>
                           </DialogContent>
                         </Dialog>
                       )}
-
 
                       <DeleteConfirmationDialog
                         isOpen={isDeleteDialogOpen}
@@ -2555,16 +3267,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       {/** In Progress Modal */}
 
                       {isDialogOpen && (
-                        <Dialog
-                          open={isDialogOpen}
-                        >
+                        <Dialog open={isDialogOpen}>
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
                           <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">Task Update</DialogTitle>
-                              <DialogClose onClick={() => setIsDialogOpen(false)}>X</DialogClose>
+                              <DialogTitle className="text-sm">
+                                Task Update
+                              </DialogTitle>
+                              <DialogClose
+                                onClick={() => setIsDialogOpen(false)}
+                              >
+                                X
+                              </DialogClose>
                             </div>
-                            <p className="text-xs -mt-2">Please add a note before marking the task as in progress</p>
+                            <p className="text-xs -mt-2">
+                              Please add a note before marking the task as in
+                              progress
+                            </p>
                             <div className="mt-2">
                               <Label className="text-sm">Comment</Label>
                               <div
@@ -2577,20 +3296,21 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 }}
                               ></div>
 
-                              <div className='flex mb-4  mt-4 gap-4'>
+                              <div className="flex mb-4  mt-4 gap-4">
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
                                   onClick={triggerImageOrVideoUpload}
                                 >
                                   <Files className="h-5 text-center m-auto mt-1" />
-
                                 </div>
-                                <h1 className="text-xs mt-2">Attach a File (All File Types Accepted)</h1>
+                                <h1 className="text-xs mt-2">
+                                  Attach a File (All File Types Accepted)
+                                </h1>
 
                                 <input
                                   ref={imageInputRef}
                                   type="file"
-                                  style={{ display: 'none' }}
+                                  style={{ display: "none" }}
                                   onChange={handleImageOrVideoUpload}
                                 />
                               </div>
@@ -2599,8 +3319,11 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                             </div>
                             <div className="file-previews">
                               {filePreviews.map((preview, index) => (
-                                <div key={index} className="file-preview-item relative inline-block">
-                                  {files[index].type.startsWith('image/') ? (
+                                <div
+                                  key={index}
+                                  className="file-preview-item relative inline-block"
+                                >
+                                  {files[index].type.startsWith("image/") ? (
                                     <img
                                       src={preview}
                                       alt={`Preview ${index}`}
@@ -2614,22 +3337,20 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                   <button
                                     type="button"
                                     onClick={() => handleRemoveFile(index)}
-                                    className='absolute top-2 right-1 bg-red-600 text-white rounded-full p-1'
+                                    className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
                                   >
-                                    <X className='h-3 w-3' />
+                                    <X className="h-3 w-3" />
                                   </button>
                                 </div>
                               ))}
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
-
                               <Button
                                 onClick={handleUpdateTaskStatus}
                                 className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
                               >
                                 {loading ? <Loader /> : "Update Task"}
                               </Button>
-
                             </div>
                           </DialogContent>
                         </Dialog>
@@ -2638,16 +3359,23 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                       {/** Reopen Modal */}
 
                       {isReopenDialogOpen && (
-                        <Dialog
-                          open={isReopenDialogOpen}
-                        >
+                        <Dialog open={isReopenDialogOpen}>
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
                           <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">Task Update</DialogTitle>
-                              <DialogClose onClick={() => setIsReopenDialogOpen(false)}>X</DialogClose>
+                              <DialogTitle className="text-sm">
+                                Task Update
+                              </DialogTitle>
+                              <DialogClose
+                                onClick={() => setIsReopenDialogOpen(false)}
+                              >
+                                X
+                              </DialogClose>
                             </div>
-                            <p className="text-xs -mt-2">Please add a note before marking the task as Reopen</p>
+                            <p className="text-xs -mt-2">
+                              Please add a note before marking the task as
+                              Reopen
+                            </p>
                             <div className="mt-2">
                               <Label className="text-sm">Comment</Label>
                               <textarea
@@ -2656,27 +3384,31 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                 className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 w-full mt-2"
                               />
 
-                              <div className='flex mb-4  mt-4 gap-4'>
+                              <div className="flex mb-4  mt-4 gap-4">
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
                                   onClick={triggerImageOrVideoUpload}
                                 >
                                   <Files className="h-5 text-center m-auto mt-1" />
-
                                 </div>
-                                <h1 className="text-xs mt-2">Attach a File (All File Types Accepted)</h1>
+                                <h1 className="text-xs mt-2">
+                                  Attach a File (All File Types Accepted)
+                                </h1>
 
                                 <input
                                   ref={imageInputRef}
                                   type="file"
-                                  style={{ display: 'none' }}
+                                  style={{ display: "none" }}
                                   onChange={handleImageOrVideoUpload}
                                 />
                               </div>
                               <div className="file-previews">
                                 {filePreviews.map((preview, index) => (
-                                  <div key={index} className="file-preview-item relative inline-block">
-                                    {files[index].type.startsWith('image/') ? (
+                                  <div
+                                    key={index}
+                                    className="file-preview-item relative inline-block"
+                                  >
+                                    {files[index].type.startsWith("image/") ? (
                                       <img
                                         src={preview}
                                         alt={`Preview ${index}`}
@@ -2690,32 +3422,33 @@ export default function TasksTab({ tasks, currentUser, onTaskUpdate }: TasksTabP
                                     <button
                                       type="button"
                                       onClick={() => handleRemoveFile(index)}
-                                      className='absolute top-2 right-1 bg-red-600 text-white rounded-full p-1'
+                                      className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
                                     >
-                                      <X className='h-3 w-3' />
+                                      <X className="h-3 w-3" />
                                     </button>
                                   </div>
                                 ))}
                               </div>
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
-
-                              <Button onClick={handleUpdateTaskStatus} className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]">
+                              <Button
+                                onClick={handleUpdateTaskStatus}
+                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
+                              >
                                 {loading ? <Loader /> : "Update Task"}
                               </Button>
-
                             </div>
                           </DialogContent>
                         </Dialog>
                       )}
                     </div>
                   </div>
-                </div >
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
