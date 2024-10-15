@@ -6,6 +6,52 @@ import { isSameDay, isWeekend } from 'date-fns';
 import Holiday from '@/models/holidayModel';
 import { ILeaveType } from '@/models/leaveTypeModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
+import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
+
+const sendLeaveApprovalEmail = async (leave: any, status: 'Approved' | 'Partially Approved' | 'Rejected', approvedFor: number) => {
+    const reportingManager = leave.user.reportingManager;
+    const user = leave.user;
+    const emailSubjectMap = {
+        Approved: "Leave Application - Approved",
+        'Partially Approved': "Leave Application - Partially Approved",
+        Rejected: "Leave Application - Rejected"
+    };
+
+    const emailOptions: SendEmailOptions = {
+        to: `${user.email}`,
+        text: emailSubjectMap[status],
+        subject: emailSubjectMap[status],
+        html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+            <div style="background-color: #f0f4f8; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+              <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>     
+                        <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff;">Leave Application - ${status}</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear ${user.firstName},</p>
+                        <p>Your leave application has been ${status} by ${reportingManager.firstName}, given below are the details:</p>
+                        <p><strong>Leave Type:</strong> ${leave.leaveType.leaveType}</p>
+                        <p><strong>From:</strong> ${formatDate(leave.fromDate)}</p>
+                        <p><strong>To:</strong> ${formatDate(leave.toDate)}</p>
+                        <p><strong>Applied Duration:</strong> ${leave.appliedDays} days</p>
+                        ${status === 'Partially Approved' ? `<p><strong>Approved Duration:</strong> ${approvedFor} days</p>` : ''}
+                        ${leave.remarks ? `<p><strong>Remarks:</strong> ${leave.remarks}</p>` : ''}
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="https://zapllo.com/attendance/my-leaves" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open App</a>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                    </div>
+                </div>
+            </div>
+        </body>`
+    };
+
+    await sendEmail(emailOptions);
+};
+
 
 type LeaveUnit = 'Full Day' | '1st Half' | '2nd Half' | '1st Quarter' | '2nd Quarter' | '3rd Quarter' | '4th Quarter';
 
@@ -201,9 +247,11 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
                     'leaveapproval'
                 );
             }
+            await sendLeaveApprovalEmail(leave, 'Approved', approvedFor);
         } else if (rejectedDaysCount === leave.leaveDays.length) {
             leave.status = 'Rejected';
             leave.rejectedBy = approvedBy;
+            await sendLeaveApprovalEmail(leave, 'Rejected', 0);
         } else if (approvedDaysCount > 0 && rejectedDaysCount > 0) {
             leave.status = 'Partially Approved';
             leave.approvedBy = approvedBy;
@@ -216,6 +264,7 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
                     'partialapproval_v6'
                 );
             }
+            await sendLeaveApprovalEmail(leave, 'Partially Approved', approvedFor);
         }
 
         await leave.save();

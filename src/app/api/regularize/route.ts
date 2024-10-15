@@ -5,6 +5,49 @@ import connectDB from '@/lib/db';
 import LoginEntry from '@/models/loginEntryModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 import User, { IUser } from '@/models/userModel';
+import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
+
+const sendRegularizationEmail = async (
+    user: any,
+    reportingManager: any,
+    loginTime: string,
+    logoutTime: string,
+    remarks: string,
+    createdAt: Date
+) => {
+    const emailOptions: SendEmailOptions = {
+        to: `${reportingManager.email}`,
+        text: "New Regularization Application",
+        subject: "New Regularization Application",
+        html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+            <div style="background-color: #f0f4f8; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+              <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>     
+                        <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff;">New Regularization Application</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear ${reportingManager.firstName},</p>
+                        <p>A new regularization request has been raised by ${user.firstName}, given below are the details:</p>
+                        <p><strong>Date:</strong> ${formatDate(createdAt)}</p>
+                        <p><strong>Login Time:</strong> ${loginTime}</p>
+                        <p><strong>Logout Time:</strong> ${logoutTime}</p>
+                        <p><strong>Remarks:</strong> ${remarks}</p>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="https://zapllo.com/attendance/my-attendance" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open App</a>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                    </div>
+                </div>
+            </div>
+        </body>`,
+    };
+
+    await sendEmail(emailOptions);
+};
+
 
 // Define the shape of the request body
 interface RegularizationRequestBody {
@@ -82,7 +125,7 @@ export async function POST(request: NextRequest) {
 
     const user = await User.findById(userId).populate<{ reportingManager: IUser }>({
         path: 'reportingManager',
-        select: 'firstName lastName whatsappNo',
+        select: 'firstName lastName whatsappNo email',
     });
 
     if (!user) {
@@ -152,11 +195,13 @@ export async function POST(request: NextRequest) {
         // Send WhatsApp message after successful save
         let reportingManagerFirstName = 'N/A';
         let reportingManagerPhoneNumber = '';
+        let reportingManagerEmail = '';
 
         if (user.reportingManager && 'firstName' in user.reportingManager) {
             const reportingManager = user.reportingManager as IUser;
             reportingManagerFirstName = reportingManager.firstName || 'N/A';
             reportingManagerPhoneNumber = reportingManager.whatsappNo || '';
+            reportingManagerEmail = reportingManager.email || '';
         }
 
         await sendRegularizationWhatsAppNotification(
@@ -168,6 +213,18 @@ export async function POST(request: NextRequest) {
             remarks,
             new Date() // Use current date for createdAt field
         );
+        console.log(reportingManagerEmail, 'reporting manager email?')
+        // Send email notification to the reporting manager
+        if (reportingManagerEmail) {
+            await sendRegularizationEmail(
+                user,
+                { firstName: reportingManagerFirstName, email: reportingManagerEmail },
+                loginTime,
+                logoutTime,
+                remarks,
+                new Date()
+            );
+        }
 
         return NextResponse.json(
             { success: true, message: 'Regularization request submitted successfully.' },

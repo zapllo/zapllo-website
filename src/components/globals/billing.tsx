@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogOverlay, DialogContent, DialogClose } from "@/components/ui/dialog";
 import BillingSidebar from '../sidebar/billingSidebar';
-import { Wallet } from "lucide-react";
+import { Clock, Users2, Wallet } from "lucide-react";
 import axios from 'axios';
 
 type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
@@ -23,6 +23,9 @@ export default function Billing() {
     const [rechargeModalStep, setRechargeModalStep] = useState(1);
     const [gstNumber, setGstNumber] = useState('');
     const [rechargeGstNumber, setRechargeGstNumber] = useState('');
+    const [subscribedUserCount, setSubscribedUserCount] = useState<number>(0); // State for subscribed user count
+    const [renewsOn, setRenewsOn] = useState<any>();
+
 
     useEffect(() => {
         if (currentUser?.subscribedPlan) {
@@ -32,13 +35,30 @@ export default function Billing() {
         }
     }, [currentUser?.subscribedPlan]);
 
+
     useEffect(() => {
         const getUserDetails = async () => {
-            const res = await axios.get('/api/users/me')
+            const res = await axios.get('/api/users/me');
             setCurrentUser(res.data.data);
-        }
+
+            const response = await axios.get('/api/organization/getById');
+            console.log(response.data.data); // Log the organization data
+            const organization = response.data.data;
+            // Check if the trial has expired
+            setRenewsOn(organization.subscriptionExpires);
+            // Fetch the order information including subscribed user count
+            if (res.data.data._id) {
+                const orderRes = await axios.get(`/api/orders/user/${res.data.data._id}`);
+                const userOrder = orderRes.data.find((order: { planName: any; }) => order.planName === res.data.data.subscribedPlan);
+
+                if (userOrder) {
+                    setSubscribedUserCount(userOrder.subscribedUserCount);
+                    setDisplayedPlan(userOrder.planName);
+                }
+            }
+        };
         getUserDetails();
-    }, [])
+    }, []);
 
     const plans = {
         'Task Pro': 1999,
@@ -72,6 +92,8 @@ export default function Billing() {
         return plan !== null && Object.keys(plans).includes(plan);
     };
 
+    console.log(renewsOn, 'renews on');
+
     useEffect(() => {
         const loadRazorpayScript = () => {
             const script = document.createElement('script');
@@ -102,6 +124,8 @@ export default function Billing() {
                 planName: plan,
                 gstNumber: gstNumber,
             },
+            subscribedUserCount: userCount // Store the selected number of users
+
         };
         try {
             const { data } = await axios.post('/api/create-order', orderData);
@@ -474,12 +498,22 @@ export default function Billing() {
                                             {plans['Money Saver Bundle']}
                                             <h1 className="text-xs italic">(Per User Per Year)</h1>
                                         </CardDescription>
+                                        <p className="mt-2 text-sm justify-center flex gap-1">
+                                            <Clock className='h-5' />
+                                            Renews on: <span className="text-[#3281F6]">{renewsOn}</span>
+                                        </p>
+                                        {subscribedUserCount && (
+                                            <p className="mt-1 flex justify-center gap-1 text-sm">
+                                                <Users2 className='h-5' />
+                                                Subscribed Users: <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                            </p>
+                                        )}
                                         <div className="flex justify-center py-2 w-full">
                                             <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6">Subscribed</Button>
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
-                                    <CardContent className="  bg-transparent">
+                                        <CardContent className="  bg-transparent">
                                             <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                             <ul className="list-disc text-sm">
                                                 <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
@@ -520,7 +554,7 @@ export default function Billing() {
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
-                                    <CardContent className=" bg-transparent">
+                                        <CardContent className=" bg-transparent">
                                             <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                             <ul className="list-disc text-sm">
                                                 <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
@@ -568,7 +602,7 @@ export default function Billing() {
                                                 </div>
                                             </CardHeader>
                                             <div className='p-4'>
-                                            <CardContent className=" bg-transparent">
+                                                <CardContent className=" bg-transparent">
                                                     <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                                     <ul className="list-disc text-sm">
                                                         <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>

@@ -6,6 +6,77 @@ import LoginEntry from '@/models/loginEntryModel';
 import User from '@/models/userModel';
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Your custom token extraction function
 
+import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
+
+const sendRegularizationApprovalEmail = async (user: any, regularizationEntry: any) => {
+    const emailOptions: SendEmailOptions = {
+        to: `${user.email}`,
+        text: "Regularization Request - Approved",
+        subject: "Regularization Request - Approved",
+        html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+            <div style="background-color: #f0f4f8; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>     
+                        <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff;">Regularization Request - Approved</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear ${user.firstName},</p>
+                        <p>Your regularization application has been Approved by ${regularizationEntry.approvedBy.firstName}, given below are the details:</p>
+                        <p><strong>Date:</strong> ${formatDate(regularizationEntry.createdAt)}</p>
+                        <p><strong>Login Time:</strong> ${regularizationEntry.loginTime}</p>
+                        <p><strong>Logout Time:</strong> ${regularizationEntry.logoutTime}</p>
+                        <p><strong>Manager Remarks:</strong> ${regularizationEntry.notes || 'Approved'}</p>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="https://zapllo.com/attendance/my-attendance" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open App</a>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                    </div>
+                </div>
+            </div>
+        </body>`,
+    };
+
+    await sendEmail(emailOptions);
+};
+
+const sendRegularizationRejectionEmail = async (user: any, regularizationEntry: any) => {
+    const emailOptions: SendEmailOptions = {
+        to: `${user.email}`,
+        text: "Regularization Request - Rejected",
+        subject: "Regularization Request - Rejected",
+        html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+            <div style="background-color: #f0f4f8; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                  <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>     
+                        <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff;">Regularization Request - Rejected</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear ${user.firstName},</p>r
+                        <p>Your regularization application has been Rejected by ${regularizationEntry.approvedBy.firstName}, given below are the details:</p>
+                        <p><strong>Date:</strong> ${formatDate(regularizationEntry.createdAt)}</p>
+                        <p><strong>Login Time:</strong> ${regularizationEntry.loginTime}</p>
+                        <p><strong>Logout Time:</strong> ${regularizationEntry.logoutTime}</p>
+                        <p><strong>Manager Remarks:</strong> ${regularizationEntry.notes || 'Rejected'}</p>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="https://zapllo.com/attendance/my-attendance" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open App</a>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                    </div>
+                </div>
+            </div>
+        </body>`,
+    };
+
+    await sendEmail(emailOptions);
+};
+
+
 interface ApprovalRequestBody {
     action: 'approve' | 'reject';
     remarks?: string;
@@ -114,11 +185,21 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
 
         await regularizationEntry.save();
 
-       // Send WhatsApp notification based on the action (approve or reject)
-       if (user.whatsappNo) {
-        const templateName = action === 'approve' ? 'regularizationapproval' : 'regularizationrejection';
-        await sendWhatsAppRegularizationNotification(user, user.whatsappNo, user.reportingManager, regularizationEntry, templateName);
-    }
+        // Re-fetch the regularization entry and populate the approvedBy field to include firstName
+        await regularizationEntry.populate('approvedBy', 'firstName');
+        // Send WhatsApp notification based on the action (approve or reject)
+        if (user.whatsappNo) {
+            const templateName = action === 'approve' ? 'regularizationapproval' : 'regularizationrejection';
+            await sendWhatsAppRegularizationNotification(user, user.whatsappNo, user.reportingManager, regularizationEntry, templateName);
+        }
+
+        // Send Email based on the action
+        if (action === 'approve') {
+            await sendRegularizationApprovalEmail(user, regularizationEntry);
+        } else {
+            await sendRegularizationRejectionEmail(user, regularizationEntry);
+        }
+
 
         return NextResponse.json({ success: true, message: `Regularization has been ${action}d successfully.` }, { status: 200 });
     } catch (error: any) {

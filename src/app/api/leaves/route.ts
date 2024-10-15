@@ -6,6 +6,7 @@ import Holiday from '@/models/holidayModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 import { isWeekend, isSameDay } from 'date-fns';
 import mongoose from 'mongoose';
+import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
 
 type LeaveUnit = 'Full Day' | '1st Half' | '2nd Half' | '1st Quarter' | '2nd Quarter' | '3rd Quarter' | '4th Quarter';
 
@@ -199,6 +200,39 @@ export async function POST(request: NextRequest) {
         console.log('Reporting manager found:', reportingManager.firstName, reportingManager.whatsappNo);
         // **Populate the leaveType in savedLeave** before sending the notification
         await savedLeave.populate('leaveType');
+        if (reportingManager && reportingManager.notifications.email) {
+            const emailOptions: SendEmailOptions = {
+                to: `${reportingManager.email}`,
+                text: 'New Leave Application',
+                subject: "New Leave Application",
+                html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+                    <div style="background-color: #f0f4f8; padding: 20px;">
+                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <div style="text-align: center; padding: 20px;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>     
+                        <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
+                                <h1 style="margin: 0; color: #ffffff;">New Leave Application</h1>
+                            </div>
+                            <div style="padding: 20px;">
+                                <p>Dear ${reportingManager.firstName},</p>
+                                <p>A new leave application has been raised by ${user.firstName}, given below are the details:</p>
+                                <p><strong>Leave Type:</strong> ${leaveType.leaveType}</p>
+                                <p><strong>Reason:</strong> ${savedLeave.leaveReason}</p>
+                                <p><strong>From:</strong> ${formatDate(savedLeave.fromDate)}</p>
+                                <p><strong>To:</strong> ${formatDate(savedLeave.toDate)}</p>
+                                <p><strong>Applied Duration:</strong> ${savedLeave.appliedDays} days</p>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <a href="https://zapllo.com/attendance/my-leaves" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open App</a>
+                                </div>
+                                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                            </div>
+                        </div>
+                    </div>
+                </body>`,
+            };
+            await sendEmail(emailOptions);
+        }
         // Send WhatsApp notification if enabled for reporting manager
         if (reportingManager.notifications.whatsapp) {
             console.log('Sending WhatsApp notification...');

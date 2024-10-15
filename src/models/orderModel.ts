@@ -8,6 +8,7 @@ interface IOrder extends Document {
     planName: string;
     creditedAmount: number;
     createdAt: Date;
+    subscribedUserCount: number;
 }
 
 const OrderSchema: Schema<IOrder> = new Schema(
@@ -33,6 +34,10 @@ const OrderSchema: Schema<IOrder> = new Schema(
             type: Number,
             required: true,
         },
+        subscribedUserCount: {
+            type: Number,
+            required: true
+        }, // Number of users purchased for the plan
     },
     { timestamps: true }
 );

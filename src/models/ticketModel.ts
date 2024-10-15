@@ -11,6 +11,7 @@ export interface ITicket extends Document {
     updatedAt?: Date;
     comments: IComment[];
     status: string; // Add status field
+    _id: string; // Add status field
 }
 
 export interface IComment {
