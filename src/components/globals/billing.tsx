@@ -13,12 +13,16 @@ type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
 export default function Billing() {
     const [activeTab, setActiveTab] = useState('Active');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState(null);
+    const [selectedPlan, setSelectedPlan] = useState<PlanKeys | null>(null);
     const [userCount, setUserCount] = useState(5);
     const [rechargeAmount, setRechargeAmount] = useState(5000);
     const [isRechargeDialogOpen, setIsRechargeDialogOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState<any>();
     const [displayedPlan, setDisplayedPlan] = useState('');
+    const [modalStep, setModalStep] = useState(1);
+    const [rechargeModalStep, setRechargeModalStep] = useState(1);
+    const [gstNumber, setGstNumber] = useState('');
+    const [rechargeGstNumber, setRechargeGstNumber] = useState('');
 
     useEffect(() => {
         if (currentUser?.subscribedPlan) {
@@ -28,7 +32,6 @@ export default function Billing() {
         }
     }, [currentUser?.subscribedPlan]);
 
-
     useEffect(() => {
         const getUserDetails = async () => {
             const res = await axios.get('/api/users/me')
@@ -37,7 +40,6 @@ export default function Billing() {
         getUserDetails();
     }, [])
 
-
     const plans = {
         'Task Pro': 1999,
         'Money Saver Bundle': 3000,
@@ -45,7 +47,9 @@ export default function Billing() {
 
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
-        setUserCount(5); // reset user count when dialog is closed
+        setUserCount(5);
+        setModalStep(1);
+        setGstNumber('');
     };
 
     const handleRechargeClick = () => {
@@ -54,16 +58,9 @@ export default function Billing() {
 
     const handleRechargeDialogClose = () => {
         setIsRechargeDialogOpen(false);
-        setRechargeAmount(5000); // reset recharge amount when dialog is closed
-    };
-
-    const handleRecharge = () => {
-        if (rechargeAmount >= 5000) {
-            // Redirect to checkout page
-            window.location.href = `/checkout?amount=${rechargeAmount}&plan=Recharge`;
-        } else {
-            alert('Recharge amount must be at least ₹5000.');
-        }
+        setRechargeAmount(5000);
+        setRechargeModalStep(1);
+        setRechargeGstNumber('');
     };
 
     const handleSubscribeClick = (plan: any) => {
@@ -71,26 +68,178 @@ export default function Billing() {
         setIsDialogOpen(true);
     };
 
-    const handleCheckoutClick = () => {
+    const isValidPlan = (plan: string | null): plan is keyof typeof plans => {
+        return plan !== null && Object.keys(plans).includes(plan);
+    };
+
+    useEffect(() => {
+        const loadRazorpayScript = () => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            document.body.appendChild(script);
+        };
+        loadRazorpayScript();
+    }, []);
+
+    const handlePayment = async () => {
         if (!selectedPlan || !(selectedPlan in plans)) {
             console.error("Selected plan is invalid.");
             return;
         }
-
         const plan = selectedPlan as PlanKeys;
         const planCost = plans[plan];
-
-        if (planCost === undefined) {
-            console.error("Plan cost is not available.");
-            return;
+        const amountExclGST = userCount * planCost;
+        const gstAmount = amountExclGST * 0.18;
+        const totalAmount = amountExclGST + gstAmount;
+        const orderData = {
+            amount: totalAmount * 100,
+            currency: 'INR',
+            receipt: 'receipt_order_123456',
+            notes: {
+                email: currentUser?.email,
+                whatsappNo: currentUser?.whatsappNo,
+                planName: plan,
+                gstNumber: gstNumber,
+            },
+        };
+        try {
+            const { data } = await axios.post('/api/create-order', orderData);
+            if (!data.orderId) {
+                throw new Error('Order ID not found in the response');
+            }
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
+                amount: orderData.amount,
+                currency: orderData.currency,
+                name: plan,
+                description: `Payment for ${plan}`,
+                image: '/logo.png',
+                order_id: data.orderId,
+                handler: async (response: any) => {
+                    const paymentResult = {
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        planName: plan
+                    };
+                    try {
+                        const { data: verificationResult } = await axios.post('/api/payment-success', {
+                            ...paymentResult,
+                            userId: currentUser?._id,
+                            amount: orderData.amount / 100,
+                            gstNumber: gstNumber,
+                        });
+                        if (verificationResult.success) {
+                            alert('Payment successful!');
+                            setIsDialogOpen(false);
+                            setModalStep(1);
+                            setGstNumber('');
+                        } else {
+                            alert('Payment verification failed. Please contact support.');
+                        }
+                    } catch (error) {
+                        console.error('Error verifying payment: ', error);
+                        alert('Error verifying payment. Please try again.');
+                    }
+                },
+                prefill: {
+                    name: `${currentUser?.firstName} ${currentUser?.lastName}`,
+                    email: currentUser?.email,
+                    contact: currentUser?.whatsappNo,
+                },
+                notes: {
+                    address: 'Corporate Office',
+                },
+                theme: {
+                    color: '#007A5A',
+                },
+            };
+            const rzp1 = new (window as any).Razorpay(options);
+            rzp1.open();
+        } catch (error) {
+            console.error('Error creating order: ', error);
+            alert('Error creating order. Please try again.');
         }
-
-        const totalCost = userCount * planCost;
-        window.location.href = `/checkout?amount=${totalCost}&plan=${encodeURIComponent(plan)}`;
     };
 
-    const isValidPlan = (plan: string | null): plan is keyof typeof plans => {
-        return plan !== null && Object.keys(plans).includes(plan);
+    const handleRechargePayment = async () => {
+        if (rechargeAmount >= 5000) {
+            const amountExclGST = rechargeAmount;
+            const gstAmount = amountExclGST * 0.18;
+            const totalAmount = amountExclGST + gstAmount;
+            const orderData = {
+                amount: totalAmount * 100,
+                currency: 'INR',
+                receipt: 'receipt_order_123456',
+                notes: {
+                    email: currentUser?.email,
+                    whatsappNo: currentUser?.whatsappNo,
+                    planName: 'Recharge',
+                    gstNumber: rechargeGstNumber,
+                },
+            };
+            try {
+                const { data } = await axios.post('/api/create-order', orderData);
+                if (!data.orderId) {
+                    throw new Error('Order ID not found in the response');
+                }
+                const options = {
+                    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    name: 'Recharge',
+                    description: `Payment for Wallet Recharge`,
+                    image: '/logo.png',
+                    order_id: data.orderId,
+                    handler: async (response: any) => {
+                        const paymentResult = {
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            planName: 'Recharge'
+                        };
+                        try {
+                            const { data: verificationResult } = await axios.post('/api/payment-success', {
+                                ...paymentResult,
+                                userId: currentUser?._id,
+                                amount: orderData.amount / 100,
+                                gstNumber: rechargeGstNumber,
+                            });
+                            if (verificationResult.success) {
+                                alert('Recharge successful!');
+                                setIsRechargeDialogOpen(false);
+                                setRechargeModalStep(1);
+                                setRechargeGstNumber('');
+                            } else {
+                                alert('Payment verification failed. Please contact support.');
+                            }
+                        } catch (error) {
+                            console.error('Error verifying payment: ', error);
+                            alert('Error verifying payment. Please try again.');
+                        }
+                    },
+                    prefill: {
+                        name: `${currentUser?.firstName} ${currentUser?.lastName}`,
+                        email: currentUser?.email,
+                        contact: currentUser?.whatsappNo,
+                    },
+                    notes: {
+                        address: 'Corporate Office',
+                    },
+                    theme: {
+                        color: '#007A5A',
+                    },
+                };
+                const rzp1 = new (window as any).Razorpay(options);
+                rzp1.open();
+            } catch (error) {
+                console.error('Error creating order: ', error);
+                alert('Error creating order. Please try again.');
+            }
+        } else {
+            alert('Recharge amount must be at least ₹5000.');
+        }
     };
 
     return (
@@ -160,48 +309,78 @@ export default function Billing() {
                             </div>
                         </div>
 
-
                         {isDialogOpen && isValidPlan(selectedPlan) && (
                             <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
                                 <DialogOverlay />
                                 <DialogContent>
-                                    <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
-                                    <p className="mt-2">This plan costs ₹{plans[selectedPlan]} per user per year.</p>
-                                    <div className="mt-4 flex gap-4">
-                                        <label htmlFor="userCount" className="block mb-2">Select Number of Users To Add:</label>
-                                        <select
-                                            id="userCount"
-                                            className="border outline-none bg-[#282D32] px-2 py-1 -mt-1 rounded "
-                                            value={userCount}
-                                            onChange={(e) => setUserCount(parseInt(e.target.value))}
-                                        >
-                                            {[...Array(20)].map((_, i) => {
-                                                const count = (i + 1) * 5;
-                                                return (
-                                                    <option key={count} value={count}>
-                                                        {count}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-                                    <div className='flex gap-4'>
-                                        <h1>Total Subscribed Users = </h1>
-                                        {userCount} (Adding {userCount} users)
-                                    </div>
-                                    <div className='flex gap-4'>
-                                        <h1>Total Price  = </h1>
-                                        INR {plans[selectedPlan]} X  {userCount}
-                                    </div>
-                                    <div className='flex gap-4'>
-                                        <h1>Amount To Recharge = </h1>
-                                        INR {userCount * plans[selectedPlan]} (excluding GST)
-                                    </div>
-                                    <div className="mt-4">
-                                        <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handleCheckoutClick}>
-                                            Proceed to Checkout
-                                        </Button>
-                                    </div>
+                                    {modalStep === 1 && (
+                                        <>
+                                            <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                            <p className="mt-2">This plan costs ₹{plans[selectedPlan]} per user per year.</p>
+                                            <div className="mt-4 flex gap-4">
+                                                <label htmlFor="userCount" className="block mb-2">Select Number of Users To Add:</label>
+                                                <select
+                                                    id="userCount"
+                                                    className="border outline-none bg-[#282D32] px-2 py-1 -mt-1 rounded "
+                                                    value={userCount}
+                                                    onChange={(e) => setUserCount(parseInt(e.target.value))}
+                                                >
+                                                    {[...Array(20)].map((_, i) => {
+                                                        const count = (i + 1) * 5;
+                                                        return (
+                                                            <option key={count} value={count}>
+                                                                {count}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>Total Subscribed Users = </h1>
+                                                {userCount} (Adding {userCount} users)
+                                            </div>
+                                            <div className="mt-4">
+                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={() => setModalStep(2)}>
+                                                    Next
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                    {modalStep === 2 && (
+                                        <>
+                                            <h2 className="text-xl font-bold">Payment Details</h2>
+                                            <div className='flex gap-4 mt-4'>
+                                                <h1>Amount (excluding GST) = </h1>
+                                                INR {userCount * plans[selectedPlan]}
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>GST (18%) = </h1>
+                                                INR {(userCount * plans[selectedPlan] * 0.18).toFixed(2)}
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>Total Amount (including GST) = </h1>
+                                                INR {(userCount * plans[selectedPlan] * 1.18).toFixed(2)}
+                                            </div>
+                                            <div className="mt-4">
+                                                <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
+                                                <input
+                                                    id="gstNumber"
+                                                    type="text"
+                                                    className="border p-2 rounded outline-none w-full"
+                                                    value={gstNumber}
+                                                    onChange={(e) => setGstNumber(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="mt-4 flex gap-2">
+                                                <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setModalStep(1)}>
+                                                    Back
+                                                </Button>
+                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handlePayment}>
+                                                    Proceed to Payment
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
                                 </DialogContent>
                             </Dialog>
                         )}
@@ -210,25 +389,64 @@ export default function Billing() {
                             <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
                                 <DialogOverlay />
                                 <DialogContent>
-                                    <div className='flex justify-between'>
-                                        <h2 className="text-md font-bold">Recharge Wallet</h2>
-                                        <DialogClose>X</DialogClose>
-                                    </div>
-                                    <div className="mt-4">
-                                        <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount:</label>
-                                        <input
-                                            id="rechargeAmount"
-                                            type="number"
-                                            className="border p-2 rounded outline-none w-full"
-                                            value={rechargeAmount}
-                                            onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
-                                        />
-                                    </div>
-                                    <div className="mt-4">
-                                        <Button className="bg-[#7C3886] hover:bg-[#7C3886]" onClick={handleRecharge}>
-                                            Recharge Now
-                                        </Button>
-                                    </div>
+                                    {rechargeModalStep === 1 && (
+                                        <>
+                                            <div className='flex justify-between'>
+                                                <h2 className="text-md font-bold">Recharge Wallet</h2>
+                                                <DialogClose><img src='/icons/cross.png' className='h-6 hover:bg-[#121212] rounded-full' /></DialogClose>
+                                            </div>
+                                            <div className="mt-4">
+                                                <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount (minimum ₹5000):</label>
+                                                <input
+                                                    id="rechargeAmount"
+                                                    type="number"
+                                                    className="border p-2 rounded outline-none w-full"
+                                                    value={rechargeAmount}
+                                                    onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className="mt-4">
+                                                <Button className="bg-[#7C3886] hover:bg-[#7C3886] w-full" onClick={() => setRechargeModalStep(2)}>
+                                                    Next
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                    {rechargeModalStep === 2 && (
+                                        <>
+                                            <h2 className="text-xl font-bold">Payment Details</h2>
+                                            <div className='flex gap-4 mt-4'>
+                                                <h1>Amount (excluding GST) = </h1>
+                                                INR {rechargeAmount}
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>GST (18%) = </h1>
+                                                INR {(rechargeAmount * 0.18).toFixed(2)}
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>Total Amount (including GST) = </h1>
+                                                INR {(rechargeAmount * 1.18).toFixed(2)}
+                                            </div>
+                                            <div className="mt-4">
+                                                <label htmlFor="rechargeGstNumber" className="block mb-2">Enter GST Number (Optional):</label>
+                                                <input
+                                                    id="rechargeGstNumber"
+                                                    type="text"
+                                                    className="border p-2 rounded outline-none w-full"
+                                                    value={rechargeGstNumber}
+                                                    onChange={(e) => setRechargeGstNumber(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="mt-4 flex gap-2">
+                                                <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setRechargeModalStep(1)}>
+                                                    Back
+                                                </Button>
+                                                <Button className="bg-[#7C3886] hover:bg-[#7C3886] w-full" onClick={handleRechargePayment}>
+                                                    Proceed to Payment
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
                                 </DialogContent>
                             </Dialog>
                         )}
@@ -246,9 +464,9 @@ export default function Billing() {
                         </div>
                     </div>
                     {activeTab === 'Active' ? (
-                        <div className="flex  justify-center w-full mb-24  h-screen mt-12">
+                        <div className="flex justify-center w-full mb-24 h-screen mt-12">
                             {displayedPlan === 'Money Saver Bundle' ? (
-                                <Card key="Money Saver Bundle" className="w-[400px] border h-fit  rounded bg-transparent">
+                                <Card key="Money Saver Bundle" className="w-[400px] border h-fit rounded bg-transparent">
                                     <CardHeader className="bg-[#2F0932] rounded border-b text-center">
                                         <CardTitle className="text-2xl">Money Saver Bundle</CardTitle>
                                         <CardDescription className="text-center text-white text-sm px-2">
@@ -257,11 +475,11 @@ export default function Billing() {
                                             <h1 className="text-xs italic">(Per User Per Year)</h1>
                                         </CardDescription>
                                         <div className="flex justify-center py-2 w-full">
-                                            <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6" onClick={() => handleSubscribeClick('Money Saver Bundle')}>Subscribed</Button>
+                                            <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6">Subscribed</Button>
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
-                                        <CardContent className="  bg-transparent">
+                                    <CardContent className="  bg-transparent">
                                             <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                             <ul className="list-disc text-sm">
                                                 <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
@@ -298,11 +516,11 @@ export default function Billing() {
                                             <h1 className="text-xs italic">(Per User Per Year)</h1>
                                         </CardDescription>
                                         <div className="flex justify-center py-2 w-full">
-                                            <Button className="bg-[#7C3886] hover:bg-[#75517B] w-fit px-6" onClick={() => handleSubscribeClick('Task Pro')}>Subscribe</Button>
+                                            <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6">Subscribed</Button>
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
-                                        <CardContent className=" bg-transparent">
+                                    <CardContent className=" bg-transparent">
                                             <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                             <ul className="list-disc text-sm">
                                                 <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>
@@ -332,13 +550,13 @@ export default function Billing() {
                             )}
                         </div>
                     ) : (
-                        <div className="w-full  flex justify-center">
-                            <div className=" w-full flex justify-center   max-w-5xl mx-autol mb-24 h-screen gap-12 ">
+                        <div className="w-full flex justify-center">
+                            <div className="w-full flex justify-center max-w-5xl mx-auto mb-24 h-screen gap-12">
                                 {Object.keys(plans).map((plan, index) => {
-                                    const planKey = plan as keyof typeof plans; // Type assertion
+                                    const planKey = plan as keyof typeof plans;
                                     return (
-                                        <Card key={index} className="w-[400px] h-[690px]  rounded border bg-transparent">
-                                            <CardHeader className="bg-[#2F0932]  rounded border-b text-center">
+                                        <Card key={index} className="w-[400px] h-[690px] rounded border bg-transparent">
+                                            <CardHeader className="bg-[#2F0932] rounded border-b text-center">
                                                 <CardTitle className="text-2xl">{plan}</CardTitle>
                                                 <CardDescription className="text-center text-white text-sm px-2">
                                                     <span className="text-[#007A5A]">INR </span>
@@ -346,11 +564,11 @@ export default function Billing() {
                                                     <h1 className="text-xs italic">(Per User Per Year)</h1>
                                                 </CardDescription>
                                                 <div className="flex justify-center py-2 w-full">
-                                                    <Button className="bg-[#7C3886]  hover:bg-[#75517B] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                                    <Button className="bg-[#7C3886] hover:bg-[#75517B] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
                                                 </div>
                                             </CardHeader>
                                             <div className='p-4'>
-                                                <CardContent className=" bg-transparent">
+                                            <CardContent className=" bg-transparent">
                                                     <h1 className="mt-2 px-2 text-sm text-[#3281F6]">Task Delegation App</h1>
                                                     <ul className="list-disc text-sm">
                                                         <li>Delegate <span className="text-[#3281F6]">Unlimited Tasks</span></li>

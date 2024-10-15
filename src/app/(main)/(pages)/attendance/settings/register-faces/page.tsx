@@ -23,6 +23,7 @@ interface IFaceRegistrationRequest {
   };
   imageUrls: string[];
   status: 'pending' | 'approved' | 'rejected';
+  isUpdating: boolean;
   createdAt: string; // Add a createdAt field if it doesn't exist already
 }
 
@@ -149,56 +150,66 @@ export default function RegisterFace() {
       setUploading(false); // Hide loader
     }
   };
+  // Fetch requests and initialize isUpdating
+  const fetchRequests = async () => {
+    try {
+      const response = await fetch('/api/face-registration-request');
+      const data = await response.json();
+      if (response.ok) {
+        // Add isUpdating to each request object in the fetched data
+        const requestsWithUpdating = data.requests.map((request: IFaceRegistrationRequest) => ({
+          ...request,
+          isUpdating: false,
+        }));
+        setRequests(requestsWithUpdating);
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('Failed to fetch face registration requests');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-
-        const response = await fetch('/api/face-registration-request');
-        const data = await response.json();
-        if (response.ok) {
-          console.log('Requests:', data.requests); // Check the response data here
-          setRequests(data.requests);
-        } else {
-          setError(data.message);
-        }
-      } catch (err) {
-        setError('Failed to fetch face registration requests');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchRequests();
-  }, []);
+  }, [])
 
+  // Handle the status change and toggle isUpdating for the specific request
   const handleStatusChange = async (requestId: string, status: 'approved' | 'rejected') => {
-    setUpdating(true);
+    setRequests((prevRequests) =>
+      prevRequests.map((request) =>
+        request._id === requestId ? { ...request, isUpdating: true } : request
+      )
+    );
+
     try {
       const response = await fetch(`/api/approve-face-registration/${requestId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status }), // Send the appropriate status
+        body: JSON.stringify({ status }),
       });
 
       const data = await response.json();
       if (response.ok) {
-        toast.success("Face Approved successfully!")
-
-        setRequests((prevRequests) =>
-          prevRequests.filter((request) => request._id !== requestId)
-        );
+        toast.success(status === 'approved' ? "Face Approved successfully!" : "Face Rejected successfully!");
+        fetchRequests(); // Refresh requests
       } else {
         setError(data.message);
       }
     } catch (err) {
       setError('Failed to update request status');
     } finally {
-      setUpdating(false);
+      setRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request._id === requestId ? { ...request, isUpdating: false } : request
+        )
+      );
     }
   };
-
   const handleDeleteRequest = async (requestId: string) => {
     setUpdating(true);
     try {
@@ -494,7 +505,7 @@ export default function RegisterFace() {
                             className="bg-transparent flex gap-2 border text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
-                            <CheckCheck className='text-green-700 h-4' /> Approve
+                            {request.isUpdating ? <Loader /> : <CheckCheck className='text-green-700 h-4' />} Approve
                           </button>
                         </div>
                         <div>
@@ -503,7 +514,7 @@ export default function RegisterFace() {
                             className="border flex gap-2 bg-transparent text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
-                            <Cross1Icon className='text-red-500 h-4' /> Reject
+                            {request.isUpdating ? <Loader /> : <Cross1Icon className='text-red-500 h-4' />} Reject
                           </button>
                         </div>
                       </div>
