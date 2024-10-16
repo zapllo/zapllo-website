@@ -1,12 +1,14 @@
 import LoginEntry from '@/models/loginEntryModel';
 import Leave from '@/models/leaveModel';
-import User from '@/models/userModel';
+import User, { IUser } from '@/models/userModel';
 import Holiday from '@/models/holidayModel';
 import { NextRequest, NextResponse } from 'next/server';
 import { eachDayOfInterval, isWeekend } from 'date-fns';
 import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import { getDataFromToken } from '@/helper/getDataFromToken';
+
+
 
 export async function POST(request: NextRequest) {
     await connectDB();
@@ -41,9 +43,14 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const organizationUsers = await User.find(userFilter).select('_id reportingManager firstName lastName');
+        // Fetch users with reportingManager populated
+        const organizationUsers = await User.find(userFilter)
+            .select('_id reportingManager firstName lastName')
+            .populate('reportingManager', 'firstName lastName');
+
         const organizationUserIds = organizationUsers.map(user => user._id);
 
+        // Fetch login entries
         const loginEntries = await LoginEntry.aggregate([
             {
                 $match: {
@@ -57,27 +64,10 @@ export async function POST(request: NextRequest) {
                     present: { $sum: { $cond: [{ $eq: ['$action', 'login'] }, 1, 0] } },
                     absent: { $sum: { $cond: [{ $eq: ['$action', 'logout'] }, 1, 0] } }
                 }
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'user'
-                }
-            },
-            { $unwind: '$user' },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'user.reportingManager',
-                    foreignField: '_id',
-                    as: 'reportingManager'
-                }
-            },
-            { $unwind: { path: '$reportingManager', preserveNullAndEmptyArrays: true } }
+            }
         ]);
 
+        // Fetch leaves
         const leaves = await Leave.aggregate([
             {
                 $match: {
@@ -94,35 +84,58 @@ export async function POST(request: NextRequest) {
             }
         ]);
 
+        // Create maps for login data and leave data
+        const userLoginData = new Map();
+        loginEntries.forEach(entry => {
+            userLoginData.set(entry._id.toString(), {
+                present: entry.present,
+                absent: entry.absent
+            });
+        });
+
+        const userLeaveData = new Map();
+        leaves.forEach(leave => {
+            userLeaveData.set(leave._id.toString(), leave.leaveCount);
+        });
+
+        // Fetch holidays
         const holidays = await Holiday.find({
             holidayDate: { $gte: parsedStartDate, $lte: parsedEndDate },
             organization: loggedInUser.organization
         });
 
+        // Calculate total days, working days, and week offs
         const allDaysInPeriod = eachDayOfInterval({ start: parsedStartDate, end: parsedEndDate });
         const weekdaysInPeriod = allDaysInPeriod.filter(day => !isWeekend(day));
         const totalDays = weekdaysInPeriod.length;
-
-        const workingDays = loginEntries.length + leaves.length;
         const weekOffs = allDaysInPeriod.filter(isWeekend).length;
 
-        const report = loginEntries.map(entry => {
-            const leave = leaves.find(l => l._id.equals(entry._id));
+        // Construct the report by iterating over all users
+        const report = organizationUsers.map(user => {
+            const userId = user._id.toString();
+            const loginData = userLoginData.get(userId) || { present: 0, absent: 0 };
+            const leaveCount = userLeaveData.get(userId) || 0;
+
+            let reportingManagerName = 'Not Assigned';
+            if (user.reportingManager && typeof user.reportingManager !== 'string') {
+                const rm = user.reportingManager as unknown as IUser;
+                reportingManagerName = `${rm.firstName} ${rm.lastName}`;
+            }
+
             return {
-                user: `${entry.user.firstName} ${entry.user.lastName}`,
-                present: entry.present,
-                absent: entry.absent,
-                leave: leave ? leave.leaveCount : 0,
-                reportingManager: entry.reportingManager
-                    ? `${entry.reportingManager.firstName} ${entry.reportingManager.lastName}`
-                    : 'N/A'
+                user: `${user.firstName} ${user.lastName}`,
+                present: loginData.present,
+                absent: loginData.absent,
+                leave: leaveCount,
+                reportingManager: reportingManagerName
             };
         });
+
 
         return NextResponse.json({
             report,
             totalDays,
-            workingDays,
+            workingDays: totalDays - weekOffs - holidays.length,
             holidays: holidays.map(holiday => holiday.holidayDate),
             weekOffs
         }, { status: 200 });

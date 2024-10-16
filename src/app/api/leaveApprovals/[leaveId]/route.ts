@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Leave from '@/models/leaveModel';
+import Leave, { ILeave } from '@/models/leaveModel';
 import User, { IUser } from '@/models/userModel';
 import mongoose from 'mongoose';
 import { isSameDay, isWeekend } from 'date-fns';
@@ -166,14 +166,17 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         const { leaveId } = params;
         const approvedBy = await getDataFromToken(request);
 
-        // Fetch the leave request and populate the user and leaveType
-        const leave = await Leave.findById(leaveId)
-            .populate<{ user: IUser; leaveType: ILeaveType }>('user leaveType')
+        // Fetch the leave request and populate the user and leaveType and user's leave balances
+        const leave = (await Leave.findById(leaveId)
+            .populate('leaveType')
             .populate({
                 path: 'user',
-                populate: { path: 'reportingManager', model: 'users', select: 'firstName lastName' }
+                populate: [
+                    { path: 'reportingManager', select: 'firstName lastName' },
+                    { path: 'leaveBalances.leaveType' }
+                ]
             })
-            .exec();
+            .exec()) as ILeave & { leaveType: ILeaveType };
 
         if (!leave) {
             console.error('Leave not found for ID:', leaveId);
@@ -182,14 +185,6 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
 
         console.log('Leave found:', leave);
         const user = leave.user as any;
-
-        try {
-            await user.populate('leaveBalances.leaveType');
-            console.log('User leave balances populated:', user.leaveBalances);
-        } catch (populateError) {
-            console.error('Error populating leave balances:', populateError);
-            return NextResponse.json({ success: false, error: 'Error populating leave balances' });
-        }
 
         let approvedFor = 0;
         let approvedDaysCount = 0;
@@ -270,10 +265,31 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         await leave.save();
         console.log('Leave saved after approval.');
 
+        // **Balance Deduction Logic**
+        if (leave.status === 'Approved' || leave.status === 'Partially Approved') {
+            const leaveBalance = user.leaveBalances.find((b: { leaveType: { _id: { equals: (arg0: mongoose.Types.ObjectId) => any; }; }; }) => {
+                // Ensure leaveType is populated
+                if (b.leaveType && leave.leaveType && b.leaveType._id && leave.leaveType._id) {
+                    return b.leaveType._id.equals(leave.leaveType._id);
+                }
+                return false;
+            });
+
+            if (leaveBalance) {
+                leaveBalance.balance -= approvedFor;
+                if (leaveBalance.balance < 0) {
+                    leaveBalance.balance = 0;
+                }
+                await user.save();
+                console.log('User leave balance updated.');
+            } else {
+                console.error('User does not have a leave balance entry for this leave type.');
+            }
+        }
+
         return NextResponse.json({ success: true, approvedFor });
     } catch (error) {
         console.error('Error in leave approval/rejection flow:', error);
         return NextResponse.json({ success: false, error: 'Internal Server Error' });
     }
 }
-

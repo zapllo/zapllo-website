@@ -382,7 +382,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
 
 
 
-                        <div className="">
+                        <div className="p-4 w-1/2 border ml-2 bg-[#121212]">
                             {selectedTask.audioUrl && (
                                 <CustomAudioPlayer audioUrl={selectedTask.audioUrl} />
                             )}

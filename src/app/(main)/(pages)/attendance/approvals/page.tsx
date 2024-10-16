@@ -1048,7 +1048,7 @@ export default function Approvals() {
               fromDate={selectedEntry.fromDate}
               toDate={selectedEntry.toDate}
               leaveReason={selectedEntry.leaveReason}
-              leaveType={selectedEntry.leaveType.leaveType}
+              leaveType={selectedEntry?.leaveType?.leaveType}
               user={selectedEntry.user}
               manager={selectedEntry.user.reportingManager}
               onClose={handleModalClose}

@@ -600,8 +600,6 @@ export default function MyAttendance() {
         }
     };
 
-
-
     const filterDailyReportEntries = (entries: LoginEntry[]) => {
         return entries?.filter((entry) => {
             if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
@@ -859,7 +857,7 @@ export default function MyAttendance() {
                         <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
                     </div>
                 ) : (
-                    <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-full mx-12">
+                    <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-[60%] mx-12">
                         {todayEntries?.map((entry: LoginEntry, index: number) => {
                             const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                             const formattedLogoutTime = entry.logoutTime
@@ -867,7 +865,7 @@ export default function MyAttendance() {
                                 : null;
                             const date = new Date(entry.loginTime);
                             return (
-                                <div key={index} className="flex gap-4 justify-around w-full">
+                                <div key={index} className=" w-full  grid grid-cols-3">
                                     {entry.loginTime && (
                                         <div>
                                             <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
@@ -878,15 +876,15 @@ export default function MyAttendance() {
                                             <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
                                         </div>
                                     )}
-                                    <div className={`px-2 py-1 h-6  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
+                                    <div className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
                                         <h1 className='text-xs'>
                                             {entry.action.toUpperCase()}
                                         </h1>
                                     </div>
                                     {/* Render map icon only if lat and lng are present */}
                                     {entry.lat && entry.lng && (
-                                        <div>
-                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ml-2">
+                                        <div className='flex justify-end '>
+                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ">
                                                 <MapPin />
                                             </button>
                                         </div>
@@ -997,10 +995,12 @@ export default function MyAttendance() {
                                                 {groupedEntries[date].map((entry, index) => (
                                                     <div
                                                         key={index}
-                                                        className="flex justify-between items-center p-2 text-xs  rounded mb-2"
+                                                        className="flex justify-between items-center p-2 text-xs rounded mb-2"
                                                     >
-                                                        <span>   {`Login: ${formatTimeToAMPM(entry.loginTime)} - Logout: ${formatTimeToAMPM(entry.logoutTime)}`}</span>
-                                                        <span className={`text-xs border h-fit w-fit px-2 py-1  rounded-2xl ${entry.action === 'login' ? 'bg-[#017a5b] ' : 'bg-[#8a3d17]'}`}>
+                                                        <span>
+                                                            {`${entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}: ${formatTimeToAMPM(entry.timestamp)}`}
+                                                        </span>
+                                                        <span className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === 'login' ? 'bg-[#017a5b]' : 'bg-[#8a3d17]'}`}>
                                                             {entry.action.toUpperCase()}
                                                         </span>
                                                         {entry.lat && entry.lng && (
