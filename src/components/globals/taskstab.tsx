@@ -1372,12 +1372,15 @@ export default function TasksTab({
                                         Select Date Range
                                       </h3>
                                       <button
-                                        className="cursor-pointer text-white text-lg"
+                                        className="h-7 scale-75"
                                         onClick={() =>
                                           setActiveDateFilter(undefined)
                                         }
                                       >
-                                        &times;
+                                        <img
+                                          src="/icons/cross.png"
+                                          className="h-7 hover:bg-[#121212] rounded-full"
+                                        />
                                       </button>
                                     </div>
 
