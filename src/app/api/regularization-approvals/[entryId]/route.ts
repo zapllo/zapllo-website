@@ -186,7 +186,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
         await regularizationEntry.save();
 
         // Re-fetch the regularization entry and populate the approvedBy field to include firstName
-        await regularizationEntry.populate('approvedBy', 'firstName');
+        await regularizationEntry.populate({
+            path: 'approvedBy',
+            select: 'firstName',
+            model: 'users', // Explicitly specify the model name
+        });
+
         // Send WhatsApp notification based on the action (approve or reject)
         if (user.whatsappNo) {
             const templateName = action === 'approve' ? 'regularizationapproval' : 'regularizationrejection';

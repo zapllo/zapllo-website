@@ -8,9 +8,9 @@ import Category from "@/models/categoryModel";
 
 connectDB();
 
-const sendWebhookNotification = async (taskData: any, taskCreator: any, status: any, userName: any, comment: any, taskCategory: any) => {
+const sendWebhookNotification = async (taskData: any, taskCreator: any, assignedUser: any, status: any, userName: any, comment: any, taskCategory: any) => {
     const payload = {
-        phoneNumber: taskCreator.whatsappNo,
+        phoneNumber: assignedUser.whatsappNo,
         templateName: 'taskupdate',
         bodyVariables: [
             taskCreator.firstName,
@@ -97,9 +97,9 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'category  not found' }, { status: 404 });
         }
         // Send Email to the task creator
-        if (taskCreator.notifications.email) { // Check if email notifications are enabled
+        if (assignedUser.notifications.email) { // Check if email notifications are enabled
             const emailOptions: SendEmailOptions = {
-                to: taskCreator.email,
+                to: assignedUser.email,
                 subject: "Task Status Updates",
                 text: `Task '${task.title}' has been updated.`,
                 html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
@@ -136,7 +136,7 @@ export async function PATCH(request: NextRequest) {
             await sendEmail(emailOptions);
 
         }
-        await sendWebhookNotification(task, taskCreator, status, userName, comment, taskCategory);
+        await sendWebhookNotification(task, taskCreator, assignedUser, status, userName, comment, taskCategory);
         return NextResponse.json({ message: 'Task updated successfully', task }, { status: 200 });
     } catch (error) {
         console.error('Error updating task:', error);

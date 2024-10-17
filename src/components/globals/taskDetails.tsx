@@ -402,6 +402,13 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                         Reopen
                                     </Button>
                                     <Button
+                                        onClick={handleEditClick}
+                                        className="border bg-transparent hover:shadow-sm hover:shadow-blue-500 hover:bg-transparent border-gray-600 w-fit"
+                                    >
+                                        <Edit className="h-4 rounded-full text-blue-400" />
+                                        Edit
+                                    </Button>
+                                    <Button
                                         onClick={() => handleDeleteClick(selectedTask._id)}
                                         className="border bg-transparent hover:shadow-sm hover:shadow-red-500 hover:bg-transparent border-gray-600 w-fit "
                                     >
