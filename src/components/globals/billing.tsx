@@ -7,6 +7,8 @@ import { Dialog, DialogOverlay, DialogContent, DialogClose } from "@/components/
 import BillingSidebar from '../sidebar/billingSidebar';
 import { Clock, Users2, Wallet } from "lucide-react";
 import axios from 'axios';
+import { toast, Toaster } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
 
@@ -25,6 +27,8 @@ export default function Billing() {
     const [rechargeGstNumber, setRechargeGstNumber] = useState('');
     const [subscribedUserCount, setSubscribedUserCount] = useState<number>(0); // State for subscribed user count
     const [renewsOn, setRenewsOn] = useState<any>();
+    const router = useRouter();
+
 
 
     useEffect(() => {
@@ -155,16 +159,17 @@ export default function Billing() {
                             gstNumber: gstNumber,
                         });
                         if (verificationResult.success) {
-                            alert('Payment successful!');
+                            toast.success('Payment successful!');
                             setIsDialogOpen(false);
                             setModalStep(1);
                             setGstNumber('');
                         } else {
-                            alert('Payment verification failed. Please contact support.');
+                            // Payment verification failed
+                            router.push('/payment-failed'); // Redirect to payment failed page
                         }
                     } catch (error) {
                         console.error('Error verifying payment: ', error);
-                        alert('Error verifying payment. Please try again.');
+                        router.push('/payment-failed'); // Redirect to payment failed page
                     }
                 },
                 prefill: {
@@ -183,7 +188,7 @@ export default function Billing() {
             rzp1.open();
         } catch (error) {
             console.error('Error creating order: ', error);
-            alert('Error creating order. Please try again.');
+            toast.error('Error creating order. Please try again.');
         }
     };
 
@@ -231,16 +236,16 @@ export default function Billing() {
                                 gstNumber: rechargeGstNumber,
                             });
                             if (verificationResult.success) {
-                                alert('Recharge successful!');
+                                toast.success('Recharge successful!');
                                 setIsRechargeDialogOpen(false);
                                 setRechargeModalStep(1);
                                 setRechargeGstNumber('');
                             } else {
-                                alert('Payment verification failed. Please contact support.');
+                                router.push('/payment-failed'); // Redirect to payment failed page
                             }
                         } catch (error) {
                             console.error('Error verifying payment: ', error);
-                            alert('Error verifying payment. Please try again.');
+                            router.push('/payment-failed'); // Redirect to payment failed page
                         }
                     },
                     prefill: {
@@ -259,15 +264,16 @@ export default function Billing() {
                 rzp1.open();
             } catch (error) {
                 console.error('Error creating order: ', error);
-                alert('Error creating order. Please try again.');
+                router.push('/payment-failed'); // Redirect to payment failed page
             }
         } else {
-            alert('Recharge amount must be at least ₹5000.');
+            toast.error('Recharge amount must be at least ₹5000.');
         }
     };
 
     return (
         <div className="flex w-full ">
+            <Toaster />
             <BillingSidebar />
             {currentUser?.role === "orgAdmin" ? (
                 <div className="flex-1 overflow-y-scroll h-screen  p-4">

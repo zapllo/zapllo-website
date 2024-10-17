@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, ChangeEvent, MouseEvent, useRef, Dispatch, SetStateAction } from 'react';
 import axios from 'axios';
-import { Calendar, Clock, Link, MailIcon, Paperclip, Plus, Tag, User } from 'lucide-react';
+import { Calendar, Clock, Link, MailIcon, Paperclip, Plus, Repeat, Tag, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { FaUpload } from 'react-icons/fa';
@@ -15,6 +15,7 @@ import CustomDatePicker from './date-picker';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { CaretDownIcon } from '@radix-ui/react-icons';
 import { toast } from 'sonner';
+import Loader from '../ui/loader';
 
 
 interface Reminder {
@@ -123,6 +124,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     const [links, setLinks] = useState<string[]>(['']);
     const [files, setFiles] = useState<File[]>([]) // Updated to handle array of files
     const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
     const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
     const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
@@ -140,6 +142,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     const [newCategory, setNewCategory] = useState('');
     const [searchCategoryQuery, setSearchCategoryQuery] = useState<string>(''); // State for search query
     const [isMonthlyDaysModalOpen, setIsMonthlyDaysModalOpen] = useState(false);
+    const [linkInputs, setLinkInputs] = useState<string[]>([]);
 
 
 
@@ -163,6 +166,13 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     const handleCloseCategoryPopup = () => {
         setCategoryOpen(false);
     }
+
+    useEffect(() => {
+        if (isLinkModalOpen) {
+            setLinkInputs([...formData.links]); // Clone the current links into linkInputs
+        }
+    }, [isLinkModalOpen]);
+
 
 
     const handleUpdateDateTime = () => {
@@ -247,6 +257,40 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         }
     };
 
+
+    // Helper function to format the date
+    function formatDate(date: any) {
+        if (!(date instanceof Date)) return '';
+
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        const month = monthNames[date.getMonth()];
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        // Function to get the ordinal suffix for the day
+        function getOrdinalSuffix(n: any) {
+            const s = ['th', 'st', 'nd', 'rd'],
+                v = n % 100;
+            return s[(v - 20) % 10] || s[v] || s[0];
+        }
+
+        const dayWithSuffix = day + getOrdinalSuffix(day);
+
+        // Format time to always have two digits
+        const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes
+            .toString()
+            .padStart(2, '0')}`;
+
+        return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
+    }
+
+
     const handleDaysChange = (day: string, pressed: boolean) => {
         setFormData(prevFormData => {
             const updatedDays = pressed
@@ -292,10 +336,12 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
         console.log(formData, 'form data'); // Check that formData contains updated 'days' and 'dates'
 
         try {
+            setLoading(true);
             const response = await axios.patch('/api/tasks/edit', { id: task?._id, ...formData });
 
             if (response.status === 200) { // Ensure success response
                 onTaskUpdate(response.data.data);
+                setLoading(false);
                 onClose(); // Close the dialog on success
             } else {
                 console.error('Unexpected response status:', response.status);
@@ -379,6 +425,31 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
     //     setIsMonthlyDaysModalOpen(false);
     // };
 
+    const handleLinkInputChange = (index: number, value: string) => {
+        const updatedLinks = [...linkInputs];
+        updatedLinks[index] = value;
+        setLinkInputs(updatedLinks);
+    };
+
+
+    const removeLinkInputField = (index: number) => {
+        const updatedLinks = linkInputs.filter((_, i) => i !== index);
+        setLinkInputs(updatedLinks);
+    };
+
+    const addLinkInputField = () => {
+        setLinkInputs([...linkInputs, '']);
+    };
+
+    const handleSaveLinks = () => {
+        setFormData(prevState => ({
+            ...prevState,
+            links: linkInputs,
+        }));
+        setIsLinkModalOpen(false);
+    };
+
+    const nonEmptyLinksCount = formData.links.filter(link => link.trim() !== '').length;
 
 
     console.log(formData, 'formdata')
@@ -386,10 +457,12 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
     return (
         <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#1A1C20] border max-h-screen h-[500px] overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-1/2 shadow-lg">
-                <div className='flex w-full justify-between'>
-                    <h2 className="text-lg font-medium mb-4">Edit Task</h2>
-                    <h1 className='cursor-pointer  text-lg' onClick={onClose}>X</h1>
+            <div className="bg-[#1A1C20] border max-h-screen h-[450px] overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
+                <div className='flex w-full justify-between mb-4'>
+                    <h2 className="text-lg font-medium ">Edit Task</h2>
+                    <button className='cursor-pointer  text-lg' onClick={onClose}>
+                        <img src='/icons/cross.png' className='rounded-full h-6  hover:bg-[#121212]' />
+                    </button>
                 </div>
 
                 <input
@@ -404,7 +477,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full bg-transparent outline-none p-2 border rounded mt-2"
+                    className="w-full bg-transparent outline-none p-2 h-12  border rounded mt-2"
                     rows={4}
                 />
 
@@ -465,7 +538,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                     </div>
 
 
-                    <div className='p-2  mt-1 rounded-lg flex gap-2 ml-auto'>
+                    <div className='   rounded-lg flex gap-2 ml-auto'>
 
                         {/* <label className="block mb-2 ">
                             <select
@@ -500,8 +573,8 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                 </div>
                 <div className='w-full flex justify-between'>
                     <div className="block mb-2">
-                        <div className="flex gap-2 border px-4 py-4  w-full rounded mt-1">
-                            <h1 className='text-xs ' >Priority:</h1>
+                        <div className="flex gap-2 border px-4 py-5 w-full rounded ">
+                            <h1 className='text-xs font-bold' >Priority:</h1>
 
                             <div className=''>
                                 {['High', 'Medium', 'Low'].map((level) => (
@@ -527,7 +600,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         </div>
                     </div>
 
-                    <label className="flex mt-2 items-center mb-4">
+                    <div className="flex gap-2 ml-40 items-center ">
+                        <Repeat className='h-4' />
+                        <Label htmlFor="repeat" className="font-semibold text-xs ">Repeat</Label>
                         <input
                             type="checkbox"
                             name="repeat"
@@ -535,65 +610,70 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                             onChange={handleChange}
                             className="mr-2"
                         />
-                        Repeat
-                    </label>
+                    </div>
                 </div>
-                {formData.repeat && (
-                    <div className="flex w-full justify-end">
-                        <label className="block mb-2">
-                            Repeat Type:
-                            <select
-                                name="repeatType"
-                                value={formData.repeatType}
-                                onChange={handleChange}
-                                className="w-full p-2 border outline-none rounded mt-1"
-                            >
-                                <option value="Daily">Daily</option>
-                                <option value="Weekly">Weekly</option>
-                                <option value="Monthly">Monthly</option>
-                            </select>
-                        </label>
-                    </div>
-                )}
-
-
-                {formData.repeatType === 'Weekly' && formData.repeat && (
-                    <div className="mb-4">
-                        <Label className="block font-medium mb-2">Select Days</Label>
-                        <div className="grid grid-cols-7 p-2 rounded">
-                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                                <div key={day} className="flex gap-2 cursor-pointer items-center">
-                                    <Toggle
-                                        variant="outline"
-                                        aria-label={`${day}`}
-                                        pressed={formData.days.includes(day)} // Set pressed state based on inclusion in formData.days
-                                        onPressedChange={(pressed) => handleDaysChange(day, pressed)} // Update handler to pass the pressed state
-                                        className={formData.days.includes(day) ? "text-white cursor-pointer" : "text-black cursor-pointer"}
-                                    >
-                                        <Label htmlFor={day} className="font-semibold cursor-pointer">{day.slice(0, 1)}</Label>
-                                    </Toggle>
-                                </div>
-                            ))}
+                {
+                    formData.repeat && (
+                        <div className="flex w-full relative justify-end">
+                            <label className="block absolute mb-2">
+                                Repeat Type:
+                                <select
+                                    name="repeatType"
+                                    value={formData.repeatType}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border outline-none rounded mt-1"
+                                >
+                                    <option value="Daily">Daily</option>
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Monthly">Monthly</option>
+                                </select>
+                            </label>
                         </div>
-                    </div>
-                )}
+                    )
+                }
 
 
-                {formData.repeatType === 'Monthly' && formData.repeat && (
-                    <div>
-                        {isMonthlyDaysModalOpen && (
-                            <DaysSelectModal
-                                isOpen={isMonthlyDaysModalOpen}
-                                onOpenChange={setIsMonthlyDaysModalOpen}
-                                selectedDays={formData.dates}
-                                setSelectedDays={(update) => setFormData(prev => ({
-                                    ...prev,
-                                    dates: typeof update === 'function' ? update(prev.dates) : update  // Handles both function and direct state
-                                }))}
-                            />
-                        )}
-                    </div>
-                )}
+                {
+                    formData.repeatType === 'Weekly' && formData.repeat && (
+                        <div className="mb-4 ml-2 mt-12">
+                            <Label className="block font-medium mb-2">Select Days</Label>
+                            <div className="grid grid-cols-7 p-2 rounded">
+                                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                                    <div key={day} className="flex gap-2 cursor-pointer items-center">
+                                        <Toggle
+                                            variant="outline"
+                                            aria-label={`${day}`}
+                                            pressed={formData.days.includes(day)} // Set pressed state based on inclusion in formData.days
+                                            onPressedChange={(pressed) => handleDaysChange(day, pressed)} // Update handler to pass the pressed state
+                                            className={formData.days.includes(day) ? "text-white cursor-pointer" : "text-black cursor-pointer"}
+                                        >
+                                            <Label htmlFor={day} className="font-semibold cursor-pointer">{day.slice(0, 1)}</Label>
+                                        </Toggle>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                }
+
+
+                {
+                    formData.repeatType === 'Monthly' && formData.repeat && (
+                        <div>
+                            {isMonthlyDaysModalOpen && (
+                                <DaysSelectModal
+                                    isOpen={isMonthlyDaysModalOpen}
+                                    onOpenChange={setIsMonthlyDaysModalOpen}
+                                    selectedDays={formData.dates}
+                                    setSelectedDays={(update) => setFormData(prev => ({
+                                        ...prev,
+                                        dates: typeof update === 'function' ? update(prev.dates) : update  // Handles both function and direct state
+                                    }))}
+                                />
+                            )}
+                        </div>
+                    )
+                }
                 <div className='flex gap-2 '>
                     <label className="block mb-2">
                         <Button
@@ -602,12 +682,12 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                             className=" border-2 text-xs rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
                         >
                             <Calendar className='h-5 text-sm' />
-                            {formData.dueDate.toLocaleDateString()
-                                ? `${formData.dueDate.toLocaleString()} `
-                                : <h1 className='text-xs'>
-                                    Select Date & Time
-                                </h1>
-                            }
+                            {formData.dueDate ? (
+                                <span>{formatDate(formData.dueDate)}</span>
+                            ) : (
+                                <h1 className="text-xs">Select Date & Time</h1>
+                            )}
+
                         </Button>
                         {/* <input
                             type="date"
@@ -618,80 +698,85 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         /> */}
                     </label>
                 </div>
-                {isDateTimeModalOpen && (
-                    <Dialog open={isDateTimeModalOpen} onOpenChange={() => setIsDateTimeModalOpen(false)}>
-                        <DialogContent className='scale-75'>
+                {
+                    isDateTimeModalOpen && (
+                        <Dialog open={isDateTimeModalOpen} onOpenChange={() => setIsDateTimeModalOpen(false)}>
+                            <DialogContent className='scale-75'>
 
 
-                            <DialogDescription>
-                                <div className="flex flex-col w-full  ">
-                                    <AnimatePresence>
-                                        {isDatePickerVisible ? (
-                                            <motion.div
-                                                key="date-picker"
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                className=''
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.9 }}
-                                                transition={{ duration: 0.3, ease: 'linear' }}
-                                            >
+                                <DialogDescription>
+                                    <div className="flex flex-col w-full  ">
+                                        <AnimatePresence>
+                                            {isDatePickerVisible ? (
+                                                <motion.div
+                                                    key="date-picker"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    className=''
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.9 }}
+                                                    transition={{ duration: 0.3, ease: 'linear' }}
+                                                >
 
-                                                <CustomDatePicker
-                                                    selectedDate={formData.dueDate ?? new Date()}
-                                                    onDateChange={(date: Date) => {
-                                                        setDueDate(date);
-                                                        setIsDatePickerVisible(false);
-                                                    }}
-                                                    onCloseDialog={() => setIsDateTimeModalOpen(false)}  // Add this line to fix the error
-                                                />
-                                            </motion.div>
-                                        ) : (
-                                            <motion.div
-                                                key="time-picker"
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.9 }}
-                                                transition={{ duration: 0.3, ease: 'linear' }}
-                                            >
-                                                <CustomTimePicker
-                                                    onCancel={() => setIsDateTimeModalOpen(false)}
-                                                    onAccept={() => setIsDateTimeModalOpen(false)}
-                                                    onBackToDatePicker={() => setIsDatePickerVisible(true)}
-                                                    selectedTime={dueTime}
-                                                    onTimeChange={setDueTime}
-                                                />
-                                                <div className='flex gap-2'>
-                                                    <Button
-                                                        type="button"
-                                                        onClick={() => setIsDatePickerVisible(true)}
-                                                        className="bg-gray-600 hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
-                                                    >
-                                                        Back to Date Picker
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        onClick={handleUpdateDateTime}
-                                                        className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
-                                                    >
-                                                        Update Time & Date
-                                                    </Button>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            </DialogDescription>
-                        </DialogContent>
-                    </Dialog>
-                )}
+                                                    <CustomDatePicker
+                                                        selectedDate={formData.dueDate ?? new Date()}
+                                                        onDateChange={(date: Date) => {
+                                                            setDueDate(date);
+                                                            setIsDatePickerVisible(false);
+                                                        }}
+                                                        onCloseDialog={() => setIsDateTimeModalOpen(false)}  // Add this line to fix the error
+                                                    />
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="time-picker"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.9 }}
+                                                    transition={{ duration: 0.3, ease: 'linear' }}
+                                                >
+                                                    <CustomTimePicker
+                                                        onCancel={() => setIsDateTimeModalOpen(false)}
+                                                        onAccept={() => setIsDateTimeModalOpen(false)}
+                                                        onBackToDatePicker={() => setIsDatePickerVisible(true)}
+                                                        selectedTime={dueTime}
+                                                        onTimeChange={setDueTime}
+                                                    />
+                                                    <div className='flex gap-2'>
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => setIsDatePickerVisible(true)}
+                                                            className="bg-gray-600 hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
+                                                        >
+                                                            Back to Date Picker
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            onClick={handleUpdateDateTime}
+                                                            className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
+                                                        >
+                                                            Update Time & Date
+                                                        </Button>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </DialogDescription>
+                            </DialogContent>
+                        </Dialog>
+                    )
+                }
                 <div className='flex    gap-4'>
-                    <div className='flex mt-4  gap-2'>
-                        <div onClick={() => { setIsLinkModalOpen(true) }} className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${formData.links.length > 0 ? 'border-[#017A5B]' : ''
-                            }`} >
+                    <div className='flex mt-4 gap-2'>
+                        <div
+                            onClick={() => { setIsLinkModalOpen(true) }}
+                            className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${nonEmptyLinksCount > 0 ? 'border-[#017A5B]' : ''
+                                }`}
+                        >
                             <Link className='h-5 text-center m-auto mt-1' />
                         </div>
-                        {links.map(link => link).length > 0 && (
-                            <span className="text-xs mt-2 text">{links.length} Links</span> // Display the count of non-empty links
+                        {nonEmptyLinksCount > 0 && (
+                            <span className="text-xs mt-2">{nonEmptyLinksCount} Links</span>
                         )}
                     </div>
 
@@ -740,27 +825,35 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                                     <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 hover:bg-red-500 text-white rounded">Remove</Button>
                                 </div>
                             ))} */}
-                            {formData.links.map((link, index) => (
+                            {linkInputs.map((link, index) => (
                                 <div key={index} className="flex items-center mb-2">
                                     <input
                                         type="text"
                                         value={link}
-                                        onChange={(e) => handleLinkChange(index, e.target.value)}
-                                        className="w-full p-2 borde outline-none rounded mr-2"
+                                        onChange={(e) => handleLinkInputChange(index, e.target.value)}
+                                        className="w-full p-2 border outline-none rounded mr-2"
                                     />
                                     <button
-                                        onClick={() => removeLink(index)}
+                                        onClick={() => removeLinkInputField(index)}
                                         className="bg-red-500 text-white p-2 rounded"
                                     >
                                         Remove
                                     </button>
                                 </div>
                             ))}
+
                             <div className='w-full flex justify-between mt-6'>
-                                <Button type="button" onClick={addLink} className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded">Add Link
+                                <Button type="button" onClick={addLinkInputField} className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded">Add Link
                                     <Plus />
                                 </Button>
-                                <Button type="button" onClick={() => setIsLinkModalOpen(false)} className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded">Save Links</Button>
+                                <Button
+                                    type="button"
+                                    onClick={handleSaveLinks}
+                                    className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded"
+                                >
+                                    Save Links
+                                </Button>
+
                             </div>
 
                         </div>
@@ -920,11 +1013,11 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         onClick={handleSubmit}
                         className="bg-[#017A5B]  w-full text-white p-2 rounded"
                     >
-                        Update Task
+                        {loading ? <Loader />:"Update Task"}
                     </button>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

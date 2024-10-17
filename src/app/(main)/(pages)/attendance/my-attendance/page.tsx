@@ -7,12 +7,25 @@ import Webcam from 'react-webcam';
 import { BookIcon, Calendar, CalendarClock, Camera, CheckCircle, Clock, MapPin, MapPinIcon, Users2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 // const Webcam = dynamic(() => import('react-webcam'), { ssr: false });
-// Dynamically import Leaflet related components with `ssr: false`
-const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+// Dynamically import Leaflet components with SSR disabled
+const MapContainer = dynamic(
+    () => import('react-leaflet').then((mod) => mod.MapContainer),
+    { ssr: false }
+);
+const TileLayer = dynamic(
+    () => import('react-leaflet').then((mod) => mod.TileLayer),
+    { ssr: false }
+);
+const Marker = dynamic(
+    () => import('react-leaflet').then((mod) => mod.Marker),
+    { ssr: false }
+);
+
+// Remove the top-level import of Leaflet
+// import L from 'leaflet';
+
+// Import Leaflet CSS (this is okay because CSS imports don't execute JS code)
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import { toast, Toaster } from 'sonner';
 import RegularizationDetails from '@/components/sheets/regularizationDetails';
 import CustomDatePicker from '@/components/globals/date-picker';
@@ -96,17 +109,23 @@ export default function MyAttendance() {
     const [isStartPickerOpen, setIsStartPickerOpen] = useState(false); // For triggering the start date picker
     const [isEndPickerOpen, setIsEndPickerOpen] = useState(false); // For triggering the end date picker
 
-    // useEffect(() => {
-    //     if (typeof window !== 'undefined') {
-    //         // Dynamically set Leaflet icon options only after the window object is available
-    //         delete (L.Icon.Default.prototype as any)._getIconUrl;
-    //         L.Icon.Default.mergeOptions({
-    //             iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-    //             iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    //             shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-    //         });
-    //     }
-    // }, [])
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            // Dynamically import Leaflet inside useEffect
+            import('leaflet').then((L) => {
+                // Dynamically set Leaflet icon options only after the window object is available
+                delete (L.Icon.Default.prototype as any)._getIconUrl;
+                L.Icon.Default.mergeOptions({
+                    iconRetinaUrl:
+                        'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+                    iconUrl:
+                        'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+                    shadowUrl:
+                        'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+                });
+            });
+        }
+    }, []);
 
 
     useEffect(() => {
@@ -600,8 +619,6 @@ export default function MyAttendance() {
         }
     };
 
-
-
     const filterDailyReportEntries = (entries: LoginEntry[]) => {
         return entries?.filter((entry) => {
             if (entry.action === 'regularization' && entry.approvalStatus !== 'Approved') {
@@ -859,7 +876,7 @@ export default function MyAttendance() {
                         <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
                     </div>
                 ) : (
-                    <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-full mx-12">
+                    <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-[60%] mx-12">
                         {todayEntries?.map((entry: LoginEntry, index: number) => {
                             const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                             const formattedLogoutTime = entry.logoutTime
@@ -867,7 +884,7 @@ export default function MyAttendance() {
                                 : null;
                             const date = new Date(entry.loginTime);
                             return (
-                                <div key={index} className="flex gap-4 justify-around w-full">
+                                <div key={index} className=" w-full  grid grid-cols-3">
                                     {entry.loginTime && (
                                         <div>
                                             <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
@@ -878,15 +895,15 @@ export default function MyAttendance() {
                                             <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
                                         </div>
                                     )}
-                                    <div className={`px-2 py-1 h-6  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
+                                    <div className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
                                         <h1 className='text-xs'>
                                             {entry.action.toUpperCase()}
                                         </h1>
                                     </div>
                                     {/* Render map icon only if lat and lng are present */}
                                     {entry.lat && entry.lng && (
-                                        <div>
-                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ml-2">
+                                        <div className='flex justify-end '>
+                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ">
                                                 <MapPin />
                                             </button>
                                         </div>
@@ -997,10 +1014,12 @@ export default function MyAttendance() {
                                                 {groupedEntries[date].map((entry, index) => (
                                                     <div
                                                         key={index}
-                                                        className="flex justify-between items-center p-2 text-xs  rounded mb-2"
+                                                        className="flex justify-between items-center p-2 text-xs rounded mb-2"
                                                     >
-                                                        <span>   {`Login: ${formatTimeToAMPM(entry.loginTime)} - Logout: ${formatTimeToAMPM(entry.logoutTime)}`}</span>
-                                                        <span className={`text-xs border h-fit w-fit px-2 py-1  rounded-2xl ${entry.action === 'login' ? 'bg-[#017a5b] ' : 'bg-[#8a3d17]'}`}>
+                                                        <span>
+                                                            {`${entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}: ${formatTimeToAMPM(entry.timestamp)}`}
+                                                        </span>
+                                                        <span className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === 'login' ? 'bg-[#017a5b]' : 'bg-[#8a3d17]'}`}>
                                                             {entry.action.toUpperCase()}
                                                         </span>
                                                         {entry.lat && entry.lng && (

@@ -1,34 +1,56 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
-import { RocketIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const PaymentSuccess = () => {
-    const router = useRouter();
+  const router = useRouter();
 
-    const handleBackToTasks = () => {
-        router.push('/dashboard/tasks');
-    };
+  const handleBackToTasks = () => {
+    router.push('/dashboard');
+  };
 
-    return (
-        <div className="px-24 py-8 bg-[#201024]  " >
-            <div className='  rounded-xl rounded-b-none py-2  text-center bg-[#007A5A] '>
-                <div className='flex gap-4 w-full justify-center'>
-                    <RocketIcon className='h-10 scale-150' /> <h1 className='font-bold text-3xl'>Congratulations, Your Subscription is Active!  </h1>
-                </div>
-
-                <div className='flex justify-center bg-[#201024] h-screen w-full '>
-                    <Card className='w-fit h-fit bg-transparent p-12 mt-24 '>
-                        <CardTitle className='text-xl font-bold'>Payment Successful!</CardTitle>
-                        <p className='p-4'>Your payment has been successfully processed and your credits have been updated.</p>
-                        <Button className='bg-[#007A5A] hover:bg-[#007A5A] mt-4' onClick={handleBackToTasks}>Back to Dashboard</Button>
-                    </Card>
-                </div>
-            </div>
+  return (
+    <div className="flex items-center justify-center h-screen  bg-[#201024]">
+      <div className="text-center ">
+        <div className="flex flex-col items-center mb-8">
+        <Image
+            src="/logo.png" // Ensure this path points to your illustration
+            alt="Payment Success"
+            width={200}
+            height={200}
+            className="mb-4"
+          />
+          <Image
+            src="/animations/money.gif" // Ensure this path points to your illustration
+            alt="Payment Success"
+            width={200}
+            height={200}
+            className="mb-4"
+          />
+          <h1 className="text-3xl font-bold text-white/80">
+            Congratulations, Your Subscription is Active!
+          </h1>
         </div>
-    );
+        <Card className="bg-[#2A2A2A] p-8 rounded-lg shadow-lg">
+          <CardTitle className="text-2xl font-bold text-white">
+            Payment Successful!
+          </CardTitle>
+          <p className="text-gray-300 mt-4">
+            Your payment has been successfully processed and your credits have been updated.
+          </p>
+          <Button
+            className="mt-6 bg-[#007A5A] hover:bg-[#006148] text-white transition-colors duration-200 px-6 py-3 text-lg rounded-md"
+            onClick={handleBackToTasks}
+          >
+            Back to Dashboard
+          </Button>
+        </Card>
+      </div>
+    </div>
+  );
 };
 
 export default PaymentSuccess;

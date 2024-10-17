@@ -115,6 +115,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false); // For Date picker modal
     const [isTimePickerOpen, setIsTimePickerOpen] = useState(false); // For Time picker modal
+    const [linkInputs, setLinkInputs] = useState<string[]>([]);
 
 
     // States for reminder settings
@@ -145,6 +146,32 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     useEffect(() => {
         controls.start('visible');
     }, [controls]);
+
+    useEffect(() => {
+        if (isLinkModalOpen) {
+            setLinkInputs([...links]); // Clone the current links into linkInputs
+        }
+    }, [isLinkModalOpen]);
+
+    const handleLinkInputChange = (index: number, value: string) => {
+        const updatedLinkInputs = [...linkInputs];
+        updatedLinkInputs[index] = value;
+        setLinkInputs(updatedLinkInputs);
+    };
+
+
+    const removeLinkInputField = (index: number) => {
+        const updatedLinkInputs = [...linkInputs];
+        updatedLinkInputs.splice(index, 1);
+        setLinkInputs(updatedLinkInputs);
+    };
+
+
+    const handleSaveLinks = () => {
+        setLinks([...linkInputs]); // Update the main links state
+        setIsLinkModalOpen(false); // Close the modal
+    };
+
 
 
     useEffect(() => {
@@ -324,8 +351,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
     // Function to add a link field
     const addLinkField = () => {
-        setLinks([...links, '']);
+        setLinkInputs([...linkInputs, '']);
     };
+
 
     // Function to remove a link field
     const removeLinkField = (index: number) => {
@@ -521,6 +549,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setEmailReminderValue(0);
         setWhatsappReminderType('minutes');
         setWhatsappReminderValue(0);
+        setAudioBlob(null);
+        setAudioURL("");
         setReminderDate(null);
     };
 
@@ -934,17 +964,40 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                             </DialogDescription>
                             <div className="mb-4">
                                 <Label className="block font-semibold mb-2">Links</Label>
-                                {links.map((link, index) => (
+                                {linkInputs.map((link, index) => (
                                     <div key={index} className="flex gap-2 items-center mb-2">
-                                        <input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full outline-none border-[#505356]  bg-transparent border rounded px-3 py-2 mr-2" />
-                                        <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 hover:bg-red-500 text-white rounded">Remove</Button>
+                                        <input
+                                            type="text"
+                                            value={link}
+                                            onChange={(e) => handleLinkInputChange(index, e.target.value)}
+                                            className="w-full outline-none border-[#505356] bg-transparent border rounded px-3 py-2 mr-2"
+                                        />
+                                        <Button
+                                            type="button"
+                                            onClick={() => removeLinkInputField(index)}
+                                            className="bg-red-500 hover:bg-red-500 text-white rounded"
+                                        >
+                                            Remove
+                                        </Button>
                                     </div>
                                 ))}
+
                                 <div className='w-full flex justify-between mt-6'>
-                                    <Button type="button" onClick={addLinkField} className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded">Add Link
+                                    <Button
+                                        type="button"
+                                        onClick={addLinkField}
+                                        className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded"
+                                    >
+                                        Add Link
                                         <Plus />
                                     </Button>
-                                    <Button type="button" onClick={() => setIsLinkModalOpen(false)} className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded">Save Links</Button>
+                                    <Button
+                                        type="button"
+                                        onClick={handleSaveLinks}
+                                        className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded"
+                                    >
+                                        Save Links
+                                    </Button>
                                 </div>
 
                             </div>

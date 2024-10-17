@@ -1,7 +1,7 @@
 'use client';
 
 import CustomDatePicker from '@/components/globals/date-picker';
-import { startOfWeek, endOfWeek, subWeeks, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { startOfWeek, endOfWeek, subWeeks, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend, endOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/ui/dialog';
 import axios from 'axios';
@@ -56,6 +56,7 @@ interface AttendanceEntry {
   leave: number;
   absent: number;
   total: number;
+  holiday: number;
 }
 
 interface LeaveEntry {
@@ -142,7 +143,7 @@ const AttendanceDashboard: React.FC = () => {
   const [dailypresentCount, setDailyPresentCount] = useState<number>(0);
   const [dailyonLeaveCount, setDailyOnLeaveCount] = useState<number>(0);
   const [dailyabsentCount, setDailyAbsentCount] = useState<number>(0);
-
+  const [monthlyReport, setMonthlyReport] = useState<AttendanceEntry[]>([]);
 
 
 
@@ -230,51 +231,85 @@ const AttendanceDashboard: React.FC = () => {
   }, [managerId, period, employeeId]);
 
   // Fetch attendance, leave, and holiday data for the entire organization
+  // Fetch attendance, leave, and holiday data for the entire organization
   useEffect(() => {
     async function fetchAttendanceData() {
-      setAttendanceLoading(true)
+      setAttendanceLoading(true);
       try {
         const response = await fetch(`/api/attendance?date=${selectedAttendanceDate}`);
         const data = await response.json();
 
-        // Update the attendance, leave, and holiday states
-        setAttendance(data.monthlyAttendance);
+        // Update leaves and holidays
         setLeaves(data.leaves);
         setHolidays(data.holidays);
 
-        // Calculate total working days (excluding weekends)
-        const weekdaysInMonth = generateWeekdaysInMonth(
-          parseInt(selectedAttendanceDate.split('-')[0]),
-          parseInt(selectedAttendanceDate.split('-')[1]) - 1
-        );
+        // Parse the selected month and year
+        const [selectedYearStr, selectedMonthStr] = selectedAttendanceDate.split('-');
+        const selectedYear = parseInt(selectedYearStr, 10);
+        const selectedMonth = parseInt(selectedMonthStr, 10) - 1; // JavaScript months are 0-based
+
+        // Get today's date
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to midnight
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+
+        // Determine startDate and endDate
+        // Determine startDate and endDate
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        let endDate: Date;
+
+        if (selectedYear === currentYear && selectedMonth === currentMonth) {
+          // Selected month is current month, so end date is end of today
+          endDate = endOfDay(today); // Set to 23:59:59 of today
+        } else {
+          // Selected month is not current month, so end date is end of selected month
+          const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0); // Last day of the selected month
+          endDate = endOfDay(lastDayOfMonth); // Set to 23:59:59 of the last day
+        }
+
+
+        // Generate all days from startDate to endDate
+        const allDaysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
+
+        // Exclude weekends if necessary
+        const weekdaysInMonth = allDaysInMonth.filter((day: any) => !isWeekend(day));
+
+        // Set totalDays
         setTotalDays(weekdaysInMonth.length);
-        setAttendanceLoading(false)
-        let present = 0;
-        let leave = 0;
-        let absent = 0;
 
-        weekdaysInMonth.forEach((day) => {
-          const dayString = day.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-
-          const isPresent = data.monthlyAttendance.some((entry: AttendanceEntry) => entry.date === dayString && entry.present);
-          const isLeave = data.leaves.some((leave: LeaveEntry) => leave.fromDate <= dayString && leave.toDate >= dayString);
-          const isHoliday = data.holidays.some((holiday: HolidayEntry) => holiday.holidayDate === dayString);
-
-          if (isPresent) {
-            present++;
-          } else if (isLeave) {
-            leave++;
-          } else if (isHoliday) {
-            // Exclude holidays from working days
-            absent++;
-          }
+        // Filter monthlyReport to include only dates up to endDate
+        const filteredMonthlyReport = data.monthlyReport.filter((day: AttendanceEntry) => {
+          const dayDate = new Date(day.date);
+          return dayDate >= startDate && dayDate <= endDate;
         });
 
-        setPresentCount(present);
-        setLeaveCount(leave);
-        setAbsentCount(absent);
-        setWorkingDays(weekdaysInMonth.length - data.holidays.length); // Total working days excluding weekends and holidays
-        setHolidayCount(data.holidays.length); // Count the number of holidays
+        // Update state with the filtered report
+        setMonthlyReport(filteredMonthlyReport);
+
+        setAttendanceLoading(false);
+
+        // Calculate summary counts using filteredMonthlyReport
+        let totalPresent = 0;
+        let totalLeave = 0;
+        let totalAbsent = 0;
+        let totalHoliday = 0;
+
+        filteredMonthlyReport.forEach((day: any) => {
+          totalPresent += day.present;
+          totalLeave += day.leave;
+          totalAbsent += day.absent;
+          totalHoliday += day.holiday;
+        });
+
+        setPresentCount(totalPresent);
+        setLeaveCount(totalLeave);
+        setAbsentCount(totalAbsent);
+        setHolidayCount(totalHoliday);
+
+        // Update workingDays accordingly
+        setWorkingDays(weekdaysInMonth.length - totalHoliday);
+
       } catch (error) {
         console.error('Error fetching attendance data:', error);
       }
@@ -282,7 +317,6 @@ const AttendanceDashboard: React.FC = () => {
 
     fetchAttendanceData();
   }, [selectedAttendanceDate]);
-
 
   // Function to fetch the daily report from the server
   const fetchDailyReport = async (date: string) => {
@@ -364,8 +398,8 @@ const AttendanceDashboard: React.FC = () => {
             ))}
           </select>
           {/* <button onClick={fetchCumulativeReport} className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg">
-              Fetch Report
-            </button> */}
+                Fetch Report
+              </button> */}
         </div>
         <div className='grid grid-cols-2 gap-2'>
           <div className="flex-1 border  shadow-md rounded p-6">
@@ -375,11 +409,11 @@ const AttendanceDashboard: React.FC = () => {
               <div>
                 {/* <span className="text-sm mr-2">Date:</span> */}
                 {/* <input
-                  type="date"
-                  className="border rounded-lg p-2 text-xs"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                /> */}
+                    type="date"
+                    className="border rounded-lg p-2 text-xs"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                  /> */}
 
                 <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                   <DialogTrigger>
@@ -418,7 +452,7 @@ const AttendanceDashboard: React.FC = () => {
                 On Leave : {dailyonLeaveCount}
               </div>
               <div className="flex flex-col items-center text-red-500 border p-2 text-xs  rounded">
-              Absent : {dailyabsentCount}
+                Absent : {dailyabsentCount}
               </div>
             </div>
 
@@ -435,9 +469,9 @@ const AttendanceDashboard: React.FC = () => {
               <tbody>
                 {dailyReport.map((entry, index) => (
                   <tr key={index} className='border-t'>
-                    <td className=" px-4 text-xs py-2">{entry.user}</td>
+                    <td className="px-4 text-xs py-2">{entry.user}</td>
                     <td
-                      className={` px-4 text-xs py-2 ${entry.status === 'Present'
+                      className={`px-4 text-xs py-2 ${entry.status === 'Present'
                         ? 'text-green-600'
                         : entry.status === 'On Leave'
                           ? 'text-yellow-600'
@@ -446,9 +480,18 @@ const AttendanceDashboard: React.FC = () => {
                     >
                       {entry.status}
                     </td>
-                    <td className=" text-xs px-4 py-2">{entry.loginTime}</td>
-                    <td className=" text-xs px-4 py-2">{entry.logoutTime}</td>
-                    <td className=" text-xs px-4 py-2">{entry.totalDuration}</td>
+                    <td className="text-xs px-4 py-2">
+                      {entry.loginTime !== 'N/A' && !isNaN(new Date(entry.loginTime).getTime())
+                        ? format(new Date(entry.loginTime), 'dd-MM-yy hh:mm a')
+                        : 'N/A'}
+
+                    </td>
+                    <td className="text-xs px-4 py-2">
+                      {entry.logoutTime !== 'N/A' && !isNaN(new Date(entry.logoutTime).getTime())
+                        ? format(new Date(entry.logoutTime), 'dd-MM-yy hh:mm a')
+                        : 'N/A'}
+                    </td>
+                    <td className="text-xs px-4 py-2">{entry.totalDuration}</td>
                   </tr>
                 ))}
               </tbody>
@@ -522,11 +565,25 @@ const AttendanceDashboard: React.FC = () => {
       </div>
 
       {/* Summary */}
-      <div className="mb-4 flex w-full justify-center space-x-2">
-        <span className="border text-xs bg-blue-900 text-white p-2 rounded">Total Days: {workingDays}</span>
-        <span className="border text-xs bg-yellow-600 text-white p-2 rounded">Working: {presentCount + leaveCount}</span>
-        <span className="border text-xs bg-green-700 text-white p-2 rounded">Week Offs: {totalDays - workingDays}</span>
-        <span className="border text-xs bg-red-700 text-white p-2 rounded">Holidays: {holidayCount}</span>
+      <div className="mb-4 mt-4 flex w-full justify-center space-x-2">
+        <span className="border text-xs bg-blue-900 text-white p-2 rounded">
+          Total Days: {totalDays}
+        </span>
+        <span className="border text-xs bg-yellow-600 text-white p-2 rounded">
+          Total Employees: {employees.length}
+        </span>
+        <span className="border text-xs bg-green-700 text-white p-2 rounded">
+          Present: {presentCount}
+        </span>
+        <span className="border text-xs bg-red-700 text-white p-2 rounded">
+          Leave: {leaveCount}
+        </span>
+        <span className="border text-xs bg-gray-700 text-white p-2 rounded">
+          Absent: {absentCount}
+        </span>
+        <span className="border text-xs bg-purple-700 text-white p-2 rounded">
+          Holidays: {holidayCount}
+        </span>
       </div>
 
       {/* Monthly Attendance Report */}
@@ -534,41 +591,28 @@ const AttendanceDashboard: React.FC = () => {
         <div className="h-full  rounded-md">
           <table className="w-full border-collapse border">
             <thead className='bg-[#380e3d]'>
-              <tr>
-                <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
-                <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Absent</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
-                <th className="text-sm w-24 rounded-r font-medium p-2 px-4">Total</th>
-              </tr>
+              <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
+              <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
+              <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
+              <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
+              <th className="text-sm text-start w-24 font-medium p-2 px-4">Absent</th>
+              <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
+              <th className="text-sm w-24 rounded-r font-medium p-2 px-4">Total</th>
             </thead>
             <tbody>
-              {generateWeekdaysInMonth(
-                parseInt(selectedAttendanceDate.split('-')[0]),
-                parseInt(selectedAttendanceDate.split('-')[1]) - 1
-              )
-                .filter(day => day <= new Date()) // Only include dates up to today
-                .map((day, index) => {
-                  const dayString = day.toISOString().split('T')[0];
-                  const isPresent = attendance?.some(entry => entry.date === dayString && entry.present);
-                  const isLeave = leaves?.some(leave => leave.fromDate <= dayString && leave.toDate >= dayString);
-                  const isHoliday = holidays?.some(holiday => holiday.holidayDate === dayString);
-                  const isAbsent = !isPresent && !isLeave && !isHoliday;
-
-                  return (
-                    <tr key={index} className="border-b">
-                      <td className="px-4 py-2 text-xs">{day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
-                      <td className="px-4 py-2 text-xs">{day.toLocaleDateString('en-US', { weekday: 'short' })}</td>
-                      <td className="px-4 py-2 text-xs">{isPresent ? 1 : 0}</td>
-                      <td className="px-4 py-2 text-xs">{isLeave ? 1 : 0}</td>
-                      <td className="px-4 py-2 text-xs">{isAbsent ? 1 : 0}</td>
-                      <td className="px-4 py-2 text-xs">{isHoliday ? 1 : 0}</td>
-                      <td className="px-4 py-2 text-xs">1</td>
-                    </tr>
-                  );
-                })}
+              {monthlyReport.map((day, index) => (
+                <tr key={index} className="border-b">
+                  <td className="px-4 py-2 text-xs">
+                    {format(new Date(day.date), 'dd MMM yyyy')}
+                  </td>
+                  <td className="px-4 py-2 text-xs">{day.day}</td>
+                  <td className="px-4 py-2 text-xs">{day.present}</td>
+                  <td className="px-4 py-2 text-xs">{day.leave}</td>
+                  <td className="px-4 py-2 text-xs">{day.absent}</td>
+                  <td className="px-4 py-2 text-xs">{day.holiday}</td>
+                  <td className="px-4 py-2 text-xs">{day.total}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

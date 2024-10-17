@@ -382,7 +382,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
 
 
 
-                        <div className="">
+                        <div className="p-4 w-1/2 border ml-2 bg-[#121212]">
                             {selectedTask.audioUrl && (
                                 <CustomAudioPlayer audioUrl={selectedTask.audioUrl} />
                             )}
@@ -400,6 +400,13 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                     >
                                         <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
                                         Reopen
+                                    </Button>
+                                    <Button
+                                        onClick={handleEditClick}
+                                        className="border bg-transparent hover:shadow-sm hover:shadow-blue-500 hover:bg-transparent border-gray-600 w-fit"
+                                    >
+                                        <Edit className="h-4 rounded-full text-blue-400" />
+                                        Edit
                                     </Button>
                                     <Button
                                         onClick={() => handleDeleteClick(selectedTask._id)}
