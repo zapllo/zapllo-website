@@ -358,7 +358,7 @@ export default function SignupPage() {
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={togglePasswordVisibility}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <Eye size={18} /> :   <EyeOff size={18} />}
                 </div>
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
@@ -376,7 +376,7 @@ export default function SignupPage() {
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={toggleConfirmPasswordVisibility}
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? <Eye size={18} />  :  <EyeOff size={18} />}
                 </div>
               </LabelInputContainer>
               <CountryDrop

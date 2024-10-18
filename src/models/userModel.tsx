@@ -35,7 +35,8 @@ export interface IUser extends Document {
     verifyTokenExpiry: Date | null;
     checklistProgress: boolean[];
     faceDescriptors: number[][]; // An array of face descriptors (each descriptor is an array of numbers)
-    imageUrls: { type: [String], default: [] }
+    imageUrls: { type: [String], default: [] };
+    country: string;
 }
 
 // Define the schema
@@ -80,6 +81,9 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     imageUrls: {
         type: [String], // Array to store multiple image URLs
         default: [],
+    },
+    country: {
+        type: String,
     },
 }, { timestamps: true });
 

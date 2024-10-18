@@ -84,7 +84,6 @@ const leaveSchema: Schema<ILeave> = new mongoose.Schema({
     },
     remarks: {
         type: String,
-        default: '',
     },
     approvedBy: {
         type: mongoose.Schema.Types.ObjectId,

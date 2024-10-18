@@ -153,8 +153,6 @@ const DashboardPage = () => {
                 <Button className='bg-white text-black ml-4  hover:bg-white mt-6' >Go To Tutorials</Button></Link>
               <img src='/animations/tutorials.png' className='absolute h-48 ml-[45%] -mt-[150px]' />
             </div>
-
-
           </div>
 
         </div>
@@ -256,7 +254,7 @@ const DashboardPage = () => {
                 {attendanceTrialExpires ? (
                   <>
                     <p className='text-xs py-2 text-red-600 '>
-                     Free Trial Expires {attendanceRemainingTime}
+                      Free Trial Expires {attendanceRemainingTime}
                     </p>
                     <Link href='/attendance/my-attendance'>
                       <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Attendance</Button>

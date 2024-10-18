@@ -14,7 +14,7 @@ import { Toaster, toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Home from "@/components/icons/home";
 import Loader from "@/components/ui/loader"; // Import the Loader component
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -24,6 +24,7 @@ export default function LoginPage() {
         email: "",
         password: "",
     });
+    const [showPassword, setShowPassword] = useState(false); // State for showing/hiding password
 
     useEffect(() => {
         // Check if the user is already logged in
@@ -51,6 +52,8 @@ export default function LoginPage() {
             setUserLoading(false)
         }
     };
+
+    const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
     return (
         <>
@@ -95,15 +98,21 @@ export default function LoginPage() {
                                 placeholder="example@gmail.com"
                             />
                         </LabelInputContainer>
-                        <LabelInputContainer className="mb-4">
+                        <LabelInputContainer className="relative mb-4">
                             <h1 className="text-xs absolute ml-2 bg-[#000101] ">Password</h1>
                             <Input
                                 id="password"
                                 placeholder="••••••••"
                                 value={user.password}
                                 onChange={(e) => setUser({ ...user, password: e.target.value })}
-                                type="password"
+                                type={showPassword ? "text" : "password"} // Toggle between text and password
                             />
+                            <div
+                                className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                                onClick={togglePasswordVisibility}
+                            >
+                                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </div>
                         </LabelInputContainer>
                         <button
                             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"

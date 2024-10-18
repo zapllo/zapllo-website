@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { usePathname } from 'next/navigation'
-import Image from "next/image";
+import { usePathname } from "next/navigation";
 import ShimmerButton from "../magicui/shimmer-button";
 import ShineBorder from "../magicui/shine-border";
+import { Calendar } from "lucide-react";
 
 export const FloatingNav = ({
     navItems,
@@ -23,45 +23,88 @@ export const FloatingNav = ({
     // Initialize visible state as true
     const [visible, setVisible] = useState(true);
 
+    // Handle hover state for "Products" dropdown
+    const [isProductsHovered, setIsProductsHovered] = useState(false);
+
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                className="flex max-w-5xl fixed top-0 md:top-5 py-3 inset-x-0 mx-auto  border-transparent -white/[0.2] rounded-full bg-[#141841] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] px-6  justify-between "
-
+                className="flex gap-2 max-w-5xl fixed top-0 md:top-5 py-3 inset-x-0 mx-auto border-transparent rounded-full bg-[#141841] shadow-md z-[5000] px-6 justify-between"
             >
                 <motion.div
-
                     className={cn(
-                        "flex max-w-fit fixed top-5 md:top-8 inset-x-0 mx-auto border  dark:border-[#2C2E44] rounded-full bg-[#141841] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] px-6 py-2 justify-center space-x-6",
+                        "flex max-w-fit  fixed top-5 md:top-8 inset-x-0 mx-auto border dark:border-[#2C2E44] rounded-full bg-[#141841] shadow-lg z-[5000] px-4 py-2 justify-center space-x-6",
                         className
                     )}
                 >
                     {navItems.map((navItem: any, idx: number) => (
-                        <Link
+                        <div
                             key={`link=${idx}`}
-                            href={navItem.link}
-                            className={cn(
-                                "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500",
-                                pathname === navItem.link && " " // Apply different style for the current page
-                            )}
-                            style={{ position: 'relative' }} // Ensure the parent container has a relative position
+                            onMouseEnter={() => navItem.name === "Products" && setIsProductsHovered(true)}
+                            onMouseLeave={() => navItem.name === "Products" && setIsProductsHovered(false)}
+                            className="relative"
                         >
-                            <span className="block sm:hidden">{navItem.icon}</span>
-                            <span className="hidden sm:block text-md">{navItem.name}</span>
-                            {pathname === navItem.link && (
-                                <span className="absolute bottom-0 left-0 top-8 w-full h-0.5 bg-purple-400   rounded-sm shadow-purple-400 shadow-[4.0px_-2.0px_8.0px_rgba(0,0,0,0.38)]" />
+                            <Link
+                                href={navItem.link}
+                                className={cn(
+                                    "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500",
+                                    pathname === navItem.link && " "
+                                )}
+                                style={{ position: "relative" }}
+                            >
+                                <span className="block sm:hidden">{navItem.icon}</span>
+                                <span className="hidden sm:block text-md">{navItem.name}</span>
+                                {pathname === navItem.link && (
+                                    <span className="absolute bottom-0 left-0 top-8 w-full h-0.5 bg-purple-400 rounded-sm shadow-purple-400 shadow-[4px_-2px_8px_rgba(0,0,0,0.38)]" />
+                                )}
+                            </Link>
+
+                            {/* Dropdown for Products */}
+                            {navItem.name === "Products" && (
+                                <AnimatePresence>
+                                    {isProductsHovered && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            className="absolute space-y-12 gap-y-6 top-8 left-0 w-64 mt-2 bg-white dark:bg-[#141841] shadow-lg rounded-lg py-2 px-4 z-10"
+                                        >
+                                            <Link href="/products/zapllo-work">
+                                                <p className="p-2 text-sm flex gap-1 hover:bg-black rounded-md">
+                                                    <img src="/icons/task.png" className="h-5" />  Zapllo Tasks
+                                                </p>
+                                            </Link>
+                                            <Link href="/products/zapllo-people">
+                                                <p className="py-2 px-1 text-sm flex gap-1 hover:bg-black   rounded-md">
+                                                    <Calendar className="h-5" />      Zapllo Payroll
+                                                </p>
+                                            </Link>
+                                            <Link href="/products/zapllo-clients">
+                                                <p className="p-2 text-sm flex gap-1 hover:bg-black   rounded-md">
+                                                <img src="/icons/crm.png" className="h-4 invert-[100]" />    Zapllo CRM (Coming Soon)
+                                                </p>
+                                            </Link>
+                                            <Link href="/products/zapllo-billing">
+                                                <p className="p-2 text-sm  rounded-md">
+                                                    Invoice by Zapllo
+                                                </p>
+                                            </Link>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             )}
-                        </Link>
+                        </div>
                     ))}
                 </motion.div>
+
                 <div className="py-3">
-                    <Link href='/'>
-                        <img src='/logo.png' height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
+                    <Link href="/">
+                        <img src="/logo.png" height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
                     </Link>
                 </div>
                 <Link
                     href="/dashboard"
-                    className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] "
+                    className="relative  h-10 overflow-hidden rounded-full p-[2px] "
                 >
                     <ShineBorder borderRadius={50}
                         className="text-center text-xl font-bold capitalize"

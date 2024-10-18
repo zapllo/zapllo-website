@@ -263,7 +263,8 @@ export async function GET(request: NextRequest) {
             .populate({ path: 'leaveType', model: 'leaveTypes' })
             .populate({ path: 'user', model: 'users', select: 'firstName lastName _id' })
             .populate({ path: 'approvedBy', model: 'users', select: 'firstName lastName _id' })
-            .populate({ path: 'rejectedBy', model: 'users', select: 'firstName lastName _id' });
+            .populate({ path: 'rejectedBy', model: 'users', select: 'firstName lastName _id' })
+            .sort({ createdAt: -1 }) // Sort by createdAt in descending order (latest entries first)
 
         if (!userLeaves || userLeaves.length === 0) {
             return NextResponse.json({ success: false, error: 'No leaves found for this user' });

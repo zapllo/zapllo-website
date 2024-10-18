@@ -53,7 +53,7 @@ interface LeaveDetailsProps {
 
 const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) => {
     if (!selectedLeave) return null;
-
+console.log(selectedLeave, 'selected leave!')
     return (
         <Sheet open={!!selectedLeave} onOpenChange={onClose}>
             <SheetContent className="max-w-4xl w-full">

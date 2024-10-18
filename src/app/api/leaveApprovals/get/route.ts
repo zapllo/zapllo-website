@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
                     path: 'reportingManager',
                     select: 'firstName lastName'
                 }
-            })
+            }).sort({ createdAt: -1 }) // Sort by createdAt in descending order (latest entries first)
 
         return NextResponse.json({ success: true, leaves });
     } catch (error: any) {

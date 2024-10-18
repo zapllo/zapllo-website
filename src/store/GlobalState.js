@@ -2,33 +2,49 @@ import { createContext, useReducer, useEffect } from "react";
 import reducers from "./Reducers";
 import { getData } from "../utils/fetchData";
 
-export const DataContext = createContext()
+export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-    const initialState = { auth: {} }
-    const [state, dispatch] = useReducer(reducers, initialState)
+  const initialState = { auth: {} };
+  const [state, dispatch] = useReducer(reducers, initialState);
 
+  useEffect(() => {
+    const firstLogin = localStorage.getItem("firstLogin");
+    const loginTime = localStorage.getItem("loginTime");
 
-    useEffect(()=>{
-        const firstLogin = localStorage.getItem('firstLogin');
-        if(firstLogin){
-            getData('/auth/accessToken').then(res => {
-                if(res.err) return localStorage.removeItem("firstLogin")
+    if (firstLogin && loginTime) {
+      const currentTime = new Date().getTime();
+      const elapsedTime = currentTime - loginTime;
 
-                dispatch({
-                    type: "AUTH",
-                    payload:{
-                        token:res.access_token,
-                        user: res.user,
-                    }
-                })
-            })
+      // Check if more than 1 hour (3600000 milliseconds) has passed
+      if (elapsedTime > 3600000) {
+        localStorage.removeItem("firstLogin");
+        localStorage.removeItem("loginTime");
+        dispatch({ type: "LOGOUT" });
+        return;
+      }
+
+      getData("/auth/accessToken").then((res) => {
+        if (res.err) {
+          localStorage.removeItem("firstLogin");
+          localStorage.removeItem("loginTime");
+          return;
         }
-    }, [])
 
-    return (
-        <DataContext.Provider value={{ state, dispatch }}>
-            {children}
-        </DataContext.Provider>
-    )
-}
+        dispatch({
+          type: "AUTH",
+          payload: {
+            token: res.access_token,
+            user: res.user,
+          },
+        });
+      });
+    }
+  }, []);
+
+  return (
+    <DataContext.Provider value={{ state, dispatch }}>
+      {children}
+    </DataContext.Provider>
+  );
+};

@@ -67,6 +67,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
     // Submit the approval/rejection data to the backend    
     const handleSubmit = async () => {
         console.log('Submitting data:', approvalData);
+        console.log('Submitting remarks:', remarks); // Add this to check the remarks value
         setLoading(true);
         try {
             const response = await axios.post(`/api/leaveApprovals/${leaveId}`, {
@@ -91,11 +92,11 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
         setApprovedDaysCount(approvedDays);
     }, [approvalData]);
 
-    console.log(manager, 'whats the issue?');
+    // console.log(manager, 'whats the issue?');
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#1A1C20] p-6 rounded-md w-full max-w-lg">
+            <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-[470px] p-6 rounded-md w-full max-w-lg">
                 <div className='flex justify-between mb-4'>
                     <h2 className="text-md font-medium">{leaveType} By {user.firstName} {user.lastName}</h2>
                     <X onClick={onClose} className='cursor-pointer h-5 w-5 text-gray-500' />
@@ -148,8 +149,8 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
                             <span className="text-xs">{new Date(day.date).toDateString()} ({day.unit})</span>
                             <select
                                 className={`text-xs outline-none border rounded-md p-2 ${day.status === 'Approved' ? 'border-[#017a5b]' :
-                                        day.status === 'Rejected' ? 'border-red-500' :
-                                            'border-gray-300'
+                                    day.status === 'Rejected' ? 'border-red-500' :
+                                        'border-gray-300'
                                     }`}
                                 value={day.status}
                                 onChange={(e) => handleStatusChange(day.date, e.target.value as 'Approved' | 'Rejected')}

@@ -415,7 +415,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
                             {/* Display Allotted Leaves and Balance */}
                             {allotedLeaves !== null && userLeaveBalance !== null && (
-                                <div className="mt-2 flex justify-between text-xs text-white bg-[#121212] p-2 rounded">
+                                <div className="mt-2 flex justify-between text-xs text-white bg-[#121212] p-3 rounded">
                                     <p>Total Allotted Leaves: {allotedLeaves}</p>
                                     <p>Remaining Balance: {userLeaveBalance}</p>
                                 </div>
@@ -493,7 +493,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-2 flex justify-end text-xs text-white bg-[#121212] p-2 rounded">
+                            <div className="mt-2 flex justify-start text-xs text-white bg-[#121212] p-3 rounded">
                                 <p>Leave Application for : {totalAppliedDays} day(s)</p>
                             </div>
                             <div >

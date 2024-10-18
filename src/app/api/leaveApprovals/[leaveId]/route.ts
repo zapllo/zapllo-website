@@ -189,6 +189,8 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         let approvedFor = 0;
         let approvedDaysCount = 0;
         let rejectedDaysCount = 0;
+        // Add this line to ensure remarks are being set
+        leave.remarks = remarks || 'Your Leave request has been approved.';  // Make sure remarks are updated
 
         if (leaveDays) {
             try {

@@ -149,6 +149,7 @@ export async function POST(request: NextRequest) {
       trialExpires,
       role: newUserRole,
       organization: newOrganizationId,
+      country,
       reportingManager: reportingManagerId || null, // Assign reporting manager
     });
 

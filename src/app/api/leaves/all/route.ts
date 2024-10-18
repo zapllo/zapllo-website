@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
             .populate({
                 path: 'approvedBy rejectedBy', // Populate both approvedBy and rejectedBy
                 select: 'firstName lastName',  // Select firstName and lastName
-            })
+            }).sort({ createdAt: -1 }) // Sort by createdAt in descending order (latest entries first)
             .exec();
 
         // Filter out any leaves where the user doesn't match the organization

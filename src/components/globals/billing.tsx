@@ -271,6 +271,27 @@ export default function Billing() {
         }
     };
 
+    // Function to format the date as "14th October 24"
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return 'Invalid Date';
+        }
+
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear().toString().slice(0);
+
+        // Get ordinal suffix
+        const getOrdinalSuffix = (n: number) => {
+            const s = ['th', 'st', 'nd', 'rd'];
+            const v = n % 100;
+            return s[(v - 20) % 10] || s[v] || s[0];
+        };
+
+        return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
+    };
+
     return (
         <div className="flex w-full ">
             <Toaster />
@@ -506,7 +527,7 @@ export default function Billing() {
                                         </CardDescription>
                                         <p className="mt-2 text-sm justify-center flex gap-1">
                                             <Clock className='h-5' />
-                                            Renews on: <span className="text-[#3281F6]">{renewsOn}</span>
+                                            Renews on: <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
                                         </p>
                                         {subscribedUserCount && (
                                             <p className="mt-1 flex justify-center gap-1 text-sm">

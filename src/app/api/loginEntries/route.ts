@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
                 path: 'reportingManager', // Populate the `reportingManager` field within the `userId`
                 select: 'firstName lastName', // Select only `firstName` and `lastName` of the reporting manager
             },
-        }).exec();
+        }).sort({ createdAt: -1 }).exec();
 
         // Ensure timestamp is returned as an ISO string in UTC
         const formattedEntries = entries.map((entry) => {

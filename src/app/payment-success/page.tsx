@@ -16,27 +16,27 @@ const PaymentSuccess = () => {
     <div className="flex items-center justify-center h-screen  bg-[#201024]">
       <div className="text-center ">
         <div className="flex flex-col items-center mb-8">
-        <Image
+        {/* <Image
             src="/logo.png" // Ensure this path points to your illustration
             alt="Payment Success"
             width={200}
             height={200}
             className="mb-4"
-          />
-          <Image
+          /> */}
+          {/* <Image
             src="/animations/money.gif" // Ensure this path points to your illustration
             alt="Payment Success"
             width={200}
             height={200}
             className="mb-4"
-          />
+          /> */}
           <h1 className="text-3xl font-bold text-white/80">
-            Congratulations, Your Subscription is Active!
+          🎉Congratulations, Your Subscription is Active!
           </h1>
         </div>
         <Card className="bg-[#2A2A2A] p-8 rounded-lg shadow-lg">
           <CardTitle className="text-2xl font-bold text-white">
-            Payment Successful!
+            Payment  Successful
           </CardTitle>
           <p className="text-gray-300 mt-4">
             Your payment has been successfully processed and your credits have been updated.

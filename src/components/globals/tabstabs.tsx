@@ -20,13 +20,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
-import { Edit, Edit3, FileEdit, Mail, Pencil, Phone, Plus, Trash, Trash2, User, UserCheck, Users, Users2Icon } from "lucide-react";
+import { Edit, Edit3, FileEdit, Mail, Pencil, Phone, Plus, Trash, Trash2, User, UserCheck, UserCircle, Users, Users2Icon } from "lucide-react";
 import axios from "axios";
 import { Tabs2, TabsList2, TabsTrigger2 } from "../ui/tabs2";
 import { Tabs3, TabsList3, TabsTrigger3 } from "../ui/tabs3";
 import Loader from "../ui/loader";
 import { toast, Toaster } from "sonner";
 import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
+import { getData } from "country-list";
+import CountryDrop from "./countrydropdown";
+import { getCountryCallingCode } from 'libphonenumber-js';
+import UserCountry from "./userCountry";
 
 interface User {
   _id: string;
@@ -37,6 +41,7 @@ interface User {
   lastName: string;
   whatsappNo: string;
   reportingManager: string;
+  country: string;
 }
 
 interface APIResponse<T> {
@@ -48,6 +53,9 @@ interface APIResponse<T> {
 export default function TeamTabs() {
   const [activeTab, setActiveTab] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState('IN'); // Default country as India
+  const [countryCode, setCountryCode] = useState('+91'); // Default country code for India
+
   const [newMember, setNewMember] = useState({
     email: "",
     role: "member",
@@ -56,7 +64,9 @@ export default function TeamTabs() {
     lastName: "",
     whatsappNo: "",
     reportingManager: "",
+    country: 'IN', // Add country to the newMember state
   });
+
 
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -71,6 +81,7 @@ export default function TeamTabs() {
     lastName: "",
     whatsappNo: "",
     reportingManager: "",
+    country: "IN",
   });
   const [selectedManager, setSelectedManager] = useState('');
   const [reportingManagerName, setReportingManagerName] = useState('');
@@ -80,6 +91,15 @@ export default function TeamTabs() {
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+
+  const handleCountrySelect = (countryCode: any) => {
+    const phoneCode = getCountryCallingCode(countryCode);
+    setCountryCode(`+${phoneCode}`);
+    setSelectedCountry(countryCode);
+    setNewMember({ ...newMember, country: countryCode }); // Update country in the newMember object
+  };
+
 
   useEffect(() => {
     // Update newMember's reportingManagerId when selectedManager changes
@@ -188,6 +208,7 @@ export default function TeamTabs() {
           lastName: "",
           whatsappNo: "",
           reportingManager: '',
+          country: '',
         });
         toast.success("New member added successfully!");
 
@@ -225,6 +246,7 @@ export default function TeamTabs() {
       lastName: "",
       whatsappNo: "",
       reportingManager: '',
+      country: '',
     });
     setSelectedManager('');
   }
@@ -340,7 +362,7 @@ export default function TeamTabs() {
             <select
               value={selectedReportingManager}
               onChange={handleReportingManagerChange}
-              className="block bg-[#29142E] w-full px-3 py-1 border rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+              className="block bg-[#121212] border-[#380e3d]  border-2 w-full px-3 py-1  rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="">Reporting Manager</option>
               {users.map(user => (
@@ -354,8 +376,15 @@ export default function TeamTabs() {
                     Add Member <Plus /></Button>
                 </DialogTrigger>
               )}
-              <DialogContent>
-                <DialogTitle>Add New Member</DialogTitle>
+              <DialogContent className="w-[40%]">
+                <DialogTitle>
+                  <div className="flex gap-2">
+                    <UserCircle className='h-7' />
+                    <h1 className="text-md mt-1">
+                      Add New Member
+                    </h1>
+                  </div>
+                </DialogTitle>
                 <DialogDescription>
                   Please fill in the details of the new team member.
                 </DialogDescription>
@@ -389,6 +418,20 @@ export default function TeamTabs() {
                   {errorMessage && (
                     <p className="text-red-500 text-xs ml-1 -my-3  ">{errorMessage}</p>
                   )}
+
+                  <UserCountry
+                    selectedCountry={selectedCountry}
+                    onCountrySelect={handleCountrySelect}
+                  />
+                  <div className="flex items-center">
+                    <span className="py-2 px-2 bg-[#292c32] rounded-l text-xs">{countryCode}</span>
+                    <input
+                      placeholder="WhatsApp Number"
+                      value={newMember.whatsappNo}
+                      className="py-2 px-2 text-xs w-full bg-[#292c32] rounded-r outline-none"
+                      onChange={(e) => setNewMember({ ...newMember, whatsappNo: e.target.value })}
+                    />
+                  </div>
                   <input
                     placeholder="Password"
                     className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
@@ -399,7 +442,7 @@ export default function TeamTabs() {
                   <select
                     value={newMember.role}
                     onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
-                    className="block w-full px-2 text-xs py-2 bg-[#292c32]   border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+                    className="block w-full px-2 text-xs py-2 bg-[#292c32]  rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                   >
                     <option className="text-xs" value="member">Team Member</option>
                     <option className="text-xs" value="manager">Manager</option>
@@ -421,12 +464,8 @@ export default function TeamTabs() {
                       </select>
                     )}
                   </div>
-                  <input
-                    placeholder="WhatsApp Number"
-                    value={newMember.whatsappNo}
-                    className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
-                    onChange={(e) => setNewMember({ ...newMember, whatsappNo: e.target.value })}
-                  />
+                  {/* Country Dropdown */}
+
                 </div>
                 <div className="mt-4 flex justify-end gap-4">
                   <Button variant="outline" className="rounded" onClick={clearFields}>Cancel</Button>
@@ -492,14 +531,14 @@ export default function TeamTabs() {
                     </div>
                     <h1 className="text-[#E0E0E066]">|</h1>
                     {reportingManagerNames[user._id] && (
-                      <div className="flex">
-                        <UserCheck className="h-5" />
+                      <div className="flex gap-1 mt-1">
+                        <UserCircle className="h-5" />
                         <p className="text-[#E0E0E0]">{reportingManagerNames[user._id]}</p>
                       </div>
                     )}
                   </div>
 
-                  <div className="justify-end w-full flex">
+                  <div className="justify-end px-8 w-full flex">
                     <div
                       className={`w-fit px-4 py-1 rounded text-xs ${user.role === 'orgAdmin' ? 'bg-[#B4173B]' : user.role === 'manager' ? 'bg-orange-500' : user.role === 'member' ? 'bg-[#007A5A]' : 'bg-gray-500'}`}
                     >
@@ -510,8 +549,8 @@ export default function TeamTabs() {
 
 
                   {loggedInUserRole == "orgAdmin" && (
-                    <div className="flex">
-                      <Button className="bg-transparent  hover:bg-transparent" onClick={() => {
+                    <div className=" flex gap-2">
+                      <div className="bg-transparent  hover:bg-transparent" onClick={() => {
                         setEditedUser({
                           _id: user._id,
                           email: user.email,
@@ -520,15 +559,16 @@ export default function TeamTabs() {
                           firstName: user.firstName,
                           lastName: user.lastName,
                           whatsappNo: user.whatsappNo,
+                          country: user?.country,
                           reportingManager: selectedManager,
                         });
                         setIsEditModalOpen(true);
                       }}>
                         <Pencil className="h-5 text-blue-500" />
-                      </Button>
-                      <Button className="bg-transparent hover:bg-transparent" onClick={() => openDeleteDialog(user)}>
+                      </div>
+                      <div className="bg-transparent hover:bg-transparent" onClick={() => openDeleteDialog(user)}>
                         <Trash2 className="text-[#9C2121] h-5" />
-                      </Button>
+                      </div>
                     </div>
                   )}
 
@@ -539,7 +579,7 @@ export default function TeamTabs() {
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent>
+        <DialogContent className="w-[40%]">
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
             Modify the details of the selected user.
@@ -572,7 +612,7 @@ export default function TeamTabs() {
             <select
               value={editedUser.role}
               onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
-              className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="member" className="text-xs">Team Member</option>
               <option value="orgAdmin" className="text-xs">Admin</option>
@@ -580,7 +620,7 @@ export default function TeamTabs() {
             </select>
             <select
               value={selectedReportingManager || editedUser.reportingManager}
-              className="block w-full px-2 py-2 bg-[#292c32] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="block w-full px-2 py-2 bg-[#292c32] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
               onChange={(e) => setSelectedReportingManager(e.target.value)} // Update selected reporting manager
             >
               <option value="">Select Reporting Manager</option>
@@ -590,13 +630,20 @@ export default function TeamTabs() {
                 </option>
               ))}
             </select>
-
-            <input
-              placeholder="WhatsApp Number"
-              value={editedUser.whatsappNo}
-              className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
-              onChange={(e) => setEditedUser({ ...editedUser, whatsappNo: e.target.value })}
+            {/* Country Dropdown */}
+            <UserCountry
+              selectedCountry={selectedCountry}
+              onCountrySelect={handleCountrySelect}
             />
+            <div className="flex items-center">
+              <span className="py-2 px-2 bg-[#292c32] rounded-l text-xs">{countryCode}</span>
+              <input
+                placeholder="WhatsApp Number"
+                value={editedUser.whatsappNo}
+                className="py-2 px-2 text-xs bg-[#292c32] rounded-r w-full outline-none"
+                onChange={(e) => setEditedUser({ ...editedUser, whatsappNo: e.target.value })}
+              />
+            </div>
           </div>
           <div className="mt-4 flex justify-end gap-4">
             <Button variant="outline" className="rounded" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>

@@ -49,6 +49,7 @@ const Layout = (props: Props) => {
     const [remainingTime, setRemainingTime] = useState('');
     const [userLoading, setUserLoading] = useState<boolean | null>(false);
     const [sidebarUpdateTrigger, setSidebarUpdateTrigger] = useState(false);
+    const [subscriptionExpires, setSubscriptionExpires] = useState<Date | null>(null); // State for subscription expiration
 
     const refreshSidebar = () => {
         // Toggle sidebarUpdateTrigger to refresh sidebar component
@@ -58,29 +59,49 @@ const Layout = (props: Props) => {
     useEffect(() => {
         const getUserDetails = async () => {
             try {
-                setUserLoading(true)
+                setUserLoading(true);
                 const userRes = await axios.get('/api/users/me');
                 setFirstName(userRes.data.data.firstName);
                 setLastName(userRes.data.data.lastName);
                 setRole(userRes.data.data.role);
-                setUserLoading(false)
-                // Fetch trial status
-                const response = await axios.get('/api/organization/getById');
-                console.log(response.data.data); // Log the organization data
+                setUserLoading(false);
 
+                // Fetch organization details
+                const response = await axios.get('/api/organization/getById');
                 const organization = response.data.data;
 
-                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
-                console.log('isExpired:', isExpired);
-                console.log('trialExpires:', organization.trialExpires);
+                const currentDate = new Date();
 
-                setTrialExpires(isExpired ? null : organization.trialExpires);
+                // Check if the subscription is still active
+                const subscriptionEndDate = new Date(organization.subscriptionExpires);
+                const isSubscriptionActive = subscriptionEndDate > currentDate;
+
+                // Check if the trial has expired
+                const trialEndDate = new Date(organization.trialExpires);
+                const isTrialExpired = trialEndDate <= currentDate;
+
+                // Set trial expiration date if the trial is not expired
+                if (!isTrialExpired) {
+                    setTrialExpires(organization.trialExpires);
+                }
+
+                // Set subscription expiration date if the subscription is active
+                if (isSubscriptionActive) {
+                    setSubscriptionExpires(organization.subscriptionExpires);
+                }
+
+                // Hide the trial banner if the subscription is active
+                if (isSubscriptionActive) {
+                    setIsVisible(false);
+                }
+
             } catch (error) {
                 console.error('Error fetching user details or trial status:', error);
             }
         }
         getUserDetails();
     }, []);
+
 
 
     console.log(trialExpires, 'trial')
@@ -150,7 +171,7 @@ const Layout = (props: Props) => {
     return (
         <div>
             <>
-                {isVisible && (
+                {isVisible && !subscriptionExpires && (
                     <div className='p-2 flex fixed mt- m   top-0  w-[100%] justify-center gap-2 bg-[#75517B] border'>
                         <div className='flex gap-2 justify-center w-full'>
                             <h1 className='text-center  mt-1 flex text-white text-xs'>
@@ -171,7 +192,7 @@ const Layout = (props: Props) => {
             </>
             <div className={`flex overflow-hidden ${isVisible ? 'mt-10' : ''}  dark:bg-[#201124] scrollbar-hide h-full w-full `}>
 
-                <MenuOptions  />
+                <MenuOptions />
                 <div className='w-full overflow-hidden please h-screen '>
                     <InfoBar />
                     <div className=' ml-16 '>

@@ -455,8 +455,7 @@ const AttendanceDashboard: React.FC = () => {
                 Absent : {dailyabsentCount}
               </div>
             </div>
-
-            <table className="table-auto border w-full border-collapse">
+            <table className="table- border w-full border-collapse">
               <thead className='bg-[#380e3d] rounded'>
                 <tr className="text-xs border-t ">
                   <th className=" px-4 py-2 text-left">Name</th>

@@ -15,8 +15,22 @@ export function FloatingNavbar() {
       icon: <Home className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
     {
+      name: "Products",
+      link: "",
+      icon: (
+        <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
+      ),
+    },
+    {
       name: "Success Stories",
       link: "/successstories",
+      icon: (
+        <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
+      ),
+    },
+    {
+      name: "Support",
+      link: "/support",
       icon: (
         <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
@@ -42,6 +56,7 @@ export function FloatingNavbar() {
         <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
     },
+  
   ];
 
 
