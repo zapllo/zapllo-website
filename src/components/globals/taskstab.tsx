@@ -1265,7 +1265,7 @@ export default function TasksTab({
               <div className="flex justify-start w-full ml-4 gap-2">
                 <img
                   src="/icons/delegated.png"
-                  className="h-[16px]"
+                  className="h-[16px] mt-1"
                   alt="Delegated Tasks Icon"
                 />
                 <h1 className="text-xs mt-1">Delegated Tasks</h1>
@@ -1278,7 +1278,7 @@ export default function TasksTab({
               <div className="flex justify-start w-full gap-2 ml-4">
                 <img
                   src="/icons/all.png"
-                  className="h-5"
+                  className="h-5 mt-0.5"
                   alt="All Tasks Icon"
                 />
                 <h1 className="text-xs mt-1">All Tasks</h1>
