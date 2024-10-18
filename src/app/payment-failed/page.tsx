@@ -38,7 +38,7 @@ const PaymentFailed = () => {
             Transaction Unsuccessful
           </CardTitle>
           <p className="text-gray-300 mt-4">
-            Unfortunately, we couldn't process your payment. Please try again or contact support if the issue persists.
+            Unfortunately, we could not process your payment. Please try again or contact support if the issue persists.
           </p>
           <Button
             className="mt-6 bg-[#007A5A] hover:bg-[#006148] text-white transition-colors duration-200 px-6 py-3 text-lg rounded-md"
