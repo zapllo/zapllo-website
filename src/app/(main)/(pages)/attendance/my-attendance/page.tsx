@@ -868,7 +868,7 @@ export default function MyAttendance() {
 
             <div className="last-two-days-entries p-4 w-full justify-center flex mb-6">
                 {todayEntries?.length === 0 ? (
-                    <div className='bg-[#1a1c20] w-1/2 rounded p-4'>
+                    <div className='bg-[#] border w-1/2 rounded p-4'>
                         <div className='flex w-full justify-center'>
                             <img src='/animations/not found.gif' className='h-40 ' />
                         </div>
@@ -925,27 +925,27 @@ export default function MyAttendance() {
             </div>
             {/* Tabs for filtering entries */}
             <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
-                <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}>Today</button>
-                <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Yesterday</button>
-                <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Week</button>
-                <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Last Week</button>
-                <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>This Month</button>
-                <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>Last Month</button>
-                <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#7c3987]' : 'bg-[#28152e]'}`}>All Time</button>
-                <button onClick={openCustomModal} className={`px-4 py-2 rounded text-xs border ${customDateRange.start && customDateRange.end ? 'bg-[#7c3987] text-white' : 'bg-transparent'
+                <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}>Today</button>
+                <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Yesterday</button>
+                <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Week</button>
+                <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Week</button>
+                <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Month</button>
+                <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Month</button>
+                <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>All Time</button>
+                <button onClick={openCustomModal} className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end ? 'bg-[#815BF5] text-white' : 'bg-transparent'
                     }`}>Custom</button>
             </div>
             <div className="flex justify-center gap-4 mt-2 mb-6">
                 <button
                     onClick={() => setActiveAttendanceTab('dailyReport')}
-                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
+                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
                 >
                     <img src='/icons/report.png' className='invert-[100] h-4' />
                     Daily Report
                 </button>
                 <button
                     onClick={() => setActiveAttendanceTab('regularization')}
-                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#7c3987]' : 'bg-[#28152e] '}`}
+                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
                 >
                     <Users2 className='h-4' />
                     Regularization

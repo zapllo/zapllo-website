@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Label } from '../ui/label';
-import { ArrowLeft, Calendar, CheckCircle, Circle, Clock, CalendarDays, MessageSquare, CheckCheck, CalendarCheck } from 'lucide-react';
+import { ArrowLeft, Calendar, CheckCircle, Circle, Clock, CalendarDays, MessageSquare, CheckCheck, CalendarCheck, Bell } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import CustomAudioPlayer from '../globals/customAudioPlayer'; // Import your audio player component
 
@@ -53,7 +53,7 @@ interface LeaveDetailsProps {
 
 const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) => {
     if (!selectedLeave) return null;
-console.log(selectedLeave, 'selected leave!')
+    console.log(selectedLeave, 'selected leave!')
     return (
         <Sheet open={!!selectedLeave} onOpenChange={onClose}>
             <SheetContent className="max-w-4xl w-full">
@@ -183,7 +183,6 @@ console.log(selectedLeave, 'selected leave!')
                             </ul>
                         </div>
                     )}
-
                     {/* Remarks and Updates */}
                     <Separator className='mt-4' />
                     <div className="rounded-xl bg-[#] p-4 mb-4">
@@ -191,7 +190,7 @@ console.log(selectedLeave, 'selected leave!')
                             <CheckCheck className="h-5" />
                             <Label className=" text-md mt-auto">Updates</Label>
                         </div>
-                        <div className="mt-2 border bg-[#121212] p-2 rounded">
+                        <div className="mt-2 border bg-[#121212] p-2 py-8 rounded">
                             {selectedLeave.remarks ? (
                                 <div className="flex justify-between items-center p-2 rounded">
                                     {/* Display remark and approvedBy user */}
@@ -212,7 +211,14 @@ console.log(selectedLeave, 'selected leave!')
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-xs text-gray-500">No remarks provided.</p>
+                                <div className='flex justify-center'>
+                                    <div>
+                                        <Bell />
+                                        <p className="text-xs mt-2 -ml-10 text-white -500">
+                                            No remarks provided.
+                                        </p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>

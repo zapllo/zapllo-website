@@ -100,7 +100,7 @@ const MenuOptions = (props: Props) => {
   };
 
   return (
-    <nav className="dark:bg-[#380E3D] z-[50] h-screen fixed border-r border-[#4F2F51] overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-14">
+    <nav className="dark:bg-[#0A0D28] z-[50] h-screen fixed border-r border-[#37384B] overflow-hidden scrollbar-hide justify-between flex items-center flex-col gap-10 py-4 px-2 w-14">
       <div className="flex items-center justify-center flex-col gap-8">
         <Link href="/dashboard">
           <img src='/icons/zapllo.png' className='h-full w-full scale-75' alt="Zapllo Logo" />
@@ -118,7 +118,7 @@ const MenuOptions = (props: Props) => {
                         className={clsx(
                           'group h-6 w-6 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer',
                           {
-                            'bg-[#74517A]': isActive(menuItem, pathName),
+                            'bg-[#37384B]': isActive(menuItem, pathName),
                           }
                         )}
                       >

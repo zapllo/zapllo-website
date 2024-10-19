@@ -260,41 +260,41 @@ const LeaveTypes: React.FC = () => {
                         <Dialog.Content className="fixed z-[100]   inset-0 flex items-center justify-center">
                             <div className="b rounded-lg bg-[#1A1C20] shadow-lg w-full max-w-lg p-6">
                                 <div className='flex w-full mb-4 justify-between'>
-                                    <Dialog.Title className="text-md font-medium mb-4"> {isEdit ? 'Edit Leave Type' : 'New Leave Type'}</Dialog.Title>
+                                    <Dialog.Title className="text-lg font-medium mb-4"> {isEdit ? 'Edit Leave Type' : 'New Leave Type'}</Dialog.Title>
                                     <Dialog.DialogClose className='-mt-4'>X</Dialog.DialogClose>
                                 </div>
                                 {loading ? <Loader /> : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         <div>
-                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs -mt-2 px-1">Leave Type</label>
+                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs text-muted-foreground -mt-2 px-1">Leave Type</label>
                                             <input
                                                 type="text"
                                                 name="leaveType"
                                                 value={formData.leaveType}
                                                 onChange={handleInputChange}
                                                 // placeholder='Leave Type'
-                                                className="w-full text-sm p-2 outline-none font-medium border rounded bg-transparent"
+                                                className="w-full text-sm pt-3 p-2 outline-none font-medium border rounded bg-transparent"
                                                 required
                                             />
                                         </div>
 
-                                        <div>
+                                        <div className=''>
                                             {/* <label className="block text-sm">Description</label> */}
-                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs -mt-2 px-1">Description</label>
+                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs text-muted-foreground -mt-2 px-1">Description</label>
 
                                             <textarea
                                                 name="description"
                                                 value={formData.description}
                                                 onChange={handleInputChange}
                                                 // placeholder='Description'
-                                                className="w-full text-xs font-medium p-2 border bg-transparent outline-none rounded"
+                                                className="w-full text-xs h-24 pt-3 font-medium p-2 border bg-transparent outline-none rounded"
                                                 required
                                             />
                                         </div>
 
                                         <div>
                                             {/* <label className="block text-sm">Allotted Leaves</label> */}
-                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs -mt-2 px-1">Alloted Leaves</label>
+                                            <label className="absolute bg-[#1A1C20]  text-muted-foreground -mt-2 ml-2 text-xs -mt-2 px-1">Alloted Leaves</label>
                                             <input
                                                 type="number"
                                                 name="allotedLeaves"
@@ -399,7 +399,7 @@ const LeaveTypes: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='mt-3 flex gap-1'>
+                                            <div className='mt-3 flex gap-1 text-muted-foreground'>
                                                 <Info className='h-5' />
                                                 <p className=' text-sm '>Deduction (in Days) : Full Day - 1, Half Day - 0.5, Short Leave - 0.25 </p>
                                             </div>

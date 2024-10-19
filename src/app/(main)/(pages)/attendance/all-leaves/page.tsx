@@ -59,13 +59,13 @@ type User = {
 interface LeaveDay {
   date: string;
   unit:
-    | "Full Day"
-    | "1st Half"
-    | "2nd Half"
-    | "1st Quarter"
-    | "2nd Quarter"
-    | "3rd Quarter"
-    | "4th Quarter";
+  | "Full Day"
+  | "1st Half"
+  | "2nd Half"
+  | "1st Quarter"
+  | "2nd Quarter"
+  | "3rd Quarter"
+  | "4th Quarter";
   status: "Pending" | "Approved" | "Rejected";
 }
 
@@ -205,11 +205,11 @@ export default function AllLeaves() {
   useEffect(() => {
     const fetchAllLeaves = async () => {
       try {
-        setLoading(true);
+        // setLoading(true);
         const response = await axios.get("/api/leaves/all");
         if (response.data.success) {
           setLeaves(response.data.leaves);
-          setLoading(false);
+          // setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching leaves:", error);
@@ -366,12 +366,12 @@ export default function AllLeaves() {
   useEffect(() => {
     const fetchLeaveBalances = async () => {
       try {
-        setLoading(true);
+        // setLoading(true);
         const response = await axios.get("/api/leaves/getAllUsersBalances");
         if (response.data.success) {
           setUsers(response.data.data.users);
           setLeaveTypes(response.data.data.leaveTypes);
-          setLoading(false);
+          // setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching leave balances:", error);
@@ -405,71 +405,64 @@ export default function AllLeaves() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setDateFilter("Today")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Today"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Today"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           Today
         </button>
         <button
           onClick={() => setDateFilter("Yesterday")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Yesterday"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Yesterday"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setDateFilter("ThisWeek")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "ThisWeek"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisWeek"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           This Week
         </button>
         <button
           onClick={() => setDateFilter("ThisMonth")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "ThisMonth"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisMonth"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           This Month
         </button>
         <button
           onClick={() => setDateFilter("LastMonth")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "LastMonth"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "LastMonth"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setDateFilter("AllTime")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "AllTime"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "AllTime"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           All Time
         </button>
         <button
           onClick={() => setIsCustomModalOpen(true)}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Custom"
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Custom"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           Custom
         </button>
@@ -478,22 +471,20 @@ export default function AllLeaves() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setTab("applications")}
-          className={`px-4 text-xs py-2 flex  rounded ${
-            tab === "applications"
+          className={`px-4 text-xs py-2 flex  rounded ${tab === "applications"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           <Calendar className="h-4" />
           <h1 className="mt-[1px]">Leave Applications ({leaves.length})</h1>
         </button>
         <button
           onClick={() => setTab("balances")}
-          className={`px-4 text-xs py-2 flex  rounded ${
-            tab === "balances"
+          className={`px-4 text-xs py-2 flex  rounded ${tab === "balances"
               ? "bg-[#7c3987] text-white"
               : "bg-[#28152e] text-white"
-          }`}
+            }`}
         >
           <WalletCards className="h-4" />
           Leave Balances ({users.length})
@@ -523,11 +514,10 @@ export default function AllLeaves() {
                     status as "Pending" | "Approved" | "Rejected" | "All"
                   )
                 }
-                className={`px-4 text-xs h-8 flex items-center gap-2 rounded ${
-                  filter === status
+                className={`px-4 text-xs h-8 flex items-center gap-2 rounded ${filter === status
                     ? "bg-[#7c3987] text-white"
                     : "bg-[#28152e] text-white"
-                }`}
+                  }`}
               >
                 {status === "All" && <HamburgerMenuIcon className="h-4" />}
                 {status === "Pending" && (
@@ -569,10 +559,11 @@ export default function AllLeaves() {
                 <div
                   key={leave._id}
                   className="border hover:border-[#75517B] cursor-pointer"
+                  onClick={() => setSelectedLeaveForDetails(leave)}
                 >
                   <div
                     className="flex items-center justify-between  px-4 rounded shadow-sm py-2 "
-                    onClick={() => setSelectedLeaveForDetails(leave)}
+
                   >
                     <div className="flex items-center gap-4">
                       {/* User Profile Icon */}
@@ -615,17 +606,16 @@ export default function AllLeaves() {
                       </div>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs ${
-                        leave.status === "Pending"
+                      className={`px-3 py-1 rounded-full text-xs ${leave.status === "Pending"
                           ? "bg-yellow-800 text-white"
                           : leave.status === "Approved"
-                          ? "bg-green-800 text-white"
-                          : leave.status === "Rejected"
-                          ? "bg-red-800 text-white"
-                          : leave.status === "Partially Approved"
-                          ? "bg-red-900 text-white"
-                          : "bg-gray-500 text-white"
-                      }`}
+                            ? "bg-green-800 text-white"
+                            : leave.status === "Rejected"
+                              ? "bg-red-800 text-white"
+                              : leave.status === "Partially Approved"
+                                ? "bg-red-900 text-white"
+                                : "bg-gray-500 text-white"
+                        }`}
                     >
                       {leave.status}
                     </span>

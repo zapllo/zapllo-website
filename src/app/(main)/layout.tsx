@@ -172,13 +172,13 @@ const Layout = (props: Props) => {
         <div>
             <>
                 {isVisible && !subscriptionExpires && (
-                    <div className='p-2 flex fixed mt- m   top-0  w-[100%] justify-center gap-2 bg-[#75517B] border'>
+                    <div className='p-2 flex fixed mt- m   top-0  w-[100%] justify-center gap-2 bg-[#37384B] border-b-2'>
                         <div className='flex gap-2 justify-center w-full'>
                             <h1 className='text-center  mt-1 flex text-white text-xs'>
-                                Your Trial Period will expire {'  '} <strong className='text-yellow-500 ml-1'>{remainingTime}</strong>{' '}, Upgrade now for uninterrupted access
+                                Your Trial Period will expire {'  '} <strong className='text-yellow-500 ml-1'>{remainingTime}</strong>{'  '}, Upgrade now for uninterrupted access
                             </h1>
                             <Link href='/dashboard/billing' >
-                                <Button className='h-5 rounded dark:bg-[#822b90] w-fit px-2 py-3  text-xs text-white'>
+                                <Button className='h-5 rounded-sm dark:bg-[#017a5b] w-fit px-2 py-3  text-xs text-white'>
                                     Upgrade Now
                                 </Button>
                             </Link>
@@ -190,7 +190,7 @@ const Layout = (props: Props) => {
                     </div>
                 )}
             </>
-            <div className={`flex overflow-hidden ${isVisible ? 'mt-10' : ''}  dark:bg-[#201124] scrollbar-hide h-full w-full `}>
+            <div className={`flex overflow-hidden ${isVisible ? 'mt-10' : ''}  dark:bg-[#04061e] scrollbar-hide h-full w-full `}>
 
                 <MenuOptions />
                 <div className='w-full overflow-hidden please h-screen '>

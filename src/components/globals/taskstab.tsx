@@ -59,6 +59,7 @@ import {
   Files,
   X,
   Play,
+  ArrowRight,
 } from "lucide-react";
 import {
   IconBrandTeams,
@@ -1292,7 +1293,7 @@ export default function TasksTab({
           <div className="gap-2 flex mb-6 w-full">
             <div className="-mt-2">
               <div className="p-4">
-                <div className="w-full     max-w-8xl ">
+                <div className="w-full max-w-8xl ">
                   <Toaster />
                   <div className=" w-full ml-2  justify-start">
                     <div className=" scrollbar-hide  mt-6">
@@ -1353,9 +1354,9 @@ export default function TasksTab({
                                 onClick={() => {
                                   setActiveDateFilter("custom"); // Set directly to "custom"
                                 }}
-                                className={`text-xs bg-[#28152e] hover:bg-[#28152e] text-muted-foreground h-6 ${activeDateFilter === "custom" ||
+                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${activeDateFilter === "custom" ||
                                   (customStartDate && customEndDate)
-                                  ? "bg-[#7C3987] text-white"
+                                  ? "bg-[#815BF5] text-white"
                                   : ""
                                   }`}
                               >
@@ -1478,43 +1479,46 @@ export default function TasksTab({
                               />
                             </div>
                             {/* <DashboardAnalytics /> */}
-                            <div className="flex gap-4 ml-24  w-full justify-center">
-                              <Tabs2
-                                defaultValue={activeDashboardTab}
-                                onValueChange={setActiveDashboardTab}
-                                className="gap-4"
-                              >
-                                <TabsList2 className="flex gap-4">
-                                  {userDetails?.role === "orgAdmin" && (
-                                    <>
-                                      <TabsTrigger2
-                                        className="flex gap-2 text-xs tabs-trigger"
-                                        value="employee-wise"
-                                      >
-                                        Employee Wise
-                                      </TabsTrigger2>
-                                      <TabsTrigger2
-                                        value="category-wise"
-                                        className="flex gap-2 text-xs"
-                                      >
-                                        Category Wise
-                                      </TabsTrigger2>
-                                    </>
-                                  )}
-                                  <TabsTrigger2
-                                    value="my-report"
-                                    className="text-xs"
-                                  >
-                                    My Report{" "}
-                                  </TabsTrigger2>
-                                  <TabsTrigger2
-                                    value="delegatedTasks"
-                                    className="tabs-trigger text-xs"
-                                  >
-                                    Delegated
-                                  </TabsTrigger2>
-                                </TabsList2>
-                              </Tabs2>
+                            <div className="flex gap-4 ml-24   w-full justify-center">
+                              <div className="w-fit px-6 border-b-2 ">
+                                <Tabs2
+                                  defaultValue={activeDashboardTab}
+                                  onValueChange={setActiveDashboardTab}
+                                  className="gap-4"
+                                >
+                                  <TabsList2 className="flex gap-4">
+                                    {userDetails?.role === "orgAdmin" && (
+                                      <>
+                                        <TabsTrigger2
+                                          className="flex gap-1 text-xs tabs-trigger"
+                                          value="employee-wise"
+                                        >
+                                          <User2 className="h-4" />  Employee Wise
+                                        </TabsTrigger2>
+                                        <TabsTrigger2
+                                          value="category-wise"
+                                          className="flex gap-1 text-xs"
+                                        >
+                                          <Tag className="h-4" />  Category Wise
+                                        </TabsTrigger2>
+                                      </>
+                                    )}
+                                    <TabsTrigger2
+                                      value="my-report"
+                                      className="text-xs flex gap-1"
+                                    >
+                                      <File className="h-4" />   My Report{" "}
+                                    </TabsTrigger2>
+                                    <TabsTrigger2
+                                      value="delegatedTasks"
+                                      className="tabs-trigger flex gap-1 text-xs"
+                                    >
+                                      <ArrowRight className="h-4" />
+                                      Delegated
+                                    </TabsTrigger2>
+                                  </TabsList2>
+                                </Tabs2>
+                              </div>
                             </div>
                             {activeDashboardTab === "employee-wise" && (
                               <div className="">
@@ -1602,7 +1606,7 @@ export default function TasksTab({
                                             setSelectedUserId(user); // Set the selected user ID
                                           }}
                                           key={user._id}
-                                          className="p-4 flex bg-[#] hover:border-[#74517A]  cursor-pointer flex-col gap-2"
+                                          className="p-4 flex bg-[#] hover:border-[#815BF5]  cursor-pointer flex-col gap-2"
                                         >
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#75517B] -400">

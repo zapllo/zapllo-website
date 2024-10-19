@@ -88,14 +88,14 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
     };
 
     return (
-        <div className=' bg-[#282d32] rounded mt-2'>
+        <div className=' bg-[#] border border-dashed border-[#815BF5] rounded mt-2'>
             {audioSrc && (
                 <div className='border p-1 px-2 h-12 mb-4 rounded-lg'>
                     <h1 className='p text-xs'>Voice Note</h1>
                     <div className="flex items-center gap-4  rounded-lg">
                         <div className="relative w-[80%] h-1 bg-gray-600 rounded">
                             <div
-                                className="absolute top-0 left-0 h-full bg-green-500 rounded"
+                                className="absolute top-0 left-0 h-full bg-[#017a5b] rounded"
                                 style={{ width: `${(currentTime / duration) * 100}%` }}
                             ></div>
                         </div>
@@ -104,10 +104,10 @@ const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioU
                         </div>
                         <button
                             onClick={handlePlayPause}
-                            className="bg-[#017A5B] text-white h-5 w-5 rounded-full"
+                            className="bg-[#017A5B] text-white h-5 w-5  rounded-full"
                         >
                             {isPlaying ? (
-                                <img src='/icons/pause.png' className='h-4 w-4 object-contain ml-[2px]' />
+                                <img src='/icons/pause.png' className='h-5 w-5 object-contain ml-[2px]' />
                             ) : (
                                 <img src='/icons/play.png' className='h-4 ml-1 w-4 object-contain' />
                             )}

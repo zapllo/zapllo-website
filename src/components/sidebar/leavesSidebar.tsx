@@ -45,11 +45,11 @@ const LeavesSidebar: React.FC = () => {
     const isAdminOrManager = userRole && userRole !== 'member';
 
     return (
-        <div className="w-48 mt-12 border-r fixed overflow-y-scroll scrollbar-hide bg-[#201024] text-white h-screen">
+        <div className="w-48 mt-12 border-r fixed overflow-y-scroll scrollbar-hide bg-[#04061e] text-white h-screen">
             <div className='space-y-4'>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg mt-6 gap-2 text-xs px-4 h-8 justify-start hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg mt-6 gap-2 text-xs px-4 h-8 justify-start hover:bg-[#37384B] bg-transparent mb-2 ${isActive('/attendance') ? 'bg-[#815BF5] text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance')}
                     >
                         <Grid2X2 className='h-4' /> Dashboard
@@ -57,7 +57,7 @@ const LeavesSidebar: React.FC = () => {
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg gap-2 text-xs px-4 h-8 justify-start hover:bg-[#75517B] bg-transparent mb-2 ${isActive('/attendance/my-attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg gap-2 text-xs px-4 h-8 justify-start hover:bg-[#37384B] bg-transparent mb-2 ${isActive('/attendance/my-attendance') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance/my-attendance')}
                     >
                         <CalendarCheck className='h-4' /> My Attendance
@@ -65,7 +65,7 @@ const LeavesSidebar: React.FC = () => {
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg gap-2 text-xs px-4  bg-transparent h-8 justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/my-leaves') ? 'bg-[#75517B] text-white ' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg gap-2 text-xs px-4  bg-transparent h-8 justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/my-leaves') ? 'bg-[#815BF5] text-white ' : 'hover:text-white text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance/my-leaves')}
                     >
                         <CalendarMinus className='h-4' /> My Leaves
@@ -73,7 +73,7 @@ const LeavesSidebar: React.FC = () => {
                 </div>
                 <div className='flex justify-center'>
                     <Button
-                        className={`w-[90%] rounded-lg text-xs gap-2 px-4 h-8 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/holidays') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                        className={`w-[90%] rounded-lg text-xs gap-2 px-4 h-8 bg-transparent justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/holidays') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
                         onClick={() => handleNavigation('/attendance/holidays')}
                     >
                         <CalendarX className='h-4' /> Holidays
@@ -84,7 +84,7 @@ const LeavesSidebar: React.FC = () => {
                 {isAdminOrManager && (
                     <div className='flex justify-center'>
                         <Button
-                            className={`w-[90%] rounded-lg text-xs gap-2 px-4  h-8 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/approvals') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                            className={`w-[90%] rounded-lg text-xs gap-2 px-4  h-8 bg-transparent justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/approvals') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
                             onClick={() => handleNavigation('/attendance/approvals')}
                         >
                             <Stamp className='h-4' /> Approvals
@@ -97,7 +97,7 @@ const LeavesSidebar: React.FC = () => {
                     <>
                         <div className='flex justify-center'>
                             <Button
-                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/all-leaves') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/all-leaves') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
                                 onClick={() => handleNavigation('/attendance/all-leaves')}
                             >
                                 <CalendarMinus2Icon className='h-4' /> All Leaves
@@ -105,7 +105,7 @@ const LeavesSidebar: React.FC = () => {
                         </div>
                         <div className='flex justify-center'>
                             <Button
-                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/all-attendance') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/all-attendance') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
                                 onClick={() => handleNavigation('/attendance/all-attendance')}
                             >
                                 <CalendarCheck2 className='h-4' /> All Attendance
@@ -113,7 +113,7 @@ const LeavesSidebar: React.FC = () => {
                         </div>
                         <div className='flex justify-center'>
                             <Button
-                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#75517B] mb-2 ${isActive('/attendance/settings') ? 'bg-[#75517B] text-white' : 'text-gray-400'}`}
+                                className={`w-[90%] rounded-lg text-xs gap-2 h-8 px-4 bg-transparent justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/settings') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
                                 onClick={() => handleNavigation('/attendance/settings')}
                             >
                                 <Settings className='h-4' /> Settings

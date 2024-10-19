@@ -120,21 +120,22 @@ const DashboardPage = () => {
 
   return (
 
-    <div className=' dark:bg-[#211025] pt-2 scale-95 mt-16 gap- relative overflow-x-hidden scrollbar-hide'>
+    <div className=' dark:bg-[#04061e] mb-16 overflow-y-scroll
+     pt-2 scale-95 mt-16 h-screen gap- relative overflow-x-hidden scrollbar-hide'>
 
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
       <div className='w-full mb-2 flex'>
         {calculateProgress() < 100 && (
           <div className=' w-[50.33%] flex justify-start gap-4'>
-            <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
+            <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
               <div className='w-full'>
                 <h1>Checklist </h1>
                 <Progress value={calculateProgress()} className='' />
               </div>
               <div className='flex justify-start mt-3'>
                 <Link href='/dashboard/checklist' >
-                  <Button className='bg-[#7C3886] mt-12 hover:bg-[#7C3886]'>
+                  <Button className='bg-[#815BF5] mt-12 hover:bg-[#815BF5]'>
                     Checklist
                   </Button>
                 </Link>
@@ -145,7 +146,7 @@ const DashboardPage = () => {
           </div>
         )}
         <div className=' w-full h-48 flex justify-start gap-4'>
-          <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
+          <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
             <div className='w-full p'>
               <h1 className='px-4 text-lg font-medium'>Tutorials </h1>
               <h1 className='px-4 py-4 text-sm'>Learn how to to get best out of our business workspace </h1>
@@ -158,7 +159,7 @@ const DashboardPage = () => {
         </div>
         {calculateProgress() == 100 && (
           <div className=' w-[50.33%] flex justify-start gap-4'>
-            <div className='p-4  w-full mx-4 rounded  border border-[#E0E0E066]'>
+            <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
               <div className='w-full m'>
                 <h1 className='text-lg font-medium flex gap-2'><Megaphone /> Events </h1>
                 <p className='text-sm py-4'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
@@ -174,9 +175,9 @@ const DashboardPage = () => {
           </div>
         )}
       </div>
-      <div className='grid grid-cols-3 '>
+      <div className='grid grid-cols-3  '>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#]   m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/atask.png' className=' ml-[15px] mt-3 h-6     object-cover' />
@@ -185,7 +186,7 @@ const DashboardPage = () => {
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs' >Go To Task Management</Button>
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs' >Go To Task Management</Button>
                 </Link>
 
               </div>
@@ -194,7 +195,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <Globe className=' ml-[11px] mt-3 h-6     object-cover' />
@@ -203,7 +204,7 @@ const DashboardPage = () => {
               <p className='text-xs font-medium'>Manage all your Important Company Links</p>
               <div className='pt-2'>
                 <Link href='/intranet'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To Intranet</Button>
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5]  text-xs' >Go To Intranet</Button>
                 </Link>
 
               </div>
@@ -212,7 +213,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <CalendarMinus className=' ml-[11px] mt-3 h-6     object-cover' />
@@ -226,12 +227,12 @@ const DashboardPage = () => {
                       Free Trial  Expires {leavesRemainingTime}
                     </p>
                     <Link href='/attendance/my-leaves'>
-                      <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Leaves</Button>
+                      <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs'>Go To Leaves</Button>
                     </Link>
 
                   </>
                 ) : (
-                  <Button onClick={() => startTrial('leaves')} className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Start Trial</Button>
+                  <Button onClick={() => startTrial('leaves')} className='bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs'>Start Trial</Button>
                 )}
 
               </div>
@@ -241,9 +242,9 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <div className='grid grid-cols-3'>
+      <div className='grid grid-cols-3 mb-12 '>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[#]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
@@ -257,12 +258,12 @@ const DashboardPage = () => {
                       Free Trial Expires {attendanceRemainingTime}
                     </p>
                     <Link href='/attendance/my-attendance'>
-                      <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Go To Attendance</Button>
+                      <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs'>Go To Attendance</Button>
                     </Link>
 
                   </>
                 ) : (
-                  <Button onClick={() => startTrial('attendance')} className='bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs'>Start Trial</Button>
+                  <Button onClick={() => startTrial('attendance')} className='bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs'>Start Trial</Button>
                 )}
               </div>
             </div>
@@ -270,7 +271,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/whatsapp.png' className=' ml-3 mt-[10px] h-6     object-cover' />
@@ -279,7 +280,7 @@ const DashboardPage = () => {
               <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
               <div className='pt-2'>
                 <Link href='https://app.zapllo.com/signup'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886]  text-xs' >Go To WhatsApp API</Button>
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5]  text-xs' >Go To WhatsApp API</Button>
                 </Link>
 
               </div>
@@ -288,7 +289,7 @@ const DashboardPage = () => {
 
         </div>
         <div className='flex  gap-4 '>
-          <div className='p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/crm.png' className=' ml-[10px] mt-3 h-6  invert-[100]    object-cover' />
@@ -297,7 +298,7 @@ const DashboardPage = () => {
               <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#7C3886] py-1 hover:bg-[#7C3886] opacity-50 text-xs' >Coming Soon</Button>
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
                 </Link>
 
               </div>

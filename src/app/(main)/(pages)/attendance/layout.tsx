@@ -46,7 +46,7 @@ const Layout = (props: Props) => {
 
 
     return (
-        <div className={`flex overflow-hidden  dark:bg-[#201124] scrollbar-hide h-full w-full `}>
+        <div className={`flex overflow-hidden  dark:bg-[#04061e] scrollbar-hide h-full w-full `}>
 
             <LeavesSidebar />
             <div className='w-full overflow-hidden please h-screen '>

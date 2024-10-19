@@ -514,28 +514,29 @@ export default function TeamTabs() {
                         <AvatarFallback className="bg-[#75517B]">{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium w-[100px] mt-2 text-sm">
-                          {user.firstName.length > 8 ? `${user.firstName.slice(0, 8)}...` : user.firstName}
-                          {' '}
-                          {user.lastName.length > 8 ? `${user.lastName.slice(0, 8)}...` : user.lastName}
+                        <p className="font-medium w-[210px] mt-2 text-sm">
+                          {`${(user.firstName + ' ' + user.lastName).slice(0, 20)}${(user.firstName + ' ' + user.lastName).length > 20 ? '' : ''}`}
                         </p>
+
                       </div>
 
                     </div>
-                    <Mail className="h-5" />
-                    <p className="text-[#E0E0E0]">{user.email}</p>
-                    <h1 className="text-[#E0E0E066]">|</h1>
-                    <div className="flex gap-2 mt-1">
-                      <Phone className="h-5" />
-                      <p className="text-[#E0E0E0]">{user.whatsappNo}</p>
-                    </div>
-                    <h1 className="text-[#E0E0E066]">|</h1>
-                    {reportingManagerNames[user._id] && (
-                      <div className="flex gap-1 mt-1">
-                        <UserCircle className="h-5" />
-                        <p className="text-[#E0E0E0]">{reportingManagerNames[user._id]}</p>
+                    <div className="-ml-6 flex gap-2">
+                      <Mail className="h-5" />
+                      <p className="text-[#E0E0E0]">{user.email}</p>
+                      <h1 className="text-[#E0E0E066]">|</h1>
+                      <div className="flex gap-2 mt-[1px]">
+                        <Phone className="h-4 mt-[1px]" />
+                        <p className="text-[#E0E0E0]">{user.whatsappNo}</p>
                       </div>
-                    )}
+                      <h1 className="text-[#E0E0E066]">|</h1>
+                      {reportingManagerNames[user._id] && (
+                        <div className="flex gap-1 mt-[1px]">
+                          <UserCircle className="h-5" />
+                          <p className="text-[#E0E0E0]">{reportingManagerNames[user._id]}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="justify-end px-8 w-full flex">

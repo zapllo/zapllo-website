@@ -10,6 +10,8 @@ import Loader from '../ui/loader';
 import { toast, Toaster } from 'sonner';
 import CustomDatePicker from '../globals/date-picker';
 import { useAnimation, motion } from 'framer-motion';
+import { Separator } from '../ui/separator';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 interface LeaveFormProps {
     leaveTypes: any[]; // Leave types passed as prop
@@ -390,14 +392,15 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
                 <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
-                    <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md p-6 rounded-lg">
-                        <div className="flex justify-between mb-4">
-                            <Dialog.Title className="text-md mb-4 font-medium">Submit Leave Request</Dialog.Title>
-                            <Dialog.DialogClose className="-mt-4"><img src='/icons/cross.png' className='h-5 hover:bg-[#121212] rounded-full' /></Dialog.DialogClose>
+                    <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+                        <div className="flex border-b py-2  w-full justify-between ">
+                            <Dialog.Title className="text-md   px-6 py-2 font-medium">Submit Leave Request</Dialog.Title>
+                            <Dialog.DialogClose className=" px-6 py-2"><CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' /></Dialog.DialogClose>
                         </div>
-                        <form onSubmit={handleSubmit} className="space-y-4 ">
+
+                        <form onSubmit={handleSubmit} className="space-y-4 p-6">
                             <div className='relative'>
-                                <label className="absolute bg-[#1A1C20] ml-2 text-xs -mt-2 px-1">Leave Type</label>
+                                <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">Leave Type</label>
                                 <select
                                     name="leaveType"
                                     value={formData.leaveType}
@@ -415,7 +418,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
                             {/* Display Allotted Leaves and Balance */}
                             {allotedLeaves !== null && userLeaveBalance !== null && (
-                                <div className="mt-2 flex justify-between text-xs text-white bg-[#121212] p-3 rounded">
+                                <div className="mt-2 flex justify-between text-xs text-white bg-[#252738] p-3 rounded">
                                     <p>Total Allotted Leaves: {allotedLeaves}</p>
                                     <p>Remaining Balance: {userLeaveBalance}</p>
                                 </div>
@@ -427,9 +430,10 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     <button
                                         type="button"
                                         onClick={() => setIsFromDatePickerOpen(true)}
-                                        className="w-full text-sm p-2 outline-none border rounded bg-[#1A1C20] flex gap-1 mt-auto text-gray-300"
+                                        className="w-full text-sm p-2 outline-none border rounded bg-[#] flex gap-1 mt-auto text-gray-300"
+                                        disabled={!formData.leaveType}
                                     >
-                                        <Calendar className='h-5' />   {formData.fromDate ? new Date(formData.fromDate).toLocaleDateString() : <h1 className='mt-'>Start Date</h1>}
+                                        <Calendar className='h-5' />   {formData.fromDate ? new Date(formData.fromDate).toLocaleDateString() : <h1 className='text-[#787CA5]'>Start Date</h1>}
                                     </button>
                                     {isFromDatePickerOpen && (
                                         <div className="fixed inset-0  bg-black/50 opacity- z-[10]" >
@@ -452,9 +456,10 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     <button
                                         type="button"
                                         onClick={() => setIsToDatePickerOpen(true)}
-                                        className="w-full text-sm flex gap-1 p-2 outline-none border rounded bg-[#1A1C20] text-gray-300"
+                                        className="w-full text-sm flex gap-1 p-2 outline-none border rounded bg-[#] text-gray-300"
+                                        disabled={!formData.leaveType}
                                     >
-                                        <Calendar className='h-5' />  {formData.toDate ? new Date(formData.toDate).toLocaleDateString() : <h1 className='mt-'>End Date</h1>}
+                                        <Calendar className='h-5' />  {formData.toDate ? new Date(formData.toDate).toLocaleDateString() : <h1 className='text-[#787CA5]'>End Date</h1>}
                                     </button>
                                     {isToDatePickerOpen && (
                                         <div className="fixed inset-0  bg-black/50 opacity- z-[10]" >
@@ -493,12 +498,12 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-2 flex justify-start text-xs text-white bg-[#121212] p-3 rounded">
+                            <div className="mt-2 flex justify-start text-xs text-white bg-[#252738] p-3 rounded">
                                 <p>Leave Application for : {totalAppliedDays} day(s)</p>
                             </div>
                             <div >
                                 <div className='relative'>
-                                    <label className="absolute bg-[#1A1C20] ml-2 text-xs -mt-2 px-1">Leave Reason</label>
+                                    <label className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1">Leave Reason</label>
                                 </div>
                                 <textarea
                                     name="leaveReason"
@@ -519,7 +524,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                         <Mic className='h-5 text-center m-auto mt-1' />
                                     </div>
                                 ) : (
-                                    <div onClick={startRecording} className='h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
+                                    <div onClick={startRecording} className='h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#815BF5]'>
                                         <Mic className='h-5 text-center m-auto mt-1' />
                                     </div>
                                 )}
@@ -533,10 +538,11 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     onChange={handleFileUpload}
                                     style={{ display: 'none' }} // Hide the file input
                                 />
-                                <label htmlFor='file-upload' className='h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]'>
-                                    <Paperclip className='h-5 text-center m-auto mt-1' />
+                                <label htmlFor='file-upload' className=' '>
+                                    <img className='h-8 text-center cursor-pointer ' src='/icons/imagee.png' />
                                     {/* <span>Attach Files</span> */}
                                 </label>
+                                <canvas ref={canvasRef} className={` ${recording ? `w-1/2 ml-auto h-12` : 'hidden'} `}></canvas>
                             </div>
 
                             {/* Display selected files */}
@@ -553,7 +559,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                 </ul>
                             )}
 
-                            <canvas ref={canvasRef} className={` ${recording ? `w-1/2 h-fit` : 'hidden'} `}></canvas>
+               
                             {audioBlob && (
                                 <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
                             )}
@@ -561,10 +567,10 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                             <div className="flex justify-end ">
                                 <button
                                     type="submit"
-                                    className="bg-[#017A5B] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
                                     disabled={!formData.leaveType || formData.leaveDays.length === 0 || error !== null}
                                 >
-                                    {loading ? <Loader /> : 'Submit Leave Request'}
+                                    {loading ? <Loader /> : 'Submit Now'}
                                 </button>
                             </div>
                         </form>

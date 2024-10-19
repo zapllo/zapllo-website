@@ -374,10 +374,10 @@ const AttendanceDashboard: React.FC = () => {
       <div className='mb-12  gap-2'>
         <div className="mb-4 flex gap-2 justify-center w-full">
           <select
-            className="border-2 rounded text-xs border-[#380e3d]  outline-none p-2"
+            className="border rounded text-xs border-[] bg-[#04061E]  outline-none p-2"
             onChange={(e) => setManagerId(e.target.value)}
           >
-            <option value="">Select Manager</option>
+            <option value="bg-black">Select Manager</option>
             {managers?.map((manager) => (
               <option key={manager._id} value={manager._id}>
                 {manager.firstName} {manager.lastName}
@@ -386,7 +386,7 @@ const AttendanceDashboard: React.FC = () => {
           </select>
           {/* <label htmlFor="employee" className="mr-2">Employee:</label> */}
           <select
-            className="border-[#380e3d] border-2 outline-none text-xs  rounded p-2"
+            className="border-[#] border outline-none bg-[#04061E] text-xs  rounded p-2"
             id="employee"
             onChange={(e) => setEmployeeId(e.target.value)} // Update selected employee
           >
@@ -420,7 +420,7 @@ const AttendanceDashboard: React.FC = () => {
                     <Button
                       type="button"
                       onClick={() => setIsDatePickerOpen(true)}
-                      className=" rounded  border-2 border-[#380e3d] bg-[#121212] hover:bg-[#121212] px-3 flex gap-1 py-2"
+                      className=" rounded  border border-[#] bg-[#] hover:bg-[#37384B] px-3 flex gap-1 py-2"
                     >
                       <Calendar className="h-5 text-sm" />
 
@@ -456,7 +456,7 @@ const AttendanceDashboard: React.FC = () => {
               </div>
             </div>
             <table className="table- border w-full border-collapse">
-              <thead className='bg-[#380e3d] rounded'>
+              <thead className='bg-[#0A0D28] rounded'>
                 <tr className="text-xs border-t ">
                   <th className=" px-4 py-2 text-left">Name</th>
                   <th className=" px-4 py-2 text-left">Status</th>
@@ -503,7 +503,7 @@ const AttendanceDashboard: React.FC = () => {
 
               <div>
                 <select
-                  className="border-[#380e3d] border-2 outline-none text-xs rounded-lg p-2"
+                  className="border-[#] bg-[#04061E] border-2 outline-none text-xs rounded p-2"
                   onChange={(e) => setPeriod(e.target.value)}
                 >
                   <option value="thisWeek">This Week</option>
@@ -521,7 +521,7 @@ const AttendanceDashboard: React.FC = () => {
               <span className="border text-xs text-red-500  p-2 rounded">Holidays: {holidaysCumulative}</span>
             </div>
             <table className="table-auto border  w-full border-collapse">
-              <thead className='bg-[#380e3d] rounded'>
+              <thead className='bg-[#0A0D28] rounded'>
                 <tr className="0 text-xs">
                   <th className=" px-4 py-2 text-left">Name</th>
                   <th className=" px-4 py-2 text-left">Present</th>
@@ -545,51 +545,56 @@ const AttendanceDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className=" flex gap-2">
-        <h2 className="text-lg font-semibold mt-1">Monthly Report</h2>
-        <div className="flex items-center  space-x-4">
-          {/* Month selector */}
-          <select
-            className="p-2 text-sm border-2 outline-none w-24 border-[#380e3d] rounded"
-            value={selectedAttendanceDate}
-            onChange={(e) => setSelectedAttendanceDate(e.target.value)}
-          >
-            {monthOptions.map((month) => (
-              <option key={month.value} value={month.value}>
-                {month.display}
-              </option>
-            ))}
-          </select>
+      <div className=" flex gap-2 w-full">
+        <div className='flex gap-2 w-full'>
+          <div>
+            <h2 className="text-lg font-semibold 4">Monthly Report</h2>
+          </div>
+          <div className="flex items-center  ">
+            {/* Month selector */}
+            <select
+              className="p-2 text-sm border-2 outline-none w-24 border-[#] bg-[#04061E] rounded"
+              value={selectedAttendanceDate}
+              onChange={(e) => setSelectedAttendanceDate(e.target.value)}
+            >
+              {monthOptions.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.display}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+      
       </div>
 
-      {/* Summary */}
-      <div className="mb-4 mt-4 flex w-full justify-center space-x-2">
-        <span className="border text-xs bg-blue-900 text-white p-2 rounded">
-          Total Days: {totalDays}
-        </span>
-        <span className="border text-xs bg-yellow-600 text-white p-2 rounded">
-          Total Employees: {employees.length}
-        </span>
-        <span className="border text-xs bg-green-700 text-white p-2 rounded">
-          Present: {presentCount}
-        </span>
-        <span className="border text-xs bg-red-700 text-white p-2 rounded">
-          Leave: {leaveCount}
-        </span>
-        <span className="border text-xs bg-gray-700 text-white p-2 rounded">
-          Absent: {absentCount}
-        </span>
-        <span className="border text-xs bg-purple-700 text-white p-2 rounded">
-          Holidays: {holidayCount}
-        </span>
-      </div>
+  {/* Summary */}
+  <div className="mb-4 mt-4 flex w-full justify-start space-x-2">
+          <span className="border text-xs bg-blue-900 text-white p-2 rounded">
+            Total Days: {totalDays}
+          </span>
+          <span className="border text-xs bg-yellow-600 text-white p-2 rounded">
+            Total Employees: {employees.length}
+          </span>
+          <span className="border text-xs bg-green-700 text-white p-2 rounded">
+            Present: {presentCount}
+          </span>
+          <span className="border text-xs bg-red-700 text-white p-2 rounded">
+            Leave: {leaveCount}
+          </span>
+          <span className="border text-xs bg-gray-700 text-white p-2 rounded">
+            Absent: {absentCount}
+          </span>
+          <span className="border text-xs bg-purple-700 text-white p-2 rounded">
+            Holidays: {holidayCount}
+          </span>
+        </div>
 
       {/* Monthly Attendance Report */}
-      <div className="relative mt-6 mb-12">
+      <div className="relative mt-2 mb-12">
         <div className="h-full  rounded-md">
           <table className="w-full border-collapse border">
-            <thead className='bg-[#380e3d]'>
+            <thead className='bg-[#0A0D28]'>
               <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
               <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
               <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>

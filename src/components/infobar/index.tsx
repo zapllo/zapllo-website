@@ -185,7 +185,7 @@ const InfoBar = (props: Props) => {
     <>
 
       {userLoading && (
-        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
           {/* <Toaster /> */}
           <div
             className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
@@ -203,7 +203,7 @@ const InfoBar = (props: Props) => {
       )}
       <div className="  fixed  w-[100%]  z-[10]">
 
-        <div className='gap-6 ml-12 border-b  items-center px-4 py-2 w-[100%] z-[10] flex flex-row  bg-[#211025]'>
+        <div className='gap-6 ml-12 border-b  items-center px-4 py-2 w-[100%] z-[10] flex flex-row  bg-[#04061e]'>
           {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
           <div className={`flex ml-4   ${pathName === '/dashboard' ? 'text-center ml-[48%] w-screen' : ''}`}>
             <h1 className={`text-md mt-1 text-white font-bold `}>
@@ -217,7 +217,7 @@ const InfoBar = (props: Props) => {
             <DropdownMenu >
               <DropdownMenuTrigger asChild>
                 <Button
-                  className='relative rounded-full hover:bg-[#75517B] bg-[#75517B] p-2 h-9 w-9'
+                  className='relative rounded-full hover:bg-[] bg-[] border p-2 h-9 w-9'
                   size="icon"
                 >
                   <img src='/icons/bell.png' className='h' alt="Notification Bell" />
@@ -239,10 +239,10 @@ const InfoBar = (props: Props) => {
                     {`${lastName}`.slice(0, 1)}
                   </div>
                   <div>
-                    <h1 className='text-[#fd8829] text-sm '>
+                    <h1 className='text-[#ffffff] text-sm '>
                       {firstName}
                     </h1>
-                    {role === "orgAdmin" ? <h1 className=' text-[10px] '>Admin</h1> : role === "manager" ? <h1 className='text-[10px]'>Manager</h1> : <h1 className='text-[10px]'>Member</h1>}
+                    {role === "orgAdmin" ? <h1 className=' text-[10px] text-muted-foreground font-thin '>Admin</h1> : role === "manager" ? <h1 className='text-[10px]'>Manager</h1> : <h1 className='text-[10px]'>Member</h1>}
                   </div>
                 </div>
               </DropdownMenuTrigger>
