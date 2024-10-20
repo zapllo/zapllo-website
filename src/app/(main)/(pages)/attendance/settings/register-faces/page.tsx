@@ -1,12 +1,18 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import Loader from '@/components/ui/loader'; // Assuming you have a Loader component
-import * as Dialog from '@radix-ui/react-dialog';
-import { CheckCheck, Circle, Cross, Trash2 } from 'lucide-react';
-import { endOfMonth, startOfDay, startOfMonth, startOfWeek, subDays } from 'date-fns';
-import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
-import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
-import { toast, Toaster } from 'sonner';
+"use client";
+import React, { useState, useEffect } from "react";
+import Loader from "@/components/ui/loader"; // Assuming you have a Loader component
+import * as Dialog from "@radix-ui/react-dialog";
+import { CheckCheck, Circle, Cross, Trash2, X } from "lucide-react";
+import {
+  endOfMonth,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+} from "date-fns";
+import { Cross1Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDialog";
+import { toast, Toaster } from "sonner";
 
 interface IUser {
   _id: string;
@@ -22,7 +28,7 @@ interface IFaceRegistrationRequest {
     lastName: string;
   };
   imageUrls: string[];
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   isUpdating: boolean;
   createdAt: string; // Add a createdAt field if it doesn't exist already
 }
@@ -36,21 +42,24 @@ export default function RegisterFace() {
   const [error, setError] = useState<string | null>(null);
   const [requests, setRequests] = useState<IFaceRegistrationRequest[]>([]);
   const [updating, setUpdating] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [activeTab, setActiveTab] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null); // For image preview modal
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteRequestId, setDeleteRequestId] = useState<string | null>(null);
 
-
   // Search and date filter states
-  const [searchQuery, setSearchQuery] = useState<string>(''); // Search input
-  const [dateFilter, setDateFilter] = useState<'Today' | 'Yesterday' | 'ThisWeek' | 'ThisMonth' | 'LastMonth' | 'AllTime'>('AllTime'); // Date filter
+  const [searchQuery, setSearchQuery] = useState<string>(""); // Search input
+  const [dateFilter, setDateFilter] = useState<
+    "Today" | "Yesterday" | "ThisWeek" | "ThisMonth" | "LastMonth" | "AllTime"
+  >("AllTime"); // Date filter
 
   // Fetch the users from the organization
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users/organization');
+        const response = await fetch("/api/users/organization");
         const data = await response.json();
         if (response.ok) {
           setUsers(data.data);
@@ -58,7 +67,7 @@ export default function RegisterFace() {
           setError(data.error);
         }
       } catch (err) {
-        setError('Failed to fetch users');
+        setError("Failed to fetch users");
       } finally {
         setLoading(false);
       }
@@ -71,7 +80,7 @@ export default function RegisterFace() {
     if (files) {
       const selectedFiles = Array.from(files);
       if (selectedFiles.length > 3) {
-        setError('You can only upload up to 3 images');
+        setError("You can only upload up to 3 images");
       } else {
         setError(null); // Clear error if within limits
         setImageFiles(selectedFiles);
@@ -91,15 +100,14 @@ export default function RegisterFace() {
     }
   };
 
-
   const registerFaces = async () => {
     if (!selectedUser) {
-      setError('Please select a user');
+      setError("Please select a user");
       return;
     }
 
     if (imageFiles.length !== 3) {
-      setError('Please upload exactly 3 images');
+      setError("Please upload exactly 3 images");
       return;
     }
 
@@ -108,10 +116,10 @@ export default function RegisterFace() {
     try {
       // Step 1: Upload images to S3
       const formData = new FormData();
-      imageFiles.forEach((file) => formData.append('files', file));
+      imageFiles.forEach((file) => formData.append("files", file));
 
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
 
@@ -122,10 +130,10 @@ export default function RegisterFace() {
 
         // Step 2: Send the image URLs and user ID to the register API
 
-        const registerResponse = await fetch('/api/register-faces', {
-          method: 'POST',
+        const registerResponse = await fetch("/api/register-faces", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             userId: selectedUser,
@@ -136,16 +144,16 @@ export default function RegisterFace() {
         const registerData = await registerResponse.json();
 
         if (registerResponse.ok) {
-          console.log('Face details registered successfully:', registerData);
-          toast.success('Face details registered successfully');
+          console.log("Face details registered successfully:", registerData);
+          toast.success("Face details registered successfully");
         } else {
-          console.error('Error registering face details:', registerData.error);
+          console.error("Error registering face details:", registerData.error);
         }
       } else {
-        console.error('Error uploading images:', uploadData.error);
+        console.error("Error uploading images:", uploadData.error);
       }
     } catch (err) {
-      console.error('Error during registration process:', err);
+      console.error("Error during registration process:", err);
     } finally {
       setUploading(false); // Hide loader
     }
@@ -153,20 +161,22 @@ export default function RegisterFace() {
   // Fetch requests and initialize isUpdating
   const fetchRequests = async () => {
     try {
-      const response = await fetch('/api/face-registration-request');
+      const response = await fetch("/api/face-registration-request");
       const data = await response.json();
       if (response.ok) {
         // Add isUpdating to each request object in the fetched data
-        const requestsWithUpdating = data.requests.map((request: IFaceRegistrationRequest) => ({
-          ...request,
-          isUpdating: false,
-        }));
+        const requestsWithUpdating = data.requests.map(
+          (request: IFaceRegistrationRequest) => ({
+            ...request,
+            isUpdating: false,
+          })
+        );
         setRequests(requestsWithUpdating);
       } else {
         setError(data.message);
       }
     } catch (err) {
-      setError('Failed to fetch face registration requests');
+      setError("Failed to fetch face registration requests");
     } finally {
       setLoading(false);
     }
@@ -174,10 +184,13 @@ export default function RegisterFace() {
 
   useEffect(() => {
     fetchRequests();
-  }, [])
+  }, []);
 
   // Handle the status change and toggle isUpdating for the specific request
-  const handleStatusChange = async (requestId: string, status: 'approved' | 'rejected') => {
+  const handleStatusChange = async (
+    requestId: string,
+    status: "approved" | "rejected"
+  ) => {
     setRequests((prevRequests) =>
       prevRequests.map((request) =>
         request._id === requestId ? { ...request, isUpdating: true } : request
@@ -185,27 +198,36 @@ export default function RegisterFace() {
     );
 
     try {
-      const response = await fetch(`/api/approve-face-registration/${requestId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
+      const response = await fetch(
+        `/api/approve-face-registration/${requestId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
-        toast.success(status === 'approved' ? "Face Approved successfully!" : "Face Rejected successfully!");
+        toast.success(
+          status === "approved"
+            ? "Face Approved successfully!"
+            : "Face Rejected successfully!"
+        );
         fetchRequests(); // Refresh requests
       } else {
         setError(data.message);
       }
     } catch (err) {
-      setError('Failed to update request status');
+      setError("Failed to update request status");
     } finally {
       setRequests((prevRequests) =>
         prevRequests.map((request) =>
-          request._id === requestId ? { ...request, isUpdating: false } : request
+          request._id === requestId
+            ? { ...request, isUpdating: false }
+            : request
         )
       );
     }
@@ -213,9 +235,12 @@ export default function RegisterFace() {
   const handleDeleteRequest = async (requestId: string) => {
     setUpdating(true);
     try {
-      const response = await fetch(`/api/delete-face-registration/${requestId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/delete-face-registration/${requestId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -227,7 +252,7 @@ export default function RegisterFace() {
         setError(data.message);
       }
     } catch (err) {
-      setError('Failed to delete request');
+      setError("Failed to delete request");
     } finally {
       setUpdating(false);
     }
@@ -238,24 +263,33 @@ export default function RegisterFace() {
     const yesterday = subDays(today, 1);
     const thisWeekStart = startOfWeek(today);
     const thisMonthStart = startOfMonth(today);
-    const lastMonthStart = startOfMonth(new Date(today.getFullYear(), today.getMonth() - 1));
-    const lastMonthEnd = endOfMonth(new Date(today.getFullYear(), today.getMonth() - 1));
+    const lastMonthStart = startOfMonth(
+      new Date(today.getFullYear(), today.getMonth() - 1)
+    );
+    const lastMonthEnd = endOfMonth(
+      new Date(today.getFullYear(), today.getMonth() - 1)
+    );
 
     return requests.filter((request) => {
       const requestDate = new Date(request.createdAt); // Assuming `createdAt` is a timestamp
 
       switch (dateFilter) {
-        case 'Today':
-          return startOfDay(requestDate).getTime() === startOfDay(today).getTime();
-        case 'Yesterday':
-          return startOfDay(requestDate).getTime() === startOfDay(yesterday).getTime();
-        case 'ThisWeek':
+        case "Today":
+          return (
+            startOfDay(requestDate).getTime() === startOfDay(today).getTime()
+          );
+        case "Yesterday":
+          return (
+            startOfDay(requestDate).getTime() ===
+            startOfDay(yesterday).getTime()
+          );
+        case "ThisWeek":
           return requestDate >= thisWeekStart && requestDate <= today;
-        case 'ThisMonth':
+        case "ThisMonth":
           return requestDate >= thisMonthStart && requestDate <= today;
-        case 'LastMonth':
+        case "LastMonth":
           return requestDate >= lastMonthStart && requestDate <= lastMonthEnd;
-        case 'AllTime':
+        case "AllTime":
         default:
           return true;
       }
@@ -265,20 +299,23 @@ export default function RegisterFace() {
   // Search requests by user name
   const filterRequestsBySearch = (requests: IFaceRegistrationRequest[]) => {
     return requests.filter((request) => {
-      const fullName = `${request.userId.firstName} ${request.userId.lastName}`.toLowerCase();
+      const fullName =
+        `${request.userId.firstName} ${request.userId.lastName}`.toLowerCase();
       return fullName.includes(searchQuery.toLowerCase());
     });
   };
 
   // Apply both date and search filters
-  const filteredRequests = filterRequestsBySearch(filterRequestsByDate(requests));
+  const filteredRequests = filterRequestsBySearch(
+    filterRequestsByDate(requests)
+  );
 
-  const countRequests = (status: 'pending' | 'approved' | 'rejected') =>
+  const countRequests = (status: "pending" | "approved" | "rejected") =>
     requests.filter((request) => request.status === status).length;
 
   // Filter by status (all, pending, approved, rejected)
   const filteredByStatus = filteredRequests.filter((request) => {
-    if (activeTab === 'all') return true;
+    if (activeTab === "all") return true;
     return request.status === activeTab;
   });
 
@@ -289,38 +326,60 @@ export default function RegisterFace() {
       {/* Date Filters */}
       <div className="flex justify-center gap-4 mb-2">
         <button
-          onClick={() => setDateFilter('Today')}
-          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === 'Today' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
+          onClick={() => setDateFilter("Today")}
+          className={`px-4 py-1 h-8 text-xs rounded ${
+            dateFilter === "Today" ? "bg-[#7c3987] text-white" : "bg-[#28152e]"
+          }`}
         >
           Today
         </button>
         <button
-          onClick={() => setDateFilter('Yesterday')}
-          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === 'Yesterday' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
+          onClick={() => setDateFilter("Yesterday")}
+          className={`px-4 py-1 h-8 text-xs rounded ${
+            dateFilter === "Yesterday"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
         >
           Yesterday
         </button>
         <button
-          onClick={() => setDateFilter('ThisWeek')}
-          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === 'ThisWeek' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
+          onClick={() => setDateFilter("ThisWeek")}
+          className={`px-4 py-1 h-8 text-xs rounded ${
+            dateFilter === "ThisWeek"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
         >
           This Week
         </button>
         <button
-          onClick={() => setDateFilter('ThisMonth')}
-          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === 'ThisMonth' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
+          onClick={() => setDateFilter("ThisMonth")}
+          className={`px-4 py-1 h-8 text-xs rounded ${
+            dateFilter === "ThisMonth"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
         >
           This Month
         </button>
         <button
-          onClick={() => setDateFilter('LastMonth')}
-          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === 'LastMonth' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
+          onClick={() => setDateFilter("LastMonth")}
+          className={`px-4 py-1 h-8 text-xs rounded ${
+            dateFilter === "LastMonth"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
         >
           Last Month
         </button>
         <button
-          onClick={() => setDateFilter('AllTime')}
-          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === 'AllTime' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
+          onClick={() => setDateFilter("AllTime")}
+          className={`px-4 py-1 h-8 text-xs rounded ${
+            dateFilter === "AllTime"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
         >
           All Time
         </button>
@@ -338,11 +397,14 @@ export default function RegisterFace() {
           <Dialog.Content className="fixed inset-0 flex justify-center items-center">
             <div className="flex justify-center items-center bg-transparent w-screen">
               <div className="bg-[#1A1C20]  bg-opacity-90 shadow-xl rounded-lg p-6 m w-[33.33%]">
-                <div className='flex w-full justify-between'>
+                <div className="flex w-full justify-between">
                   <h3 className="text-md text-white ">
                     Register Faces - Upload 3 Images of Employee
                   </h3>
-                  <Dialog.DialogClose>X</Dialog.DialogClose>
+                  <Dialog.DialogClose>
+                    {" "}
+                    <X className="cursor-pointer border  rounded-full border-white h-5 hover:bg-white hover:text-black w-5" />
+                  </Dialog.DialogClose>
                 </div>
                 {loading ? (
                   <p>Loading users...</p>
@@ -356,7 +418,11 @@ export default function RegisterFace() {
                     >
                       <option value="text-sm">Select User</option>
                       {users.map((user) => (
-                        <option key={user._id} className='text-sm' value={user._id}>
+                        <option
+                          key={user._id}
+                          className="text-sm"
+                          value={user._id}
+                        >
                           {user.firstName} {user.lastName}
                         </option>
                       ))}
@@ -417,32 +483,67 @@ export default function RegisterFace() {
       {/* Status Tabs */}
       <div className="tabs mb-6 flex justify-center mt-4 space-x-4">
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === 'all' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
-          onClick={() => setActiveTab('all')}
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${
+            activeTab === "all" ? "bg-[#7c3987] text-white" : "bg-[#28152e]"
+          }`}
+          onClick={() => setActiveTab("all")}
         >
           <HamburgerMenuIcon />
           All ({requests.length})
         </button>
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === 'pending' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
-          onClick={() => setActiveTab('pending')}
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${
+            activeTab === "pending" ? "bg-[#7c3987] text-white" : "bg-[#28152e]"
+          }`}
+          onClick={() => setActiveTab("pending")}
         >
-          <Circle className='text-red-500 h-4' />
-          Pending ({countRequests('pending')})
+          <Circle className="text-red-500 h-4" />
+          Pending ({countRequests("pending")})
         </button>
-        <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === 'approved' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
-          onClick={() => setActiveTab('approved')}
+        {/* <button
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${
+            activeTab === "approved"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
+          onClick={() => setActiveTab("approved")}
         >
-          <CheckCheck className='text-green-500 h-4' />
-          Approved ({countRequests('approved')})
+          <CheckCheck className="text-green-500 h-4" />
+          Approved ({countRequests("approved")})
+        </button> */}
+        <button
+          className={`px-4 py-2 flex text-xs rounded gap-2 border ${
+            activeTab === "approved"
+              ? "bg-[#7c3987] text-white border-transparent"
+              : "bg-[#28152e] border-transparent"
+          } hover:border-green-500`}
+          onClick={() => setActiveTab("approved")}
+        >
+          <CheckCheck className="text-green-500 h-4" />
+          Approved ({countRequests("approved")})
         </button>
+        {/* 
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === 'rejected' ? 'bg-[#7c3987] text-white' : 'bg-[#28152e]'}`}
-          onClick={() => setActiveTab('rejected')}
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${
+            activeTab === "rejected"
+              ? "bg-[#7c3987] text-white"
+              : "bg-[#28152e]"
+          }`}
+          onClick={() => setActiveTab("rejected")}
         >
-          <Cross1Icon className='text-red-500 h-4' />
-          Rejected ({countRequests('rejected')})
+          <Cross1Icon className="text-red-500 h-4" />
+          Rejected ({countRequests("rejected")})
+        </button> */}
+        <button
+          className={`px-4 py-2 flex text-xs rounded gap-2 border ${
+            activeTab === "rejected"
+              ? "bg-[#7c3987] text-white border-transparent"
+              : "bg-[#28152e] border-transparent"
+          } hover:border-red-500`}
+          onClick={() => setActiveTab("rejected")}
+        >
+          <Cross1Icon className="text-red-500 h-4" />
+          Rejected ({countRequests("rejected")})
         </button>
       </div>
       {/* Request Table */}
@@ -453,13 +554,19 @@ export default function RegisterFace() {
           <p className="text-red-500">{error}</p>
         ) : filteredByStatus.length === 0 ? (
           // Display this message when there are no requests based on filters
-          <div className='flex w-full justify-center'>
+          <div className="flex w-full justify-center">
             <div className="mt-8 ml-4">
-              <img src='/animations/notfound.gif' className="h-56 ml-8" alt="No requests found" />
+              <img
+                src="/animations/notfound.gif"
+                className="h-56 ml-8"
+                alt="No requests found"
+              />
               <h1 className="text-center font-bold text-md mt-2">
                 No Face Registration Requests Found
               </h1>
-              <p className="text-center text-sm">The list is currently empty for the selected filters</p>
+              <p className="text-center text-sm">
+                The list is currently empty for the selected filters
+              </p>
             </div>
           </div>
         ) : (
@@ -474,10 +581,24 @@ export default function RegisterFace() {
             </thead>
             <tbody>
               {filteredByStatus.map((request) => (
-                <tr key={request._id} className="border-t text-xs border-gray-600">
-                  <td className="px-4 py-2">{request.userId.firstName}{request.userId.lastName}</td>
+                <tr
+                  key={request._id}
+                  className="border-t text-xs border-gray-600"
+                >
+                  <td className="px-4 py-2">
+                    {request.userId.firstName}
+                    {request.userId.lastName}
+                  </td>
                   {/* Conditional text color based on status */}
-                  <td className={`px-4 py-2 uppercase ${request.status === 'approved' ? 'text-green-500' : request.status === 'rejected' ? 'text-red-500' : 'text-yellow-500'}`}>
+                  <td
+                    className={`px-4 py-2 uppercase ${
+                      request.status === "approved"
+                        ? "text-green-500"
+                        : request.status === "rejected"
+                        ? "text-red-500"
+                        : "text-yellow-500"
+                    }`}
+                  >
                     {request.status}
                   </td>
                   <td className="px-4 py-2">
@@ -491,30 +612,49 @@ export default function RegisterFace() {
                             className="w-16 h-12 opacity-30 bg-black object-contain rounded cursor-pointer"
                             onClick={() => setImageModalUrl(url)} // Set image URL for preview modal
                           />
-                          <h1 onClick={() => setImageModalUrl(url)} className=' -mt-8 hover:underline cursor-pointer ml-5 absolute '>View</h1>
+                          <h1
+                            onClick={() => setImageModalUrl(url)}
+                            className=" -mt-8 hover:underline cursor-pointer ml-5 absolute "
+                          >
+                            View
+                          </h1>
                         </div>
                       ))}
                     </div>
                   </td>
                   <td className="px-4 py-2 flex text-right">
-                    {request.status === 'pending' && (
+                    {request.status === "pending" && (
                       <div className="space-x-2 flex">
                         <div>
                           <button
-                            onClick={() => handleStatusChange(request._id, 'approved')}
+                            onClick={() =>
+                              handleStatusChange(request._id, "approved")
+                            }
                             className="bg-transparent flex gap-2 border text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
-                            {request.isUpdating ? <Loader /> : <CheckCheck className='text-green-700 h-4' />} Approve
+                            {request.isUpdating ? (
+                              <Loader />
+                            ) : (
+                              <CheckCheck className="text-green-700 h-4" />
+                            )}{" "}
+                            Approve
                           </button>
                         </div>
                         <div>
                           <button
-                            onClick={() => handleStatusChange(request._id, 'rejected')}
+                            onClick={() =>
+                              handleStatusChange(request._id, "rejected")
+                            }
                             className="border flex gap-2 bg-transparent text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
-                            {request.isUpdating ? <Loader /> : <Cross1Icon className='text-red-500 h-4' />} Reject
+                            {request.isUpdating ? (
+                              <Loader />
+                            ) : (
+                              <Cross1Icon className="text-red-500 h-4" />
+                            )}{" "}
+                            Reject
                           </button>
                         </div>
                       </div>
@@ -525,7 +665,7 @@ export default function RegisterFace() {
                       className=" text-white flex justify-start py-2 px-4 rounded "
                       disabled={updating}
                     >
-                      <Trash2 className='text-red-500 h-4' />
+                      <Trash2 className="text-red-500 h-4" />
                     </button>
                     <DeleteConfirmationDialog
                       isOpen={isDeleteDialogOpen}
@@ -534,7 +674,6 @@ export default function RegisterFace() {
                       title="Confirm Delete"
                       description="Are you sure you want to delete this face registration request? This action cannot be undone."
                     />
-
                   </td>
                 </tr>
               ))}
@@ -545,12 +684,19 @@ export default function RegisterFace() {
 
       {/* Image Preview Modal */}
       {imageModalUrl && (
-        <Dialog.Root open={!!imageModalUrl} onOpenChange={() => setImageModalUrl(null)}>
+        <Dialog.Root
+          open={!!imageModalUrl}
+          onOpenChange={() => setImageModalUrl(null)}
+        >
           <Dialog.Portal>
             <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
             <Dialog.Content className="fixed  z-[100] inset-0  flex justify-center items-center">
               <div className="bg-[#211025] z-[100] relative p-6 max-w-2xl rounded-lg">
-                <img src={imageModalUrl} alt="Face Preview" className="w-full h-auto rounded" />
+                <img
+                  src={imageModalUrl}
+                  alt="Face Preview"
+                  className="w-full h-auto rounded"
+                />
                 <button
                   onClick={() => setImageModalUrl(null)}
                   className="mt-4 text-red-500"

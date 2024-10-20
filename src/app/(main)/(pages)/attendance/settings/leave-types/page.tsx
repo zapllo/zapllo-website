@@ -1,201 +1,201 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import * as Dialog from '@radix-ui/react-dialog';
-import { useRouter } from 'next/navigation';
-import clsx from 'clsx';
-import { Edit2, Info, Trash2 } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
-import Loader from '@/components/ui/loader';
-import { toast, Toaster } from 'sonner';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useRouter } from "next/navigation";
+import clsx from "clsx";
+import { Edit2, Info, Trash2, X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDialog";
+import Loader from "@/components/ui/loader";
+import { toast, Toaster } from "sonner";
 
 interface LeaveFormData {
-    leaveType: string;
-    description: string;
-    allotedLeaves: number;
-    type: 'Paid' | 'Unpaid';
-    backdatedLeaveDays: number;
-    advanceLeaveDays: number;
-    includeHolidays: boolean;
-    includeWeekOffs: boolean;
-    unit: ('Full Day' | 'Half Day' | 'Short Leave')[]; // Array for multi-selectable units
+  leaveType: string;
+  description: string;
+  allotedLeaves: number;
+  type: "Paid" | "Unpaid";
+  backdatedLeaveDays: number;
+  advanceLeaveDays: number;
+  includeHolidays: boolean;
+  includeWeekOffs: boolean;
+  unit: ("Full Day" | "Half Day" | "Short Leave")[]; // Array for multi-selectable units
 }
 
 interface LeaveType {
-    _id: string;
-    leaveType: string;
-    allotedLeaves: number;
-    description: string;
-    type: 'Paid' | 'Unpaid';
-    backdatedLeaveDays: number;  // Number of backdated leave days allowed
-    advanceLeaveDays: number;    // Number of advance leave days allowed
-    includeHolidays: boolean;    // Whether holidays are included in leave calculation
-    includeWeekOffs: boolean;    // Whether week-offs are included in leave calculation
-    unit: ('Full Day' | 'Half Day' | 'Short Leave')[];  // Array for multi-selectable units
+  _id: string;
+  leaveType: string;
+  allotedLeaves: number;
+  description: string;
+  type: "Paid" | "Unpaid";
+  backdatedLeaveDays: number; // Number of backdated leave days allowed
+  advanceLeaveDays: number; // Number of advance leave days allowed
+  includeHolidays: boolean; // Whether holidays are included in leave calculation
+  includeWeekOffs: boolean; // Whether week-offs are included in leave calculation
+  unit: ("Full Day" | "Half Day" | "Short Leave")[]; // Array for multi-selectable units
 }
 
-
 const LeaveTypes: React.FC = () => {
-    const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]); // State to store leave types
-    const [formData, setFormData] = useState<LeaveFormData>({
-        leaveType: '',
-        description: '',
-        allotedLeaves: 0,
-        type: 'Paid',
-        backdatedLeaveDays: 0,
-        advanceLeaveDays: 0,
-        includeHolidays: false,
-        includeWeekOffs: false,
-        unit: [], // Initialize as an empty array
+  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]); // State to store leave types
+  const [formData, setFormData] = useState<LeaveFormData>({
+    leaveType: "",
+    description: "",
+    allotedLeaves: 0,
+    type: "Paid",
+    backdatedLeaveDays: 0,
+    advanceLeaveDays: 0,
+    includeHolidays: false,
+    includeWeekOffs: false,
+    unit: [], // Initialize as an empty array
+  });
+
+  const [isEdit, setIsEdit] = useState(false); // Flag for edit state
+  const [deleteId, setDeleteId] = useState<string | null>(null); // Store ID of leave type to delete
+  const [editLeaveId, setEditLeaveId] = useState<string | null>(null); // Store ID of leave type to edit
+  const router = useRouter();
+  const unitOptions = ["Full Day", "Half Day", "Short Leave"] as const; // Define unit options
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Control the modal state
+  const [isLoading, setIsLoading] = useState(false); // Loader for create and edit
+  const [isDeleting, setIsDeleting] = useState(false); // Loader for delete
+  const [activeTab, setActiveTab] = useState<"All" | "Paid" | "Unpaid">("All"); // State to manage active tab
+
+  const [loading, setLoading] = useState(false);
+
+  const handleUnitToggle = (unit: "Full Day" | "Half Day" | "Short Leave") => {
+    setFormData((prevData) => ({
+      ...prevData,
+      unit: prevData.unit.includes(unit)
+        ? prevData.unit.filter((u) => u !== unit) // Remove if already selected
+        : [...prevData.unit, unit], // Add if not selected
+    }));
+  };
+  const fetchLeaveTypes = async () => {
+    try {
+      const response = await axios.get("/api/leaves/leaveType");
+      setLeaveTypes(response.data);
+    } catch (error) {
+      console.error("Error fetching leave types:", error);
+    }
+  };
+
+  // Fetch leave types when component mounts
+  useEffect(() => {
+    fetchLeaveTypes();
+  }, []);
+
+  const totalAllotedLeaves = leaveTypes.reduce(
+    (total, leave) => total + leave.allotedLeaves,
+    0
+  );
+
+  // Handle form input changes
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    // Handle checkboxes
+    if (type === "checkbox") {
+      const { checked } = e.target as HTMLInputElement;
+      setFormData({
+        ...formData,
+        [name]: checked,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleSwitchChange = (name: string, checked: boolean) => {
+    setFormData({
+      ...formData,
+      [name]: checked,
     });
+  };
 
-    const [isEdit, setIsEdit] = useState(false); // Flag for edit state
-    const [deleteId, setDeleteId] = useState<string | null>(null); // Store ID of leave type to delete
-    const [editLeaveId, setEditLeaveId] = useState<string | null>(null); // Store ID of leave type to edit
-    const router = useRouter();
-    const unitOptions = ['Full Day', 'Half Day', 'Short Leave'] as const; // Define unit options
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false); // Control the modal state
-    const [isLoading, setIsLoading] = useState(false);   // Loader for create and edit
-    const [isDeleting, setIsDeleting] = useState(false); // Loader for delete
-    const [activeTab, setActiveTab] = useState<'All' | 'Paid' | 'Unpaid'>('All'); // State to manage active tab
-
-    const [loading, setLoading] = useState(false);
-
-    const handleUnitToggle = (unit: 'Full Day' | 'Half Day' | 'Short Leave') => {
-        setFormData((prevData) => ({
-            ...prevData,
-            unit: prevData.unit.includes(unit)
-                ? prevData.unit.filter((u) => u !== unit) // Remove if already selected
-                : [...prevData.unit, unit], // Add if not selected
-        }));
-    };
-    const fetchLeaveTypes = async () => {
-        try {
-            const response = await axios.get('/api/leaves/leaveType');
-            setLeaveTypes(response.data);
-        } catch (error) {
-            console.error('Error fetching leave types:', error);
-        }
-    };
-
-    // Fetch leave types when component mounts
-    useEffect(() => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      if (isEdit && editLeaveId) {
+        // PUT request for editing
+        await axios.put(`/api/leaves/leaveType/${editLeaveId}`, formData);
+        setLoading(false);
+        setIsModalOpen(false);
+        toast.success("Leave Type updated successfully!");
         fetchLeaveTypes();
-    }, []);
+      } else {
+        // POST request for creating a new leave type
+        await axios.post("/api/leaves/leaveType", formData);
+        setLoading(false);
+        toast.success("Leave Type created successfully!");
+        setIsModalOpen(false);
+        fetchLeaveTypes();
+      }
+      router.refresh(); // Refresh after submit
+    } catch (error) {
+      console.error("Error submitting leave type:", error);
+    }
+  };
 
-    const totalAllotedLeaves = leaveTypes.reduce((total, leave) => total + leave.allotedLeaves, 0);
-
-    // Handle form input changes
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-
-        // Handle checkboxes
-        if (type === 'checkbox') {
-            const { checked } = e.target as HTMLInputElement;
-            setFormData({
-                ...formData,
-                [name]: checked,
-            });
-        } else {
-            setFormData({
-                ...formData,
-                [name]: value,
-            });
-        }
-    };
-
-
-    const handleSwitchChange = (name: string, checked: boolean) => {
-        setFormData({
-            ...formData,
-            [name]: checked,
-        });
-    };
-
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            if (isEdit && editLeaveId) {
-                // PUT request for editing
-                await axios.put(`/api/leaves/leaveType/${editLeaveId}`, formData);
-                setLoading(false);
-                setIsModalOpen(false);
-                toast.success("Leave Type updated successfully!");
-                fetchLeaveTypes();
-            } else {
-                // POST request for creating a new leave type
-                await axios.post('/api/leaves/leaveType', formData);
-                setLoading(false);
-                toast.success("Leave Type created successfully!");
-                setIsModalOpen(false);
-                fetchLeaveTypes();
-
-            }
-            router.refresh(); // Refresh after submit
-        } catch (error) {
-            console.error('Error submitting leave type:', error);
-        }
-    };
-
-    // Handle edit leave type
-    const openEditModal = (leave: LeaveType) => {
-        setIsEdit(true);
-        setEditLeaveId(leave._id);
-        setFormData({
-            leaveType: leave.leaveType,
-            description: leave.description || '',  // Prefill description
-            allotedLeaves: leave.allotedLeaves,
-            type: leave.type,
-            backdatedLeaveDays: leave.backdatedLeaveDays || 0,  // Prefill backdatedLeaveDays if available
-            advanceLeaveDays: leave.advanceLeaveDays || 0,  // Prefill advanceLeaveDays if available
-            includeHolidays: leave.includeHolidays || false,  // Prefill includeHolidays
-            includeWeekOffs: leave.includeWeekOffs || false,  // Prefill includeWeekOffs
-            unit: leave.unit || [],  // Prefill units if available
-        });
-        setIsModalOpen(true); // Open the modal for editing
-    };
-
-
-    // Handle delete leave type
-    const handleDelete = async () => {
-        try {
-            await axios.delete(`/api/leaves/leaveType/${deleteId}`);
-            setIsDeleteDialogOpen(false);
-            fetchLeaveTypes(); // Refresh after delete
-        } catch (error) {
-            console.error('Error deleting leave type:', error);
-        }
-    };
-
-    const handleDeleteClick = (id: string) => {
-        setDeleteId(id);
-        setIsDeleteDialogOpen(true);
-    };
-
-    // Filter leave types based on the active tab
-    const filteredLeaveTypes = leaveTypes.filter((leave) => {
-        if (activeTab === 'All') return true;
-        return leave.type === activeTab;
+  // Handle edit leave type
+  const openEditModal = (leave: LeaveType) => {
+    setIsEdit(true);
+    setEditLeaveId(leave._id);
+    setFormData({
+      leaveType: leave.leaveType,
+      description: leave.description || "", // Prefill description
+      allotedLeaves: leave.allotedLeaves,
+      type: leave.type,
+      backdatedLeaveDays: leave.backdatedLeaveDays || 0, // Prefill backdatedLeaveDays if available
+      advanceLeaveDays: leave.advanceLeaveDays || 0, // Prefill advanceLeaveDays if available
+      includeHolidays: leave.includeHolidays || false, // Prefill includeHolidays
+      includeWeekOffs: leave.includeWeekOffs || false, // Prefill includeWeekOffs
+      unit: leave.unit || [], // Prefill units if available
     });
+    setIsModalOpen(true); // Open the modal for editing
+  };
 
-    const handleCreateRecommendedLeaveTypes = async () => {
-        setLoading(true);
-        try {
-            // Call the API to create recommended leave types
-            await axios.post('/api/leaves/recommendedLeaveTypes');
-            // Refresh the leave types list
-            fetchLeaveTypes();
-        } catch (error) {
-            console.error('Error creating recommended leave types:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  // Handle delete leave type
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/leaves/leaveType/${deleteId}`);
+      setIsDeleteDialogOpen(false);
+      fetchLeaveTypes(); // Refresh after delete
+    } catch (error) {
+      console.error("Error deleting leave type:", error);
+    }
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  // Filter leave types based on the active tab
+  const filteredLeaveTypes = leaveTypes.filter((leave) => {
+    if (activeTab === "All") return true;
+    return leave.type === activeTab;
+  });
+
+  const handleCreateRecommendedLeaveTypes = async () => {
+    setLoading(true);
+    try {
+      // Call the API to create recommended leave types
+      await axios.post("/api/leaves/recommendedLeaveTypes");
+      // Refresh the leave types list
+      fetchLeaveTypes();
+    } catch (error) {
+      console.error("Error creating recommended leave types:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
     return (
         <div className="container mx-auto p-6">
@@ -306,66 +306,82 @@ const LeaveTypes: React.FC = () => {
                                             />
                                         </div>
 
-                                        <div className="flex space-x-4">
-                                            <div className='flex gap-4'>
-                                                <label className="block text-sm mt-2 ">Type</label>
-                                                <div className="flex space-x-4">
-                                                    <button
-                                                        type="button"
-                                                        className={clsx(
-                                                            'px-4 py-1 text-xs h-8 mt-1 rounded  border border-[#505356]    cursor-pointer',
-                                                            formData.type === 'Paid' ? 'bg-[#017A5B] text-white' : 'bg-transparent  border border-[#505356] '
-                                                        )}
-                                                        onClick={() => setFormData({ ...formData, type: 'Paid' })}
-                                                    >
-                                                        Paid
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className={clsx(
-                                                            'px-4 py-1 text-xs h-8 mt-1 rounded  border border-[#505356]    cursor-pointer',
-                                                            formData.type === 'Unpaid' ? 'bg-[#017A5B] text-white' : 'bg-transparent  border border-[#505356] '
-                                                        )}
-                                                        onClick={() => setFormData({ ...formData, type: 'Unpaid' })}
-                                                    >
-                                                        Unpaid
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                    <div className="flex space-x-4">
+                      <div className="flex gap-4">
+                        <label className="block text-sm mt-2 ">Type</label>
+                        <div className="flex space-x-4">
+                          <button
+                            type="button"
+                            className={clsx(
+                              "px-4 py-1 text-xs h-8 mt-1 rounded  border border-[#505356]    cursor-pointer",
+                              formData.type === "Paid"
+                                ? "bg-[#017A5B] text-white"
+                                : "bg-transparent  border border-[#505356] "
+                            )}
+                            onClick={() =>
+                              setFormData({ ...formData, type: "Paid" })
+                            }
+                          >
+                            Paid
+                          </button>
+                          <button
+                            type="button"
+                            className={clsx(
+                              "px-4 py-1 text-xs h-8 mt-1 rounded  border border-[#505356]    cursor-pointer",
+                              formData.type === "Unpaid"
+                                ? "bg-[#017A5B] text-white"
+                                : "bg-transparent  border border-[#505356] "
+                            )}
+                            onClick={() =>
+                              setFormData({ ...formData, type: "Unpaid" })
+                            }
+                          >
+                            Unpaid
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
-                                        <div className="flex  gap-8">
-                                            <div className='flex w-full gap-2  bg-[#282D32] p-2  rounded'>
-                                                <label className="block text-sm  ">Backdated Leave Days</label>
-                                                <input
-                                                    type="number"
-                                                    name="backdatedLeaveDays"
-                                                    value={formData.backdatedLeaveDays}
-                                                    onChange={handleInputChange}
-                                                    className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
-                                                />
-                                            </div>
-                                            <div className='flex gap-2 w-full bg-[#282D32] p-2 rounded'>
-                                                <label className="block text-sm w-1/2 ">Advance Leave Days</label>
-                                                <input
-                                                    type="number"
-                                                    name="advanceLeaveDays"
-                                                    value={formData.advanceLeaveDays}
-                                                    onChange={handleInputChange}
-                                                    className=" border border-[#505356] px-4 w-24 outline-none bg-transparent rounded-md"
-                                                />
-                                            </div>
-                                        </div>
+                    <div className="flex  gap-8">
+                      <div className="flex w-full gap-2  bg-[#282D32] p-2  rounded">
+                        <label className="block text-sm  ">
+                          Backdated Leave Days
+                        </label>
+                        <input
+                          type="number"
+                          name="backdatedLeaveDays"
+                          value={formData.backdatedLeaveDays}
+                          onChange={handleInputChange}
+                          className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
+                        />
+                      </div>
+                      <div className="flex gap-2 w-full bg-[#282D32] p-2 rounded">
+                        <label className="block text-sm w-1/2 ">
+                          Advance Leave Days
+                        </label>
+                        <input
+                          type="number"
+                          name="advanceLeaveDays"
+                          value={formData.advanceLeaveDays}
+                          onChange={handleInputChange}
+                          className=" border border-[#505356] px-4 w-24 outline-none bg-transparent rounded-md"
+                        />
+                      </div>
+                    </div>
 
-                                        <div className="flex justify-between w-full ">
-                                            <div className='flex gap-2 px-2'>
-                                                <label className="block text-sm mb-2">Include Holidays</label>
-                                                <Switch
-                                                    checked={formData.includeHolidays}
-                                                    onCheckedChange={(checked) => handleSwitchChange('includeHolidays', checked)}
-                                                    id="includeHolidays"
-                                                />
-                                            </div>
+                    <div className="flex justify-between w-full ">
+                      <div className="flex gap-2 px-2">
+                        <label className="block text-sm mb-2">
+                          Include Holidays
+                        </label>
+                        <Switch
+                          checked={formData.includeHolidays}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange("includeHolidays", checked)
+                          }
+                          id="includeHolidays"
+                        />
+                      </div>
 
                                             <div className='flex gap-2 px-2'>
                                                 <label className="block text-sm mb-2">Include Week Offs</label>

@@ -1,48 +1,49 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from 'next/navigation';
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePathname, useRouter } from "next/navigation";
 import {
-    CalendarCheck,
-    CalendarMinus,
-    CalendarX,
-    CalendarCheck2,
-    Grid2X2,
-    Stamp,
-    Settings,
-    CalendarMinus2Icon
-} from 'lucide-react';
+  CalendarCheck,
+  CalendarMinus,
+  CalendarX,
+  CalendarCheck2,
+  Grid2X2,
+  Stamp,
+  Settings,
+  CalendarMinus2Icon,
+} from "lucide-react";
 
 const LeavesSidebar: React.FC = () => {
-    const pathname = usePathname();
-    const router = useRouter();
-    const [userRole, setUserRole] = useState<string | null>(null);
+  const pathname = usePathname();
+  const router = useRouter();
+  const [userRole, setUserRole] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const response = await axios.get('/api/users/me');
-                setUserRole(response.data.data.role); // Assuming the role is in response.data.data.role
-            } catch (error) {
-                console.error('Error fetching user role:', error);
-            }
-        };
-
-        fetchUserRole();
-    }, []);
-
-    const handleNavigation = (path: string) => {
-        router.push(path);
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get("/api/users/me");
+        setUserRole(response.data.data.role); // Assuming the role is in response.data.data.role
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
     };
 
-    const isActive = (path: string) => pathname === path;
+    fetchUserRole();
+  }, []);
 
-    // Conditional rendering for orgAdmin only
-    const isOrgAdmin = userRole === 'orgAdmin';
-    // Conditional rendering for non-member roles (e.g., admin, manager)
-    const isAdminOrManager = userRole && userRole !== 'member';
+  const handleNavigation = (path: string) => {
+    router.push(path);
+  };
+
+  const isActive = (path: string) => pathname === path;
+
+  // Conditional rendering for orgAdmin only
+  const isOrgAdmin = userRole === "orgAdmin";
+  // Conditional rendering for non-member roles (e.g., admin, manager)
+  const isAdminOrManager = userRole && userRole !== "member";
 
     return (
         <div className="w-48 mt-12 border-r fixed overflow-y-scroll scrollbar-hide bg-[#04061e] text-white h-screen">

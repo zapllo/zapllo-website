@@ -597,19 +597,21 @@ export default function AllAttendance() {
                 {entry.approvalStatus === "Pending" && (
                   <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
                     <button
-                      className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
+                      className="bg-transparent py-2 flex gap-2 border border-transparent text-xs text-white px-4 rounded hover:border-green-500"
                       onClick={(e) => handleApproval(entry, e)}
                     >
                       <CheckCheck className="w-4 h-4 text-[#017a5b]" />
                       Approve
                     </button>
+
                     <button
-                      className="bg-transparent border flex gap-2 text-white px-4 py-2 text-xs rounded"
+                      className="bg-transparent border border-transparent flex gap-2 text-white px-4 py-2 text-xs rounded hover:border-red-500"
                       onClick={(e) => handleReject(entry, e)}
                     >
                       <X className="w-4 h-4 text-red-500" />
                       Reject
                     </button>
+
                     <button
                       className="bg-transparent flex gap-2 text-white px-4 py-2 text-xs rounded"
                       onClick={(e) => openDeleteDialog(entry._id, e)} // Trigger confirmation dialog
@@ -640,10 +642,7 @@ export default function AllAttendance() {
               Select Custom Date Range
             </DialogTitle>
             <DialogClose className="h-8 scale-75">
-              <img
-                src="/icons/cross.png"
-                className="h-7 hover:bg-[#121212] rounded-full"
-              />
+              <X className="cursor-pointer border -mt-4 rounded-full border-white h-7 hover:bg-white hover:text-black w-7" />
             </DialogClose>
           </div>
 

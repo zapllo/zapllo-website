@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
@@ -14,377 +14,390 @@ import { Separator } from '../ui/separator';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 interface LeaveFormProps {
-    leaveTypes: any[]; // Leave types passed as prop
+  leaveTypes: any[]; // Leave types passed as prop
 
-    onClose: () => void; // Prop to close the modal
+  onClose: () => void; // Prop to close the modal
 }
 
 interface LeaveDay {
-    date: string;
-    unit: 'Full Day' | '1st Half' | '2nd Half' | '1st Quarter' | '2nd Quarter' | '3rd Quarter' | '4th Quarter';
+  date: string;
+  unit:
+    | "Full Day"
+    | "1st Half"
+    | "2nd Half"
+    | "1st Quarter"
+    | "2nd Quarter"
+    | "3rd Quarter"
+    | "4th Quarter";
 }
 
 interface LeaveFormData {
-    leaveType: string;
-    fromDate: string;
-    toDate: string;
-    leaveReason: string;
-    leaveDays: LeaveDay[];
+  leaveType: string;
+  fromDate: string;
+  toDate: string;
+  leaveReason: string;
+  leaveDays: LeaveDay[];
 }
 
-
-const unitMapping: Record<LeaveDay['unit'], number> = {
-    'Full Day': 1,
-    '1st Half': 0.5,
-    '2nd Half': 0.5,
-    '1st Quarter': 0.25,
-    '2nd Quarter': 0.25,
-    '3rd Quarter': 0.25,
-    '4th Quarter': 0.25,
+const unitMapping: Record<LeaveDay["unit"], number> = {
+  "Full Day": 1,
+  "1st Half": 0.5,
+  "2nd Half": 0.5,
+  "1st Quarter": 0.25,
+  "2nd Quarter": 0.25,
+  "3rd Quarter": 0.25,
+  "4th Quarter": 0.25,
 };
 
 const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
-    const [formData, setFormData] = useState<LeaveFormData>({
-        leaveType: '',
-        fromDate: '',
-        toDate: '',
-        leaveReason: '',
-        leaveDays: [],
-    });
+  const [formData, setFormData] = useState<LeaveFormData>({
+    leaveType: "",
+    fromDate: "",
+    toDate: "",
+    leaveReason: "",
+    leaveDays: [],
+  });
 
-    const [availableUnits, setAvailableUnits] = useState<LeaveDay['unit'][]>([]);
-    const [allotedLeaves, setAllotedLeaves] = useState<number | null>(null);
-    const [userLeaveBalance, setUserLeaveBalance] = useState<number | null>(null);
-    const [userLeaveBalances, setUserLeaveBalances] = useState<any[]>([]); // Store user leave balances
-    const [error, setError] = useState<string | null>(null); // Error message state
-    const audioURLRef = useRef<string | null>(null);
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [recording, setRecording] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const analyserRef = useRef<AnalyserNode | null>(null);
-    const [files, setFiles] = useState<File[]>([]); // State to manage file uploads
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [totalAppliedDays, setTotalAppliedDays] = useState<number>(0); // State to store total applied days
-    const [isFromDatePickerOpen, setIsFromDatePickerOpen] = useState(false); // Manage From Date Picker
-    const [isToDatePickerOpen, setIsToDatePickerOpen] = useState(false); // Manage To Date Picker
-    const controls = useAnimation();
+  const [availableUnits, setAvailableUnits] = useState<LeaveDay["unit"][]>([]);
+  const [allotedLeaves, setAllotedLeaves] = useState<number | null>(null);
+  const [userLeaveBalance, setUserLeaveBalance] = useState<number | null>(null);
+  const [userLeaveBalances, setUserLeaveBalances] = useState<any[]>([]); // Store user leave balances
+  const [error, setError] = useState<string | null>(null); // Error message state
+  const audioURLRef = useRef<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const [files, setFiles] = useState<File[]>([]); // State to manage file uploads
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [totalAppliedDays, setTotalAppliedDays] = useState<number>(0); // State to store total applied days
+  const [isFromDatePickerOpen, setIsFromDatePickerOpen] = useState(false); // Manage From Date Picker
+  const [isToDatePickerOpen, setIsToDatePickerOpen] = useState(false); // Manage To Date Picker
+  const controls = useAnimation();
 
-    const modalVariants = {
-        hidden: {
-            opacity: 0,
-            y: '100%',
-        },
-        visible: {
-            opacity: 1,
-            y: '0%',
-            transition: {
-                type: 'spring',
-                stiffness: 300,
-                damping: 40,
-            },
-        },
-    };
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      y: "100%",
+    },
+    visible: {
+      opacity: 1,
+      y: "0%",
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 40,
+      },
+    },
+  };
 
-    // Trigger the animation when the component mounts
-    useEffect(() => {
-        controls.start('visible');
-    }, [controls]);
+  // Trigger the animation when the component mounts
+  useEffect(() => {
+    controls.start("visible");
+  }, [controls]);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get("/api/users/me"); // Adjust API endpoint as needed
+        const user = response.data.data;
 
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await axios.get('/api/users/me'); // Adjust API endpoint as needed
-                const user = response.data.data;
-
-                if (user) {
-                    // Set the user's leave balances
-                    setUserLeaveBalances(user.leaveBalances);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-
-        if (name === 'leaveType' && value) {
-            const selectedLeaveType = leaveTypes.find((type) => type._id === value);
-            if (selectedLeaveType) {
-                const selectedUnits = [];
-                if (selectedLeaveType.unit.includes('Full Day')) selectedUnits.push('Full Day');
-                if (selectedLeaveType.unit.includes('Half Day')) {
-                    selectedUnits.push('1st Half', '2nd Half');
-                }
-                if (selectedLeaveType.unit.includes('Short Leave')) {
-                    selectedUnits.push('1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter');
-                }
-                setAvailableUnits(selectedUnits as LeaveDay['unit'][]);
-
-                // Set allotted leaves and user balance
-                setAllotedLeaves(selectedLeaveType.allotedLeaves);
-                // Find the user's leave balance for the selected leave type
-                const userLeaveBalanceForType = userLeaveBalances.find(
-                    (balance) => balance.leaveType === value
-                );
-
-                // Set the leave balance for the selected leave type
-                setUserLeaveBalance(userLeaveBalanceForType ? userLeaveBalanceForType.balance : null);
-            }
+        if (user) {
+          // Set the user's leave balances
+          setUserLeaveBalances(user.leaveBalances);
         }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
 
-    const handleUnitChange = (date: string, newUnit: LeaveDay['unit']) => {
-        const updatedLeaveDays = formData.leaveDays.map((day) =>
-            day.date === date ? { ...day, unit: newUnit } : day
+    fetchUserData();
+  }, []);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === "leaveType" && value) {
+      const selectedLeaveType = leaveTypes.find((type) => type._id === value);
+      if (selectedLeaveType) {
+        const selectedUnits = [];
+        if (selectedLeaveType.unit.includes("Full Day"))
+          selectedUnits.push("Full Day");
+        if (selectedLeaveType.unit.includes("Half Day")) {
+          selectedUnits.push("1st Half", "2nd Half");
+        }
+        if (selectedLeaveType.unit.includes("Short Leave")) {
+          selectedUnits.push(
+            "1st Quarter",
+            "2nd Quarter",
+            "3rd Quarter",
+            "4th Quarter"
+          );
+        }
+        setAvailableUnits(selectedUnits as LeaveDay["unit"][]);
+
+        // Set allotted leaves and user balance
+        setAllotedLeaves(selectedLeaveType.allotedLeaves);
+        // Find the user's leave balance for the selected leave type
+        const userLeaveBalanceForType = userLeaveBalances.find(
+          (balance) => balance.leaveType === value
         );
-        setFormData((prevData) => ({ ...prevData, leaveDays: updatedLeaveDays }));
-    };
 
-    const calculateRequestedDays = () => {
-        const { fromDate, toDate } = formData;
-        if (fromDate && toDate) {
-            const start = new Date(fromDate);
-            const end = new Date(toDate);
-            const diffTime = Math.abs(end.getTime() - start.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include both start and end date
-            return diffDays;
-        }
-        return 0;
-    };
+        // Set the leave balance for the selected leave type
+        setUserLeaveBalance(
+          userLeaveBalanceForType ? userLeaveBalanceForType.balance : null
+        );
+      }
+    }
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+  const handleUnitChange = (date: string, newUnit: LeaveDay["unit"]) => {
+    const updatedLeaveDays = formData.leaveDays.map((day) =>
+      day.date === date ? { ...day, unit: newUnit } : day
+    );
+    setFormData((prevData) => ({ ...prevData, leaveDays: updatedLeaveDays }));
+  };
 
-        // First, upload files (including audio) to /api/upload
-        let fileUrls: string[] = [];
-        let audioUrl: string | null = null;
+  const calculateRequestedDays = () => {
+    const { fromDate, toDate } = formData;
+    if (fromDate && toDate) {
+      const start = new Date(fromDate);
+      const end = new Date(toDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include both start and end date
+      return diffDays;
+    }
+    return 0;
+  };
 
-        // Prepare the FormData object to hold the files and audio for upload
-        const formDataToUpload = new FormData();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        if (files.length > 0) {
-            files.forEach(file => formDataToUpload.append('files', file)); // Add each file to the FormData
-        }
+    // First, upload files (including audio) to /api/upload
+    let fileUrls: string[] = [];
+    let audioUrl: string | null = null;
 
-        if (audioBlob) {
-            formDataToUpload.append('audio', audioBlob, 'audio.wav'); // Add the audio to the FormData
-        }
+    // Prepare the FormData object to hold the files and audio for upload
+    const formDataToUpload = new FormData();
 
-        // If there are files or audio, make the API call to upload them
-        if (files.length > 0 || audioBlob) {
-            try {
-                const uploadResponse = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formDataToUpload,
-                });
+    if (files.length > 0) {
+      files.forEach((file) => formDataToUpload.append("files", file)); // Add each file to the FormData
+    }
 
-                if (uploadResponse.ok) {
-                    const uploadData = await uploadResponse.json();
-                    fileUrls = uploadData.fileUrls || []; // Array of uploaded file URLs
-                    audioUrl = uploadData.audioUrl || null; // Audio URL if present
-                } else {
-                    console.error('Failed to upload files.');
-                    return;
-                }
-            } catch (error) {
-                console.error('Error uploading files:', error);
-                return;
-            }
-        }
+    if (audioBlob) {
+      formDataToUpload.append("audio", audioBlob, "audio.wav"); // Add the audio to the FormData
+    }
 
-        // Now that we have the file and audio URLs, submit the leave request to the database
-        const leaveRequestData = {
-            leaveType: formData.leaveType,
-            fromDate: formData.fromDate,
-            toDate: formData.toDate,
-            leaveReason: formData.leaveReason,
-            attachment: fileUrls, // List of file URLs
-            audioUrl: audioUrl, // Audio URL (if available)
-            leaveDays: formData.leaveDays,
-        };
+    // If there are files or audio, make the API call to upload them
+    if (files.length > 0 || audioBlob) {
+      try {
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formDataToUpload,
+        });
 
-        try {
-            setLoading(true);
-            const response = await fetch('/api/leaves', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(leaveRequestData),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                toast.success("Leave Request submitted successfully");
-                console.log('Leave request submitted successfully:', data);
-                onClose(); // Close the modal on successful submission
-            } else {
-                console.error('Failed to submit leave request.');
-            }
-            setLoading(false);
-        } catch (error) {
-            console.error('Error submitting leave request:', error);
-        }
-        setLoading(false);
-        onClose();
-    };
-
-
-    useEffect(() => {
-        if (formData.fromDate && formData.toDate) {
-            const start = new Date(formData.fromDate);
-            const end = new Date(formData.toDate);
-            const dateArray: LeaveDay[] = [];
-
-            while (start <= end) {
-                const formattedDate = start.toISOString().split('T')[0];
-                dateArray.push({ date: formattedDate, unit: 'Full Day' });
-                start.setDate(start.getDate() + 1);
-            }
-
-            setFormData((prevData) => ({ ...prevData, leaveDays: dateArray }));
-        }
-    }, [formData.fromDate, formData.toDate]);
-
-    useEffect(() => {
-        // Check if the requested leave days exceed the user's balance
-        const requestedDays = calculateRequestedDays();
-        if (userLeaveBalance !== null && requestedDays > userLeaveBalance) {
-            setError('Exceeded leave request balance');
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          fileUrls = uploadData.fileUrls || []; // Array of uploaded file URLs
+          audioUrl = uploadData.audioUrl || null; // Audio URL if present
         } else {
-            setError(null);
+          console.error("Failed to upload files.");
+          return;
         }
-    }, [formData.fromDate, formData.toDate, userLeaveBalance]);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        return;
+      }
+    }
 
-    // Handle file upload logic
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFiles = event.target.files;
-
-        if (selectedFiles && selectedFiles.length > 0) {
-            const validFiles: File[] = [];
-
-            for (let i = 0; i < selectedFiles.length; i++) {
-                const file = selectedFiles[i];
-                validFiles.push(file);
-            }
-
-            if (validFiles.length > 0) {
-                setFiles(validFiles); // Update state with all selected files
-            }
-        }
+    // Now that we have the file and audio URLs, submit the leave request to the database
+    const leaveRequestData = {
+      leaveType: formData.leaveType,
+      fromDate: formData.fromDate,
+      toDate: formData.toDate,
+      leaveReason: formData.leaveReason,
+      attachment: fileUrls, // List of file URLs
+      audioUrl: audioUrl, // Audio URL (if available)
+      leaveDays: formData.leaveDays,
     };
 
-    const removeFile = (index: number) => {
-        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove the file at the specified index
-    };
+    try {
+      setLoading(true);
+      const response = await fetch("/api/leaves", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(leaveRequestData),
+      });
 
-    // Handle audio recording logic
-    const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Type assertion
-            const audioContext = new AudioContext();
-            const analyser = audioContext.createAnalyser();
-            const source = audioContext.createMediaStreamSource(stream);
-            source.connect(analyser);
-            analyser.fftSize = 2048;
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            analyserRef.current = analyser;
+      if (response.ok) {
+        const data = await response.json();
+        toast.success("Leave Request submitted successfully");
+        console.log("Leave request submitted successfully:", data);
+        onClose(); // Close the modal on successful submission
+      } else {
+        console.error("Failed to submit leave request.");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error submitting leave request:", error);
+    }
+    setLoading(false);
+    onClose();
+  };
 
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    const blob = new Blob([event.data], { type: 'audio/wav' });
-                    setAudioBlob(blob);
-                    const audioURL = URL.createObjectURL(blob);
-                    audioURLRef.current = audioURL;
+  useEffect(() => {
+    if (formData.fromDate && formData.toDate) {
+      const start = new Date(formData.fromDate);
+      const end = new Date(formData.toDate);
+      const dateArray: LeaveDay[] = [];
+
+      while (start <= end) {
+        const formattedDate = start.toISOString().split("T")[0];
+        dateArray.push({ date: formattedDate, unit: "Full Day" });
+        start.setDate(start.getDate() + 1);
+      }
+
+      setFormData((prevData) => ({ ...prevData, leaveDays: dateArray }));
+    }
+  }, [formData.fromDate, formData.toDate]);
+
+  useEffect(() => {
+    // Check if the requested leave days exceed the user's balance
+    const requestedDays = calculateRequestedDays();
+    if (userLeaveBalance !== null && requestedDays > userLeaveBalance) {
+      setError("Exceeded leave request balance");
+    } else {
+      setError(null);
+    }
+  }, [formData.fromDate, formData.toDate, userLeaveBalance]);
+
+  // Handle file upload logic
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = event.target.files;
+
+    if (selectedFiles && selectedFiles.length > 0) {
+      const validFiles: File[] = [];
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        validFiles.push(file);
+      }
+
+      if (validFiles.length > 0) {
+        setFiles(validFiles); // Update state with all selected files
+      }
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove the file at the specified index
+  };
+
+  // Handle audio recording logic
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext; // Type assertion
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      analyserRef.current = analyser;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          const blob = new Blob([event.data], { type: "audio/wav" });
+          setAudioBlob(blob);
+          const audioURL = URL.createObjectURL(blob);
+          audioURLRef.current = audioURL;
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        setRecording(false);
+      };
+
+      mediaRecorder.start();
+      setRecording(true);
+
+      // Real-time waveform visualization
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const canvasCtx = canvas.getContext("2d");
+        if (canvasCtx) {
+          const drawWaveform = () => {
+            if (analyserRef.current) {
+              requestAnimationFrame(drawWaveform);
+              analyserRef.current.getByteTimeDomainData(dataArray);
+              canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+              canvasCtx.lineWidth = 2;
+              canvasCtx.strokeStyle = "green";
+              canvasCtx.beginPath();
+
+              const sliceWidth = (canvas.width * 1.0) / bufferLength;
+              let x = 0;
+
+              for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
+                const y = (v * canvas.height) / 2; // Convert to canvas height
+
+                if (i === 0) {
+                  canvasCtx.moveTo(x, y);
+                } else {
+                  canvasCtx.lineTo(x, y);
                 }
-            };
 
-            mediaRecorder.onstop = () => {
-                setRecording(false);
-            };
+                x += sliceWidth;
+              }
 
-            mediaRecorder.start();
-            setRecording(true);
-
-            // Real-time waveform visualization
-            const canvas = canvasRef.current;
-            if (canvas) {
-                const canvasCtx = canvas.getContext('2d');
-                if (canvasCtx) {
-                    const drawWaveform = () => {
-                        if (analyserRef.current) {
-                            requestAnimationFrame(drawWaveform);
-                            analyserRef.current.getByteTimeDomainData(dataArray);
-                            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-                            canvasCtx.lineWidth = 2;
-                            canvasCtx.strokeStyle = 'green';
-                            canvasCtx.beginPath();
-
-                            const sliceWidth = canvas.width * 1.0 / bufferLength;
-                            let x = 0;
-
-                            for (let i = 0; i < bufferLength; i++) {
-                                const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
-                                const y = v * canvas.height / 2; // Convert to canvas height
-
-                                if (i === 0) {
-                                    canvasCtx.moveTo(x, y);
-                                } else {
-                                    canvasCtx.lineTo(x, y);
-                                }
-
-                                x += sliceWidth;
-                            }
-
-                            canvasCtx.lineTo(canvas.width, canvas.height / 2);
-                            canvasCtx.stroke();
-                        }
-                    };
-
-                    drawWaveform();
-                }
+              canvasCtx.lineTo(canvas.width, canvas.height / 2);
+              canvasCtx.stroke();
             }
+          };
 
-            mediaRecorderRef.current = mediaRecorder;
-        } catch (error) {
-            console.error('Error accessing microphone:', error);
+          drawWaveform();
         }
-    };
+      }
 
-    const stopRecording = () => {
-        mediaRecorderRef.current?.stop();
-    };
+      mediaRecorderRef.current = mediaRecorder;
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
 
-    const calculateTotalAppliedDays = () => {
-        let totalDays = 0;
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+  };
 
-        for (const leaveDay of formData.leaveDays) {
-            totalDays += unitMapping[leaveDay.unit]; // Use the unit mapping to calculate total days
-        }
+  const calculateTotalAppliedDays = () => {
+    let totalDays = 0;
 
-        return totalDays;
-    };
+    for (const leaveDay of formData.leaveDays) {
+      totalDays += unitMapping[leaveDay.unit]; // Use the unit mapping to calculate total days
+    }
 
+    return totalDays;
+  };
 
-    useEffect(() => {
-        // Calculate and update total applied days whenever leaveDays change
-        const totalDays = calculateTotalAppliedDays();
-        setTotalAppliedDays(totalDays);
-    }, [formData.leaveDays]);
-
-
+  useEffect(() => {
+    // Calculate and update total applied days whenever leaveDays change
+    const totalDays = calculateTotalAppliedDays();
+    setTotalAppliedDays(totalDays);
+  }, [formData.leaveDays]);
 
     return (
         <Dialog.Root open onOpenChange={onClose}>
@@ -513,8 +526,8 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                 />
                             </div>
 
-                            {/* Display Error if leave request exceeds balance */}
-                            {error && <p className="text-red-500 text-xs">{error}</p>}
+              {/* Display Error if leave request exceeds balance */}
+              {error && <p className="text-red-500 text-xs">{error}</p>}
 
                             {/* Audio Recording and File Attachment */}
                             <div className='flex gap-4'>
@@ -545,19 +558,25 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                 <canvas ref={canvasRef} className={` ${recording ? `w-1/2 ml-auto h-12` : 'hidden'} `}></canvas>
                             </div>
 
-                            {/* Display selected files */}
-                            {files.length > 0 && (
-                                <ul className='list-disc list-inside'>
-                                    {files.map((file, index) => (
-                                        <li key={index} className='flex justify-between items-center'>
-                                            {file.name}
-                                            <button onClick={() => removeFile(index)} className='text-red-500 ml-2'>
-                                                <FaTimes className='h-4 w-4' />
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+              {/* Display selected files */}
+              {files.length > 0 && (
+                <ul className="list-disc list-inside">
+                  {files.map((file, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-between items-center"
+                    >
+                      {file.name}
+                      <button
+                        onClick={() => removeFile(index)}
+                        className="text-red-500 ml-2"
+                      >
+                        <FaTimes className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
                
                             {audioBlob && (

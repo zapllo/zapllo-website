@@ -928,7 +928,7 @@ export default function TasksTab({
     return `${day}-${month}-${year}`;
   };
 
-  const handleDelete = async (taskId: string) => { };
+  const handleDelete = async (taskId: string) => {};
 
   const handleEditClick = () => {
     setTaskToEdit(selectedTask);
@@ -1266,7 +1266,7 @@ export default function TasksTab({
               <div className="flex justify-start w-full ml-4 gap-2">
                 <img
                   src="/icons/delegated.png"
-                  className="h-[16px]"
+                  className="h-[16px] mt-1"
                   alt="Delegated Tasks Icon"
                 />
                 <h1 className="text-xs mt-1">Delegated Tasks</h1>
@@ -1279,7 +1279,7 @@ export default function TasksTab({
               <div className="flex justify-start w-full gap-2 ml-4">
                 <img
                   src="/icons/all.png"
-                  className="h-5"
+                  className="h-5 mt-0.5"
                   alt="All Tasks Icon"
                 />
                 <h1 className="text-xs mt-1">All Tasks</h1>
@@ -1306,48 +1306,51 @@ export default function TasksTab({
                           >
                             <TabsList3 className="flex gap-4">
                               <TabsTrigger3
-                                className="flex gap-2 text-xs"
+                                className="flex gap-2 text-xs h-7"
                                 value="today"
                               >
                                 Today
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="yesterday"
-                                className="flex gap-2 text-xs"
+                                className="flex gap-2 text-xs h-7"
                               >
                                 Yesterday
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="thisWeek"
-                                className="text-xs"
+                                className="text-xs h-7"
                               >
                                 This Week
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="lastWeek"
-                                className="text-xs"
+                                className="text-xs h-7"
                               >
                                 Last Week
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="thisMonth"
-                                className="text-xs"
+                                className="text-xs h-7"
                               >
                                 This Month
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="lastMonth"
-                                className="text-xs"
+                                className="text-xs h-7"
                               >
                                 Last Month
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="thisYear"
-                                className="text-xs"
+                                className="text-xs h-7"
                               >
                                 This Year
                               </TabsTrigger3>
-                              <TabsTrigger3 value="allTime" className="text-xs">
+                              <TabsTrigger3
+                                value="allTime"
+                                className="text-xs h-7"
+                              >
                                 All Time
                               </TabsTrigger3>
                               <Button
@@ -1372,15 +1375,12 @@ export default function TasksTab({
                                         Select Date Range
                                       </h3>
                                       <button
-                                        className="h-7 scale-75"
+                                        className="h-7 scale-75 cursor-pointer border rounded-full  hover:bg-white hover:text-black w-7"
                                         onClick={() =>
                                           setActiveDateFilter(undefined)
                                         }
                                       >
-                                        <img
-                                          src="/icons/cross.png"
-                                          className="h-7 hover:bg-[#121212] rounded-full"
-                                        />
+                                        <X className="cursor-pointer border rounded-full border-white h-7 hover:bg-white hover:text-black w-7" />
                                       </button>
                                     </div>
 
@@ -1399,8 +1399,8 @@ export default function TasksTab({
                                             <Calendar className="h-4" />
                                             {customStartDate
                                               ? new Date(
-                                                customStartDate
-                                              ).toLocaleDateString()
+                                                  customStartDate
+                                                ).toLocaleDateString()
                                               : "Start Date"}
                                           </div>
                                         </button>
@@ -1419,8 +1419,8 @@ export default function TasksTab({
                                             <Calendar className="h-4" />
                                             {customEndDate
                                               ? new Date(
-                                                customEndDate
-                                              ).toLocaleDateString()
+                                                  customEndDate
+                                                ).toLocaleDateString()
                                               : "End Date"}
                                           </div>
                                         </button>
@@ -1539,8 +1539,12 @@ export default function TasksTab({
                                     .filter((user) => {
                                       const query = searchQuery.toLowerCase();
                                       return (
-                                        user.firstName.toLowerCase().includes(query) ||
-                                        user.lastName.toLowerCase().includes(query)
+                                        user.firstName
+                                          .toLowerCase()
+                                          .includes(query) ||
+                                        user.lastName
+                                          .toLowerCase()
+                                          .includes(query)
                                       );
                                     })
                                     // Remove the second filter to include all users
@@ -1575,17 +1579,18 @@ export default function TasksTab({
 
                                       const getCompletionPercentage = (
                                         completedTasks: any,
-                                        totalTasks: any,
+                                        totalTasks: any
                                       ) => {
                                         return totalTasks === 0
                                           ? 0
                                           : (completedTasks / totalTasks) * 100;
                                       };
 
-                                      const completionPercentage = getCompletionPercentage(
-                                        completedTasks,
-                                        totalTasks
-                                      );
+                                      const completionPercentage =
+                                        getCompletionPercentage(
+                                          completedTasks,
+                                          totalTasks
+                                        );
 
                                       // Determine the color based on the traffic light logic
                                       let pathColor;
@@ -1593,7 +1598,10 @@ export default function TasksTab({
                                         pathColor = "#6C636E"; // Grey color for users with no tasks
                                       } else if (completionPercentage < 50) {
                                         pathColor = "#FF0000"; // Red for less than 50%
-                                      } else if (completionPercentage >= 50 && completionPercentage < 80) {
+                                      } else if (
+                                        completionPercentage >= 50 &&
+                                        completionPercentage < 80
+                                      ) {
                                         pathColor = "#FFA500"; // Orange for 50%-79%
                                       } else {
                                         pathColor = "#008000"; // Green for 80% and above
@@ -2154,10 +2162,11 @@ export default function TasksTab({
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "overdue"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
                                   Overdue ({myTasksOverdueCount})
@@ -2166,10 +2175,11 @@ export default function TasksTab({
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "pending"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
                                   Pending ({myTasksPendingCount})
@@ -2180,10 +2190,11 @@ export default function TasksTab({
                                   onClick={() =>
                                     setTaskStatusFilter("inProgress")
                                   }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inProgress"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
                                   In Progress ({myTasksInProgressCount})
@@ -2194,10 +2205,11 @@ export default function TasksTab({
                                   onClick={() =>
                                     setTaskStatusFilter("completed")
                                   }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "completed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
                                   Completed ({myTasksCompletedCount})
@@ -2206,10 +2218,11 @@ export default function TasksTab({
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inTime"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
                                   In Time ({myTasksInTimeCount})
@@ -2218,10 +2231,11 @@ export default function TasksTab({
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "delayed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
                                   Delayed ({myTasksDelayedCount})
@@ -2315,15 +2329,21 @@ export default function TasksTab({
                                                   className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
-                                                  <h1 className="text-xs">Reopen</h1>
+                                                  <h1 className="text-xs">
+                                                    Reopen
+                                                  </h1>
                                                 </Button>
                                                 {/* Delete Button */}
                                                 <Button
-                                                  onClick={() => handleDelete(task._id)}
+                                                  onClick={() =>
+                                                    handleDelete(task._id)
+                                                  }
                                                   className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <Trash className="h-4 rounded-full text-red-400" />
-                                                  <h1 className="text-xs">Delete</h1>
+                                                  <h1 className="text-xs">
+                                                    Delete
+                                                  </h1>
                                                 </Button>
                                               </>
                                             ) : (
@@ -2331,30 +2351,39 @@ export default function TasksTab({
                                                 {/* In Progress Button */}
                                                 <Button
                                                   onClick={() => {
-                                                    setStatusToUpdate("In Progress");
+                                                    setStatusToUpdate(
+                                                      "In Progress"
+                                                    );
                                                     setIsDialogOpen(true);
                                                   }}
                                                   className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
-                                                  <h1 className="text-xs">In Progress</h1>
+                                                  <h1 className="text-xs">
+                                                    In Progress
+                                                  </h1>
                                                 </Button>
                                                 {/* Completed Button */}
                                                 <Button
                                                   onClick={() => {
-                                                    setStatusToUpdate("Completed");
-                                                    setIsCompleteDialogOpen(true);
+                                                    setStatusToUpdate(
+                                                      "Completed"
+                                                    );
+                                                    setIsCompleteDialogOpen(
+                                                      true
+                                                    );
                                                   }}
                                                   className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
-                                                  <h1 className="text-xs">Completed</h1>
+                                                  <h1 className="text-xs">
+                                                    Completed
+                                                  </h1>
                                                 </Button>
                                               </>
                                             )}
                                           </div>
                                         </div>
-
 
                                         <div className="flex justify-end mt-4"></div>
                                       </div>
@@ -2552,10 +2581,11 @@ export default function TasksTab({
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "overdue"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
                                   Overdue ({delegatedTasksOverdueCount})
@@ -2564,10 +2594,11 @@ export default function TasksTab({
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "pending"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
                                   Pending ({delegatedTasksPendingCount})
@@ -2578,10 +2609,11 @@ export default function TasksTab({
                                   onClick={() =>
                                     setTaskStatusFilter("inProgress")
                                   }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inProgress"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
                                   In Progress ({delegatedTasksInProgressCount})
@@ -2592,10 +2624,11 @@ export default function TasksTab({
                                   onClick={() =>
                                     setTaskStatusFilter("completed")
                                   }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "completed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
                                   Completed ({delegatedTasksCompletedCount})
@@ -2604,10 +2637,11 @@ export default function TasksTab({
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inTime"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
                                   In Time ({delegatedTasksInTimeCount})
@@ -2616,10 +2650,11 @@ export default function TasksTab({
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "delayed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
                                   Delayed ({delegatedTasksDelayedCount})
@@ -2929,10 +2964,11 @@ export default function TasksTab({
                                 {/* Overdue Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "overdue"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "overdue"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CircleAlert className="text-red-500 h-3  " />
                                   Overdue ({overdueTasks})
@@ -2941,10 +2977,11 @@ export default function TasksTab({
                                 {/* Pending Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "pending"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "pending"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Circle className="text-red-400 h-3 " />
                                   Pending ({pendingTasks})
@@ -2955,10 +2992,11 @@ export default function TasksTab({
                                   onClick={() =>
                                     setTaskStatusFilter("inProgress")
                                   }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inProgress"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inProgress"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <IconProgress className="text-orange-500 h-3 " />
                                   In Progress ({inProgressTasks})
@@ -2969,10 +3007,11 @@ export default function TasksTab({
                                   onClick={() =>
                                     setTaskStatusFilter("completed")
                                   }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "completed"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "completed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-green-500 h-3 " />
                                   Completed ({completedTasks})
@@ -2981,10 +3020,11 @@ export default function TasksTab({
                                 {/* In Time Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "inTime"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "inTime"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <Clock className="text-green-500 h-3 " />
                                   In Time ({inTimeTasks})
@@ -2993,10 +3033,11 @@ export default function TasksTab({
                                 {/* Delayed Filter */}
                                 <Button
                                   onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${taskStatusFilter === "delayed"
-                                    ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                    : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                    }`}
+                                  className={`h-8 w-36 flex gap-1 text-xs   ${
+                                    taskStatusFilter === "delayed"
+                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
+                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
+                                  }`}
                                 >
                                   <CheckCircle className="text-red-500 h-3 " />
                                   Delayed ({delayedTasks})

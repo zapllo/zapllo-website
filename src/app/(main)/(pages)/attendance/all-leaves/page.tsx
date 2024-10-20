@@ -505,7 +505,7 @@ export default function AllLeaves() {
       {tab === "applications" ? (
         <>
           {/* Filter Buttons */}
-          <div className="flex justify-center gap-4 mb-6">
+          {/* <div className="flex justify-center gap-4 mb-6">
             {["All", "Pending", "Approved", "Rejected"].map((status) => (
               <button
                 key={status}
@@ -518,6 +518,49 @@ export default function AllLeaves() {
                     ? "bg-[#7c3987] text-white"
                     : "bg-[#28152e] text-white"
                   }`}
+              >
+                {status === "All" && <HamburgerMenuIcon className="h-4" />}
+                {status === "Pending" && (
+                  <Circle className="h-4 text-red-500" />
+                )}
+                {status === "Approved" && (
+                  <CheckCircle className="h-4 text-green-500" />
+                )}
+                {status === "Rejected" && (
+                  <Cross1Icon className="h-4 text-red-500" />
+                )}
+                {status} (
+                {
+                  leaves.filter(
+                    (leave) => status === "All" || leave.status === status
+                  ).length
+                }
+                )
+              </button>
+            ))}
+          </div> */}
+          <div className="flex justify-center gap-4 mb-6">
+            {["All", "Pending", "Approved", "Rejected"].map((status) => (
+              <button
+                key={status}
+                onClick={() =>
+                  setFilter(
+                    status as "Pending" | "Approved" | "Rejected" | "All"
+                  )
+                }
+                className={`px-4 text-xs h-8 flex items-center gap-2 rounded border ${
+                  filter === status
+                    ? "bg-[#7c3987] text-white"
+                    : "bg-[#28152e] text-white"
+                } ${
+                  status === "Approved" && filter !== status
+                    ? "hover:border-green-500 border-transparent"
+                    : ""
+                } ${
+                  status === "Rejected" && filter !== status
+                    ? "hover:border-red-500 border-transparent"
+                    : ""
+                }`}
               >
                 {status === "All" && <HamburgerMenuIcon className="h-4" />}
                 {status === "Pending" && (
@@ -627,19 +670,21 @@ export default function AllLeaves() {
                       leave.status === "Pending" && (
                         <div className="flex gap-2">
                           <button
-                            className="bg-transparent py-2  flex gap-2 border text-xs text-white px-4  rounded"
+                            className="bg-transparent py-2 flex gap-2 border border-transparent text-xs text-white px-4 rounded hover:border-green-500"
                             onClick={() => handleApproval(leave)}
                           >
                             <CheckCheck className="w-4 h-4 text-[#017a5b]" />
                             Approve
                           </button>
+
                           <button
-                            className="bg-transparent border flex gap-2  text-white px-4 py-2 text-xs rounded"
+                            className="bg-transparent border border-transparent flex gap-2 text-white px-4 py-2 text-xs rounded hover:border-red-500"
                             onClick={() => handleReject(leave)}
                           >
-                            <X className="w-4 h-4 text-red-500 " />
+                            <X className="w-4 h-4 text-red-500" />
                             Reject
                           </button>
+
                           <button
                             className="text-red-500  px-4 py-1 ml-auto text-xs rounded"
                             onClick={() => openDeleteDialog(leave._id)}
@@ -704,11 +749,7 @@ export default function AllLeaves() {
                   Select Custom Date Range
                 </DialogTitle>
                 <DialogClose className="h-8 scale-75">
-                  {" "}
-                  <img
-                    src="/icons/cross.png"
-                    className="h-7 hover:bg-[#121212] rounded-full"
-                  />
+                  <X className="cursor-pointer border -mt-4 rounded-full border-white h-7 hover:bg-white hover:text-black w-7" />
                 </DialogClose>
               </div>
 

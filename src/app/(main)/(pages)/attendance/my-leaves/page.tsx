@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import MyLeaveForm from "@/components/forms/MyLeavesForm"; // Your form component
 import LeaveDetails from "@/components/sheets/leaveDetails";
-import { Calendar, CheckCircle, Circle, Info } from "lucide-react";
+import { Calendar, CheckCircle, Circle, Info, X } from "lucide-react";
 import { Cross1Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
@@ -522,7 +522,7 @@ const MyLeaves: React.FC = () => {
                 <Circle className="h-4 text-red-500" />
                 Pending ({pendingCount})
               </button>
-              <button
+              {/* <button
                 className={`px-4 py-2 flex gap-2 rounded ${
                   selectedStatus === "Approved"
                     ? "bg-[#7c3987] text-white"
@@ -532,12 +532,36 @@ const MyLeaves: React.FC = () => {
               >
                 <CheckCircle className="h-4 text-green-500" />
                 Approved ({approvedCount})
-              </button>
+              </button> */}
+
               <button
+                className={`px-4 py-2 flex gap-2 rounded border ${
+                  selectedStatus === "Approved"
+                    ? "bg-[#7c3987] text-white border-transparent hover:border-green-500"
+                    : "bg-[#28152e] border-transparent hover:border-green-500"
+                }`}
+                onClick={() => setSelectedStatus("Approved")}
+              >
+                <CheckCircle className="h-4 text-green-500" />
+                Approved ({approvedCount})
+              </button>
+
+              {/* <button
                 className={`px-4 py-2 flex gap-2 rounded ${
                   selectedStatus === "Rejected"
                     ? "bg-[#7c3987] text-white"
                     : "bg-[#28152e]"
+                }`}
+                onClick={() => setSelectedStatus("Rejected")}
+              >
+                <Cross1Icon className="h-4 text-red-500" />
+                Rejected ({rejectedCount})
+              </button> */}
+              <button
+                className={`px-4 py-2 flex gap-2 rounded border ${
+                  selectedStatus === "Rejected"
+                    ? "bg-[#7c3987] text-white border-transparent hover:border-red-500"
+                    : "bg-[#28152e] border-transparent hover:border-red-500"
                 }`}
                 onClick={() => setSelectedStatus("Rejected")}
               >
@@ -682,10 +706,11 @@ const MyLeaves: React.FC = () => {
             </DialogTitle>
             <DialogClose className="h-8 scale-75">
               {" "}
-              <img
+              {/* <img
                 src="/icons/cross.png"
                 className="h-7 hover:bg-[#121212] rounded-full"
-              />
+              /> */}
+              <X className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6" />
             </DialogClose>
           </div>
 
