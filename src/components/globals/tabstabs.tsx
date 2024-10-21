@@ -1,11 +1,7 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -83,10 +79,14 @@ export default function TeamTabs() {
     reportingManager: "",
     country: "IN",
   });
-  const [selectedManager, setSelectedManager] = useState('');
-  const [reportingManagerName, setReportingManagerName] = useState('');
-  const [reportingManagerNames, setReportingManagerNames] = useState<{ [key: string]: string }>({});
+  const [selectedManager, setSelectedManager] = useState("");
+  const [reportingManagerName, setReportingManagerName] = useState("");
+  const [reportingManagerNames, setReportingManagerNames] = useState<{
+    [key: string]: string;
+  }>({});
   const [selectedReportingManager, setSelectedReportingManager] = useState("");
+  const [updateModalReportingManager, setUpdateModalReportingManager] =
+    useState("");
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -103,24 +103,30 @@ export default function TeamTabs() {
 
   useEffect(() => {
     // Update newMember's reportingManagerId when selectedManager changes
-    setNewMember(prevState => ({
+    setNewMember((prevState) => ({
       ...prevState,
-      reportingManagerId: selectedManager
+      reportingManagerId: selectedManager,
     }));
   }, [selectedManager]);
 
-
-  const fetchReportingManagerNames = async (users: User[]): Promise<{ [key: string]: string }> => {
+  const fetchReportingManagerNames = async (
+    users: User[]
+  ): Promise<{ [key: string]: string }> => {
     const managerNames: { [key: string]: string } = {};
 
     for (const user of users) {
       if (user.reportingManager) {
         try {
-          const response = await axios.get(`/api/users/${user.reportingManager}`);
+          const response = await axios.get(
+            `/api/users/${user.reportingManager}`
+          );
           const { data } = response.data;
           managerNames[user._id] = `${data.firstName}`;
         } catch (error: any) {
-          console.error(`Error fetching reporting manager for user ${user._id}:`, error);
+          console.error(
+            `Error fetching reporting manager for user ${user._id}:`,
+            error
+          );
         }
       }
     }
@@ -149,23 +155,28 @@ export default function TeamTabs() {
     fetchUsers();
   }, []);
 
-  console.log(users, 'wow')
+  console.log(users, "wow");
 
   useEffect(() => {
     const getUserDetails = async () => {
-      const res = await axios.get('/api/users/me')
+      const res = await axios.get("/api/users/me");
       setLoggedInUserRole(res.data.data.role);
-    }
+    };
     getUserDetails();
   }, []);
 
-  const handleReportingManagerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleReportingManagerChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSelectedReportingManager(event.target.value);
   };
 
   // Filter users based on search query, active tab, and selected reporting manager
   const filteredUsers = users.filter((user) => {
-    if (activeTab !== "all" && !user.role.toLowerCase().includes(activeTab.toLowerCase())) {
+    if (
+      activeTab !== "all" &&
+      !user.role.toLowerCase().includes(activeTab.toLowerCase())
+    ) {
       return false;
     }
     if (searchQuery) {
@@ -178,18 +189,20 @@ export default function TeamTabs() {
         return false;
       }
     }
-    if (selectedReportingManager && user.reportingManager !== selectedReportingManager) {
+    if (
+      selectedReportingManager &&
+      user.reportingManager !== selectedReportingManager
+    ) {
       return false;
     }
     return true;
   });
 
-
   const handleCreateUser = async () => {
     setLoading(true); // Start loader
     try {
       setErrorMessage(""); // Clear any existing error message
-      const response = await axios.post('/api/users/signup', newMember);
+      const response = await axios.post("/api/users/signup", newMember);
 
       const data: APIResponse<User> = response.data;
 
@@ -211,7 +224,6 @@ export default function TeamTabs() {
           country: '',
         });
         toast.success("New member added successfully!");
-
       } else {
         // Display error toast for existing email
         if (data.error === "A user with this email already exists.") {
@@ -232,8 +244,7 @@ export default function TeamTabs() {
       setLoading(false); // Stop loader
     }
   };
-  console.log(errorMessage, 'errorrr')
-
+  console.log(errorMessage, "errorrr");
 
   const clearFields = () => {
     setIsModalOpen(false);
@@ -248,16 +259,16 @@ export default function TeamTabs() {
       reportingManager: '',
       country: '',
     });
-    setSelectedManager('');
-  }
-
+    setSelectedManager("");
+  };
 
   const handleEditUser = async () => {
     setLoading(true);
     try {
       const updatedUser = {
         ...editedUser,
-        reportingManager: selectedReportingManager || editedUser.reportingManager, // Ensure reporting manager is included
+        reportingManager:
+          updateModalReportingManager || editedUser.reportingManager, // Ensure reporting manager is included
       };
 
       const response = await fetch(`/api/users/update`, {
@@ -273,11 +284,15 @@ export default function TeamTabs() {
       if (data.success) {
         // Update the users state
         setUsers((prevUsers) =>
-          prevUsers.map((user) => (user._id === editedUser._id ? data.user : user))
+          prevUsers.map((user) =>
+            user._id === editedUser._id ? data.user : user
+          )
         );
 
         // Update the selected user's reporting manager name in the UI
-        const updatedManager = users.find(user => user._id === updatedUser.reportingManager);
+        const updatedManager = users.find(
+          (user) => user._id === updatedUser.reportingManager
+        );
         if (updatedManager) {
           setReportingManagerNames((prev) => ({
             ...prev,
@@ -336,7 +351,6 @@ export default function TeamTabs() {
     setIsDeleteDialogOpen(true);
   };
 
-
   // useEffect(() => {
   //   if (selectedUser) {
   //     fetchReportingManagerName(selectedUser.reportingManager);
@@ -348,7 +362,11 @@ export default function TeamTabs() {
       <div className="gap-2 ml-24 mb-6 w-full">
         <div className="flex mt-4 gap-2 mb-4">
           <div>
-            <Tabs3 defaultValue={activeTab} onValueChange={setActiveTab} className="w-full justify-start">
+            <Tabs3
+              defaultValue={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full justify-start"
+            >
               <TabsList3 className="flex gap-4">
                 <TabsTrigger3 value="all">All</TabsTrigger3>
                 <TabsTrigger3 value="orgAdmin">Admin</TabsTrigger3>
@@ -365,8 +383,10 @@ export default function TeamTabs() {
               className="block bg-[#04061E] border-[#]  border-2 w-full px-3 py-1  rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="">Reporting Manager</option>
-              {users.map(user => (
-                <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
+              {users.map((user) => (
+                <option key={user._id} value={user._id}>
+                  {user.firstName} {user.lastName}
+                </option>
               ))}
             </select>
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -394,14 +414,18 @@ export default function TeamTabs() {
                     className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.firstName}
-                    onChange={(e) => setNewMember({ ...newMember, firstName: e.target.value })}
+                    onChange={(e) =>
+                      setNewMember({ ...newMember, firstName: e.target.value })
+                    }
                   />
                   <input
                     placeholder="Last Name"
                     className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.lastName}
-                    onChange={(e) => setNewMember({ ...newMember, lastName: e.target.value })}
+                    onChange={(e) =>
+                      setNewMember({ ...newMember, lastName: e.target.value })
+                    }
                   />
                   <input
                     placeholder="Email"
@@ -416,7 +440,9 @@ export default function TeamTabs() {
                     }}
                   />
                   {errorMessage && (
-                    <p className="text-red-500 text-xs ml-1 -my-3  ">{errorMessage}</p>
+                    <p className="text-red-500 text-xs ml-1 -my-3  ">
+                      {errorMessage}
+                    </p>
                   )}
 
                   <UserCountry
@@ -437,29 +463,45 @@ export default function TeamTabs() {
                     className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.password}
-                    onChange={(e) => setNewMember({ ...newMember, password: e.target.value })}
+                    onChange={(e) =>
+                      setNewMember({ ...newMember, password: e.target.value })
+                    }
                   />
                   <select
                     value={newMember.role}
                     onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
                     className="block w-full px-2 text-xs py-2 bg-[#0b0d29] border  rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                   >
-                    <option className="text-xs" value="member">Team Member</option>
-                    <option className="text-xs" value="manager">Manager</option>
+                    <option className="text-xs" value="member">
+                      Team Member
+                    </option>
+                    <option className="text-xs" value="manager">
+                      Manager
+                    </option>
                     {loggedInUserRole === "orgAdmin" && (
-                      <option className="text-xs" value="orgAdmin">Admin</option>
+                      <option className="text-xs" value="orgAdmin">
+                        Admin
+                      </option>
                     )}
                   </select>
                   <div>
-                    {newMember.role !== 'orgAdmin' && (
+                    {newMember.role !== "orgAdmin" && (
                       <select
                         value={selectedManager}
                         onChange={(e) => setSelectedManager(e.target.value)}
                         className="block w-full px-2 py-2 bg-[#0b0d29]   text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                       >
-                        <option className="text-xs" value="">Select Reporting Manager</option>
-                        {users.map(user => (
-                          <option className="text-xs" key={user._id} value={user._id}>{user.firstName}</option>
+                        <option className="text-xs" value="">
+                          Select Reporting Manager
+                        </option>
+                        {users.map((user) => (
+                          <option
+                            className="text-xs"
+                            key={user._id}
+                            value={user._id}
+                          >
+                            {user.firstName}
+                          </option>
                         ))}
                       </select>
                     )}
@@ -468,14 +510,24 @@ export default function TeamTabs() {
 
                 </div>
                 <div className="mt-4 flex justify-end gap-4">
-                  <Button variant="outline" className="rounded" onClick={clearFields}>Cancel</Button>
-                  <Button size="sm" className="bg-[#007A5A] rounded hover:bg-[#007A5A]" onClick={handleCreateUser}>
+                  <Button
+                    variant="outline"
+                    className="rounded"
+                    onClick={clearFields}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-[#007A5A] rounded hover:bg-[#007A5A]"
+                    onClick={handleCreateUser}
+                  >
                     {loading ? (
                       <>
                         <Loader /> Adding Member
                       </>
                     ) : (
-                      'Add Member'
+                      "Add Member"
                     )}
                   </Button>
                 </div>
@@ -519,7 +571,6 @@ export default function TeamTabs() {
                         </p>
 
                       </div>
-
                     </div>
                     <div className="-ml-6 flex gap-2">
                       <Mail className="h-5" />
@@ -541,13 +592,25 @@ export default function TeamTabs() {
 
                   <div className="justify-end px-8 w-full flex">
                     <div
-                      className={`w-fit px-4 py-1 rounded text-xs ${user.role === 'orgAdmin' ? 'bg-[#B4173B]' : user.role === 'manager' ? 'bg-orange-500' : user.role === 'member' ? 'bg-[#007A5A]' : 'bg-gray-500'}`}
+                      className={`w-fit px-4 py-1 rounded text-xs ${
+                        user.role === "orgAdmin"
+                          ? "bg-[#B4173B]"
+                          : user.role === "manager"
+                          ? "bg-orange-500"
+                          : user.role === "member"
+                          ? "bg-[#007A5A]"
+                          : "bg-gray-500"
+                      }`}
                     >
-                      {user.role === "orgAdmin" ? "Admin" : user.role === "member" ? "Member" : user.role === "manager" ? "Manager" : user.role}
+                      {user.role === "orgAdmin"
+                        ? "Admin"
+                        : user.role === "member"
+                        ? "Member"
+                        : user.role === "manager"
+                        ? "Manager"
+                        : user.role}
                     </div>
                   </div>
-
-
 
                   {loggedInUserRole == "orgAdmin" && (
                     <div className=" flex gap-2">
@@ -572,7 +635,6 @@ export default function TeamTabs() {
                       </div>
                     </div>
                   )}
-
                 </Card>
               </div>
             ))}
@@ -590,7 +652,9 @@ export default function TeamTabs() {
               placeholder="First Name"
               value={editedUser.firstName}
               className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
-              onChange={(e) => setEditedUser({ ...editedUser, firstName: e.target.value })}
+              onChange={(e) =>
+                setEditedUser({ ...editedUser, firstName: e.target.value })
+              }
             />
             <input
               placeholder="Last Name"
@@ -615,14 +679,20 @@ export default function TeamTabs() {
               onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
               className="block w-full px-2 py-2 bg-[#121212]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
-              <option value="member" className="text-xs">Team Member</option>
-              <option value="orgAdmin" className="text-xs">Admin</option>
-              <option value="manager" className="text-xs">Manager</option>
+              <option value="member" className="text-xs">
+                Team Member
+              </option>
+              <option value="orgAdmin" className="text-xs">
+                Admin
+              </option>
+              <option value="manager" className="text-xs">
+                Manager
+              </option>
             </select>
             <select
-              value={selectedReportingManager || editedUser.reportingManager}
-              className="block w-full px-2 py-2 bg-[#0b0d29] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
-              onChange={(e) => setSelectedReportingManager(e.target.value)} // Update selected reporting manager
+              value={updateModalReportingManager || editedUser.reportingManager}
+              className="block w-full px-2 py-2 bg-[#292c32] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              onChange={(e) => setUpdateModalReportingManager(e.target.value)} // Update selected reporting manager
             >
               <option value="">Select Reporting Manager</option>
               {users.map((user) => (
@@ -647,18 +717,27 @@ export default function TeamTabs() {
             </div>
           </div>
           <div className="mt-4 flex justify-end gap-4">
-            <Button variant="outline" className="rounded" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
-            <Button size="sm" className="bg-[#007A5A] hover:bg-[#007A5A] rounded" onClick={handleEditUser}>
+            <Button
+              variant="outline"
+              className="rounded"
+              onClick={() => setIsEditModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              className="bg-[#007A5A] hover:bg-[#007A5A] rounded"
+              onClick={handleEditUser}
+            >
               {loading ? (
                 <>
                   <Loader />
                   Saving Changes
                 </>
               ) : (
-                'Save Changes'
+                "Save Changes"
               )}
             </Button>
-
           </div>
         </DialogContent>
       </Dialog>
@@ -672,6 +751,5 @@ export default function TeamTabs() {
         />
       )}
     </div>
-
   );
 }

@@ -571,7 +571,7 @@ export default function AllLeaves() {
                 )}
                 {status} (
                 {
-                  leaves.filter(
+                  filteredLeaves.filter(
                     (leave) => status === "All" || leave.status === status
                   ).length
                 }

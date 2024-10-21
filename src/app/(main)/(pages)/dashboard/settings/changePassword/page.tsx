@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import axios from "axios";
@@ -8,22 +8,22 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 const ChangePassword = () => {
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [message, setMessage] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await axios.patch("/api/changePassword", {
-                currentPassword,
-                newPassword,
-            });
-            setMessage(response.data.message);
-        } catch (error: any) {
-            setMessage(error.response?.data?.error || "An error occurred");
-        }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.patch("/api/changePassword", {
+        currentPassword,
+        newPassword,
+      });
+      setMessage(response.data.message);
+    } catch (error: any) {
+      setMessage(error.response?.data?.error || "An error occurred");
+    }
+  };
 
     return (
         <Card className="p-6  bg-transparent m-6 s">
