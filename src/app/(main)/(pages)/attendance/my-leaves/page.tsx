@@ -160,10 +160,11 @@ const MyLeaves: React.FC = () => {
   const isWithinDateRange = (date: Date, startDate: Date, endDate: Date) =>
     date >= startDate && date <= endDate;
 
-  // Filter leaves by both date range (active tab) and other filters
-  const filterEntriesByTab = () => {
+  // Filter leaves by both date range (active tab) and others
+  const filterEntriesByDateAndMeta = () => {
     const today = new Date();
     const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     const lastMonthStart = new Date(
       today.getFullYear(),
       today.getMonth() - 1,
@@ -196,7 +197,7 @@ const MyLeaves: React.FC = () => {
       case "thisMonth":
         dateFilteredLeaves = leaves.filter((leave) => {
           const leaveDate = normalizeDate(new Date(leave.fromDate));
-          return leaveDate >= thisMonthStart && leaveDate <= todayNormalized;
+          return leaveDate >= thisMonthStart && leaveDate <= thisMonthEnd;
         });
         break;
       case "lastMonth":
@@ -219,7 +220,7 @@ const MyLeaves: React.FC = () => {
         break;
     }
 
-    // Apply additional filters like leave type, status, year, and month
+    // Further filter by leave type, year, and month
     return dateFilteredLeaves
       .filter((leave) =>
         selectedLeaveType
@@ -232,10 +233,14 @@ const MyLeaves: React.FC = () => {
           leaveDate.getFullYear() === selectedYear &&
           leaveDate.getMonth() === selectedMonth
         );
-      })
-      .filter((leave) =>
-        selectedStatus === "All" ? true : leave.status === selectedStatus
-      );
+      });
+  };
+
+  //This function takes input from dateFiltered leaves and filters on the basis of status
+  const filterEntriesByStatus = (dateFilteredLeaves: Leave[]): Leave[] => {
+    return dateFilteredLeaves.filter((leave) =>
+      selectedStatus === "All" ? true : leave.status === selectedStatus
+    );
   };
 
   const handleLeaveClick = (leave: Leave) => {
@@ -333,20 +338,20 @@ const MyLeaves: React.FC = () => {
     setInfoModalContent(null);
   };
 
-  const filteredLeaves = filterEntriesByTab();
+  const filteredLeaves = filterEntriesByDateAndMeta(); // Filters by date, leave type, year, and month
+  const finalFilteredLeaves = filterEntriesByStatus(filteredLeaves); // Filters by status
 
-  // Count leaves based on status
-  const pendingCount = leaves.filter(
+  // Calculate counts based on status
+  const allLeavesCount = filteredLeaves.length;
+  const pendingCount = filteredLeaves.filter(
     (leave) => leave.status === "Pending"
   ).length;
-  const approvedCount = leaves.filter(
+  const approvedCount = filteredLeaves.filter(
     (leave) => leave.status === "Approved"
   ).length;
-  const rejectedCount = leaves.filter(
+  const rejectedCount = filteredLeaves.filter(
     (leave) => leave.status === "Rejected"
   ).length;
-
-  console.log(leaveDetails, "leaveDetails");
 
   if (loading) {
     return (
@@ -509,7 +514,7 @@ const MyLeaves: React.FC = () => {
                 onClick={() => setSelectedStatus("All")}
               >
                 <HamburgerMenuIcon />
-                All ({leaves.length})
+                All ({allLeavesCount})
               </button>
               <button
                 className={`px-4 py-2 flex gap-2 rounded ${
@@ -585,7 +590,7 @@ const MyLeaves: React.FC = () => {
       {/* Display Filtered Leaves */}
       <div className="grid grid-cols-1 w-full mb-12 ">
         {filteredLeaves?.length > 0 ? (
-          filteredLeaves?.map((leave) => (
+          finalFilteredLeaves?.map((leave) => (
             <div
               key={leave._id}
               className="flex hover:border-[#75517B] items-center  cursor-pointer justify-between border p-4 rounded shadow-sm mb-4"

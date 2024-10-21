@@ -1,133 +1,192 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
+import { Play, Pause, X } from "lucide-react";
 
 interface CustomAudioPlayerProps {
-    audioBlob?: Blob | null;
-    audioUrl?: string | null;
-    setAudioBlob?: React.Dispatch<React.SetStateAction<Blob | null>>;
+  audioBlob?: Blob | null;
+  audioUrl?: string | null;
+  setAudioBlob?: React.Dispatch<React.SetStateAction<Blob | null>>;
 }
 
-const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioBlob, audioUrl, setAudioBlob }) => {
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const [isMuted, setIsMuted] = useState<boolean>(false);
-    const [currentTime, setCurrentTime] = useState<number>(0);
-    const [duration, setDuration] = useState<number>(0);
+export default function CustomAudioPlayer({
+  audioBlob,
+  audioUrl,
+  setAudioBlob,
+}: CustomAudioPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-    const audioSrc = audioBlob ? URL.createObjectURL(audioBlob) : audioUrl || '';
-    const audioRef = useRef<HTMLAudioElement>(null);
+  const audioSrc = audioBlob ? URL.createObjectURL(audioBlob) : audioUrl || "";
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
-    // Update the audio src when audioBlob or audioUrl changes
-    useEffect(() => {
-        if (audioRef.current && audioSrc) {
-            audioRef.current.src = audioSrc;
-            audioRef.current.load();
-            setIsPlaying(false);
-            setCurrentTime(0);
-            setDuration(0);
+  function getAudioDuration(audioBlob: Blob): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const audio = new Audio();
+
+      audio.onloadedmetadata = () => {
+        resolve(audio.duration);
+      };
+
+      audio.onerror = (error) => {
+        reject(error);
+      };
+
+      audio.src = URL.createObjectURL(audioBlob);
+    });
+  }
+
+  // Ensure duration and other metadata are loaded properly
+  useEffect(() => {
+    if (audioRef.current && audioSrc) {
+      audioRef.current.src = audioSrc;
+      audioRef.current.load();
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
+  }, [audioBlob, audioUrl]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    console.log(audio?.duration);
+    console.log(audioRef.current?.duration);
+    if (audio) {
+      const handleTimeUpdate = () => {
+        if (!isDragging) {
+          setCurrentTime(audio.currentTime);
         }
-    }, [audioBlob, audioUrl]);
+      };
 
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (audio) {
-            const handleTimeUpdate = () => {
-                setCurrentTime(audio.currentTime);
-            };
+      const handleLoadedMetadata = async () => {
+        // if (audio.duration !== Infinity && !isNaN(audio.duration)) {
+        //   setDuration(audio.duration);
+        // }
+        const audioDuration = audioBlob ? await getAudioDuration(audioBlob) : 0;
+        setDuration(audioDuration);
+      };
 
-            const handleLoadedMetadata = () => {
-                setDuration(audio.duration); // Ensure duration is correctly set
-            };
-
-            audio.addEventListener('timeupdate', handleTimeUpdate);
-            audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-            return () => {
-                audio.removeEventListener('timeupdate', handleTimeUpdate);
-                audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-            };
-        }
-    }, []);
-
-    const handlePlayPause = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.preventDefault();
-        const audio = audioRef.current;
-        if (audio) {
-            if (isPlaying) {
-                audio.pause();
-            } else {
-                audio.play();
-            }
-            setIsPlaying(!isPlaying);
-        }
-    };
-
-    const handleMuteUnmute = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.preventDefault();
-        const audio = audioRef.current;
-        if (audio) {
-            audio.muted = !isMuted;
-            setIsMuted(!isMuted);
-        }
-    };
-
-    const formatTime = (time: number) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = Math.floor(time % 60);
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    };
-
-    const handleClear = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.preventDefault();
-        if (setAudioBlob) {
-            setAudioBlob(null);
-        }
+      const handleEnded = () => {
         setIsPlaying(false);
         setCurrentTime(0);
-        setDuration(0);
-    };
+      };
 
-    return (
-        <div className=' bg-[#282d32] rounded mt-2'>
-            {audioSrc && (
-                <div className='border p-1 px-2 h-12 mb-4 rounded-lg'>
-                    <h1 className='p text-xs'>Voice Note</h1>
-                    <div className="flex items-center gap-4  rounded-lg">
-                        <div className="relative w-[80%] h-1 bg-gray-600 rounded">
-                            <div
-                                className="absolute top-0 left-0 h-full bg-green-500 rounded"
-                                style={{ width: `${(currentTime / duration) * 100}%` }}
-                            ></div>
-                        </div>
-                        <div className="text-white text-sm">
-                            <span>{formatTime(currentTime)}</span>
-                        </div>
-                        <button
-                            onClick={handlePlayPause}
-                            className="bg-[#017A5B] text-white h-5 w-5 rounded-full"
-                        >
-                            {isPlaying ? (
-                                <img src='/icons/pause.png' className='h-4 w-4 object-contain ml-[2px]' />
-                            ) : (
-                                <img src='/icons/play.png' className='h-4 ml-1 w-4 object-contain' />
-                            )}
-                        </button>
-                        {setAudioBlob && (
-                            <div className=' flex  justify-end'>
-                                <button
-                                    onClick={handleClear}
-                                    className="bg-transparent text-xs flex gap border-[#505356] border text-white h-5 w-5 items-center  rounded-full"
-                                >
-                                    <h1 className='text-red-400 ml-[5px]'>X</h1>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                    <audio ref={audioRef} controls className='hidden' />
-                </div>
-            )}
+      audio.addEventListener("timeupdate", handleTimeUpdate);
+      audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.addEventListener("ended", handleEnded);
+
+      return () => {
+        audio.removeEventListener("timeupdate", handleTimeUpdate);
+        audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        audio.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, [isDragging]);
+
+  const handlePlayPause = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const handleClear = () => {
+    if (setAudioBlob) {
+      setAudioBlob(null);
+    }
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const progressBar = progressRef.current;
+    const audio = audioRef.current;
+    if (progressBar && audio) {
+      const bounds = progressBar.getBoundingClientRect();
+      const x = e.clientX - bounds.left;
+      const percentage = x / bounds.width;
+      const newTime = percentage * audio.duration;
+      setDuration(audio.duration);
+      audio.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  return (
+    <div className="bg-[#282D32] rounded-lg shadow-md p-4 max-w-md w-full">
+      {audioSrc && (
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-md font-semibold">Voice Note</h2>
+              <p className="text-sm text-gray-500">{formatTime(currentTime)}</p>
+            </div>
+            <button
+              onClick={handlePlayPause}
+              className="bg-green-500 text-white rounded-full p-3 hover:bg-green-600 transition-colors"
+              aria-label={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          <div
+            ref={progressRef}
+            className="relative w-full h-2 bg-gray-200 rounded cursor-pointer"
+            onClick={handleSeek}
+            onMouseDown={handleDragStart}
+            onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
+          >
+            <div
+              className="absolute top-0 left-0 h-full bg-green-500 rounded"
+              style={{
+                width: `${(currentTime / duration) * 100}%`,
+              }}
+            ></div>
+          </div>
+          {setAudioBlob && (
+            <div className="flex justify-end">
+              <button
+                onClick={handleClear}
+                className="bg-gray-700 text-gray-600 px-2 py-1 text-xs rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-1"
+              >
+                <X className="w-4 h-4" />
+                <span>Clear</span>
+              </button>
+            </div>
+          )}
+          <audio ref={audioRef} className="hidden" />
         </div>
-    );
-};
-
-export default CustomAudioPlayer;
+      )}
+    </div>
+  );
+}
