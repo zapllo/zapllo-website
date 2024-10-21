@@ -98,7 +98,7 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <Toaster />
-      <div className="bg-[#1a1c20] p-6 rounded-lg w-full max-w-md">
+      <div className="bg-[#0B0D29] p-6 rounded-lg w-full max-w-md">
         <div className="flex justify-between">
           <h2 className="text-md font-bold mb-4">Update Leave Balance </h2>
           <button onClick={onClose} className="px-4 py-2 rounded">

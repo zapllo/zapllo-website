@@ -22,7 +22,7 @@ const RegularizationRejectModal: React.FC<RegularizationRejectModalProps> = ({
 }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#1A1C20] p-6 rounded-md w-full max-w-md">
+            <div className="bg-[#0b0d29] p-6 rounded-md w-full max-w-md">
                 <div className='flex justify-between'>
                     <h2 className="text-md font-medium  text-white">Reject Regularization</h2>
                     <button onClick={onClose} className="text-xs ">X</button>

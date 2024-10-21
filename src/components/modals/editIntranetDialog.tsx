@@ -94,7 +94,7 @@ const EditIntranetDialog: React.FC<EditIntranetDialogProps> = ({ entry, onClose,
         <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-60 rounded-xl flex justify-center items-center">
 
             <motion.div
-                className="bg-[#1A1C20] z-[100] h-[450px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
+                className="bg-[#0B0D29] z-[100] h-[450px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
                 variants={modalVariants}
                 initial="hidden"
                 animate={controls}

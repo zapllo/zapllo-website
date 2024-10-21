@@ -13,7 +13,7 @@ const PaymentSuccess = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen  bg-[#201024]">
+    <div className="flex items-center justify-center h-screen  bg-[#04061E]">
       <div className="text-center ">
         <div className="flex flex-col items-center mb-8">
         {/* <Image

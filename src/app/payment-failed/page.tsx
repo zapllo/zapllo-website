@@ -19,7 +19,7 @@ const PaymentFailed = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#201024]">
+    <div className="flex items-center justify-center min-h-screen bg-[#04061E]">
       <div className="text-center">
         <div className="flex flex-col items-center mb-8">
           {/* <Image
@@ -48,7 +48,7 @@ const PaymentFailed = () => {
           </Button>
           <div className='w-full justify-center flex mt-4'>
             <Button
-              className="bg-[#7C3886] text-center  justify-center flex  gap-2 hover:bg-[#6B2F77] text-white transition-colors duration-200 px-6 py-2 mt-1 text-lg rounded-md"
+              className="bg-[#017a5b] text-center  justify-center flex  gap-2 hover:bg-[#6B2F77] text-white transition-colors duration-200 px-6 py-2 mt-1 text-lg rounded-md"
               onClick={handleEmailSupport}
             >
               <Mail className='h-6' />  Contact Support

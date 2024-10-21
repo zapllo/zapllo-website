@@ -92,7 +92,7 @@ export default function WalletLogs({ }: Props) {
                     <h2 className="text-lg font-semibold mb-4">Wallet Logs</h2>
                     <table className="min-w-full  border">
                       <thead>
-                        <tr className="bg-[#75517B] -100">
+                        <tr className="bg-[#815BF5] -100">
                           <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Order ID</th>
                           <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Payment ID</th>
                           <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Plan</th>

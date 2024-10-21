@@ -65,7 +65,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
             <Toaster />
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label className='absolute z-[100] text-xs -mt-[8px] bg-[#1A1C20] ml-1'>Holiday Name</label>
+                    <label className='absolute z-[100] text-xs -mt-[8px] bg-[#0B0D29] ml-1'>Holiday Name</label>
                     <input
                         type="text"
                         value={holidayName}
@@ -76,7 +76,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
                 </div>
 
                 <div className='mt-4'>
-                    <label className='absolute text-xs -mt-2 bg-[#1A1C20] ml-1'>Holiday Date</label>
+                    <label className='absolute text-xs -mt-2 bg-[#0B0D29] ml-1'>Holiday Date</label>
 
                     {/* Date Picker Button */}
                     <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
@@ -105,7 +105,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
 
                             <div className="absolute z-[100] inset-0 bg-black -900 bg-opacity-50 rounded-xl flex justify-center items-center">
                                 <div
-                                    className="bg-[#1A1C20] z-[100] h-[510px] max-h-screen scale-75 text-[#D0D3D3] w-[100%] rounded-lg p-8">
+                                    className="bg-[#0B0D29] z-[100] h-[510px] max-h-screen scale-75 text-[#D0D3D3] w-[100%] rounded-lg p-8">
                                     <CustomDatePicker
                                         selectedDate={holidayDate ? new Date(holidayDate) : null}
                                         onDateChange={(newDate) => {

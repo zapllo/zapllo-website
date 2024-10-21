@@ -63,10 +63,10 @@ const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) =
     console.log(selectedLeave, 'selected leave!')
     return (
         <Sheet open={!!selectedLeave} onOpenChange={onClose}>
-            <SheetContent className="max-w-4xl w-full">
+            <SheetContent className="max-w-4xl bg-[#0B0D29] w-full">
                 <SheetHeader>
                     <div className="flex gap-2">
-                        <ArrowLeft className="cursor-pointer h-7 w-7 bg-[#121212] border border-white rounded-full" onClick={onClose} />
+                        <ArrowLeft className="cursor-pointer h-7 w-7 bg-[#121212] border hover:bg-white hover:text-[#121212] border-white rounded-full" onClick={onClose} />
                         <SheetTitle className="text-white mb-4">Leave Details</SheetTitle>
                     </div>
                 </SheetHeader>

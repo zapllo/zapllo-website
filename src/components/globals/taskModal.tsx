@@ -279,6 +279,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
+    // Stop all tracks of the media stream to release the microphone
+    if (mediaRecorderRef.current?.stream) {
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    }
   };
 
   useEffect(() => {
@@ -504,20 +508,20 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
           emailReminderType === "specific"
             ? null
             : {
-                type: emailReminderType,
-                value: emailReminderValue,
-              },
+              type: emailReminderType,
+              value: emailReminderValue,
+            },
         whatsapp:
           whatsappReminderType === "specific"
             ? null
             : {
-                type: whatsappReminderType,
-                value: whatsappReminderValue,
-              },
+              type: whatsappReminderType,
+              value: whatsappReminderValue,
+            },
         specific: reminderDate
           ? {
-              date: reminderDate.toISOString(),
-            }
+            date: reminderDate.toISOString(),
+          }
           : null,
       },
     };
@@ -693,7 +697,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       <Toaster />
 
       <motion.div
-        className="bg-[#1A1C20] z-[100] h-[510px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
+        className="bg-[#0B0D29] z-[100] h-[510px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
         variants={modalVariants}
         initial="hidden"
         animate={controls}
@@ -806,11 +810,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   {["High", "Medium", "Low"].map((level) => (
                     <label
                       key={level}
-                      className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${
-                        priority === level
+                      className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
                           ? "bg-[#017A5B]  text-white"
                           : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -979,11 +982,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsLinkModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${
-                  links.filter((link) => link).length > 0
+                className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter((link) => link).length > 0
                     ? "border-[#017A5B]"
                     : ""
-                }`}
+                  }`}
               >
                 <Link className="h-5 text-center m-auto mt-1" />
               </div>
@@ -999,9 +1001,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsAttachmentModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
-                  files.length > 0 ? "border-[#017A5B]" : ""
-                }`}
+                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? "border-[#017A5B]" : ""
+                  }`}
               >
                 <Paperclip className="h-5 text-center m-auto mt-1" />
               </div>
@@ -1367,8 +1368,8 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       backgroundColor: state.isSelected
         ? "#FC8929"
         : state.isFocused
-        ? "#017A5B"
-        : "#282D32", // Custom background color for options
+          ? "#017A5B"
+          : "#282D32", // Custom background color for options
       color: "white", // Custom text color
     }),
     multiValue: (provided) => ({
@@ -1384,7 +1385,7 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       ...provided,
       color: "white", // Custom text color for remove icon
       ":hover": {
-        backgroundColor: "#7C3886", // Custom background color for remove icon hover state
+        backgroundColor: "#017a5b", // Custom background color for remove icon hover state
         color: "white",
       },
     }),
@@ -1472,7 +1473,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
   return (
     <div
       ref={popupRef}
-      className="absolute bg-[#1A1C20]  text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[45%] z-50"
+      className="absolute bg-[#0B0D29]  text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[45%] z-50"
     >
       <input
         placeholder="Search user"
@@ -1492,7 +1493,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
                 onClick={() => handleSelectUser(user._id)}
               >
                 <div className="flex gap-2">
-                  <Avatar className="h-8 w-8 rounded-full flex bg-[#75517B] items-center">
+                  <Avatar className="h-8 w-8 rounded-full flex bg-[#815BF5] items-center">
                     <AvatarFallback className="ml-2">
                       <h1 className="text-sm">
                         {`${user.firstName}`.slice(0, 1)}
@@ -1641,7 +1642,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({
   return (
     <div
       ref={popupRef}
-      className="absolute bg-[#1a1c20] text-black border mt-2 rounded shadow-md p-4 w-[45%] z-50"
+      className="absolute bg-[#0B0D29] text-black border mt-2 rounded shadow-md p-4 w-[45%] z-50"
     >
       <input
         placeholder=" Search Categories..."

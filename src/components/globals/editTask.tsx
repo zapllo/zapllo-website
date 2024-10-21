@@ -457,7 +457,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
     return (
         <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#1A1C20] border max-h-screen h-[450px] overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
+            <div className="bg-[#0B0D29] border max-h-screen h-[450px] overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
                 <div className='flex w-full justify-between mb-4'>
                     <h2 className="text-lg font-medium ">Edit Task</h2>
                     <button className='cursor-pointer  text-lg' onClick={onClose}>
@@ -1078,7 +1078,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
     }, [onClose]);
 
     return (
-        <div ref={popupRef} className="absolute bg-[#1A1C20] text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[22%] z-50">
+        <div ref={popupRef} className="absolute bg-[#0B0D29] text-white border mt-10 border-gray-700 rounded shadow-md p-4 w-[22%] z-50">
             <input
                 placeholder="Search user"
                 className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
@@ -1097,7 +1097,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
                                 onClick={() => handleSelectUser(user._id)}
                             >
                                 <div className='flex gap-2'>
-                                    <div className='h-8 w-8 rounded-full flex bg-[#75517B] items-center'>
+                                    <div className='h-8 w-8 rounded-full flex bg-[#815BF5] items-center'>
                                         <span className='ml-2 text-sm'>
                                             {`${user.firstName[0]}${user.lastName[0]}`}
                                         </span>
@@ -1226,7 +1226,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({ categories, c
 
 
     return (
-        <div ref={popupRef} className="absolute bg-[#1a1c20] ml-4 text-black border -mt-4 rounded shadow-md p-4 w-[22%] z-50">
+        <div ref={popupRef} className="absolute bg-[#0B0D29] ml-4 text-black border -mt-4 rounded shadow-md p-4 w-[22%] z-50">
             <input
                 placeholder=" Search Categories..."
                 className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"

@@ -418,11 +418,11 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     name="leaveType"
                                     value={formData.leaveType}
                                     onChange={handleInputChange}
-                                    className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
+                                    className="w-full text-xs p-2 bg-[#0B0D29] outline-none border rounded bg-transparent"
                                 >
-                                    <option className='bg-[#1A1C20]' value="">Select Leave Type</option>
+                                    <option className='bg-[#0B0D29]' value="">Select Leave Type</option>
                                     {leaveTypes.map((type) => (
-                                        <option key={type._id} className='bg-[#1A1C20]' value={type._id}>
+                                        <option key={type._id} className='bg-[#0B0D29]' value={type._id}>
                                             {type.leaveType}
                                         </option>
                                     ))}
@@ -451,7 +451,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     {isFromDatePickerOpen && (
                                         <div className="fixed inset-0  bg-black/50 opacity- z-[10]" >
 
-                                            <div className="bg-[#1A1C20] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
+                                            <div className="bg-[#0B0D29] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
                                                 <CustomDatePicker
                                                     selectedDate={formData.fromDate ? new Date(formData.fromDate) : null}
                                                     onDateChange={(date) => {
@@ -477,7 +477,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                     {isToDatePickerOpen && (
                                         <div className="fixed inset-0  bg-black/50 opacity- z-[10]" >
 
-                                            <div className="bg-[#1A1C20] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
+                                            <div className="bg-[#0B0D29] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
                                                 <CustomDatePicker
                                                     selectedDate={formData.toDate ? new Date(formData.toDate) : null}
                                                     onDateChange={(date) => {
@@ -503,7 +503,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                             className="ml-2 p-2 border bg-transparent outline-none rounded text-sm"
                                         >
                                             {availableUnits.map((unit) => (
-                                                <option key={unit} className='bg-[#1A1C20]' value={unit}>
+                                                <option key={unit} className='bg-[#0B0D29]' value={unit}>
                                                     {unit}
                                                 </option>
                                             ))}

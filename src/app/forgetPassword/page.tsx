@@ -46,7 +46,7 @@ const ForgotPassword = () => {
                                 required
                             />
                         </div>
-                        <Button className="bg-[#7C3886] hover:bg-[#7C3886]" type="submit">Send Password Link</Button>
+                        <Button className="bg-[#017a5b] hover:bg-[#017a5b]" type="submit">Send Password Link</Button>
                     </form>
                     {message && <p>{message}</p>}
                 </Card>

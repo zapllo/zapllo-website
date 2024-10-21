@@ -96,7 +96,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#1A1C20] overflow-y-scroll scrollbar-hide h-[470px] p-6 rounded-md w-full max-w-lg">
+            <div className="bg-[#0B0D29] overflow-y-scroll scrollbar-hide h-[470px] p-6 rounded-md w-full max-w-lg">
                 <div className='flex justify-between mb-4'>
                     <h2 className="text-md font-medium">{leaveType} By {user.firstName} {user.lastName}</h2>
                     <X onClick={onClose} className='cursor-pointer h-5 w-5 text-gray-500' />
@@ -109,7 +109,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
                     <div className="flex items-center gap-2">
                         <p>Applied By:</p>
 
-                        <div className="rounded-full text-sm bg-[#75517b] w-6 h-6 flex items-center justify-center text-white">
+                        <div className="rounded-full text-sm bg-[#815BF5] w-6 h-6 flex items-center justify-center text-white">
                             {user.firstName[0]}
                         </div>
                         <div className="flex gap-2 text-sm ">
@@ -119,7 +119,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
                     <div className="flex items-center gap-2">
                         <p>Manager: </p>
                         {manager && (
-                            <div className="rounded-full bg-[#75517b] w-6 h-6 flex items-center justify-center text-white">
+                            <div className="rounded-full bg-[#815BF5] w-6 h-6 flex items-center justify-center text-white">
                                 {manager?.firstName[0]}
                             </div>
                         )}

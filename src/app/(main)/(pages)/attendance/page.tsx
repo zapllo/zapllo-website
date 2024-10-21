@@ -355,7 +355,7 @@ const AttendanceDashboard: React.FC = () => {
   return (
     <div className="p-6 h-screen overflow-y-scroll">
       {attendanceLoading && (
-        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
           {/* <Toaster /> */}
           <div
             className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">

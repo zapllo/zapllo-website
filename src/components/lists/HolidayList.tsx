@@ -98,7 +98,7 @@ const HolidayList: React.FC = () => {
             <Toaster />
             {holidays.length > 0 ? (
                 <table className="w-full rounded table-auto border-collapse border">
-                    <thead className='bg-[#380e3d] '>
+                    <thead className='bg-[#0B0D29]  '>
                         <tr>
                             <th className="px-4 text-xs text-start py-2">Name</th>
                             <th className="px-4 text-xs text-start py-2">Date</th>

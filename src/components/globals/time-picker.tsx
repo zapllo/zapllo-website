@@ -58,7 +58,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
               borderBottom: 'none'
             },
             '& .MuiPickersToolbar-root': {
-              backgroundColor: '#1A1C20',
+              backgroundColor: '#0B0D29',
               color: 'white',
               border: 'none',
             },
@@ -78,7 +78,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
               border: 'none',
             },
             '& .MuiTimeClock-root': {
-              backgroundColor: '#1A1C20',
+              backgroundColor: '#0B0D29',
               border: 'none',
               borderColor: 'red',
             },
@@ -91,7 +91,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
               border: 'none',
             },
             '& .MuiDialogActions-root': {
-              backgroundColor: '#1A1C20',
+              backgroundColor: '#0B0D29',
               borderTop: 'none', // Remove top border in action buttons
               borderBottom: 'none'
             },

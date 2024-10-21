@@ -84,7 +84,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
                                     handleSelect(option);
                                 }}
 
-                                className="cursor-pointer text-sm p-2 hover:bg-[#201024] flex items-center"
+                                className="cursor-pointer text-sm p-2 hover:bg-[#04061E] flex items-center"
                             >
                                 {option.code && (
                                     <Flag code={option.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />

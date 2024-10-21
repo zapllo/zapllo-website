@@ -42,7 +42,7 @@ const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ holiday, onHolidayU
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
                 <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
-                    <form onSubmit={handleSubmit} className="bg-[#1A1C20] rounded-lg shadow-lg p-6 w-full max-w-lg">
+                    <form onSubmit={handleSubmit} className="bg-[#0B0D29] rounded-lg shadow-lg p-6 w-full max-w-lg">
                         <div className="flex justify-between mb-4">
                             <Dialog.Title className="text-md font-medium">Edit Holiday</Dialog.Title>
                             <Dialog.Close asChild>
@@ -51,7 +51,7 @@ const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ holiday, onHolidayU
                         </div>
 
                         <div>
-                            <label className="absolute text-xs -mt-[8px] bg-[#1A1C20] ml-1">Holiday Name</label>
+                            <label className="absolute text-xs -mt-[8px] bg-[#0B0D29] ml-1">Holiday Name</label>
                             <input
                                 type="text"
                                 value={holidayName}
@@ -61,7 +61,7 @@ const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ holiday, onHolidayU
                             />
                         </div>
                         <div>
-                            <label className='absolute text-xs mt-2 bg-[#1A1C20] ml-1'>Holiday Date</label>
+                            <label className='absolute text-xs mt-2 bg-[#0B0D29] ml-1'>Holiday Date</label>
                             <input
                                 type="date"
                                 value={holidayDate.split('T')[0]} // Ensure correct date format

@@ -318,7 +318,7 @@ export default function Billing() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="bg-[#7C3886] hover:bg-[#7C3886]"
+                                                        className="bg-[#017a5b] hover:bg-[#017a5b]"
                                                         onClick={handleRechargeClick}
                                                     >
                                                         Recharge Now
@@ -347,7 +347,7 @@ export default function Billing() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="bg-[#7C3886] hover:bg-[#7C3886]"
+                                                        className="bg-[#017a5b] hover:bg-[#017a5b]"
                                                         onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
                                                     >
                                                         Connect Now
@@ -457,7 +457,7 @@ export default function Billing() {
                                                 />
                                             </div>
                                             <div className="mt-4">
-                                                <Button className="bg-[#7C3886] hover:bg-[#7C3886] w-full" onClick={() => setRechargeModalStep(2)}>
+                                                <Button className="bg-[#017a5b] hover:bg-[#017a5b] w-full" onClick={() => setRechargeModalStep(2)}>
                                                     Next
                                                 </Button>
                                             </div>
@@ -492,7 +492,7 @@ export default function Billing() {
                                                 <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setRechargeModalStep(1)}>
                                                     Back
                                                 </Button>
-                                                <Button className="bg-[#7C3886] hover:bg-[#7C3886] w-full" onClick={handleRechargePayment}>
+                                                <Button className="bg-[#017a5b] hover:bg-[#017a5b] w-full" onClick={handleRechargePayment}>
                                                     Proceed to Payment
                                                 </Button>
                                             </div>
@@ -506,10 +506,10 @@ export default function Billing() {
                         <div className="w-1/2  ">
                             <div className="flex space-x-4 mb-8  justify-center">
                                 <Button variant={activeTab === 'Active' ? 'default' : 'outline'}
-                                    className={activeTab === 'Active' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
+                                    className={activeTab === 'Active' ? 'bg-[#815BF5] hover:bg-[#815BF5] w-full' : 'bg-[#0A0D28] hover:bg-[#0A0D28] w-full'}
                                     onClick={() => setActiveTab('Active')}>Active</Button>
                                 <Button variant={activeTab === 'Plans' ? 'default' : 'outline'}
-                                    className={activeTab === 'Plans' ? 'bg-[#75517B] hover:bg-[#75517B] w-full' : 'bg-[#2F0932] hover:bg-[#2F0932] w-full'}
+                                    className={activeTab === 'Plans' ? 'bg-[#815BF5] hover:bg-[#815BF5] w-full' : 'bg-[#0A0D28] hover:bg-[#0A0D28] w-full'}
                                     onClick={() => setActiveTab('Plans')}>Plans</Button>
                             </div>
                         </div>
@@ -518,7 +518,7 @@ export default function Billing() {
                         <div className="flex justify-center w-full mb-24 h-screen mt-12">
                             {displayedPlan === 'Money Saver Bundle' ? (
                                 <Card key="Money Saver Bundle" className="w-[400px] border h-fit rounded bg-transparent">
-                                    <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                    <CardHeader className="bg-[#0A0D28] rounded border-b text-center">
                                         <CardTitle className="text-2xl">Money Saver Bundle</CardTitle>
                                         <CardDescription className="text-center text-white text-sm px-2">
                                             <span className="text-[#007A5A]">INR </span>
@@ -569,7 +569,7 @@ export default function Billing() {
                                 </Card>
                             ) : displayedPlan === 'Task Pro' ? (
                                 <Card key="Task Pro" className="w-[400px] rounded border bg-transparent">
-                                    <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                    <CardHeader className="bg-[#0A0D28] rounded border-b text-center">
                                         <CardTitle className="text-2xl">Task Pro</CardTitle>
                                         <CardDescription className="text-center text-white text-sm px-2">
                                             <span className="text-[#007A5A]">INR </span>
@@ -617,7 +617,7 @@ export default function Billing() {
                                     const planKey = plan as keyof typeof plans;
                                     return (
                                         <Card key={index} className="w-[400px] h-[690px] rounded border bg-transparent">
-                                            <CardHeader className="bg-[#2F0932] rounded border-b text-center">
+                                            <CardHeader className="bg-[#0A0D28] rounded border-b text-center">
                                                 <CardTitle className="text-2xl">{plan}</CardTitle>
                                                 <CardDescription className="text-center text-white text-sm px-2">
                                                     <span className="text-[#007A5A]">INR </span>
@@ -625,7 +625,7 @@ export default function Billing() {
                                                     <h1 className="text-xs italic">(Per User Per Year)</h1>
                                                 </CardDescription>
                                                 <div className="flex justify-center py-2 w-full">
-                                                    <Button className="bg-[#7C3886] hover:bg-[#75517B] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
+                                                    <Button className="bg-[#017a5b] hover:bg-[#815BF5] w-fit px-6" onClick={() => handleSubscribeClick(plan)}>Subscribe</Button>
                                                 </div>
                                             </CardHeader>
                                             <div className='p-4'>

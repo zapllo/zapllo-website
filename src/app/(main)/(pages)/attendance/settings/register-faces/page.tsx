@@ -10,7 +10,7 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import { Cross1Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, CrossCircledIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDialog";
 import { toast, Toaster } from "sonner";
 
@@ -328,7 +328,7 @@ export default function RegisterFace() {
         <button
           onClick={() => setDateFilter("Today")}
           className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "Today" ? "bg-[#7c3987] text-white" : "bg-[#28152e]"
+            dateFilter === "Today" ? "bg-[#815BF5] text-white" : "bg-[#] border"
           }`}
         >
           Today
@@ -337,8 +337,8 @@ export default function RegisterFace() {
           onClick={() => setDateFilter("Yesterday")}
           className={`px-4 py-1 h-8 text-xs rounded ${
             dateFilter === "Yesterday"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e]"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border"
           }`}
         >
           Yesterday
@@ -347,8 +347,8 @@ export default function RegisterFace() {
           onClick={() => setDateFilter("ThisWeek")}
           className={`px-4 py-1 h-8 text-xs rounded ${
             dateFilter === "ThisWeek"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e]"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border"
           }`}
         >
           This Week
@@ -357,8 +357,8 @@ export default function RegisterFace() {
           onClick={() => setDateFilter("ThisMonth")}
           className={`px-4 py-1 h-8 text-xs rounded ${
             dateFilter === "ThisMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e]"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border"
           }`}
         >
           This Month
@@ -367,8 +367,8 @@ export default function RegisterFace() {
           onClick={() => setDateFilter("LastMonth")}
           className={`px-4 py-1 h-8 text-xs rounded ${
             dateFilter === "LastMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e]"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border"
           }`}
         >
           Last Month
@@ -377,8 +377,8 @@ export default function RegisterFace() {
           onClick={() => setDateFilter("AllTime")}
           className={`px-4 py-1 h-8 text-xs rounded ${
             dateFilter === "AllTime"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e]"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border"
           }`}
         >
           All Time
@@ -394,16 +394,18 @@ export default function RegisterFace() {
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 flex justify-center items-center">
+          <Dialog.Content className="fixed inset-0  flex justify-center items-center">
             <div className="flex justify-center items-center bg-transparent w-screen">
-              <div className="bg-[#1A1C20]  bg-opacity-90 shadow-xl rounded-lg p-6 m w-[33.33%]">
+              <div className="bg-[#0B0D29]  shadow-xl rounded-lg p-6 m w-[33.33%]">
                 <div className="flex w-full justify-between">
                   <h3 className="text-md text-white ">
                     Register Faces - Upload 3 Images of Employee
                   </h3>
                   <Dialog.DialogClose>
                     {" "}
-                    <X className="cursor-pointer border  rounded-full border-white h-5 hover:bg-white hover:text-black w-5" />
+                    <CrossCircledIcon className='scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+
+                    {/* <X className="cursor-pointer border  rounded-full border-white h-5 hover:bg-white hover:text-black w-5" /> */}
                   </Dialog.DialogClose>
                 </div>
                 {loading ? (
@@ -436,7 +438,7 @@ export default function RegisterFace() {
                     multiple
                     accept="image/*"
                     onChange={handleImageUpload}
-                    className="w-full text-white py-2 px-4 text-sm outline-none rounded focus:outline-none focus:ring focus:border-blue-300"
+                    className="w-full text-white py-2  text-sm outline-none rounded focus:outline-none focus:ring focus:border-blue-300"
                   />
                   {error && <p className="text-red-500 mt-2">{error}</p>}
                 </div>
@@ -459,7 +461,7 @@ export default function RegisterFace() {
                 ) : (
                   <button
                     onClick={registerFaces}
-                    className="bg-[#017A5B] text-white font-medium text-sm py-2 px-4 rounded w-full"
+                    className="bg-[#815BF5] text-white font-medium text-sm py-2 px-4 rounded w-full"
                   >
                     Register Face
                   </button>
@@ -484,7 +486,7 @@ export default function RegisterFace() {
       <div className="tabs mb-6 flex justify-center mt-4 space-x-4">
         <button
           className={`px-4 py-2 flex text-xs rounded gap-2 ${
-            activeTab === "all" ? "bg-[#7c3987] text-white" : "bg-[#28152e]"
+            activeTab === "all" ? "bg-[#815BF5] text-white" : "bg-[#28152e]"
           }`}
           onClick={() => setActiveTab("all")}
         >
@@ -493,7 +495,7 @@ export default function RegisterFace() {
         </button>
         <button
           className={`px-4 py-2 flex text-xs rounded gap-2 ${
-            activeTab === "pending" ? "bg-[#7c3987] text-white" : "bg-[#28152e]"
+            activeTab === "pending" ? "bg-[#815BF5] text-white" : "bg-[#] border"
           }`}
           onClick={() => setActiveTab("pending")}
         >
@@ -514,8 +516,8 @@ export default function RegisterFace() {
         <button
           className={`px-4 py-2 flex text-xs rounded gap-2 border ${
             activeTab === "approved"
-              ? "bg-[#7c3987] text-white border-transparent"
-              : "bg-[#28152e] border-transparent"
+              ? "bg-[#815BF5] text-white border-transparent"
+              : "bg-[#] border-"
           } hover:border-green-500`}
           onClick={() => setActiveTab("approved")}
         >
@@ -537,8 +539,8 @@ export default function RegisterFace() {
         <button
           className={`px-4 py-2 flex text-xs rounded gap-2 border ${
             activeTab === "rejected"
-              ? "bg-[#7c3987] text-white border-transparent"
-              : "bg-[#28152e] border-transparent"
+              ? "bg-[#815BF5] text-white border-transparent"
+              : "bg-[#] border-"
           } hover:border-red-500`}
           onClick={() => setActiveTab("rejected")}
         >
@@ -572,7 +574,7 @@ export default function RegisterFace() {
         ) : (
           <table className="min-w-full table-auto border  text-white">
             <thead>
-              <tr className="border text-xs text-left bg-[#380E3D]">
+              <tr className="border text-xs text-left bg-[#0A0D28]">
                 <th className="px-4 py-2">User</th>
                 <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2">Images</th>

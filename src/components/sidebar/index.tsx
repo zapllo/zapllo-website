@@ -118,7 +118,7 @@ const MenuOptions = (props: Props) => {
                         className={clsx(
                           'group h-6 w-6 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer',
                           {
-                            'bg-[#37384B]': isActive(menuItem, pathName),
+                            'bg-[#202560]': isActive(menuItem, pathName),
                           }
                         )}
                       >

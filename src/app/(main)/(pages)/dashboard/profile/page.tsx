@@ -165,7 +165,7 @@ export default function Profile({ }: Props) {
                     <div className="flex items-center text-[#E0E0E0] gap-4">
                         <Avatar>
                             <AvatarImage src="/placeholder-user.jpg" />
-                            <AvatarFallback className='bg-[#75517B] text-white'>{firstName.charAt(0)}{lastName.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className='bg-[#815BF5] text-white'>{firstName.charAt(0)}{lastName.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
                             <p className="font-medium text-sm">{firstName} {lastName}</p>
@@ -189,7 +189,7 @@ export default function Profile({ }: Props) {
             </div>
             <div className='p-4 '>
                 <div>
-                    <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
+                    <div className='border bg-[#0A0D28] rounded-lg p-2 mt-2 h-10 '>
                         <h1 className='text-sm'>My Account Information</h1>
                     </div>
                     <Link href='/dashboard/settings/changePassword'>
@@ -199,7 +199,7 @@ export default function Profile({ }: Props) {
                     </Link>
                 </div>
                 <div className='py-4'>
-                    <div className='border bg-[#380E3D] rounded-lg p-2 mt-2 h-10 '>
+                    <div className='border bg-[#0A0D28] rounded-lg p-2 mt-2 h-10 '>
                         <h1 className='text-sm'>Support</h1>
                     </div>
                     <Link href='/help/tutorials'>

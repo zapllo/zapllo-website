@@ -199,7 +199,7 @@ export default function Page() {
                 role === "orgAdmin" && (
                     <div>
                         {loading ? <Loader /> : ""}
-                        <div className=' mt-2 bg- p-2 bg-[#380E3D] text-lg rounded '>
+                        <div className=' mt-2 bg- p-2 bg-[#0A0D28] text-lg rounded '>
                             <h1 className='text-sm'>Organization Details</h1>
                         </div>
                         <div className=' text-xs grid grid-cols-1 text- gap-2 py-2'>
@@ -213,7 +213,7 @@ export default function Page() {
                                     <div>
                                         <input
                                             type='text'
-                                            className='px-4 py-2 w-full bg-[#1A1C20]  border rounded outline-none'
+                                            className='px-4 py-2 w-full bg-[#0B0D29]  border rounded outline-none'
                                             value={organizationName}
                                             onChange={(e: any) => setOrganizationName(e.target.value)}
                                         />
@@ -222,7 +222,7 @@ export default function Page() {
                                         <select
                                             value={industry}
                                             onChange={(e: any) => setIndustry(e.target.value)}
-                                            className="w- mt-2 w-full outline-none bg-[#1A1C20] border rounded px-3 py-2"
+                                            className="w- mt-2 w-full outline-none bg-[#0B0D29] border rounded px-3 py-2"
                                         >
                                             <option value="" disabled>Select Industry</option>
                                             <option value="Retail">Retail</option>
@@ -237,7 +237,7 @@ export default function Page() {
                                         <select
                                             value={teamSize}
                                             onChange={(e: any) => setTeamSize(e.target.value)}
-                                            className="mt-2 border bg-[#1A1C20] outline-none w-full  rounded px-3 py-2"
+                                            className="mt-2 border bg-[#0B0D29] outline-none w-full  rounded px-3 py-2"
                                         >
                                             <option value="" disabled>Select Team Size</option>
                                             <option value="1-5">1-5</option>
@@ -301,12 +301,12 @@ export default function Page() {
                     <h1 className='ml-4 mt-1'>Raise a Ticket</h1>
                 </div>
             </Link> */}
-            <div className=' mt-4 bg-[#380E3D] p-2 border rounded '>
+            <div className=' mt-4 bg-[#0A0D28] p-2 border rounded '>
                 <h1 className='text-sm'>Task App Settings</h1>
             </div>
             <Dialog>
                 <DialogTrigger>
-                    <div className='mb-2 bg-[#75517B]  mt-2 px-4 w-full m border rounded py-2'>
+                    <div className='mb-2 bg-[#815BF5]  mt-2 px-4 w-full m border rounded py-2'>
                         <h1 className=' text-xs w-full'>Notifications & Reminders</h1>
                     </div>
                 </DialogTrigger>

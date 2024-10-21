@@ -35,7 +35,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="block bg-[#2F0932] w-full outline-none p-2 border rounded flex items-center justify-between"
+                className="block bg-[#0A0D28] w-full outline-none p-2 border rounded flex items-center justify-between"
             >
                 {selectedValue ? (
                     <div className="flex items-center">
@@ -55,14 +55,14 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
                         placeholder="Search country.."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="block w-full p-2 outline-none border-b bg-[#2F0932] text-white"
+                        className="block w-full p-2 outline-none border-b bg-[#0A0D28] text-white"
                     />
                     {filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
                             <div
                                 key={option.code}
                                 onClick={() => handleSelect(option)}
-                                className="cursor-pointer p-2 hover:bg-[#201024] flex items-center"
+                                className="cursor-pointer p-2 hover:bg-[#04061E] flex items-center"
                             >
                                 {option.code && (
                                     <Flag code={option.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />
@@ -145,7 +145,7 @@ const CountryDropdown = () => {
                     name="state"
                     value={formData.state}
                     onChange={handleStateSelect}
-                    className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                    className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                 >
                     <option value="">Select State</option>
                     {states.map((state) => (

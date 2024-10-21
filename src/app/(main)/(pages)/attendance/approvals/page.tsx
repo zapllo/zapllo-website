@@ -56,13 +56,13 @@ type User = {
 interface LeaveDay {
   date: string;
   unit:
-    | "Full Day"
-    | "1st Half"
-    | "2nd Half"
-    | "1st Quarter"
-    | "2nd Quarter"
-    | "3rd Quarter"
-    | "4th Quarter";
+  | "Full Day"
+  | "1st Half"
+  | "2nd Half"
+  | "1st Quarter"
+  | "2nd Quarter"
+  | "3rd Quarter"
+  | "4th Quarter";
   status: "Pending" | "Approved" | "Rejected";
 }
 
@@ -190,8 +190,7 @@ export default function Approvals() {
     } catch (error: any) {
       console.error("Error deleting leave:", error);
       toast.error(
-        `Error deleting leave: ${
-          error.response?.data?.message || error.message
+        `Error deleting leave: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -215,8 +214,7 @@ export default function Approvals() {
     } catch (error: any) {
       console.error("Error deleting regularization:", error);
       toast.error(
-        `Error deleting regularization: ${
-          error.response?.data?.message || error.message
+        `Error deleting regularization: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -266,8 +264,7 @@ export default function Approvals() {
           error.response?.data || error.message
         );
         toast.error(
-          `Failed to fetch ${filter} approvals: ${
-            error.response?.data?.message || error.message
+          `Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message
           }`
         );
       } finally {
@@ -482,8 +479,7 @@ export default function Approvals() {
         error.response?.data || error.message
       );
       toast.error(
-        `Failed to approve entry: ${
-          error.response?.data?.message || error.message
+        `Failed to approve entry: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -525,8 +521,7 @@ export default function Approvals() {
         error.response?.data || error.message
       );
       toast.error(
-        `Failed to reject entry: ${
-          error.response?.data?.message || error.message
+        `Failed to reject entry: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -607,71 +602,64 @@ export default function Approvals() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setDateFilter("Today")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Today"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Today"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Today
         </button>
         <button
           onClick={() => setDateFilter("Yesterday")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Yesterday"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Yesterday"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setDateFilter("ThisWeek")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "ThisWeek"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisWeek"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           This Week
         </button>
         <button
           onClick={() => setDateFilter("ThisMonth")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "ThisMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisMonth"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           This Month
         </button>
         <button
           onClick={() => setDateFilter("LastMonth")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "LastMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "LastMonth"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setDateFilter("AllTime")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "AllTime"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "AllTime"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           All Time
         </button>
         <button
           onClick={() => setIsCustomModalOpen(true)}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Custom"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Custom"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Custom
         </button>
@@ -681,22 +669,20 @@ export default function Approvals() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setFilter("Leave")}
-          className={`px-4 text-xs py-2 rounded flex ${
-            filter === "Leave"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs py-2 rounded flex ${filter === "Leave"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           <Calendar className="h-4" />
           <h1 className="mt-[1px] ml-1">Leave</h1>
         </button>
         <button
           onClick={() => setFilter("Regularization")}
-          className={`px-4 text-xs py-2 rounded flex ${
-            filter === "Regularization"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
-          }`}
+          className={`px-4 text-xs py-2 rounded flex ${filter === "Regularization"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           <Users2 className="h-4" />
           <h1 className="mt-[1px] ml-1">Regularization</h1>
@@ -709,24 +695,22 @@ export default function Approvals() {
           <>
             <button
               onClick={() => setStatusFilter("All")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs ${
-                statusFilter === "All"
-                  ? "bg-[#7c3987] text-white"
-                  : "bg-[#28152e] text-white"
-              }`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "All"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border text-white"
+                }`}
             >
               <HamburgerMenuIcon />
               All ({filteredLeaves.length})
             </button>
             <button
               onClick={() => setStatusFilter("Pending")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs ${
-                statusFilter === "Pending"
-                  ? "bg-[#7c3987] text-white"
-                  : "bg-[#28152e] text-white"
-              }`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "Pending"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border hover:border-orange-400 text-white"
+                }`}
             >
-              <Circle className="h-4 text-red-500" />
+              <Circle className={`h-4 text-red-500 ${statusFilter === "Pending" ? "text-white" : ""} `} />
               Pending (
               {
                 filteredLeaves.filter((leave) => leave.status === "Pending")
@@ -752,13 +736,12 @@ export default function Approvals() {
             </button> */}
             <button
               onClick={() => setStatusFilter("Approved")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${
-                statusFilter === "Approved"
-                  ? "bg-[#7c3987] text-white border-transparent hover:border-green-500"
-                  : "bg-[#28152e] text-white border-transparent hover:border-green-500"
-              }`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
+                ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
+                : "bg-[#] border text-white  hover:border-green-500"
+                }`}
             >
-              <CheckCircle className="h-4 text-green-500" />
+              <CheckCircle className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""} `} />
               Approved (
               {
                 filteredLeaves.filter((leave) => leave.status === "Approved")
@@ -785,13 +768,12 @@ export default function Approvals() {
             </button> */}
             <button
               onClick={() => setStatusFilter("Rejected")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${
-                statusFilter === "Rejected"
-                  ? "bg-[#7c3987] text-white border-transparent hover:border-red-500"
-                  : "bg-[#28152e] text-white border-transparent hover:border-red-500"
-              }`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
+                ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
+                : "bg-[#] text-white border hover:border-red-500"
+                }`}
             >
-              <Cross1Icon className="h-4 text-red-500" />
+              <Cross1Icon className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""} `} />
               Rejected (
               {
                 filteredLeaves.filter((leave) => leave.status === "Rejected")
@@ -804,24 +786,22 @@ export default function Approvals() {
           <>
             <button
               onClick={() => setStatusFilter("All")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs ${
-                statusFilter === "All"
-                  ? "bg-[#7c3987] text-white"
-                  : "bg-[#28152e] text-white"
-              }`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "All"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border text-white"
+                }`}
             >
               <HamburgerMenuIcon />
               All ({filteredRegularizations.length})
             </button>
             <button
               onClick={() => setStatusFilter("Pending")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs ${
-                statusFilter === "Pending"
-                  ? "bg-[#7c3987] text-white"
-                  : "bg-[#28152e] text-white"
-              }`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "Pending"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border hover:border-orange-400 text-white"
+                }`}
             >
-              <Circle className="h-4 text-red-500" />
+              <Circle className={`h-4 text-red-500  ${statusFilter === "Pending" ? "text-white" : ""} `} />
               Pending (
               {
                 filteredRegularizations.filter(
@@ -849,13 +829,12 @@ export default function Approvals() {
             </button> */}
             <button
               onClick={() => setStatusFilter("Approved")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${
-                statusFilter === "Approved"
-                  ? "bg-[#7c3987] text-white border-transparent"
-                  : "bg-[#28152e] text-white border-transparent"
-              } hover:border-green-500`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
+                ? "bg-[#815BF5] text-white border-transparent"
+                : "bg-[#] border text-white border-transparent"
+                } hover:border-green-500`}
             >
-              <CheckCircle className="h-4 text-green-500" />
+              <CheckCircle className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""} `} />
               Approved (
               {
                 filteredRegularizations.filter(
@@ -871,7 +850,7 @@ export default function Approvals() {
                 statusFilter === "Rejected"
                   ? "bg-[#7c3987] text-white"
                   : "bg-[#28152e] text-white"
-              }`}
+                }`}
             >
               <Cross1Icon className="h-4 text-red-500" />
               Rejected (
@@ -884,13 +863,12 @@ export default function Approvals() {
             </button> */}
             <button
               onClick={() => setStatusFilter("Rejected")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${
-                statusFilter === "Rejected"
-                  ? "bg-[#7c3987] text-white border-transparent"
-                  : "bg-[#28152e] text-white border-transparent"
-              } hover:border-red-500`}
+              className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
+                ? "bg-[#815BF5] text-white border-transparent"
+                : "bg-[#] border text-white border-"
+                } hover:border-red-500`}
             >
-              <Cross1Icon className="h-4 text-red-500" />
+              <Cross1Icon className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""} `} />
               Rejected (
               {
                 filteredRegularizations.filter(
@@ -921,16 +899,17 @@ export default function Approvals() {
           ) : (
             finalFilteredLeaves.map((leave) => (
               <div
-                className="border hover:border-[#75517B] cursor-pointer"
+                className="border hover:border-[#815BF5] cursor-pointer"
                 key={leave._id}
+                onClick={() => handleLeaveClick(leave)}
               >
                 <div
                   className="flex items-center justify-between   px-4 rounded shadow-sm py-3"
-                  onClick={() => handleLeaveClick(leave)}
+
                 >
                   <div className="flex items-center gap-4">
                     {/* User Profile Icon */}
-                    <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                    <div className="h-6 w-6 rounded-full bg-[#815BF5] flex items-center justify-center text-white text-sm">
                       {leave.user.firstName[0]}
                     </div>
                     <h3 className="text-md text-white">
@@ -969,15 +948,14 @@ export default function Approvals() {
                     </div>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs ${
-                      leave.status === "Pending"
-                        ? "bg-yellow-800 text-white"
-                        : leave.status === "Approved"
+                    className={`px-3 py-1 rounded-full text-xs ${leave.status === "Pending"
+                      ? "bg-yellow-800 text-white"
+                      : leave.status === "Approved"
                         ? "bg-green-800 text-white"
                         : leave.status === "Rejected"
-                        ? "bg-red-800 text-white"
-                        : "bg-gray-500 text-white"
-                    }`}
+                          ? "bg-red-800 text-white"
+                          : "bg-gray-500 text-white"
+                      }`}
                   >
                     {leave.status}
                   </span>
@@ -987,14 +965,14 @@ export default function Approvals() {
                   leave.status === "Pending" && (
                     <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
                       <button
-                        className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
+                        className="bg-transparent py-2 flex gap-2 border text-xs text-white hover:border-green-500 px-4 rounded"
                         onClick={(e) => handleApproval(leave, e)}
                       >
                         <CheckCheck className="w-4 h-4 text-[#017a5b]" />
                         Approve
                       </button>
                       <button
-                        className="bg-transparent border flex gap-2 text-white px-4 py-2 text-xs rounded"
+                        className="bg-transparent border flex gap-2  hover:border-red-500 text-white px-4 py-2 text-xs rounded"
                         onClick={(e) => handleReject(leave, e)}
                       >
                         <X className="w-4 h-4 text-red-500" />
@@ -1033,7 +1011,7 @@ export default function Approvals() {
             finalFilteredRegularizations.map((reg) => (
               <div
                 key={reg._id}
-                className="border cursor-pointer hover:border-[#75517B]"
+                className="border cursor-pointer hover:border-[#815BF5]"
                 onClick={() => handleRegularizationClick(reg)}
               >
                 <div className="flex items-center justify-between px-4 rounded shadow-sm py-2">
@@ -1053,15 +1031,14 @@ export default function Approvals() {
                     </p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs ${
-                      reg.approvalStatus === "Pending"
-                        ? "bg-yellow-800 text-white"
-                        : reg.approvalStatus === "Approved"
+                    className={`px-3 py-1 rounded-full text-xs ${reg.approvalStatus === "Pending"
+                      ? "bg-yellow-800 text-white"
+                      : reg.approvalStatus === "Approved"
                         ? "bg-green-800 text-white"
                         : reg.approvalStatus === "Rejected"
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-500 text-white"
-                    }`}
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-500 text-white"
+                      }`}
                   >
                     {reg.approvalStatus}
                   </span>
@@ -1212,7 +1189,7 @@ export default function Approvals() {
             <div className="flex justify-between gap-2">
               {/* Start Date Picker Button */}
               <div className="w-full">
-                {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">
+                {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
                 Start Date
               </h1> */}
                 <button
@@ -1241,7 +1218,7 @@ export default function Approvals() {
 
               {/* End Date Picker Button */}
               <div className="w-full">
-                {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">
+                {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
                 End Date
               </h1> */}
                 <button
@@ -1324,8 +1301,8 @@ export default function Approvals() {
           leaveIdToDelete
             ? "Are you sure you want to delete this leave request? This action cannot be undone."
             : regularizationIdToDelete
-            ? "Are you sure you want to delete this regularization request? This action cannot be undone."
-            : "Are you sure you want to delete this request? This action cannot be undone."
+              ? "Are you sure you want to delete this regularization request? This action cannot be undone."
+              : "Are you sure you want to delete this request? This action cannot be undone."
         }
       />
     </div>

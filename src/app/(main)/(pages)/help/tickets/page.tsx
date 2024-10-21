@@ -6,7 +6,7 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/
 import Loader from '@/components/ui/loader'
 import { Separator } from '@radix-ui/react-separator'
 import axios from 'axios'
-import { X, Eye } from 'lucide-react'
+import { X, Eye, Trash, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
 import { FaUpload } from 'react-icons/fa'
@@ -186,11 +186,11 @@ export default function Tickets() {
                                                     <h1 className='text-md m font-medium'>Support Tickets</h1>
                                                     <div className=''>
                                                         <DialogTrigger asChild>
-                                                            <Button className='bg-[#75517B] h-7 rounded n text-xs hover:bg-[#75517B]'>Raise A Ticket</Button>
+                                                            <Button className='bg-[#017a5b] h-7 rounded n text-xs hover:bg-[#017a5b]'>Raise A Ticket</Button>
                                                         </DialogTrigger>
                                                     </div>
                                                 </div>
-                                                <Separator className='bg-[#380E3D]' />
+                                                <Separator className='bg-[#0A0D28]' />
                                                 <DialogContent className=' overflow-y-scroll h-[500px] w-[35%] scrollbar-hide max-h-lg'>
                                                     <DialogClose asChild>
                                                         <button className='absolute top-4 right-4 text-white hover:text-gray-400'>
@@ -236,7 +236,7 @@ export default function Tickets() {
                                                     </div>
                                                     <div>
                                                         <div className='relative'>
-                                                            <label htmlFor='subject' className='absolute -mt-2 ml-2 bg-[#1A1C20] text-xs font-medium text-white -700'>
+                                                            <label htmlFor='subject' className='absolute -mt-2 ml-2 bg-[#0B0D29] text-xs font-medium text-white -700'>
                                                                 Subject
                                                             </label>
                                                             <input
@@ -250,7 +250,7 @@ export default function Tickets() {
                                                     </div>
 
                                                     <div className='relative'>
-                                                        <label htmlFor='subject' className='absolute -mt-1 ml-2 bg-[#1A1C20] text-xs font-medium text-white -700'>
+                                                        <label htmlFor='subject' className='absolute -mt-1 ml-2 bg-[#0B0D29] text-xs font-medium text-white -700'>
                                                             Description
                                                         </label>
                                                         <textarea
@@ -302,7 +302,7 @@ export default function Tickets() {
                                                         {isSubmitting ? (
                                                             <Loader />
                                                         ) : (
-                                                            <Button onClick={handleSubmit} className="bg-[#75517B] hover:bg-[#75517B] text-xs">
+                                                            <Button onClick={handleSubmit} className="bg-[#815BF5] hover:bg-[#815BF5] text-xs">
                                                                 Submit Ticket
                                                             </Button>
                                                         )}
@@ -312,11 +312,11 @@ export default function Tickets() {
                                         </div>
                                         <table className='min-w-full divide-y 0'>
 
-                                            <thead className='bg-[#380E3D] text-white'>
+                                            <thead className='bg-[#0A0D28] text-white'>
                                                 <tr>
-                                                    <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
+                                                    {/* <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
                                                         Category
-                                                    </th>
+                                                    </th> */}
                                                     <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
                                                         Subject
                                                     </th>
@@ -327,16 +327,16 @@ export default function Tickets() {
                                                         Created At
                                                     </th>
                                                     <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
-                                                        View
+                                                        Action
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody className='bg-[#1A1C20] divide-y'>
+                                            <tbody className='bg-[#0B0D29] divide-y'>
                                                 {tickets.map((ticket) => (
                                                     <tr key={ticket._id}>
-                                                        <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white -900'>
+                                                        {/* <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white -900'>
                                                             {ticket.category}
-                                                        </td>
+                                                        </td> */}
                                                         <td className='px-6 py-4 whitespace-nowrap text-sm text-white -500'>
                                                             {ticket.subject}
                                                         </td>
@@ -347,11 +347,14 @@ export default function Tickets() {
                                                             {new Date(ticket.createdAt).toLocaleDateString()}
                                                         </td>
                                                         <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-                                                            <div
-                                                                onClick={() => handleViewDetails(ticket)}
-                                                                className='text-[#] -600 hover:text-[#007A5A] -900'
-                                                            >
-                                                                <Eye className='h-5 w-5' />
+                                                            <div className='flex gap-2'>
+                                                                <div
+                                                                    onClick={() => handleViewDetails(ticket)}
+                                                                    className='text-[#] -600 cursor-pointer hover:text-[#007A5A] -900'
+                                                                >
+                                                                    <Eye className='h-5 w-5' />
+                                                                </div>
+                                                                <Trash2 className='text-red-500 h-5 cursor-pointer' />
                                                             </div>
                                                         </td>
                                                     </tr>

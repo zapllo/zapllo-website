@@ -41,6 +41,7 @@ import { toast, Toaster } from "sonner";
 import RegularizationDetails from "@/components/sheets/regularizationDetails";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 // Define interface for login entries
 interface LoginEntry {
@@ -729,7 +730,7 @@ export default function MyAttendance() {
               >
                 {entry.userId && (
                   <div className="flex gap-2 justify-start">
-                    <div className="h-6 w-6 rounded-full bg-[#75517b]">
+                    <div className="h-6 w-6 rounded-full bg-[#815BF5]">
                       <h1 className="text-center uppercase text-xs mt-1">
                         {entry.userId.firstName[0]}
                         {entry.userId.lastName[0]}
@@ -898,7 +899,7 @@ export default function MyAttendance() {
     <div className="container h-screen overflow-y-scroll scrollbar-hide rounded-lg p-4 shadow-lg">
       <Toaster />
       {displayLoader && (
-        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
           {/* <Toaster /> */}
           <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
             <div className="">
@@ -940,7 +941,7 @@ export default function MyAttendance() {
         ) : (
           <button
             onClick={() => setIsRegisterFaceModalOpen(true)}
-            className="bg-[#75517B] text-white py-2 px-6 rounded text-xs"
+            className="bg-[#815BF5] text-white py-2 px-6 rounded text-xs"
           >
             Register Faces
           </button>
@@ -967,7 +968,7 @@ export default function MyAttendance() {
                         <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
                     </div>
                 ) : (
-                    <div className="space-y-4 bg-[#1a1c20]  rounded p-4 w-[60%] mx-12">
+                    <div className="space-y-4 bg-[#0B0D29]  rounded p-4 w-[60%] mx-12">
                         {todayEntries?.map((entry: LoginEntry, index: number) => {
                             const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                             const formattedLogoutTime = entry.logoutTime
@@ -1166,7 +1167,7 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 flex justify-center items-center">
-            <div className="bg-[#1A1C20] z-[100] p-6 rounded-lg max-w-md w-full relative">
+            <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-md w-full relative">
               <div className="w-full flex mb-4 justify-between">
                 <h3 className="text-sm text-white text-center ">
                   {isLoggedIn
@@ -1265,7 +1266,7 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 flex justify-center items-center">
-            <div className="bg-[#1A1C20] p-4 rounded-lg max-w-md w-full">
+            <div className="bg-[#0B0D29] p-4 rounded-lg max-w-md w-full">
               <div className="flex justify-between">
                 <h3 className="text-md mb-4 text-white">
                   Select Custom Date Range
@@ -1314,7 +1315,7 @@ export default function MyAttendance() {
                 <div className="flex justify-between gap-2">
                   {/* Start Date Button */}
                   <div className="w-full">
-                    {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">Start Date</h1> */}
+                    {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs  font-medium text-white">Start Date</h1> */}
                     <button
                       type="button"
                       className="  text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
@@ -1339,7 +1340,7 @@ export default function MyAttendance() {
 
                   {/* End Date Button */}
                   <div className="w-full">
-                    {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs  font-medium text-white">End Date</h1> */}
+                    {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs  font-medium text-white">End Date</h1> */}
                     <button
                       type="button"
                       className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
@@ -1381,7 +1382,7 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#1A1C20] p-4 z-[100] rounded-lg max-w-xl  scale-75 w-full">
+            <div className="bg-[#0B0D29] p-4 z-[100] rounded-lg max-w-xl  scale-75 w-full">
               <CustomDatePicker
                 selectedDate={customDateRange.start}
                 onDateChange={(newDate) => {
@@ -1400,7 +1401,7 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#1A1C20] p-4 z-[100] rounded-lg scale-75 max-w-xl w-full">
+            <div className="bg-[#0B0D29] p-4 z-[100] rounded-lg scale-75 max-w-xl w-full">
               <CustomDatePicker
                 selectedDate={customDateRange.end}
                 onDateChange={(newDate) => {
@@ -1422,7 +1423,7 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[50] bg-black/50" />
           <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#1A1C20] z-[100] p-6 rounded-lg max-w-lg w-full relative">
+            <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-lg w-full relative">
               <div className="w-full flex mb-4 justify-between">
                 <h3 className="text-md font-medium mb-4 text-white">
                   Apply Regularization
@@ -1458,7 +1459,7 @@ export default function MyAttendance() {
                     <Dialog.Portal>
                       <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
                       <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
-                        <div className="bg-[#1A1C20] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
+                        <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
                           <div className="w-full flex mb-4 justify-between">
                             <CustomDatePicker
                               selectedDate={
@@ -1490,7 +1491,7 @@ export default function MyAttendance() {
                 {/* <div className="relative ">
                   <label
                     htmlFor="loginTime"
-                    className="absolute bg-[#1A1C20] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
+                    className="absolute bg-[#0B0D29] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
                   >
                     Login Time
                   </label>
@@ -1506,7 +1507,7 @@ export default function MyAttendance() {
                 {/* <div className="relative">
                   <label
                     htmlFor="loginTime"
-                    className="absolute bg-[#1A1C20] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
+                    className="absolute bg-[#0B0D29] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
                   >
                     Login Time
                   </label>
@@ -1524,7 +1525,7 @@ export default function MyAttendance() {
                 <div className="relative">
                   <label
                     htmlFor="loginTime"
-                    className="absolute bg-[#1A1C20] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
+                    className="absolute bg-[#0B0D29] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
                   >
                     Login Time
                   </label>
@@ -1548,7 +1549,7 @@ export default function MyAttendance() {
                 <div className="relative">
                   <label
                     htmlFor="logoutTime"
-                    className="absolute bg-[#1A1C20] ml-2 z-[100] text-xs -mt-2 px-1 text-white -400"
+                    className="absolute bg-[#0B0D29] ml-2 z-[100] text-xs -mt-2 px-1 text-white -400"
                   >
                     Logout Time
                   </label>
@@ -1574,7 +1575,7 @@ export default function MyAttendance() {
                 <div className="relative">
                   <label
                     htmlFor="remarks"
-                    className="absolute bg-[#1A1C20] z-[100] ml-2 text-xs -mt-2 px-1 text-white"
+                    className="absolute bg-[#0B0D29] z-[100] ml-2 text-xs -mt-2 px-1 text-white"
                   >
                     Remarks
                   </label>
@@ -1616,14 +1617,16 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0  z-[100] flex justify-center items-center">
-            <div className="bg-[#121212] p-6 rounded-lg max-w-md w-full">
+            <div className="bg-[#0B0D29] p-6 rounded-lg max-w-md w-full">
               <div className="flex justify-between">
-                <h3 className="text-md mb-4">
+                <h3 className="text-md ">
                   Register Faces (Upload 3 Images)
                 </h3>
                 <Dialog.DialogClose>
                   {" "}
-                  <X className="cursor-pointer border -mt-4 rounded-full border-white h-5 hover:bg-white hover:text-black w-5" />
+                  <CrossCircledIcon className='scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+
+                  {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-5 hover:bg-white hover:text-black w-5" /> */}
                 </Dialog.DialogClose>
               </div>
 
@@ -1632,10 +1635,10 @@ export default function MyAttendance() {
                 accept="image/*"
                 multiple
                 onChange={handleImageUpload}
-                className="block w-full outline-none text-xs mb-4"
+                className="block w-full outline-none text-xs mt-4"
               />
 
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-3 mt-4 gap-4 mb-4">
                 {selectedImages?.length > 0 &&
                   selectedImages.map((file, index) => (
                     <div key={index}>
@@ -1650,7 +1653,7 @@ export default function MyAttendance() {
 
               <button
                 onClick={handleFaceRegistrationSubmit}
-                className="bg-[#017a5b] text-sm text-white py-2 px-4 rounded w-full"
+                className="bg-[#815BF5] text-sm text-white py-2 px-4 rounded w-full"
               >
                 {isLoading ? <Loader /> : "Submit Face Registration"}
               </button>

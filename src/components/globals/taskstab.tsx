@@ -1368,7 +1368,7 @@ export default function TasksTab({
 
                               {activeDateFilter === "custom" && (
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                  <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-96 relative">
+                                  <div className="bg-[#0B0D29] p-6 rounded-lg shadow-lg w-96 relative">
                                     {/* Close Button */}
                                     <div className="w-full flex justify-between">
                                       <h3 className="text-md mb-4 text-white ">
@@ -1443,7 +1443,7 @@ export default function TasksTab({
                                     {/* Custom Date Picker Modal */}
                                     {datePickerType && (
                                       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-60">
-                                        <div className="bg-[#1A1C20] p-6 rounded-lg shadow-lg w-1/2 scale-75">
+                                        <div className="bg-[#0B0D29] p-6 rounded-lg shadow-lg w-1/2 scale-75">
                                           <CustomDatePicker
                                             selectedDate={
                                               datePickerType === "start"
@@ -1617,7 +1617,7 @@ export default function TasksTab({
                                           className="p-4 flex bg-[#] hover:border-[#815BF5]  cursor-pointer flex-col gap-2"
                                         >
                                           <div className="flex gap-2 justify-start">
-                                            <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
+                                            <div className="h-7 w-7 rounded-full bg-[#815BF5] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">
                                                 {`${user?.firstName?.slice(
                                                   0,
@@ -1964,7 +1964,7 @@ export default function TasksTab({
                                           className="p-4 flex bg-[#] flex-col  gap-2"
                                         >
                                           <div className="flex gap-2 justify-start">
-                                            <div className="h-7 w-7 rounded-full bg-[#75517B] -400">
+                                            <div className="h-7 w-7 rounded-full bg-[#815BF5] -400">
                                               <h1 className="text-center text-sm mt-1 uppercase">
                                                 {`${user?.firstName?.slice(
                                                   0,

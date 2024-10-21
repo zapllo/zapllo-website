@@ -47,7 +47,7 @@ const HolidayManager: React.FC = () => {
           <div className="flex justify-start ml-5">
             <Dialog.Trigger asChild>
               <button
-                className="hover:bg-[#017A5B] border-2 border-[#380e3d] text-white text-xs px-2 py-2 rounded flex items-center gap-2"
+                className="hover:bg-[#] border-2 border-[#] text-white text-xs px-2 py-2 rounded flex items-center gap-2"
                 onClick={() => setIsModalOpen(true)}
               >
                 <PlusCircledIcon className="h-4 w-4" /> Add New Holiday
@@ -60,7 +60,7 @@ const HolidayManager: React.FC = () => {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
           <Dialog.Content className="fixed z-[50]  inset-0 flex items-center justify-center">
-            <div className="bg-[#1A1C20] h-[235px] rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <div className="bg-[#0B0D29] h-[235px] rounded-lg shadow-lg p-6 w-full max-w-lg">
               <div className="flex justify-between mb-4">
                 <Dialog.Title className="text-md font-medium mb-2">
                   Add New Holiday

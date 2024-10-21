@@ -176,9 +176,9 @@ export default function Checkout() {
     return (
         <>
             {/* <h1 className='text-center font-bold mt-4 text-xl'>Task Management App</h1> */}
-            <div className='w-full flex  px-4 pt-4 bg-[#201024]  justify-center'>
+            <div className='w-full flex  px-4 pt-4 bg-[#04061E]  justify-center'>
             </div>
-            <div className="px-24 py-8 bg-[#201024]  ">
+            <div className="px-24 py-8 bg-[#04061E]  ">
                 <div className='  rounded rounded-b-none py-2  text-center bg-[#007A5A] '>
                     <div className='flex gap-4 w-full justify-center'>
                         <RocketIcon className='h-7 ' /> <h1 className='font-medium text-xl'>Put your Business on Autopilot - 10X your Growth and Productivity with Zapllo</h1>
@@ -203,7 +203,7 @@ export default function Checkout() {
                                             type="number"
                                             value={rechargeAmount}
                                             onChange={(e) => setRechargeAmount(Math.max(5000, Number(e.target.value)))}
-                                            className="block bg-[#2F0932] w-full outline-none mt-2 p-2 border rounded"
+                                            className="block bg-[#0A0D28] w-full outline-none mt-2 p-2 border rounded"
                                             min="5000"
                                         />
                                     </label>
@@ -219,7 +219,7 @@ export default function Checkout() {
                                             placeholder='First Name'
                                             value={formData.firstName}
                                             onChange={handleInputChange}
-                                            className="block bg-[#2F0932] w-full mt-1 outline-none p-2 border rounded"
+                                            className="block bg-[#0A0D28] w-full mt-1 outline-none p-2 border rounded"
                                         />
                                     </label>
                                     <label className="block my-4">
@@ -230,7 +230,7 @@ export default function Checkout() {
                                             name="lastName"
                                             value={formData.lastName}
                                             onChange={handleInputChange}
-                                            className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                                            className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                                         />
                                     </label>
                                 </div>
@@ -243,7 +243,7 @@ export default function Checkout() {
                                         placeholder='Email'
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                                        className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                                     />
                                 </label>
                                 <label className="block my-4">
@@ -254,7 +254,7 @@ export default function Checkout() {
                                         placeholder='OrganizationName'
                                         value={formData.organizationName}
                                         onChange={handleInputChange}
-                                        className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                                        className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                                     />
                                 </label>
                                 <label className="block my-4">
@@ -265,7 +265,7 @@ export default function Checkout() {
                                         value={formData.whatsappNo}
                                         placeholder='WhatsApp No'
                                         onChange={handleInputChange}
-                                        className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                                        className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                                     />
                                 </label>
                                 {/* <Separator /> */}
@@ -279,7 +279,7 @@ export default function Checkout() {
                                         name="gstin"
                                         value={formData.gstin}
                                         onChange={handleInputChange}
-                                        className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                                        className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                                     />
                                 </label>
                                 <Separator />
@@ -289,7 +289,7 @@ export default function Checkout() {
                                         name="paymentMethod"
                                         value={formData.paymentMethod}
                                         onChange={handleInputChange}
-                                        className="block bg-[#2F0932] w-full outline-none mt-1 p-2 border rounded"
+                                        className="block bg-[#0A0D28] w-full outline-none mt-1 p-2 border rounded"
                                     >
                                         <option value="">Select Payment Method</option>
                                         {/* Add payment method options here */}

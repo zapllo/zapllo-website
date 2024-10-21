@@ -53,7 +53,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
         <div className="relative z-[50]" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-[#292c32] w-full outline-none z-[50] px-2 py-2 text-xs border rounded flex items-center justify-between"
+                className="bg-transparent  w-full outline-none z-[50] px-2 py-2 text-xs border rounded flex items-center justify-between"
             >
                 {selectedValue ? (
                     <div className="flex items-center">
@@ -67,13 +67,13 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
                 )}
             </button>
             {isOpen && (
-                <div className="absolute bg-[#292c32] border rounded w-full max-h-60 scrollbar-hide overflow-auto">
+                <div className="absolute bg-black border rounded w-full max-h-60 scrollbar-hide overflow-auto">
                     <input
                         type="text"
                         placeholder="Search country..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="block w-full p-2 outline-none border-b bg-[#292c32] text-sm text-white"
+                        className="block w-full p-2 outline-none border-b bg-[#121212] text-sm text-white"
                     />
                     {filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
@@ -84,7 +84,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedValue,
                                     handleSelect(option);
                                 }}
 
-                                className="cursor-pointer text-sm p-2 hover:bg-[#201024] flex items-center"
+                                className="cursor-pointer text-sm p-2 hover:bg-[#04061E] flex items-center"
                             >
                                 {option.code && (
                                     <Flag code={option.code} style={{ width: '24px', height: '16px', marginRight: '8px' }} />

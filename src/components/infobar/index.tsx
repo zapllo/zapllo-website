@@ -232,7 +232,7 @@ const InfoBar = (props: Props) => {
             <DropdownMenu >
               <DropdownMenuTrigger asChild>
                 <div className='flex gap-2 '>
-                  <div className='h-9 text-xs  items-center cursor-pointer flex justify-center w-9 border bg-[#75517B] -500 rounded-full '>
+                  <div className='h-9 text-xs  items-center cursor-pointer flex justify-center w-9 border bg-[#815BF5] -500 rounded-full '>
                     {/* <User className='h-5 w-5' />
                */}
                     {`${firstName}`.slice(0, 1)}

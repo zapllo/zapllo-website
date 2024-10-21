@@ -230,7 +230,7 @@ const LeaveTypes: React.FC = () => {
                         <button
                             className={clsx(
                                 'text-xs px-4  h-8 mt-[2px] rounded-md',
-                                activeTab === 'All' ? 'bg-[#017A5B] text-white' : 'bg-transparent text-white border-[#505356]  border'
+                                activeTab === 'All' ? 'bg-[#815BF5] text-white' : 'bg-transparent text-white border-[#505356]  border'
                             )}
                             onClick={() => setActiveTab('All')}
                         >
@@ -239,7 +239,7 @@ const LeaveTypes: React.FC = () => {
                         <button
                             className={clsx(
                                 'text-xs px-4  h-8 mt-[2px] rounded-md',
-                                activeTab === 'Paid' ? 'bg-[#017A5B] text-white' : 'bg-transparent text-white border-[#505356]  border'
+                                activeTab === 'Paid' ? 'bg-[#815BF5] text-white' : 'bg-transparent text-white border-[#505356]  border'
                             )}
                             onClick={() => setActiveTab('Paid')}
                         >
@@ -248,7 +248,7 @@ const LeaveTypes: React.FC = () => {
                         <button
                             className={clsx(
                                 'text-xs px-4  h-8 mt-[2px]  rounded-md',
-                                activeTab === 'Unpaid' ? 'bg-[#017A5B] text-white' : 'bg-transparent text-white border-[#505356]  border'
+                                activeTab === 'Unpaid' ? 'bg-[#815BF5] text-white' : 'bg-transparent text-white border-[#505356]  border'
                             )}
                             onClick={() => setActiveTab('Unpaid')}
                         >
@@ -258,7 +258,7 @@ const LeaveTypes: React.FC = () => {
                     <Dialog.Portal>
                         <Dialog.Overlay className="fixed inset-0 bg-black/50 opacity- z-50" />
                         <Dialog.Content className="fixed z-[100]   inset-0 flex items-center justify-center">
-                            <div className="b rounded-lg bg-[#1A1C20] shadow-lg w-full max-w-lg p-6">
+                            <div className="b rounded-lg bg-[#0B0D29] shadow-lg w-full max-w-lg p-6">
                                 <div className='flex w-full mb-4 justify-between'>
                                     <Dialog.Title className="text-lg font-medium mb-4"> {isEdit ? 'Edit Leave Type' : 'New Leave Type'}</Dialog.Title>
                                     <Dialog.DialogClose className='-mt-4'>X</Dialog.DialogClose>
@@ -266,7 +266,7 @@ const LeaveTypes: React.FC = () => {
                                 {loading ? <Loader /> : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         <div>
-                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs text-muted-foreground -mt-2 px-1">Leave Type</label>
+                                            <label className="absolute bg-[#0B0D29] ml-2 text-xs text-muted-foreground -mt-2 px-1">Leave Type</label>
                                             <input
                                                 type="text"
                                                 name="leaveType"
@@ -280,7 +280,7 @@ const LeaveTypes: React.FC = () => {
 
                                         <div className=''>
                                             {/* <label className="block text-sm">Description</label> */}
-                                            <label className="absolute bg-[#1A1C20] ml-2 text-xs text-muted-foreground -mt-2 px-1">Description</label>
+                                            <label className="absolute bg-[#0B0D29] ml-2 text-xs text-muted-foreground -mt-2 px-1">Description</label>
 
                                             <textarea
                                                 name="description"
@@ -294,7 +294,7 @@ const LeaveTypes: React.FC = () => {
 
                                         <div>
                                             {/* <label className="block text-sm">Allotted Leaves</label> */}
-                                            <label className="absolute bg-[#1A1C20]  text-muted-foreground -mt-2 ml-2 text-xs -mt-2 px-1">Alloted Leaves</label>
+                                            <label className="absolute bg-[#0B0D29]  text-muted-foreground  ml-2 text-xs -mt-2 px-1">Alloted Leaves</label>
                                             <input
                                                 type="number"
                                                 name="allotedLeaves"
@@ -467,7 +467,7 @@ const LeaveTypes: React.FC = () => {
                                 <h2 className="text-sm font-semibold">{leave.leaveType}</h2>
                                 <span className={clsx(
                                     'inline-block px-2 py-1 text-xs font-medium rounded mt-2',
-                                    leave.type === 'Paid' ? 'bg-[#017A5B] text-white -800' : 'bg-[#75517B] text-white'
+                                    leave.type === 'Paid' ? 'bg-[#017A5B] text-white -800' : 'bg-[#202560] text-white'
                                 )}>
                                     {leave.type}
                                 </span>

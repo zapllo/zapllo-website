@@ -406,8 +406,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setDateFilter("Today")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "Today"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Today
@@ -415,8 +415,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setDateFilter("Yesterday")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "Yesterday"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Yesterday
@@ -424,8 +424,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setDateFilter("ThisWeek")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisWeek"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           This Week
@@ -433,8 +433,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setDateFilter("ThisMonth")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           This Month
@@ -442,8 +442,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setDateFilter("LastMonth")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "LastMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Last Month
@@ -451,8 +451,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setDateFilter("AllTime")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "AllTime"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           All Time
@@ -460,8 +460,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setIsCustomModalOpen(true)}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "Custom"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Custom
@@ -472,8 +472,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setTab("applications")}
           className={`px-4 text-xs py-2 flex  rounded ${tab === "applications"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           <Calendar className="h-4" />
@@ -482,8 +482,8 @@ export default function AllLeaves() {
         <button
           onClick={() => setTab("balances")}
           className={`px-4 text-xs py-2 flex  rounded ${tab === "balances"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           <WalletCards className="h-4" />
@@ -548,26 +548,23 @@ export default function AllLeaves() {
                     status as "Pending" | "Approved" | "Rejected" | "All"
                   )
                 }
-                className={`px-4 text-xs h-8 flex items-center gap-2 rounded border ${
-                  filter === status
-                    ? "bg-[#7c3987] text-white"
-                    : "bg-[#28152e] text-white"
-                } ${
-                  status === "Approved" && filter !== status
-                    ? "hover:border-green-500 border-transparent"
+                className={`px-4 text-xs h-8 flex items-center  gap-2 rounded border ${filter === status
+                  ? "bg-[#815BF5] text-white"
+                  : "bg-[#] border text-white"
+                  } ${status === "Approved" && filter !== status
+                    ? "hover:border-green-500 border"
                     : ""
-                } ${
-                  status === "Rejected" && filter !== status
-                    ? "hover:border-red-500 border-transparent"
-                    : ""
-                }`}
+                  } ${status === "Rejected" && filter !== status
+                    ? "hover:border-red-500 border"
+                    : status === "Pending" && filter !== status ? "hover:border-orange-500" : ""
+                  }`}
               >
                 {status === "All" && <HamburgerMenuIcon className="h-4" />}
                 {status === "Pending" && (
-                  <Circle className="h-4 text-red-500" />
+                  <Circle className={`h-4 text-red-500 ${status === "Pending" ? "text-" : "text-red-500"} `} />
                 )}
                 {status === "Approved" && (
-                  <CheckCircle className="h-4 text-green-500" />
+                  <CheckCircle className={`h-4 text-green-500 ${status === "Approved" ? "text-green-500" : ""} `} />
                 )}
                 {status === "Rejected" && (
                   <Cross1Icon className="h-4 text-red-500" />
@@ -601,7 +598,7 @@ export default function AllLeaves() {
               {filteredLeaves.map((leave) => (
                 <div
                   key={leave._id}
-                  className="border hover:border-[#75517B] cursor-pointer"
+                  className="border hover:border-[#815BF5] cursor-pointer"
                   onClick={() => setSelectedLeaveForDetails(leave)}
                 >
                   <div
@@ -650,14 +647,14 @@ export default function AllLeaves() {
                     </div>
                     <span
                       className={`px-3 py-1 rounded-full text-xs ${leave.status === "Pending"
-                          ? "bg-yellow-800 text-white"
-                          : leave.status === "Approved"
-                            ? "bg-green-800 text-white"
-                            : leave.status === "Rejected"
-                              ? "bg-red-800 text-white"
-                              : leave.status === "Partially Approved"
-                                ? "bg-red-900 text-white"
-                                : "bg-gray-500 text-white"
+                        ? "bg-yellow-800 text-white"
+                        : leave.status === "Approved"
+                          ? "bg-green-800 text-white"
+                          : leave.status === "Rejected"
+                            ? "bg-red-800 text-white"
+                            : leave.status === "Partially Approved"
+                              ? "bg-red-900 text-white"
+                              : "bg-gray-500 text-white"
                         }`}
                     >
                       {leave.status}
@@ -768,7 +765,7 @@ export default function AllLeaves() {
                 <div className="flex justify-between gap-2">
                   {/* Start Date Picker Button */}
                   <div className="w-full">
-                    {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">
+                    {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
                       Start Date
                     </h1> */}
                     <button
@@ -798,7 +795,7 @@ export default function AllLeaves() {
 
                   {/* End Date Picker Button */}
                   <div className="w-full">
-                    {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">
+                    {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
                       End Date
                     </h1> */}
                     <button
@@ -876,7 +873,7 @@ export default function AllLeaves() {
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full border  border-collapse table-auto">
-            <thead className="bg-[#380e3d] text-left text-xs">
+            <thead className="bg-[#0A0D28] text-left text-xs">
               <tr>
                 <th className="px-4  py-2">User</th>
                 {leaveTypes.map((leaveType) => (
@@ -928,7 +925,8 @@ export default function AllLeaves() {
             />
           )}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }

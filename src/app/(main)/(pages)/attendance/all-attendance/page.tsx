@@ -386,8 +386,8 @@ export default function AllAttendance() {
           onClick={() => setDateFilter("Today")}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "Today"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           Today
@@ -396,8 +396,8 @@ export default function AllAttendance() {
           onClick={() => setDateFilter("Yesterday")}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "Yesterday"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           Yesterday
@@ -406,8 +406,8 @@ export default function AllAttendance() {
           onClick={() => setDateFilter("ThisWeek")}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "ThisWeek"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           This Week
@@ -416,8 +416,8 @@ export default function AllAttendance() {
           onClick={() => setDateFilter("ThisMonth")}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "ThisMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           This Month
@@ -426,8 +426,8 @@ export default function AllAttendance() {
           onClick={() => setDateFilter("LastMonth")}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "LastMonth"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           Last Month
@@ -436,8 +436,8 @@ export default function AllAttendance() {
           onClick={() => setDateFilter("AllTime")}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "AllTime"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           All Time
@@ -446,8 +446,8 @@ export default function AllAttendance() {
           onClick={() => setIsCustomModalOpen(true)}
           className={`px-4 text-xs h-8 rounded ${
             dateFilter === "Custom"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           Custom
@@ -460,8 +460,8 @@ export default function AllAttendance() {
           onClick={() => setFilter("Attendance")}
           className={`px-4 text-xs flex py-2 rounded ${
             filter === "Attendance"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           <CalendarDays className="h-4" />
@@ -471,8 +471,8 @@ export default function AllAttendance() {
           onClick={() => setFilter("Regularization")}
           className={`px-4 text-xs flex py-2 rounded ${
             filter === "Regularization"
-              ? "bg-[#7c3987] text-white"
-              : "bg-[#28152e] text-white"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
           }`}
         >
           <Users2 className="h-4" />
@@ -501,7 +501,7 @@ export default function AllAttendance() {
                 <div className="border px-4">
                   <AccordionTrigger2>
                     <div className="flex gap-4">
-                      <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                      <div className="h-6 w-6 rounded-full bg-[#815BF5] flex items-center justify-center text-white text-sm">
                         {groupedEntries[userId].user.firstName[0]}
                       </div>
                       {groupedEntries[userId].user.firstName}
@@ -561,7 +561,7 @@ export default function AllAttendance() {
           ) : (
             filteredRegularizations.map((entry) => (
               <div
-                className="border hover:border-[#75517B] cursor-pointer"
+                className="border hover:border-[#815BF5] cursor-pointer"
                 key={entry._id}
               >
                 <div
@@ -569,7 +569,7 @@ export default function AllAttendance() {
                   className="flex items-center justify-between px-4 rounded shadow-sm py-2"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
+                    <div className="h-6 w-6 rounded-full bg-[#815BF5] flex items-center justify-center text-white text-sm">
                       {entry.userId.firstName[0]}
                     </div>
                     <h3 className="text-md text-white">
@@ -661,7 +661,7 @@ export default function AllAttendance() {
             <div className="flex justify-between gap-2">
               {/* Start Date Picker Button */}
               <div className="w-full">
-                {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">
+                {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
                 Start Date
               </h1> */}
                 <button
@@ -687,7 +687,7 @@ export default function AllAttendance() {
 
               {/* End Date Picker Button */}
               <div className="w-full">
-                {/* <h1 className="absolute bg-[#1A1C20] ml-2 text-xs font-medium text-white">
+                {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
                 End Date
               </h1> */}
                 <button

@@ -120,7 +120,7 @@ const IntranetPage: React.FC = () => {
           />
         </div>
         <DialogContent className="">
-          <div className="bg-[#1A1C20] z-[100] h-[320px] max-h-screen text-[#D0D3D3] w-[100%] rounded-lg p-4">
+          <div className="bg-[#0B0D29] z-[100] h-[320px] max-h-screen text-[#D0D3D3] w-[100%] rounded-lg p-4">
             <div className="flex justify-between w-full">
               <DialogTitle className="text-sm font-semibold">
                 Add New Link

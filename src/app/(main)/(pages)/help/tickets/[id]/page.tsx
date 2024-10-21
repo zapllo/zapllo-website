@@ -124,7 +124,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                 <div className='p-6   overflow-y-scroll h-screen scrollbar-hide ml-52  -mt-12 space-y-4'>
                                     <Link href='/help/tickets'>
                                         <div className='flex gap-2 mb-8 font-medium text-xl cursor-pointer'>
-                                            <ArrowLeft className='h-7 rounded-full border-white border w-7 hover:bg-[#75517B]' />
+                                            <ArrowLeft className='h-7 rounded-full border-white border w-7 hover:bg-white hover:text-black' />
                                             <h1>Back To My Tickets</h1>
                                         </div>
                                     </Link>
@@ -192,7 +192,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                                 <div className='flex gap-2'>
                                                                     <Avatar className='mt-1'>
                                                                         <AvatarImage src="/placeholder-user.jpg" />
-                                                                        <AvatarFallback className='bg-[#75517B] rounded-full p-1 text-white'>
+                                                                        <AvatarFallback className='bg-[#815BF5] rounded-full p-1 text-white'>
                                                                             {c.userId.firstName.charAt(0)}{c.userId.lastName.charAt(0)}
                                                                         </AvatarFallback>
                                                                     </Avatar>
@@ -245,7 +245,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                             onChange={handleCommentChange}
                                                             placeholder='Type your comment here'
                                                             rows={4}
-                                                            className='w-full p-2 border bg-[#1A1C20] outline-none  rounded'
+                                                            className='w-full p-2 border bg-[#0B0D29] outline-none  rounded'
                                                         />
 
                                                         <input

@@ -362,7 +362,7 @@ export default function TeamTabs() {
             <select
               value={selectedReportingManager}
               onChange={handleReportingManagerChange}
-              className="block bg-[#121212] border-[#380e3d]  border-2 w-full px-3 py-1  rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+              className="block bg-[#04061E] border-[#]  border-2 w-full px-3 py-1  rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="">Reporting Manager</option>
               {users.map(user => (
@@ -372,7 +372,7 @@ export default function TeamTabs() {
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               {loggedInUserRole === "orgAdmin" && (
                 <DialogTrigger asChild>
-                  <Button size="sm" className="ml-4 bg-[#29142E] hover:bg-[#75517B] gap-2" onClick={() => setIsModalOpen(true)}>
+                  <Button size="sm" className="ml-4 bg-[#04061E] border hover:bg-[#] gap-2" onClick={() => setIsModalOpen(true)}>
                     Add Member <Plus /></Button>
                 </DialogTrigger>
               )}
@@ -391,21 +391,21 @@ export default function TeamTabs() {
                 <div className="flex flex-col gap-4">
                   <input
                     placeholder="First Name"
-                    className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+                    className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.firstName}
                     onChange={(e) => setNewMember({ ...newMember, firstName: e.target.value })}
                   />
                   <input
                     placeholder="Last Name"
-                    className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+                    className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.lastName}
                     onChange={(e) => setNewMember({ ...newMember, lastName: e.target.value })}
                   />
                   <input
                     placeholder="Email"
-                    className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+                    className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.email}
                     onChange={(e) => {
@@ -424,17 +424,17 @@ export default function TeamTabs() {
                     onCountrySelect={handleCountrySelect}
                   />
                   <div className="flex items-center">
-                    <span className="py-2 px-2 bg-[#292c32] rounded-l text-xs">{countryCode}</span>
+                    <span className="py-2 px-2 bg-transparent border rounded-l text-xs">{countryCode}</span>
                     <input
                       placeholder="WhatsApp Number"
                       value={newMember.whatsappNo}
-                      className="py-2 px-2 text-xs w-full bg-[#292c32] rounded-r outline-none"
+                      className="py-2 px-2 text-xs w-full bg-transparent border rounded-r outline-none"
                       onChange={(e) => setNewMember({ ...newMember, whatsappNo: e.target.value })}
                     />
                   </div>
                   <input
                     placeholder="Password"
-                    className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+                    className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.password}
                     onChange={(e) => setNewMember({ ...newMember, password: e.target.value })}
@@ -442,7 +442,7 @@ export default function TeamTabs() {
                   <select
                     value={newMember.role}
                     onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
-                    className="block w-full px-2 text-xs py-2 bg-[#292c32]  rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+                    className="block w-full px-2 text-xs py-2 bg-[#0b0d29] border  rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                   >
                     <option className="text-xs" value="member">Team Member</option>
                     <option className="text-xs" value="manager">Manager</option>
@@ -455,7 +455,7 @@ export default function TeamTabs() {
                       <select
                         value={selectedManager}
                         onChange={(e) => setSelectedManager(e.target.value)}
-                        className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+                        className="block w-full px-2 py-2 bg-[#0b0d29]   text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
                       >
                         <option className="text-xs" value="">Select Reporting Manager</option>
                         {users.map(user => (
@@ -489,7 +489,7 @@ export default function TeamTabs() {
             placeholder="Search Team Member"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="py-1 text-sm px-4 outline-none border rounded bg-[#292C32]"
+            className="py-1 text-sm px-4 outline-none border rounded bg-transparent"
           />
         </div>
         <div className="flex justify-center -ml-64">
@@ -506,12 +506,12 @@ export default function TeamTabs() {
             })
             .map((user) => (
               <div key={user._id}>
-                <Card key={user.firstName} className="flex rounded bg-[#201024] cursor-pointer items-center justify-between w-full p-2">
+                <Card key={user.firstName} className="flex rounded bg-[#] border cursor-pointer items-center justify-between w-full p-2">
                   <div className="items-center flex gap-4">
                     <div className="flex gap-2">
                       <Avatar className="scale-75">
                         <AvatarImage src="/placeholder-user.jpg" />
-                        <AvatarFallback className="bg-[#75517B]">{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-[#815BF5]">{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium w-[210px] mt-2 text-sm">
@@ -595,25 +595,25 @@ export default function TeamTabs() {
             <input
               placeholder="Last Name"
               value={editedUser.lastName}
-              className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+              className="py-2 px-2 text-xs bg-[#121212] rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
             />
             <input
               placeholder="Email"
               value={editedUser.email}
-              className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+              className="py-2 px-2 text-xs bg-[#121212] rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
             />
             <input
               placeholder="Password"
               value={editedUser.password}
-              className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+              className="py-2 px-2 text-xs bg-[#121212] rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, password: e.target.value })}
             />
             <select
               value={editedUser.role}
               onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
-              className="block w-full px-2 py-2 bg-[#292c32]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+              className="block w-full px-2 py-2 bg-[#121212]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="member" className="text-xs">Team Member</option>
               <option value="orgAdmin" className="text-xs">Admin</option>
@@ -621,7 +621,7 @@ export default function TeamTabs() {
             </select>
             <select
               value={selectedReportingManager || editedUser.reportingManager}
-              className="block w-full px-2 py-2 bg-[#292c32] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+              className="block w-full px-2 py-2 bg-[#0b0d29] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
               onChange={(e) => setSelectedReportingManager(e.target.value)} // Update selected reporting manager
             >
               <option value="">Select Reporting Manager</option>
@@ -637,11 +637,11 @@ export default function TeamTabs() {
               onCountrySelect={handleCountrySelect}
             />
             <div className="flex items-center">
-              <span className="py-2 px-2 bg-[#292c32] rounded-l text-xs">{countryCode}</span>
+              <span className="py-2 px-2 bg-[#121212] rounded-l text-xs">{countryCode}</span>
               <input
                 placeholder="WhatsApp Number"
                 value={editedUser.whatsappNo}
-                className="py-2 px-2 text-xs bg-[#292c32] rounded-r w-full outline-none"
+                className="py-2 px-2 text-xs bg-transparent border rounded-r w-full outline-none"
                 onChange={(e) => setEditedUser({ ...editedUser, whatsappNo: e.target.value })}
               />
             </div>

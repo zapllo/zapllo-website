@@ -14,7 +14,7 @@ export function ModeToggle() {
 
   return (
     <Button 
-      className='rounded-full h-10 w-10 bg-[#75517B]' 
+      className='rounded-full h-10 w-10 bg-[#815BF5]' 
       size="icon" 
       onClick={toggleTheme}
     >
