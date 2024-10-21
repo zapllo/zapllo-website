@@ -46,27 +46,60 @@ export default function Profile({}: Props) {
     }
   };
 
-    return (
-        <div className='mt-16'>
-            <div className='flex justify-center w-full bg- rounded p-2'>
-                <div className="flex  cursor-pointer bg-transparent border border-lg  w-fit rounded text-xs px-4 py-2 items-center justify-center">
-                    <div className="flex items-center text-[#E0E0E0] gap-4">
-                        <Avatar>
-                            <AvatarImage src="/placeholder-user.jpg" />
-                            <AvatarFallback className='bg-[#815BF5] text-white'>{firstName.charAt(0)}{lastName.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-medium text-sm">{firstName} {lastName}</p>
-                        </div>
-                        <div>
-                            <p className="font-medium text-xs">Role: {role === "orgAdmin" ? "Admin" : role === "member" ? "Member" : role === "manager" ? "Manager" : role}</p>
-                        </div>
-                        <h1>|</h1>
-                        <div className='flex text-xs gap-1'>
-                            <Mail className='h-4' />
-                            <p className="">{email}</p>
-                        </div>
-                        <h1>|</h1>
+  return (
+    <div className="mt-16">
+      <div className="flex justify-center w-full p-2">
+        <div className="flex cursor-pointer bg-transparent border border-lg w-fit rounded text-xs px-4 py-2 items-center justify-center">
+          <div className="flex items-center text-[#E0E0E0] gap-4">
+            {/* Dialog to open Modal */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogTrigger asChild>
+                <div
+                  className="w-[40px] h-[40px] flex items-center justify-center rounded-full bg-[#75517B]"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <IoPersonAddSharp className="h-4 w-4 text-white" />
+                </div>
+              </DialogTrigger>
+
+              {/* Fullscreen Modal */}
+              <DialogContent className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                  <h2 className="text-lg font-bold mb-4">Add New User</h2>
+                  <p>This is a modal to add users' data in the application.</p>
+                  <Button
+                    onClick={() => setIsModalOpen(false)}
+                    className="mt-4"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <div>
+              <p className="font-medium text-sm">
+                {firstName} {lastName}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium text-xs">
+                Role:{" "}
+                {role === "orgAdmin"
+                  ? "Admin"
+                  : role === "member"
+                  ? "Member"
+                  : role === "manager"
+                  ? "Manager"
+                  : role}
+              </p>
+            </div>
+            <h1>|</h1>
+            <div className="flex text-xs gap-1">
+              <Mail className="h-4" />
+              <p className="">{email}</p>
+            </div>
+            <h1>|</h1>
 
             <p className="flex gap-2 text-xs">
               <Phone className="h-4" />
@@ -76,47 +109,50 @@ export default function Profile({}: Props) {
         </div>
       </div>
 
-
+      {/* Other UI Content */}
+      <div className="p-4">
+        {/* Account Information */}
+        <div>
+          <div className="border bg-[#380E3D] rounded-lg p-2 mt-2 h-10">
+            <h1 className="text-sm">My Account Information</h1>
+          </div>
+          <Link href="/dashboard/settings/changePassword">
+            <div className="border-b p-2 mt-2 h-10">
+              <h1 className="text-sm">Change Password</h1>
             </div>
-            <div className='p-4 '>
-                <div>
-                    <div className='border bg-[#0A0D28] rounded-lg p-2 mt-2 h-10 '>
-                        <h1 className='text-sm'>My Account Information</h1>
-                    </div>
-                    <Link href='/dashboard/settings/changePassword'>
-                        <div className='border-b p-2 mt-2 h-10 '>
-                            <h1 className='text-sm'>Change Password</h1>
-                        </div>
-                    </Link>
-                </div>
-                <div className='py-4'>
-                    <div className='border bg-[#0A0D28] rounded-lg p-2 mt-2 h-10 '>
-                        <h1 className='text-sm'>Support</h1>
-                    </div>
-                    <Link href='/help/tutorials'>
-                        <div className='border-b p-2 mt-2 h-10 '>
-                            <h1 className='text-sm'>Tutorials</h1>
-                        </div>
-                    </Link>
-                    <Link href='/help/tickets'>
-                        <div className='border-b p-2 mt-2 h-10 rounded-lg'>
-                            <h1 className='text-sm'>My Tickets</h1>
-                        </div>
-                    </Link>
-                    <Link href='/help/tickets'>
-                        <div className=' p-2 mt-2 h-10 '>
-                            <h1 className='text-sm'>Raise a Ticket</h1>
-                        </div>
-                    </Link>
-                    <div className='flex justify-center '>
-                        <div onClick={logout} className='border cursor-pointer w-fit  bg-red-700 px-8 mt-4 py-2  rounded-lg'>
-                            <h1 className='text-sm'>Logout</h1>
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
+          </Link>
         </div>
-    )
+
+        {/* Support and Logout */}
+        <div className="py-4">
+          <div className="border bg-[#380E3D] rounded-lg p-2 mt-2 h-10">
+            <h1 className="text-sm">Support</h1>
+          </div>
+          <Link href="/help/tutorials">
+            <div className="border-b p-2 mt-2 h-10">
+              <h1 className="text-sm">Tutorials</h1>
+            </div>
+          </Link>
+          <Link href="/help/tickets">
+            <div className="border-b p-2 mt-2 h-10 rounded-lg">
+              <h1 className="text-sm">My Tickets</h1>
+            </div>
+          </Link>
+          <Link href="/help/tickets">
+            <div className="p-2 mt-2 h-10">
+              <h1 className="text-sm">Raise a Ticket</h1>
+            </div>
+          </Link>
+          <div className="flex justify-center">
+            <div
+              onClick={logout}
+              className="border cursor-pointer w-fit bg-red-700 px-8 mt-4 py-2 rounded-lg"
+            >
+              <h1 className="text-sm">Logout</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

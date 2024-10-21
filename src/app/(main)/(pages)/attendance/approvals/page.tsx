@@ -56,13 +56,13 @@ type User = {
 interface LeaveDay {
   date: string;
   unit:
-    | "Full Day"
-    | "1st Half"
-    | "2nd Half"
-    | "1st Quarter"
-    | "2nd Quarter"
-    | "3rd Quarter"
-    | "4th Quarter";
+  | "Full Day"
+  | "1st Half"
+  | "2nd Half"
+  | "1st Quarter"
+  | "2nd Quarter"
+  | "3rd Quarter"
+  | "4th Quarter";
   status: "Pending" | "Approved" | "Rejected";
 }
 
@@ -190,8 +190,7 @@ export default function Approvals() {
     } catch (error: any) {
       console.error("Error deleting leave:", error);
       toast.error(
-        `Error deleting leave: ${
-          error.response?.data?.message || error.message
+        `Error deleting leave: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -215,8 +214,7 @@ export default function Approvals() {
     } catch (error: any) {
       console.error("Error deleting regularization:", error);
       toast.error(
-        `Error deleting regularization: ${
-          error.response?.data?.message || error.message
+        `Error deleting regularization: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -266,8 +264,7 @@ export default function Approvals() {
           error.response?.data || error.message
         );
         toast.error(
-          `Failed to fetch ${filter} approvals: ${
-            error.response?.data?.message || error.message
+          `Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message
           }`
         );
       } finally {
@@ -482,8 +479,7 @@ export default function Approvals() {
         error.response?.data || error.message
       );
       toast.error(
-        `Failed to approve entry: ${
-          error.response?.data?.message || error.message
+        `Failed to approve entry: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -525,8 +521,7 @@ export default function Approvals() {
         error.response?.data || error.message
       );
       toast.error(
-        `Failed to reject entry: ${
-          error.response?.data?.message || error.message
+        `Failed to reject entry: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -754,7 +749,7 @@ export default function Approvals() {
               <CheckCircle className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""} `} />
               Approved (
               {
-                filteredLeaves.filter((leave) => leave.status === "Approved")
+                finalFilteredLeaves.filter((leave) => leave.status === "Approved")
                   .length
               }
               )
@@ -769,7 +764,7 @@ export default function Approvals() {
               <CheckCircle className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""} `} />
               Approved (
               {
-                filteredLeaves.filter((leave) => leave.status === "Approved")
+                finalFilteredLeaves.filter((leave) => leave.status === "Approved")
                   .length
               }
               )
@@ -805,11 +800,11 @@ export default function Approvals() {
               <Cross1Icon className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""} `} />
               Rejected (
               {
-                filteredLeaves.filter((leave) => leave.status === "Rejected")
+                finalFilteredLeaves.filter((leave) => leave.status === "Rejected")
                   .length
               }
               )
-            </button> */}
+            </button>
             <button
               onClick={() => setStatusFilter("Rejected")}
               className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
@@ -820,7 +815,7 @@ export default function Approvals() {
               <Cross1Icon className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""} `} />
               Rejected (
               {
-                filteredLeaves.filter((leave) => leave.status === "Rejected")
+                finalFilteredLeaves.filter((leave) => leave.status === "Rejected")
                   .length
               }
               )
@@ -1350,8 +1345,8 @@ export default function Approvals() {
           leaveIdToDelete
             ? "Are you sure you want to delete this leave request? This action cannot be undone."
             : regularizationIdToDelete
-            ? "Are you sure you want to delete this regularization request? This action cannot be undone."
-            : "Are you sure you want to delete this request? This action cannot be undone."
+              ? "Are you sure you want to delete this regularization request? This action cannot be undone."
+              : "Are you sure you want to delete this request? This action cannot be undone."
         }
       />
     </div>
