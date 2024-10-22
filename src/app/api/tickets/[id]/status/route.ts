@@ -60,7 +60,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         }
 
         const userId = await getDataFromToken(req);
-
+        // Slice the ticketId from _id to 6 characters
+        const ticketId = updatedTicket._id.toString().slice(0, 6);
         // Add the comment
         if (comment) {
             updatedTicket.comments.push({
@@ -77,7 +78,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
         if (user && (status === 'In Resolution' || status === 'Closed')) {
             const templateName = status === 'In Resolution' ? 'ticketinresolution' : 'ticketclosed';
-            await sendWhatsAppNotification(user, updatedTicket._id, status, comment, templateName);
+            await sendWhatsAppNotification(user, ticketId, status, comment, templateName);
         }
 
         return NextResponse.json(updatedTicket);

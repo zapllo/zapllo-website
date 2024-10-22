@@ -136,7 +136,7 @@ const Layout = (props: Props) => {
       <div
         className={`flex overflow-hidden ${
           isVisible ? "mt-10" : ""
-        } dark:bg-[#201124] scrollbar-hide h-full w-full`}
+        } dark:bg-[#04061E] scrollbar-hide h-full w-full`}
       >
         <MenuOptions />
         <div className="w-full overflow-hidden h-screen">

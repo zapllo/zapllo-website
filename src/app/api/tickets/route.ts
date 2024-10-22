@@ -90,6 +90,10 @@ export async function POST(req: Request) {
 
         const newTicket = new Ticket(data); // Create a new ticket instance
         await newTicket.save(); // Save the ticket to the database
+
+        // Slice the ticketId from _id to 6 characters
+        const ticketId = newTicket._id.toString().slice(0, 6);
+
         // Fetch user details including email
         const user = await User.findById(data.user).select('email firstName whatsappNo'); // Assuming `user` contains the user ID
 
@@ -97,13 +101,13 @@ export async function POST(req: Request) {
         await sendTicketCreationEmail({
             customerName: user?.firstName,
             email: user?.email,
-            ticketId: newTicket._id,
+            ticketId, // Use the 6-character sliced ticket ID
             createdAt: new Date(),
             issue: data.subject,
             description: data.description,
         });
         await sendTicketWebhookNotification(user, {
-            _id: newTicket._id,
+            _id: ticketId, // Use the 6-character sliced ticket ID,
             createdAt: new Date(),
             subject: data.subject,
         });

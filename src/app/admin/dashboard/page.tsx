@@ -164,7 +164,7 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="flex h-screen bg-[#201124]">
+    <div className="flex h-screen bg-[#04061E]">
       {/* Main Content */}
       <div className="flex-1 p-6">
         {/* Summary Cards */}

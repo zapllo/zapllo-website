@@ -75,15 +75,22 @@ export default function ContactForm() {
                         onChange={(e) => setLastName(e.target.value)}
                     />
                 </div>
+
+
+
+
                 <div className="space-y-4">
                     <Label>Email</Label>
+
                     <input
                         placeholder="Email"
-                        className="bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border rounded-md p-2"
+                        className="bg-transparent block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border  rounded-md p-2"
+                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
+
                 <div className="space-y-4">
                     <Label>WhatsApp Number</Label>
                     <input

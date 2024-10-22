@@ -70,6 +70,8 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
     const [isFromDatePickerOpen, setIsFromDatePickerOpen] = useState(false); // Manage From Date Picker
     const [isToDatePickerOpen, setIsToDatePickerOpen] = useState(false); // Manage To Date Picker
     const controls = useAnimation();
+    const intervalRef = useRef<number | null>(null);
+    const [recordingTime, setRecordingTime] = useState(0);
 
     const modalVariants = {
         hidden: {
@@ -292,7 +294,8 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(stream);
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Type assertion
+            const AudioContext =
+                window.AudioContext || (window as any).webkitAudioContext; // Type assertion
             const audioContext = new AudioContext();
             const analyser = audioContext.createAnalyser();
             const source = audioContext.createMediaStreamSource(stream);
@@ -304,7 +307,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
             mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0) {
-                    const blob = new Blob([event.data], { type: 'audio/wav' });
+                    const blob = new Blob([event.data], { type: "audio/wav" });
                     setAudioBlob(blob);
                     const audioURL = URL.createObjectURL(blob);
                     audioURLRef.current = audioURL;
@@ -313,43 +316,53 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
             mediaRecorder.onstop = () => {
                 setRecording(false);
+                if (intervalRef.current !== null) {
+                    clearInterval(intervalRef.current); // Clear the timer
+                    intervalRef.current = null; // Reset the ref
+                }
+                setRecordingTime(0); // Reset timer
             };
 
             mediaRecorder.start();
             setRecording(true);
 
+            // Start timer
+            intervalRef.current = window.setInterval(() => {
+                setRecordingTime((prevTime) => prevTime + 1);
+            }, 1000);
+
             // Real-time waveform visualization
+            // Real-time waveform visualization (Bars Version)
             const canvas = canvasRef.current;
+            console.log(canvas);
             if (canvas) {
-                const canvasCtx = canvas.getContext('2d');
+                const canvasCtx = canvas.getContext("2d");
                 if (canvasCtx) {
                     const drawWaveform = () => {
                         if (analyserRef.current) {
                             requestAnimationFrame(drawWaveform);
-                            analyserRef.current.getByteTimeDomainData(dataArray);
-                            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-                            canvasCtx.lineWidth = 2;
-                            canvasCtx.strokeStyle = 'green';
-                            canvasCtx.beginPath();
+                            analyserRef.current.getByteFrequencyData(dataArray);
 
-                            const sliceWidth = canvas.width * 1.0 / bufferLength;
-                            let x = 0;
+                            // Clear the canvas before rendering bars
+                            canvasCtx.fillStyle = "rgb(40, 45, 50)";
+                            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-                            for (let i = 0; i < bufferLength; i++) {
-                                const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
-                                const y = v * canvas.height / 2; // Convert to canvas height
+                            const bars = 40;
+                            const barWidth = 2;
+                            const totalBarWidth = bars * barWidth;
+                            const gapWidth = (canvas.width - totalBarWidth) / (bars - 1);
+                            const step = Math.floor(bufferLength / bars); // Number of bars to draw
 
-                                if (i === 0) {
-                                    canvasCtx.moveTo(x, y);
-                                } else {
-                                    canvasCtx.lineTo(x, y);
-                                }
+                            for (let i = 0; i < bars; i++) {
+                                const barHeight =
+                                    (dataArray[i * step] / 255) * canvas.height * 0.8; // Normalizing bar height
+                                const x = i * (barWidth + gapWidth);
+                                const y = (canvas.height - barHeight) / 2; // Center the bars vertically
 
-                                x += sliceWidth;
+                                // Draw each bar
+                                canvasCtx.fillStyle = "rgb(99, 102, 241)"; // Bar color
+                                canvasCtx.fillRect(x, y, barWidth, barHeight);
                             }
-
-                            canvasCtx.lineTo(canvas.width, canvas.height / 2);
-                            canvasCtx.stroke();
                         }
                     };
 
@@ -359,7 +372,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
             mediaRecorderRef.current = mediaRecorder;
         } catch (error) {
-            console.error('Error accessing microphone:', error);
+            console.error("Error accessing microphone:", error);
         }
     };
 
@@ -395,7 +408,9 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                     <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
                         <div className="flex border-b py-2  w-full justify-between ">
                             <Dialog.Title className="text-md   px-6 py-2 font-medium">Submit Leave Request</Dialog.Title>
-                            <Dialog.DialogClose className=" px-6 py-2"><CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' /></Dialog.DialogClose>
+                            <Dialog.DialogClose className=" px-6 py-2">
+                                <CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+                            </Dialog.DialogClose>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4 p-6">
@@ -559,7 +574,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                 </ul>
                             )}
 
-               
+
                             {audioBlob && (
                                 <CustomAudioPlayer audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
                             )}

@@ -11,37 +11,32 @@ import {
   Camera,
   CheckCircle,
   Clock,
+  Globe,
   MapPin,
   MapPinIcon,
   Users2,
   X,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-// const Webcam = dynamic(() => import('react-webcam'), { ssr: false });
-// Dynamically import Leaflet components with SSR disabled
-const MapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false }
-);
+
+
 
 // Remove the top-level import of Leaflet
 // import L from 'leaflet';
 
 // Import Leaflet CSS (this is okay because CSS imports don't execute JS code)
-import "leaflet/dist/leaflet.css";
 import { toast, Toaster } from "sonner";
 import RegularizationDetails from "@/components/sheets/regularizationDetails";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+
+
+const mapContainerStyle = {
+  height: "400px",
+  width: "100%",
+};
 
 // Define interface for login entries
 interface LoginEntry {
@@ -90,10 +85,6 @@ export default function MyAttendance() {
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [mapModalOpen, setMapModalOpen] = useState(false);
-  const [mapCoords, setMapCoords] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
   const [activeTab, setActiveTab] = useState("thisMonth"); // Set default to 'thisMonth'
   const [activeAttendanceTab, setActiveAttendanceTab] = useState("dailyReport");
   const [customDateRange, setCustomDateRange] = useState<{
@@ -132,23 +123,34 @@ export default function MyAttendance() {
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false); // For triggering the start date picker
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false); // For triggering the end date picker
 
-    // useEffect(() => {
-    //     if (typeof window !== 'undefined') {
-    //         // Dynamically import Leaflet inside useEffect
-    //         import('leaflet').then((L) => {
-    //             // Dynamically set Leaflet icon options only after the window object is available
-    //             delete (L.Icon.Default.prototype as any)._getIconUrl;
-    //             L.Icon.Default.mergeOptions({
-    //                 iconRetinaUrl:
-    //                     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-    //                 iconUrl:
-    //                     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    //                 shadowUrl:
-    //                     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-    //             });
-    //         });
-    //     }
-    // }, []);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const handleViewMap = (lat: number, lng: number) => {
+    setMapCoords({ lat, lng });
+    setMapModalOpen(true);
+  };
+
+
+  // useEffect(() => {
+  //     if (typeof window !== 'undefined') {
+  //         // Dynamically import Leaflet inside useEffect
+  //         import('leaflet').then((L) => {
+  //             // Dynamically set Leaflet icon options only after the window object is available
+  //             delete (L.Icon.Default.prototype as any)._getIconUrl;
+  //             L.Icon.Default.mergeOptions({
+  //                 iconRetinaUrl:
+  //                     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  //                 iconUrl:
+  //                     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  //                 shadowUrl:
+  //                     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  //             });
+  //         });
+  //     }
+  // }, []);
 
 
   useEffect(() => {
@@ -472,11 +474,7 @@ export default function MyAttendance() {
 
   const filteredEntries = filterEntriesByTab();
 
-  // Open map modal to show coordinates on Leaflet map
-  const handleViewMap = (lat: number, lng: number) => {
-    setMapCoords({ lat, lng });
-    setMapModalOpen(true);
-  };
+
 
   // Open custom date range modal
   const openCustomModal = () => {
@@ -754,8 +752,8 @@ export default function MyAttendance() {
                     entry.approvalStatus === "Approved"
                       ? "bg-[#017a5b] px-2 py-1 rounded-xl"
                       : entry.approvalStatus === "Rejected"
-                      ? "bg-red-800 rounded-xl px-2 py-1"
-                      : "bg-orange-800 px-2 py-1 rounded-xl"
+                        ? "bg-red-800 rounded-xl px-2 py-1"
+                        : "bg-orange-800 px-2 py-1 rounded-xl"
                   }
                 >
                   {/* {`Approval Status: `} */}
@@ -932,9 +930,8 @@ export default function MyAttendance() {
         {hasRegisteredFaces ? (
           <button
             onClick={handleLoginLogout}
-            className={`bg-${
-              isLoggedIn ? "red-800" : "[#017a5b]"
-            } -500 text-white py-2 px-4 rounded text-sm`}
+            className={`bg-${isLoggedIn ? "red-800" : "[#017a5b]"
+              } -500 text-white py-2 px-4 rounded text-sm`}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
@@ -958,91 +955,91 @@ export default function MyAttendance() {
             </div> */}
       {/* Apply Regularization Button */}
 
-            <div className="last-two-days-entries p-4 w-full justify-center flex mb-6">
-                {todayEntries?.length === 0 ? (
-                    <div className='bg-[#] border w-1/2 rounded p-4'>
-                        <div className='flex w-full justify-center'>
-                            <img src='/animations/not found.gif' className='h-40 ' />
-                        </div>
-                        <h1 className='text-center text-sm'>No Entries found for today!</h1>
-                        <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
-                    </div>
-                ) : (
-                    <div className="space-y-4 bg-[#0B0D29]  rounded p-4 w-[60%] mx-12">
-                        {todayEntries?.map((entry: LoginEntry, index: number) => {
-                            const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-                            const formattedLogoutTime = entry.logoutTime
-                                ? new Date(entry.logoutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
-                                : null;
-                            const date = new Date(entry.loginTime);
-                            return (
-                                <div key={index} className=" w-full  grid grid-cols-3">
-                                    {entry.loginTime && (
-                                        <div>
-                                            <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
-                                        </div>
-                                    )}
-                                    {entry.logoutTime && (
-                                        <div>
-                                            <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
-                                        </div>
-                                    )}
-                                    <div className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
-                                        <h1 className='text-xs'>
-                                            {entry.action.toUpperCase()}
-                                        </h1>
-                                    </div>
-                                    {/* Render map icon only if lat and lng are present */}
-                                    {entry.lat && entry.lng && (
-                                        <div className='flex justify-end '>
-                                            <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ">
-                                                <MapPin />
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
+      <div className="last-two-days-entries p-4 w-full justify-center flex mb-6">
+        {todayEntries?.length === 0 ? (
+          <div className='bg-[#] border w-1/2 rounded p-4'>
+            <div className='flex w-full justify-center'>
+              <img src='/animations/not found.gif' className='h-40 ' />
             </div>
+            <h1 className='text-center text-sm'>No Entries found for today!</h1>
+            <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
+          </div>
+        ) : (
+          <div className="space-y-4 bg-[#0B0D29]  rounded p-4 w-[60%] mx-12">
+            {todayEntries?.map((entry: LoginEntry, index: number) => {
+              const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+              const formattedLogoutTime = entry.logoutTime
+                ? new Date(entry.logoutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+                : null;
+              const date = new Date(entry.loginTime);
+              return (
+                <div key={index} className=" w-full  grid grid-cols-3">
+                  {entry.loginTime && (
+                    <div>
+                      <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
+                    </div>
+                  )}
+                  {entry.logoutTime && (
+                    <div>
+                      <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
+                    </div>
+                  )}
+                  <div className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
+                    <h1 className='text-xs'>
+                      {entry.action.toUpperCase()}
+                    </h1>
+                  </div>
+                  {/* Render map icon only if lat and lng are present */}
+                  {entry.lat && entry.lng && (
+                    <div className='flex justify-end '>
+                      <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ">
+                        <MapPin />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-            <div className="apply-regularization-section flex justify-center mb-6">
-                <button
-                    onClick={() => setIsRegularizationModalOpen(true)}
-                    className="bg-[#017A5B] text-white py-2 px-4 rounded text-xs"
-                >
-                    Apply Regularization
-                </button>
-            </div>
-            {/* Tabs for filtering entries */}
-            <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
-                <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}>Today</button>
-                <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Yesterday</button>
-                <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Week</button>
-                <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Week</button>
-                <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Month</button>
-                <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Month</button>
-                <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>All Time</button>
-                <button onClick={openCustomModal} className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end ? 'bg-[#815BF5] text-white' : 'bg-transparent'
-                    }`}>Custom</button>
-            </div>
-            <div className="flex justify-center gap-4 mt-2 mb-6">
-                <button
-                    onClick={() => setActiveAttendanceTab('dailyReport')}
-                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
-                >
-                    <img src='/icons/report.png' className='invert-[100] h-4' />
-                    Daily Report
-                </button>
-                <button
-                    onClick={() => setActiveAttendanceTab('regularization')}
-                    className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
-                >
-                    <Users2 className='h-4' />
-                    Regularization
-                </button>
-            </div>
+      <div className="apply-regularization-section flex justify-center mb-6">
+        <button
+          onClick={() => setIsRegularizationModalOpen(true)}
+          className="bg-[#017A5B] text-white py-2 px-4 rounded text-xs"
+        >
+          Apply Regularization
+        </button>
+      </div>
+      {/* Tabs for filtering entries */}
+      <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
+        <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}>Today</button>
+        <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Yesterday</button>
+        <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Week</button>
+        <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Week</button>
+        <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Month</button>
+        <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Month</button>
+        <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>All Time</button>
+        <button onClick={openCustomModal} className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end ? 'bg-[#815BF5] text-white' : 'bg-transparent'
+          }`}>Custom</button>
+      </div>
+      <div className="flex justify-center gap-4 mt-2 mb-6">
+        <button
+          onClick={() => setActiveAttendanceTab('dailyReport')}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
+        >
+          <img src='/icons/report.png' className='invert-[100] h-4' />
+          Daily Report
+        </button>
+        <button
+          onClick={() => setActiveAttendanceTab('regularization')}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
+        >
+          <Users2 className='h-4' />
+          Regularization
+        </button>
+      </div>
 
       {/* Display login/logout entries */}
       <div className="entries-list mb-36">
@@ -1094,9 +1091,8 @@ export default function MyAttendance() {
                       </div>
                       <div className="flex justify-end">
                         <span
-                          className={`transition-transform duration-300 ${
-                            expandedDays[date] ? "rotate-180" : "rotate-0"
-                          }`}
+                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"
+                            }`}
                         >
                           {/* Use a caret icon (chevron-down) */}
                           <svg
@@ -1122,17 +1118,15 @@ export default function MyAttendance() {
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
                             <span>
-                              {`${
-                                entry.action.charAt(0).toUpperCase() +
+                              {`${entry.action.charAt(0).toUpperCase() +
                                 entry.action.slice(1)
-                              }: ${formatTimeToAMPM(entry.timestamp)}`}
+                                }: ${formatTimeToAMPM(entry.timestamp)}`}
                             </span>
                             <span
-                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${
-                                entry.action === "login"
-                                  ? "bg-[#017a5b]"
-                                  : "bg-[#8a3d17]"
-                              }`}
+                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login"
+                                ? "bg-[#017a5b]"
+                                : "bg-[#8a3d17]"
+                                }`}
                             >
                               {entry.action.toUpperCase()}
                             </span>
@@ -1236,13 +1230,20 @@ export default function MyAttendance() {
       <Dialog.Root open={mapModalOpen} onOpenChange={setMapModalOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg max-w-md w-full">
-              <Dialog.DialogClose className="text-black p-2 mt-4 ml-96">
-                X
-              </Dialog.DialogClose>
+          <Dialog.Content className="fixed  inset-0 flex justify-center items-center">
+            <div className="bg-[#121212] p-4 overflow-y-scroll scrollbar-hide h-[500px]   shadow-lg w-full   max-w-md  rounded-lg">
+              <div className="w-full flex justify-between">
+                <h1 className="py-4 flex gap-2  ">
+                  <Globe className="h-6 text-[#815BF5]" />
+                  Geo Location
+                </h1>
+                <Dialog.DialogClose className="text-white py-4 px-1  ">
+                  <CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+                </Dialog.DialogClose>
+              </div>
 
-              {mapCoords && (
+
+              {/* {mapCoords && (
                 <MapContainer
                   center={[mapCoords.lat, mapCoords.lng]}
                   zoom={13}
@@ -1255,7 +1256,24 @@ export default function MyAttendance() {
                   />
                   <Marker position={[mapCoords.lat, mapCoords.lng]}></Marker>
                 </MapContainer>
-              )}
+              )} */}
+              <div className="">
+                {mapCoords && (
+                  <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k"> {/* Replace with your API key */}
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={mapCoords}
+                      zoom={13}
+                      options={{
+                        disableDefaultUI: true, // Disable default UI if you want
+                        zoomControl: true, // Show zoom control
+                      }}
+                    >
+                      <Marker position={mapCoords} />
+                    </GoogleMap>
+                  </LoadScript>
+                )}
+              </div>
             </div>
           </Dialog.Content>
         </Dialog.Portal>
@@ -1471,7 +1489,7 @@ export default function MyAttendance() {
                                 // Manually extract the local date (year, month, day)
                                 const localDate = new Date(
                                   newDate.getTime() -
-                                    newDate.getTimezoneOffset() * 60000
+                                  newDate.getTimezoneOffset() * 60000
                                 )
                                   .toISOString()
                                   .split("T")[0];

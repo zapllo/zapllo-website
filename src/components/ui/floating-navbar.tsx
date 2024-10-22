@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ShimmerButton from "../magicui/shimmer-button";
 import ShineBorder from "../magicui/shine-border";
-import { Calendar } from "lucide-react";
+import { Calendar, File } from "lucide-react";
 
 export const FloatingNav = ({
     navItems,
@@ -29,7 +29,7 @@ export const FloatingNav = ({
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                className="flex gap-2 max-w-5xl fixed top-0 md:top-5 py-3 inset-x-0 mx-auto border-transparent rounded-full bg-[#141841] shadow-md z-[5000] px-6 justify-between"
+                className="flex gap-2 max-w-6xl fixed top-0 md:top-5 py-3 inset-x-0 mx-auto border-transparent rounded-full bg-[#141841] shadow-md z-[5000] px-6 justify-between"
             >
                 <motion.div
                     className={cn(
@@ -67,26 +67,26 @@ export const FloatingNav = ({
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
-                                            className="absolute space-y-12 gap-y-6 top-8 left-0 w-64 mt-2 bg-white dark:bg-[#141841] shadow-lg rounded-lg py-2 px-4 z-10"
+                                            className="absolute space-y-12 gap-y-6 top-8 left-0  h-48 w-72 mt-2 bg-white dark:bg-[#000000] shadow-lg rounded-lg py-2 px-4 z-10"
                                         >
                                             <Link href="/products/zapllo-work">
-                                                <p className="p-2 text-sm flex gap-1 hover:bg-black rounded-md">
+                                                <p className="p-2 mt-2 text-sm flex gap-1 hover:bg-[#B77EF1] rounded-md">
                                                     <img src="/icons/task.png" className="h-5" />  Zapllo Tasks
                                                 </p>
                                             </Link>
                                             <Link href="/products/zapllo-people">
-                                                <p className="py-2 px-1 text-sm flex gap-1 hover:bg-black   rounded-md">
+                                                <p className="py-2 mt-2 px-1 text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
                                                     <Calendar className="h-5" />      Zapllo Payroll
                                                 </p>
                                             </Link>
                                             <Link href="/products/zapllo-clients">
-                                                <p className="p-2 text-sm flex gap-1 hover:bg-black   rounded-md">
-                                                <img src="/icons/crm.png" className="h-4 invert-[100]" />    Zapllo CRM (Coming Soon)
+                                                <p className="p-2 text-sm mt-2 flex gap-1 hover:bg-[#B77EF1]   rounded-md">
+                                                    <img src="/icons/crm.png" className="h-4 invert-[100]" />    Zapllo CRM (Coming Soon)
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-billing">
-                                                <p className="p-2 text-sm  rounded-md">
-                                                    Invoice by Zapllo
+                                            <Link href="/products/zapllo-people">
+                                                <p className="p-2 mt-2 px-1 text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
+                                                    <File className="h-5" />     Invoice by Zapllo (Coming Soon)
                                                 </p>
                                             </Link>
                                         </motion.div>
@@ -104,7 +104,7 @@ export const FloatingNav = ({
                 </div>
                 <Link
                     href="/dashboard"
-                    className="relative  h-10 overflow-hidden rounded-full p-[2px] "
+                    className="relative   h-10 overflow-hidden rounded-full p-[2px] "
                 >
                     <ShineBorder borderRadius={50}
                         className="text-center text-xl font-bold capitalize"
