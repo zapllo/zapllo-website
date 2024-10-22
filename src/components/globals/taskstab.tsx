@@ -69,7 +69,12 @@ import {
   IconProgressBolt,
   IconProgressCheck,
 } from "@tabler/icons-react";
-import { PersonIcon, PlayIcon, UpdateIcon } from "@radix-ui/react-icons";
+import {
+  CrossCircledIcon,
+  PersonIcon,
+  PlayIcon,
+  UpdateIcon,
+} from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -1357,31 +1362,30 @@ export default function TasksTab({
                                 onClick={() => {
                                   setActiveDateFilter("custom"); // Set directly to "custom"
                                 }}
-                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${activeDateFilter === "custom" ||
+                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${
+                                  activeDateFilter === "custom" ||
                                   (customStartDate && customEndDate)
-                                  ? "bg-[#815BF5] text-white"
-                                  : ""
-                                  }`}
+                                    ? "bg-[#815BF5] text-white"
+                                    : ""
+                                }`}
                               >
                                 Custom
                               </Button>
 
                               {activeDateFilter === "custom" && (
                                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                  <div className="bg-[#0B0D29] p-6 rounded-lg shadow-lg w-96 relative">
+                                  <div className="bg-[#0B0D29] p-7 rounded-lg shadow-lg w-96 relative border">
                                     {/* Close Button */}
-                                    <div className="w-full flex justify-between">
-                                      <h3 className="text-md mb-4 text-white ">
-                                        Select Date Range
+                                    <div className="w-full flex items-center justify-between mb-4">
+                                      <h3 className="text-md font-medium text-white ">
+                                        Select Custom Date Range
                                       </h3>
-                                      <button
-                                        className="h-7 scale-75 cursor-pointer border rounded-full  hover:bg-white hover:text-black w-7"
+                                      <CrossCircledIcon
                                         onClick={() =>
                                           setActiveDateFilter(undefined)
                                         }
-                                      >
-                                        <X className="cursor-pointer border rounded-full border-white h-7 hover:bg-white hover:text-black w-7" />
-                                      </button>
+                                        className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                      />
                                     </div>
 
                                     {/* Date Selection Buttons */}
@@ -1428,13 +1432,12 @@ export default function TasksTab({
                                     </div>
 
                                     {/* Submit Button */}
-                                    <div className="flex justify-end gap-4 mt-6">
+                                    <div className="flex justify-end gap-4 mt-4">
                                       <button
                                         onClick={() =>
                                           setActiveDateFilter(undefined)
                                         } // Closes the modal
-                                        // className="px-4 py-2 bg-[#007A5A] text-white rounded hover:bg-[#005f43]"
-                                        className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
+                                        className="bg-[#815BF5] text-white py-2 px-4 rounded w-full text-xs"
                                       >
                                         Apply
                                       </button>
@@ -1443,7 +1446,7 @@ export default function TasksTab({
                                     {/* Custom Date Picker Modal */}
                                     {datePickerType && (
                                       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-60">
-                                        <div className="bg-[#0B0D29] p-6 rounded-lg shadow-lg w-1/2 scale-75">
+                                        <div className="bg-[#0B0D29] p-10 rounded-lg w-[580px] scale-75 ">
                                           <CustomDatePicker
                                             selectedDate={
                                               datePickerType === "start"
@@ -1493,13 +1496,14 @@ export default function TasksTab({
                                           className="flex gap-1 text-xs tabs-trigger"
                                           value="employee-wise"
                                         >
-                                          <User2 className="h-4" />  Employee Wise
+                                          <User2 className="h-4" /> Employee
+                                          Wise
                                         </TabsTrigger2>
                                         <TabsTrigger2
                                           value="category-wise"
                                           className="flex gap-1 text-xs"
                                         >
-                                          <Tag className="h-4" />  Category Wise
+                                          <Tag className="h-4" /> Category Wise
                                         </TabsTrigger2>
                                       </>
                                     )}
@@ -1507,7 +1511,7 @@ export default function TasksTab({
                                       value="my-report"
                                       className="text-xs flex gap-1"
                                     >
-                                      <File className="h-4" />   My Report{" "}
+                                      <File className="h-4" /> My Report{" "}
                                     </TabsTrigger2>
                                     <TabsTrigger2
                                       value="delegatedTasks"

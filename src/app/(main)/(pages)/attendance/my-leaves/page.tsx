@@ -14,7 +14,11 @@ import {
 import MyLeaveForm from "@/components/forms/MyLeavesForm"; // Your form component
 import LeaveDetails from "@/components/sheets/leaveDetails";
 import { Calendar, CheckCircle, Circle, Info, X } from "lucide-react";
-import { Cross1Icon, CrossCircledIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import {
+  Cross1Icon,
+  CrossCircledIcon,
+  HamburgerMenuIcon,
+} from "@radix-ui/react-icons";
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
 
@@ -27,13 +31,13 @@ interface LeaveType {
 interface LeaveDay {
   date: string;
   unit:
-  | "Full Day"
-  | "1st Half"
-  | "2nd Half"
-  | "1st Quarter"
-  | "2nd Quarter"
-  | "3rd Quarter"
-  | "4th Quarter";
+    | "Full Day"
+    | "1st Half"
+    | "2nd Half"
+    | "1st Quarter"
+    | "2nd Quarter"
+    | "3rd Quarter"
+    | "4th Quarter";
   status: "Pending" | "Approved" | "Rejected";
 }
 
@@ -262,6 +266,12 @@ const MyLeaves: React.FC = () => {
     setActiveTab("custom");
   };
 
+  const handleClose = () => {
+    // Reset date range when closing
+    setCustomDateRange({ start: null, end: null });
+    setIsCustomModalOpen(false);
+  };
+
   const fetchLeaveTypes = async () => {
     try {
       const response = await axios.get("/api/leaves/leaveType");
@@ -410,36 +420,41 @@ const MyLeaves: React.FC = () => {
       <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
         <button
           onClick={() => setActiveTab("today")}
-          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${
+            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           Today
         </button>
         <button
           onClick={() => setActiveTab("thisWeek")}
-          className={`px-4 py-2 h-fit text-xs rounded ${activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 h-fit text-xs rounded ${
+            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           This Week
         </button>
         <button
           onClick={() => setActiveTab("thisMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           This Month
         </button>
         <button
           onClick={() => setActiveTab("lastMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           Last Month
         </button>
         <button
           onClick={openCustomModal}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "custom" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "custom" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           Custom
         </button>
@@ -501,23 +516,29 @@ const MyLeaves: React.FC = () => {
             {/* Status Filters */}
             <div className="flex items-center  text-xs space-x-4 mb-4">
               <button
-                className={`px-4 py-2 flex gap-2 rounded ${selectedStatus === "All"
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border"
-                  }`}
+                className={`px-4 py-2 flex gap-2 rounded ${
+                  selectedStatus === "All"
+                    ? "bg-[#815BF5] text-white"
+                    : "bg-[#] border"
+                }`}
                 onClick={() => setSelectedStatus("All")}
               >
                 <HamburgerMenuIcon />
                 All ({allLeavesCount})
               </button>
               <button
-                className={`px-4 py-2 flex gap-2 rounded ${selectedStatus === "Pending"
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border hover:border-orange-400"
-                  }`}
+                className={`px-4 py-2 flex gap-2 rounded ${
+                  selectedStatus === "Pending"
+                    ? "bg-[#815BF5] text-white"
+                    : "bg-[#] border hover:border-orange-400"
+                }`}
                 onClick={() => setSelectedStatus("Pending")}
               >
-                <Circle className={`h-4 text-red-500 ${selectedStatus === "Pending" ? "text-white" : ""}`} />
+                <Circle
+                  className={`h-4 text-red-500 ${
+                    selectedStatus === "Pending" ? "text-white" : ""
+                  }`}
+                />
                 Pending ({pendingCount})
               </button>
               {/* <button
@@ -533,13 +554,18 @@ const MyLeaves: React.FC = () => {
               </button> */}
 
               <button
-                className={`px-4 py-2 flex gap-2 rounded border ${selectedStatus === "Approved"
-                  ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
-                  : "bg-[#] border hover:border-green-500"
-                  }`}
+                className={`px-4 py-2 flex gap-2 rounded border ${
+                  selectedStatus === "Approved"
+                    ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
+                    : "bg-[#] border hover:border-green-500"
+                }`}
                 onClick={() => setSelectedStatus("Approved")}
               >
-                <CheckCircle className={`h-4 text-green-500 ${selectedStatus === "Approved" ? "text-white" : ""}`} />
+                <CheckCircle
+                  className={`h-4 text-green-500 ${
+                    selectedStatus === "Approved" ? "text-white" : ""
+                  }`}
+                />
                 Approved ({approvedCount})
               </button>
 
@@ -555,13 +581,18 @@ const MyLeaves: React.FC = () => {
                 Rejected ({rejectedCount})
               </button> */}
               <button
-                className={`px-4 py-2 flex gap-2 rounded border ${selectedStatus === "Rejected"
-                  ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
-                  : "bg-[#] border hover:border-red-500"
-                  }`}
+                className={`px-4 py-2 flex gap-2 rounded border ${
+                  selectedStatus === "Rejected"
+                    ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
+                    : "bg-[#] border hover:border-red-500"
+                }`}
                 onClick={() => setSelectedStatus("Rejected")}
               >
-                <Cross1Icon className={`h-4 text-red-500 ${selectedStatus === "Rejected" ? "text-white" : ""}`} />
+                <Cross1Icon
+                  className={`h-4 text-red-500 ${
+                    selectedStatus === "Rejected" ? "text-white" : ""
+                  }`}
+                />
                 Rejected ({rejectedCount})
               </button>
             </div>
@@ -580,7 +611,7 @@ const MyLeaves: React.FC = () => {
                 </DialogTitle>
               </div>
               <DialogClose>
-                <CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
               </DialogClose>
             </div>
             <DialogDescription className="mt-2 text-sm">
@@ -658,14 +689,15 @@ const MyLeaves: React.FC = () => {
               {/* Status and Approval */}
               <div className="flex items-center">
                 <span
-                  className={`px-3  py-1 rounded-full text-[10px] ${leave.status === "Approved"
-                    ? "bg-green-700  text-white"
-                    : leave.status === "Partially Approved"
+                  className={`px-3  py-1 rounded-full text-[10px] ${
+                    leave.status === "Approved"
+                      ? "bg-green-700  text-white"
+                      : leave.status === "Partially Approved"
                       ? "bg-orange-900 text-white -800"
                       : leave.status === "Rejected"
-                        ? "bg-orange-200 text-red-800"
-                        : "bg-orange-700 text-white -800"
-                    }`}
+                      ? "bg-orange-200 text-red-800"
+                      : "bg-orange-700 text-white -800"
+                  }`}
                 >
                   {leave.status}
                 </span>
@@ -700,11 +732,9 @@ const MyLeaves: React.FC = () => {
             <DialogTitle className="text-md  font-medium text-white">
               Select Custom Date Range
             </DialogTitle>
-            <DialogClose className="">
+            <DialogClose className="" onClick={handleClose}>
               {" "}
-            
-             <CrossCircledIcon className='scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
-
+              <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
               {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6" /> */}
             </DialogClose>
           </div>
@@ -730,24 +760,20 @@ const MyLeaves: React.FC = () => {
                 <button
                   type="button"
                   className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                  onClick={() => setIsStartPickerOpen(true)} // Open start date picker
+                  onClick={() => setIsStartPickerOpen(true)} // Open end date picker
                 >
-                  {/* {customDateRange.start
-                    ? new Date(customDateRange.start).toLocaleDateString(
-                        "en-GB"
-                      ) // Format date as dd/mm/yyyy
-                    : "Select Start Date"} */}
                   {customDateRange.start ? (
-                    <div className="flex-gap-1">
+                    <div className="flex items-center gap-1">
                       <Calendar className="h-4" />
+
                       {new Date(customDateRange.start).toLocaleDateString(
                         "en-GB"
                       )}
-                    </div>
+                    </div> // Format date as dd/mm/yyyy
                   ) : (
                     <div className="flex gap-1">
                       <Calendar className="h-4" />
-                      <h1 className="text-xs">Start date</h1>
+                      <h1 className="text-xs">Start Date</h1>
                     </div>
                   )}
                 </button>
@@ -763,12 +789,20 @@ const MyLeaves: React.FC = () => {
                   className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
                   onClick={() => setIsEndPickerOpen(true)} // Open end date picker
                 >
-                  {customDateRange.end
-                    ? new Date(customDateRange.end).toLocaleDateString("en-GB") // Format date as dd/mm/yyyy
-                    :  <div className="flex gap-1">
-                    <Calendar className="h-4" />
-                    <h1 className="text-xs">End date</h1>
-                  </div>}
+                  {customDateRange.end ? (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4" />
+
+                      {new Date(customDateRange.end).toLocaleDateString(
+                        "en-GB"
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex gap-1">
+                      <Calendar className="h-4" />
+                      <h1 className="text-xs">End date</h1>
+                    </div>
+                  )}
                 </button>
               </div>
             </div>
@@ -787,7 +821,7 @@ const MyLeaves: React.FC = () => {
       {/* Start Date Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
         <DialogContent className="w-full scale-75">
-          <div className="flex justify-between">
+          <div className="flex justify-between px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.start}
               onDateChange={(newDate) => {
@@ -803,7 +837,7 @@ const MyLeaves: React.FC = () => {
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
         <DialogContent className="w-full scale-75">
-          <div className="flex justify-between">
+          <div className="flex justify-between px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.end}
               onDateChange={(newDate) => {

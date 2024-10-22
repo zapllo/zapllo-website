@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 type User = {
   _id: string;
@@ -263,6 +264,12 @@ export default function AllAttendance() {
 
   const handleCustomDateSubmit = (start: Date, end: Date) => {
     setCustomDateRange({ start, end });
+    setIsCustomModalOpen(false);
+  };
+
+  const handleClose = () => {
+    // Reset date range when closing
+    setCustomDateRange({ start: null, end: null });
     setIsCustomModalOpen(false);
   };
 
@@ -634,15 +641,16 @@ export default function AllAttendance() {
         </div>
       )}
 
-      {/* Custom Date Range Modal */}
       <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-[33.33%]">
+        <DialogContent className="w-96 bg-[#0B0D29]">
           <div className="flex justify-between">
-            <DialogTitle className="text-md font-medium mb-4 text-white">
+            <DialogTitle className="text-md font-medium text-white">
               Select Custom Date Range
             </DialogTitle>
-            <DialogClose className="h-8 scale-75">
-              <X className="cursor-pointer border -mt-4 rounded-full border-white h-7 hover:bg-white hover:text-black w-7" />
+            <DialogClose className="" onClick={handleClose}>
+              {" "}
+              <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6" /> */}
             </DialogClose>
           </div>
 
@@ -659,67 +667,65 @@ export default function AllAttendance() {
             className="space-y-4"
           >
             <div className="flex justify-between gap-2">
-              {/* Start Date Picker Button */}
+              {/* Start Date Button */}
               <div className="w-full">
                 {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
-                Start Date
-              </h1> */}
+                  Start Date
+                </h1> */}
                 <button
                   type="button"
                   className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                  onClick={() => setIsStartPickerOpen(true)} // Open start date picker
+                  onClick={() => setIsStartPickerOpen(true)} // Open end date picker
                 >
                   {customDateRange.start ? (
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-1">
                       <Calendar className="h-4" />
+
                       {new Date(customDateRange.start).toLocaleDateString(
-                        "en-GB" // Format date as dd/mm/yyyy
+                        "en-GB"
                       )}
-                    </div>
+                    </div> // Format date as dd/mm/yyyy
                   ) : (
                     <div className="flex gap-1">
-                      <Calendar className=" h-4" />
+                      <Calendar className="h-4" />
                       <h1 className="text-xs">Start Date</h1>
                     </div>
                   )}
                 </button>
               </div>
 
-              {/* End Date Picker Button */}
+              {/* End Date Button */}
               <div className="w-full">
                 {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
-                End Date
-              </h1> */}
+                  End Date
+                </h1> */}
                 <button
                   type="button"
                   className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
                   onClick={() => setIsEndPickerOpen(true)} // Open end date picker
                 >
-                  {/* {customDateRange.end
-                  ? new Date(customDateRange.end).toLocaleDateString("en-GB") // Format date as dd/mm/yyyy
-                  : "Select End Date"} */}
                   {customDateRange.end ? (
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-1">
                       <Calendar className="h-4" />
+
                       {new Date(customDateRange.end).toLocaleDateString(
                         "en-GB"
                       )}
-                    </div>
+                    </div> // Format date as dd/mm/yyyy
                   ) : (
                     <div className="flex gap-1">
                       <Calendar className="h-4" />
-                      <h1 className="text-xs">End Date</h1>
+                      <h1 className="text-xs">End date</h1>
                     </div>
                   )}
                 </button>
               </div>
             </div>
-
             {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
+                className="bg-[#815BF5] text-white py-2 px-4 rounded w-full text-xs"
               >
                 Apply
               </button>
@@ -728,14 +734,14 @@ export default function AllAttendance() {
         </DialogContent>
       </Dialog>
 
-      {/* Start Date Picker Modal */}
+      {/* Start Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
         <DialogContent className="w-full scale-75">
-          <div className="flex justify-between">
+          <div className="flex justify-between px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.start}
               onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
                 setIsStartPickerOpen(false); // Close picker after selecting the date
               }}
               onCloseDialog={() => setIsStartPickerOpen(false)}
@@ -747,7 +753,7 @@ export default function AllAttendance() {
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
         <DialogContent className="w-full scale-75">
-          <div className="flex justify-between">
+          <div className="flex justify-between px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.end}
               onDateChange={(newDate) => {

@@ -31,7 +31,11 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Cross1Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import {
+  Cross1Icon,
+  CrossCircledIcon,
+  HamburgerMenuIcon,
+} from "@radix-ui/react-icons";
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { toast } from "sonner";
@@ -59,13 +63,13 @@ type User = {
 interface LeaveDay {
   date: string;
   unit:
-  | "Full Day"
-  | "1st Half"
-  | "2nd Half"
-  | "1st Quarter"
-  | "2nd Quarter"
-  | "3rd Quarter"
-  | "4th Quarter";
+    | "Full Day"
+    | "1st Half"
+    | "2nd Half"
+    | "1st Quarter"
+    | "2nd Quarter"
+    | "3rd Quarter"
+    | "4th Quarter";
   status: "Pending" | "Approved" | "Rejected";
 }
 
@@ -357,6 +361,12 @@ export default function AllLeaves() {
     setIsCustomModalOpen(false);
   };
 
+  const handleClose = () => {
+    // Reset date range when closing
+    setCustomDateRange({ start: null, end: null });
+    setIsCustomModalOpen(false);
+  };
+
   const filteredLeaves = filterEntriesByDate(
     filter === "All"
       ? leaves
@@ -405,64 +415,71 @@ export default function AllLeaves() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setDateFilter("Today")}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "Today"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "Today"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           Today
         </button>
         <button
           onClick={() => setDateFilter("Yesterday")}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "Yesterday"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "Yesterday"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setDateFilter("ThisWeek")}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisWeek"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "ThisWeek"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           This Week
         </button>
         <button
           onClick={() => setDateFilter("ThisMonth")}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisMonth"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "ThisMonth"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           This Month
         </button>
         <button
           onClick={() => setDateFilter("LastMonth")}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "LastMonth"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "LastMonth"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setDateFilter("AllTime")}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "AllTime"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "AllTime"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           All Time
         </button>
         <button
           onClick={() => setIsCustomModalOpen(true)}
-          className={`px-4 text-xs h-8 rounded ${dateFilter === "Custom"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs h-8 rounded ${
+            dateFilter === "Custom"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           Custom
         </button>
@@ -471,20 +488,22 @@ export default function AllLeaves() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setTab("applications")}
-          className={`px-4 text-xs py-2 flex  rounded ${tab === "applications"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs py-2 flex  rounded ${
+            tab === "applications"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           <Calendar className="h-4" />
           <h1 className="mt-[1px]">Leave Applications ({leaves.length})</h1>
         </button>
         <button
           onClick={() => setTab("balances")}
-          className={`px-4 text-xs py-2 flex  rounded ${tab === "balances"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
+          className={`px-4 text-xs py-2 flex  rounded ${
+            tab === "balances"
+              ? "bg-[#815BF5] text-white"
+              : "bg-[#] border text-white"
+          }`}
         >
           <WalletCards className="h-4" />
           Leave Balances ({users.length})
@@ -548,23 +567,36 @@ export default function AllLeaves() {
                     status as "Pending" | "Approved" | "Rejected" | "All"
                   )
                 }
-                className={`px-4 text-xs h-8 flex items-center  gap-2 rounded border ${filter === status
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border text-white"
-                  } ${status === "Approved" && filter !== status
+                className={`px-4 text-xs h-8 flex items-center  gap-2 rounded border ${
+                  filter === status
+                    ? "bg-[#815BF5] text-white"
+                    : "bg-[#] border text-white"
+                } ${
+                  status === "Approved" && filter !== status
                     ? "hover:border-green-500 border"
                     : ""
-                  } ${status === "Rejected" && filter !== status
+                } ${
+                  status === "Rejected" && filter !== status
                     ? "hover:border-red-500 border"
-                    : status === "Pending" && filter !== status ? "hover:border-orange-500" : ""
-                  }`}
+                    : status === "Pending" && filter !== status
+                    ? "hover:border-orange-500"
+                    : ""
+                }`}
               >
                 {status === "All" && <HamburgerMenuIcon className="h-4" />}
                 {status === "Pending" && (
-                  <Circle className={`h-4 text-red-500 ${status === "Pending" ? "text-" : "text-red-500"} `} />
+                  <Circle
+                    className={`h-4 text-red-500 ${
+                      status === "Pending" ? "text-" : "text-red-500"
+                    } `}
+                  />
                 )}
                 {status === "Approved" && (
-                  <CheckCircle className={`h-4 text-green-500 ${status === "Approved" ? "text-green-500" : ""} `} />
+                  <CheckCircle
+                    className={`h-4 text-green-500 ${
+                      status === "Approved" ? "text-green-500" : ""
+                    } `}
+                  />
                 )}
                 {status === "Rejected" && (
                   <Cross1Icon className="h-4 text-red-500" />
@@ -601,10 +633,7 @@ export default function AllLeaves() {
                   className="border hover:border-[#815BF5] cursor-pointer"
                   onClick={() => setSelectedLeaveForDetails(leave)}
                 >
-                  <div
-                    className="flex items-center justify-between  px-4 rounded shadow-sm py-2 "
-
-                  >
+                  <div className="flex items-center justify-between  px-4 rounded shadow-sm py-2 ">
                     <div className="flex items-center gap-4">
                       {/* User Profile Icon */}
                       <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
@@ -646,16 +675,17 @@ export default function AllLeaves() {
                       </div>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs ${leave.status === "Pending"
-                        ? "bg-yellow-800 text-white"
-                        : leave.status === "Approved"
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        leave.status === "Pending"
+                          ? "bg-yellow-800 text-white"
+                          : leave.status === "Approved"
                           ? "bg-green-800 text-white"
                           : leave.status === "Rejected"
-                            ? "bg-red-800 text-white"
-                            : leave.status === "Partially Approved"
-                              ? "bg-red-900 text-white"
-                              : "bg-gray-500 text-white"
-                        }`}
+                          ? "bg-red-800 text-white"
+                          : leave.status === "Partially Approved"
+                          ? "bg-red-900 text-white"
+                          : "bg-gray-500 text-white"
+                      }`}
                     >
                       {leave.status}
                     </span>
@@ -738,15 +768,16 @@ export default function AllLeaves() {
             />
           )}
 
-          {/* Custom Date Range Modal */}
           <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-            <DialogContent className="w-[33.33%]">
+            <DialogContent className="w-96 bg-[#0B0D29]">
               <div className="flex justify-between">
-                <DialogTitle className="text-md font-medium mb-4 text-white">
+                <DialogTitle className="text-md  font-medium text-white">
                   Select Custom Date Range
                 </DialogTitle>
-                <DialogClose className="h-8 scale-75">
-                  <X className="cursor-pointer border -mt-4 rounded-full border-white h-7 hover:bg-white hover:text-black w-7" />
+                <DialogClose className="" onClick={handleClose}>
+                  {" "}
+                  <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                  {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6" /> */}
                 </DialogClose>
               </div>
 
@@ -763,23 +794,20 @@ export default function AllLeaves() {
                 className="space-y-4"
               >
                 <div className="flex justify-between gap-2">
-                  {/* Start Date Picker Button */}
+                  {/* Start Date Button */}
                   <div className="w-full">
                     {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
-                      Start Date
-                    </h1> */}
+                  Start Date
+                </h1> */}
                     <button
                       type="button"
                       className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                      onClick={() => setIsStartPickerOpen(true)}
+                      onClick={() => setIsStartPickerOpen(true)} // Open end date picker
                     >
-                      {/* {customDateRange.start
-                        ? new Date(customDateRange.start).toLocaleDateString(
-                            "en-GB"
-                          )
-                        : "Select Start Date"} */}
                       {customDateRange.start ? (
-                        <div className="flex gap-1">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4" />
+
                           {new Date(customDateRange.start).toLocaleDateString(
                             "en-GB"
                           )}
@@ -787,30 +815,26 @@ export default function AllLeaves() {
                       ) : (
                         <div className="flex gap-1">
                           <Calendar className="h-4" />
-                          <h1>Start Date</h1>
+                          <h1 className="text-xs">Start Date</h1>
                         </div>
                       )}
                     </button>
                   </div>
 
-                  {/* End Date Picker Button */}
+                  {/* End Date Button */}
                   <div className="w-full">
                     {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
-                      End Date
-                    </h1> */}
+                  End Date
+                </h1> */}
                     <button
                       type="button"
                       className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                      onClick={() => setIsEndPickerOpen(true)}
+                      onClick={() => setIsEndPickerOpen(true)} // Open end date picker
                     >
-                      {/* {customDateRange.end
-                        ? new Date(customDateRange.end).toLocaleDateString(
-                            "en-GB"
-                          )
-                        : "Select End Date"} */}
                       {customDateRange.end ? (
-                        <div className="flex gap-1">
-                          <Calendar />
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4" />
+
                           {new Date(customDateRange.end).toLocaleDateString(
                             "en-GB"
                           )}
@@ -818,18 +842,17 @@ export default function AllLeaves() {
                       ) : (
                         <div className="flex gap-1">
                           <Calendar className="h-4" />
-                          <h1 className="text-xs">End Date</h1>
+                          <h1 className="text-xs">End date</h1>
                         </div>
                       )}
                     </button>
                   </div>
                 </div>
-
                 {/* Submit Button */}
                 <div>
                   <button
                     type="submit"
-                    className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
+                    className="bg-[#815BF5] text-white py-2 px-4 rounded w-full text-xs"
                   >
                     Apply
                   </button>
@@ -841,7 +864,7 @@ export default function AllLeaves() {
           {/* Start Date Picker Modal */}
           <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
             <DialogContent className="w-full scale-75">
-              <div className="flex justify-between">
+              <div className="flex justify-between px-3 py-5">
                 <CustomDatePicker
                   selectedDate={customDateRange.start}
                   onDateChange={(newDate) => {
@@ -857,7 +880,7 @@ export default function AllLeaves() {
           {/* End Date Picker Modal */}
           <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
             <DialogContent className="w-full scale-75">
-              <div className="flex justify-between">
+              <div className="flex justify-between px-3 py-5">
                 <CustomDatePicker
                   selectedDate={customDateRange.end}
                   onDateChange={(newDate) => {
@@ -925,8 +948,7 @@ export default function AllLeaves() {
             />
           )}
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }

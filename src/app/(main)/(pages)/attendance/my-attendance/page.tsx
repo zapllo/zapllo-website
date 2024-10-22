@@ -18,8 +18,15 @@ import {
   X,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-
-
+import {
+  Dialog as DialogRoot,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+  DialogOverlay,
+} from "@/components/ui/dialog";
 
 // Remove the top-level import of Leaflet
 // import L from 'leaflet';
@@ -30,8 +37,7 @@ import RegularizationDetails from "@/components/sheets/regularizationDetails";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-
+// import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const mapContainerStyle = {
   height: "400px",
@@ -133,7 +139,6 @@ export default function MyAttendance() {
     setMapModalOpen(true);
   };
 
-
   // useEffect(() => {
   //     if (typeof window !== 'undefined') {
   //         // Dynamically import Leaflet inside useEffect
@@ -151,7 +156,6 @@ export default function MyAttendance() {
   //         });
   //     }
   // }, []);
-
 
   useEffect(() => {
     const fetchLoginStatus = async () => {
@@ -474,8 +478,6 @@ export default function MyAttendance() {
 
   const filteredEntries = filterEntriesByTab();
 
-
-
   // Open custom date range modal
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -486,6 +488,12 @@ export default function MyAttendance() {
     setCustomDateRange({ start, end });
     setIsCustomModalOpen(false);
     setActiveTab("custom");
+  };
+
+  const handleClose = () => {
+    // Reset date range when closing
+    setCustomDateRange({ start: null, end: null });
+    setIsCustomModalOpen(false);
   };
 
   // Handle Regularization Form Submission
@@ -752,8 +760,8 @@ export default function MyAttendance() {
                     entry.approvalStatus === "Approved"
                       ? "bg-[#017a5b] px-2 py-1 rounded-xl"
                       : entry.approvalStatus === "Rejected"
-                        ? "bg-red-800 rounded-xl px-2 py-1"
-                        : "bg-orange-800 px-2 py-1 rounded-xl"
+                      ? "bg-red-800 rounded-xl px-2 py-1"
+                      : "bg-orange-800 px-2 py-1 rounded-xl"
                   }
                 >
                   {/* {`Approval Status: `} */}
@@ -930,8 +938,9 @@ export default function MyAttendance() {
         {hasRegisteredFaces ? (
           <button
             onClick={handleLoginLogout}
-            className={`bg-${isLoggedIn ? "red-800" : "[#017a5b]"
-              } -500 text-white py-2 px-4 rounded text-sm`}
+            className={`bg-${
+              isLoggedIn ? "red-800" : "[#017a5b]"
+            } -500 text-white py-2 px-4 rounded text-sm`}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
@@ -957,42 +966,66 @@ export default function MyAttendance() {
 
       <div className="last-two-days-entries p-4 w-full justify-center flex mb-6">
         {todayEntries?.length === 0 ? (
-          <div className='bg-[#] border w-1/2 rounded p-4'>
-            <div className='flex w-full justify-center'>
-              <img src='/animations/not found.gif' className='h-40 ' />
+          <div className="bg-[#] border w-1/2 rounded p-4">
+            <div className="flex w-full justify-center">
+              <img src="/animations/not found.gif" className="h-40 " />
             </div>
-            <h1 className='text-center text-sm'>No Entries found for today!</h1>
-            <p className='text-center text-[9px]'>Click on Login to log your attendance</p>
+            <h1 className="text-center text-sm">No Entries found for today!</h1>
+            <p className="text-center text-[9px]">
+              Click on Login to log your attendance
+            </p>
           </div>
         ) : (
           <div className="space-y-4 bg-[#0B0D29]  rounded p-4 w-[60%] mx-12">
             {todayEntries?.map((entry: LoginEntry, index: number) => {
-              const formattedLoginTime = new Date(entry.loginTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+              const formattedLoginTime = new Date(
+                entry.loginTime
+              ).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              });
               const formattedLogoutTime = entry.logoutTime
-                ? new Date(entry.logoutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+                ? new Date(entry.logoutTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
                 : null;
               const date = new Date(entry.loginTime);
               return (
                 <div key={index} className=" w-full  grid grid-cols-3">
                   {entry.loginTime && (
                     <div>
-                      <h1 className='text-xs py-1'>Login: {formattedLoginTime}</h1> {/* Displaying the date */}
+                      <h1 className="text-xs py-1">
+                        Login: {formattedLoginTime}
+                      </h1>{" "}
+                      {/* Displaying the date */}
                     </div>
                   )}
                   {entry.logoutTime && (
                     <div>
-                      <h2 className='text-xs py-1'>Logout: {formattedLogoutTime}</h2>
+                      <h2 className="text-xs py-1">
+                        Logout: {formattedLogoutTime}
+                      </h2>
                     </div>
                   )}
-                  <div className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === 'login' ? 'bg-green-800 text-xs' : 'bg-[#8A3D17] text-xs'}`}>
-                    <h1 className='text-xs'>
-                      {entry.action.toUpperCase()}
-                    </h1>
+                  <div
+                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${
+                      entry.action === "login"
+                        ? "bg-green-800 text-xs"
+                        : "bg-[#8A3D17] text-xs"
+                    }`}
+                  >
+                    <h1 className="text-xs">{entry.action.toUpperCase()}</h1>
                   </div>
                   {/* Render map icon only if lat and lng are present */}
                   {entry.lat && entry.lng && (
-                    <div className='flex justify-end '>
-                      <button onClick={() => handleViewMap(entry.lat, entry.lng)} className="underline text-white h-5 -500 ">
+                    <div className="flex justify-end ">
+                      <button
+                        onClick={() => handleViewMap(entry.lat, entry.lng)}
+                        className="underline text-white h-5 -500 "
+                      >
                         <MapPin />
                       </button>
                     </div>
@@ -1014,29 +1047,94 @@ export default function MyAttendance() {
       </div>
       {/* Tabs for filtering entries */}
       <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
-        <button onClick={() => setActiveTab('today')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'today' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}>Today</button>
-        <button onClick={() => setActiveTab('yesterday')} className={`px-4 h-fit py-2 text-xs rounded ${activeTab === 'yesterday' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Yesterday</button>
-        <button onClick={() => setActiveTab('thisWeek')} className={`px-4 py-2 h-fit text-xs rounded ${activeTab === 'thisWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Week</button>
-        <button onClick={() => setActiveTab('lastWeek')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastWeek' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Week</button>
-        <button onClick={() => setActiveTab('thisMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'thisMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>This Month</button>
-        <button onClick={() => setActiveTab('lastMonth')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'lastMonth' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>Last Month</button>
-        <button onClick={() => setActiveTab('allTime')} className={`px-4 py-2 text-xs h-fit rounded ${activeTab === 'allTime' ? 'bg-[#815BF5]' : 'bg-[#37384B]'}`}>All Time</button>
-        <button onClick={openCustomModal} className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end ? 'bg-[#815BF5] text-white' : 'bg-transparent'
-          }`}>Custom</button>
+        <button
+          onClick={() => setActiveTab("today")}
+          className={`px-4 h-fit py-2 text-xs rounded ${
+            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#37384B] "
+          }`}
+        >
+          Today
+        </button>
+        <button
+          onClick={() => setActiveTab("yesterday")}
+          className={`px-4 h-fit py-2 text-xs rounded ${
+            activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#37384B]"
+          }`}
+        >
+          Yesterday
+        </button>
+        <button
+          onClick={() => setActiveTab("thisWeek")}
+          className={`px-4 py-2 h-fit text-xs rounded ${
+            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#37384B]"
+          }`}
+        >
+          This Week
+        </button>
+        <button
+          onClick={() => setActiveTab("lastWeek")}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#37384B]"
+          }`}
+        >
+          Last Week
+        </button>
+        <button
+          onClick={() => setActiveTab("thisMonth")}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#37384B]"
+          }`}
+        >
+          This Month
+        </button>
+        <button
+          onClick={() => setActiveTab("lastMonth")}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#37384B]"
+          }`}
+        >
+          Last Month
+        </button>
+        <button
+          onClick={() => setActiveTab("allTime")}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#37384B]"
+          }`}
+        >
+          All Time
+        </button>
+        <button
+          onClick={openCustomModal}
+          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${
+            customDateRange.start && customDateRange.end
+              ? "bg-[#815BF5] text-white"
+              : "bg-transparent"
+          }`}
+        >
+          Custom
+        </button>
       </div>
       <div className="flex justify-center gap-4 mt-2 mb-6">
         <button
-          onClick={() => setActiveAttendanceTab('dailyReport')}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'dailyReport' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
+          onClick={() => setActiveAttendanceTab("dailyReport")}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${
+            activeAttendanceTab === "dailyReport"
+              ? "bg-[#815BF5]"
+              : "bg-[#37384B] "
+          }`}
         >
-          <img src='/icons/report.png' className='invert-[100] h-4' />
+          <img src="/icons/report.png" className="invert-[100] h-4" />
           Daily Report
         </button>
         <button
-          onClick={() => setActiveAttendanceTab('regularization')}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === 'regularization' ? 'bg-[#815BF5]' : 'bg-[#37384B] '}`}
+          onClick={() => setActiveAttendanceTab("regularization")}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${
+            activeAttendanceTab === "regularization"
+              ? "bg-[#815BF5]"
+              : "bg-[#37384B] "
+          }`}
         >
-          <Users2 className='h-4' />
+          <Users2 className="h-4" />
           Regularization
         </button>
       </div>
@@ -1091,8 +1189,9 @@ export default function MyAttendance() {
                       </div>
                       <div className="flex justify-end">
                         <span
-                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"
-                            }`}
+                          className={`transition-transform duration-300 ${
+                            expandedDays[date] ? "rotate-180" : "rotate-0"
+                          }`}
                         >
                           {/* Use a caret icon (chevron-down) */}
                           <svg
@@ -1118,15 +1217,17 @@ export default function MyAttendance() {
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
                             <span>
-                              {`${entry.action.charAt(0).toUpperCase() +
+                              {`${
+                                entry.action.charAt(0).toUpperCase() +
                                 entry.action.slice(1)
-                                }: ${formatTimeToAMPM(entry.timestamp)}`}
+                              }: ${formatTimeToAMPM(entry.timestamp)}`}
                             </span>
                             <span
-                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login"
-                                ? "bg-[#017a5b]"
-                                : "bg-[#8a3d17]"
-                                }`}
+                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${
+                                entry.action === "login"
+                                  ? "bg-[#017a5b]"
+                                  : "bg-[#8a3d17]"
+                              }`}
                             >
                               {entry.action.toUpperCase()}
                             </span>
@@ -1238,10 +1339,9 @@ export default function MyAttendance() {
                   Geo Location
                 </h1>
                 <Dialog.DialogClose className="text-white py-4 px-1  ">
-                  <CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                 </Dialog.DialogClose>
               </div>
-
 
               {/* {mapCoords && (
                 <MapContainer
@@ -1257,150 +1357,112 @@ export default function MyAttendance() {
                   <Marker position={[mapCoords.lat, mapCoords.lng]}></Marker>
                 </MapContainer>
               )} */}
-              <div className="">
-                {mapCoords && (
-                  <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k"> {/* Replace with your API key */}
-                    <GoogleMap
-                      mapContainerStyle={mapContainerStyle}
-                      center={mapCoords}
-                      zoom={13}
-                      options={{
-                        disableDefaultUI: true, // Disable default UI if you want
-                        zoomControl: true, // Show zoom control
-                      }}
-                    >
-                      <Marker position={mapCoords} />
-                    </GoogleMap>
-                  </LoadScript>
-                )}
-              </div>
             </div>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
 
       {/* Custom Date Range Modal */}
-      <Dialog.Root open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 flex justify-center items-center">
-            <div className="bg-[#0B0D29] p-4 rounded-lg max-w-md w-full">
-              <div className="flex justify-between">
-                <h3 className="text-md mb-4 text-white">
-                  Select Custom Date Range
-                </h3>
-                {/* <Dialog.DialogClose className="h-7 scale-75">
-                  <img
-                    src="/icons/cross.png"
-                    className="h-7 hover:bg-[#121212] rounded-full"
-                  />
-                </Dialog.DialogClose> */}
-                {/* <Dialog.DialogClose className="h-7 scale-75 ">
-                  <img src="/icons/cross.png" className="h-7  hover:invert" />
-                </Dialog.DialogClose> */}
-                {/* <Dialog.DialogClose className="h-7 scale-75 cursor-pointer border rounded-full  hover:bg-white hover:text-black w-7">
-                  <img
-                    src="/icons/cross.png"
-                    className="h-7 rounded-full hover:invert"
-                  />
-                </Dialog.DialogClose> */}
-                {/* <Dialog.DialogClose className="h-7 scale-75 hover:bg-white rounded-full">
-                  <img
-                    src="/icons/cross.png"
-                    className="h-7 hover:invert-0 hover:text-black"
-                  />
-                </Dialog.DialogClose> */}
+      <DialogRoot open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
+        <DialogContent className="w-96 bg-[#0B0D29]">
+          <div className="flex justify-between">
+            <DialogTitle className="text-md  font-medium text-white">
+              Select Custom Date Range
+            </DialogTitle>
+            <DialogClose className="" onClick={handleClose}>
+              {" "}
+              <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6" /> */}
+            </DialogClose>
+          </div>
 
-                <Dialog.DialogClose className="h-7 scale-75 hover:bg-white rounded-full">
-                  <X
-                    // onClick={() => setShowOrganizationForm(false)}
-                    className="cursor-pointer border rounded-full border-white h-7 hover:bg-white hover:text-black w-7"
-                  />
-                  {/* <X className="h-7 w-7" /> */}
-                </Dialog.DialogClose>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (customDateRange.start && customDateRange.end) {
+                handleCustomDateSubmit(
+                  customDateRange.start,
+                  customDateRange.end
+                );
+              }
+            }}
+            className="space-y-4"
+          >
+            <div className="flex justify-between gap-2">
+              {/* Start Date Button */}
+              <div className="w-full">
+                {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
+                  Start Date
+                </h1> */}
+                <button
+                  type="button"
+                  className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                  onClick={() => setIsStartPickerOpen(true)} // Open end date picker
+                >
+                  {customDateRange.start ? (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4" />
+
+                      {new Date(customDateRange.start).toLocaleDateString(
+                        "en-GB"
+                      )}
+                    </div>
+                  ) : (
+                    // Format date as dd/mm/yyyy
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4" />
+                      <h1 className="text-xs">Start Date</h1>
+                    </div>
+                  )}
+                </button>
               </div>
 
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleCustomDateSubmit(
-                    customDateRange.start as Date,
-                    customDateRange.end as Date
-                  );
-                }}
-                className="  space-y-4"
-              >
-                <div className="flex justify-between gap-2">
-                  {/* Start Date Button */}
-                  <div className="w-full">
-                    {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs  font-medium text-white">Start Date</h1> */}
-                    <button
-                      type="button"
-                      className="  text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                      onClick={() => setIsStartPickerOpen(true)} // Open start date picker
-                    >
-                      {customDateRange.start ? (
-                        <div className="flex gap-1">
-                          <Calendar className="h-4" />
+              {/* End Date Button */}
+              <div className="w-full">
+                {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs font-medium text-white">
+                  End Date
+                </h1> */}
+                <button
+                  type="button"
+                  className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
+                  onClick={() => setIsEndPickerOpen(true)} // Open end date picker
+                >
+                  {customDateRange.end ? (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4" />
 
-                          {new Date(customDateRange.start).toLocaleDateString(
-                            "en-GB"
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex gap-1">
-                          <Calendar className="h-4" />
-                          <h1 className="text-xs">Start Date</h1>
-                        </div>
+                      {new Date(customDateRange.end).toLocaleDateString(
+                        "en-GB"
                       )}
-                    </button>
-                  </div>
-
-                  {/* End Date Button */}
-                  <div className="w-full">
-                    {/* <h1 className="absolute bg-[#0B0D29] ml-2 text-xs  font-medium text-white">End Date</h1> */}
-                    <button
-                      type="button"
-                      className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                      onClick={() => setIsEndPickerOpen(true)} // Open end date picker
-                    >
-                      {customDateRange.end ? (
-                        <div className="flex gap-1">
-                          <Calendar className="h-4" />
-                          {new Date(customDateRange.end).toLocaleDateString(
-                            "en-GB"
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex gap-1">
-                          <Calendar className="h-4" />
-                          <h1 className="text-xs">End Date</h1>
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                </div>
-                {/* Submit Button */}
-                <div>
-                  <button
-                    type="submit"
-                    className="bg-[#017A5B] text-white py-2 px-4 rounded w-full text-xs"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </form>
+                    </div>
+                  ) : (
+                    <div className="flex gap-1">
+                      <Calendar className="h-4" />
+                      <h1 className="text-xs">End date</h1>
+                    </div>
+                  )}
+                </button>
+              </div>
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+            {/* Submit Button */}
+            <div>
+              <button
+                type="submit"
+                className="bg-[#815BF5] text-white py-2 px-4 rounded w-full text-xs"
+              >
+                Apply
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </DialogRoot>
 
       {/* Start Date Picker Modal */}
       <Dialog.Root open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] p-4 z-[100] rounded-lg max-w-xl  scale-75 w-full">
+            <div className="bg-[#0B0D29] z-[100] rounded-lg max-w-xl scale-75 w-full p-10">
               <CustomDatePicker
                 selectedDate={customDateRange.start}
                 onDateChange={(newDate) => {
@@ -1419,7 +1481,7 @@ export default function MyAttendance() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] p-4 z-[100] rounded-lg scale-75 max-w-xl w-full">
+            <div className="bg-[#0B0D29] z-[100] rounded-lg scale-75 max-w-xl w-full p-10">
               <CustomDatePicker
                 selectedDate={customDateRange.end}
                 onDateChange={(newDate) => {
@@ -1489,7 +1551,7 @@ export default function MyAttendance() {
                                 // Manually extract the local date (year, month, day)
                                 const localDate = new Date(
                                   newDate.getTime() -
-                                  newDate.getTimezoneOffset() * 60000
+                                    newDate.getTimezoneOffset() * 60000
                                 )
                                   .toISOString()
                                   .split("T")[0];
@@ -1637,13 +1699,10 @@ export default function MyAttendance() {
           <Dialog.Content className="fixed inset-0  z-[100] flex justify-center items-center">
             <div className="bg-[#0B0D29] p-6 rounded-lg max-w-md w-full">
               <div className="flex justify-between">
-                <h3 className="text-md ">
-                  Register Faces (Upload 3 Images)
-                </h3>
+                <h3 className="text-md ">Register Faces (Upload 3 Images)</h3>
                 <Dialog.DialogClose>
                   {" "}
-                  <CrossCircledIcon className='scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
-
+                  <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                   {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-5 hover:bg-white hover:text-black w-5" /> */}
                 </Dialog.DialogClose>
               </div>
