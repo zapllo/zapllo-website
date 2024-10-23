@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { toast, Toaster } from 'sonner';
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { toast, Toaster } from "sonner";
 
 type LeaveType = {
   _id: string;
@@ -50,7 +51,9 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
         leaveType: leaveType, // Include the leaveType object
         leaveTypeId: leaveType._id,
         balance: existingBalance ? existingBalance.balance : 0,
-        userLeaveBalance: existingBalance ? existingBalance.userLeaveBalance : 0,
+        userLeaveBalance: existingBalance
+          ? existingBalance.userLeaveBalance
+          : 0,
       };
     });
     setLeaveBalances(initialBalances);
@@ -71,7 +74,7 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
         // Clear the error if valid
         setErrors((prev) => ({
           ...prev,
-          [leaveTypeId]: '',
+          [leaveTypeId]: "",
         }));
         // Update the balance
         const updatedBalances = leaveBalances.map((lb) =>
@@ -86,26 +89,28 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
 
   const handleSubmit = () => {
     // Prevent submission if there are any validation errors
-    const hasErrors = Object.values(errors).some((error) => error !== '');
+    const hasErrors = Object.values(errors).some((error) => error !== "");
     if (!hasErrors) {
       onSubmit(leaveBalances);
-      toast.success('Balance updated successfully!');
+      toast.success("Balance updated successfully!");
     } else {
-      alert('Please fix the errors before submitting.');
+      alert("Please fix the errors before submitting.");
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <Toaster />
-      <div className="bg-[#0B0D29] p-6 rounded-lg w-full max-w-md">
-        <div className="flex justify-between">
-          <h2 className="text-md font-bold mb-4">Update Leave Balance </h2>
-          <button onClick={onClose} className="px-4 py-2 rounded">
-            <X className="w-4 -mt-2 h-4" />
+      <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+        <div className="flex border-b py-2  w-full justify-between">
+          <h2 className="text-md   px-6 py-2 font-medium">
+            Update Leave Balance{" "}
+          </h2>
+          <button onClick={onClose} className="px-6 py-2">
+            <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
           </button>
         </div>
-        <div className="flex justify-start py-2 w-full">
+        <div className="flex justify-start px-6 py-2 w-full">
           <div className="flex-shrink-0 flex gap-2">
             <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
               {user.firstName?.[0]}
@@ -115,7 +120,7 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
             </h1>
           </div>
         </div>
-        <div>
+        <div className="px-2">
           <table className="min-w-full mt-2 border-collapse table-auto">
             <tbody>
               {leaveTypes.map((leaveType) => (
@@ -135,7 +140,7 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
                           parseInt(e.target.value) || 0
                         )
                       }
-                      className="p-2 w-full text-xs outline-none"
+                      className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
                     />
                     {/* Display validation error if it exists */}
                     {errors[leaveType._id] && (
@@ -150,9 +155,9 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
           </table>
         </div>
 
-        <div className="flex justify-end space-x-2 mt-4">
+        <div className="space-y-4 p-6">
           <button
-            className="bg-[#017A5B] w-full text-sm text-white px-4 py-2 rounded"
+            className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
             onClick={handleSubmit}
           >
             Save

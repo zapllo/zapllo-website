@@ -1501,22 +1501,24 @@ export default function MyAttendance() {
         onOpenChange={setIsRegularizationModalOpen}
       >
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[50] bg-black/50" />
-          <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-lg w-full relative">
-              <div className="w-full flex mb-4 justify-between">
-                <h3 className="text-md font-medium mb-4 text-white">
+          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
+          <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+            <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+              <div className="flex border-b py-2  w-full justify-between">
+                <Dialog.Title className="text-md   px-6 py-2 font-medium">
                   Apply Regularization
-                </h3>
-                <Dialog.DialogClose>
-                  {" "}
-                  <X className="cursor-pointer border -mt-4 rounded-full border-white h-5 hover:bg-white hover:text-black w-5" />
+                </Dialog.Title>
+                <Dialog.DialogClose className="px-6 py-2">
+                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                 </Dialog.DialogClose>
               </div>
 
-              <form onSubmit={handleSubmitRegularization} className="space-y-4">
+              <form
+                onSubmit={handleSubmitRegularization}
+                className="space-y-4 p-6"
+              >
                 {/* Date Input */}
-                <div className="relative mb-">
+                <div className="relative">
                   <Dialog.Root
                     open={isDatePickerOpen}
                     onOpenChange={setIsDatePickerOpen}
@@ -1532,7 +1534,9 @@ export default function MyAttendance() {
                           // Show the selected date if a date has been picked
                           <h1 className="text-xs mt-1">{regularizationDate}</h1>
                         ) : (
-                          <h1 className="text-xs mt-1">Select Date</h1>
+                          <h1 className="text-xs mt-1  bg-[#0b0d29] text-[#787CA5]">
+                            Select Date
+                          </h1>
                         )}
                       </button>
                     </Dialog.DialogTrigger>
@@ -1655,7 +1659,7 @@ export default function MyAttendance() {
                 <div className="relative">
                   <label
                     htmlFor="remarks"
-                    className="absolute bg-[#0B0D29] z-[100] ml-2 text-xs -mt-2 px-1 text-white"
+                    className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
                   >
                     Remarks
                   </label>
@@ -1664,7 +1668,7 @@ export default function MyAttendance() {
                     value={regularizationRemarks}
                     onChange={(e) => setRegularizationRemarks(e.target.value)}
                     required
-                    className="w-full text-sm p-2 outline-none border rounded opacity-65 bg-transparent"
+                    className="w-full text-sm p-2 border bg-transparent outline-none rounded"
                     rows={3}
                   ></textarea>
                 </div>
@@ -1676,7 +1680,7 @@ export default function MyAttendance() {
                   ) : (
                     <button
                       type="submit"
-                      className="w-full bg-[#017A5B] text-white py-2 px-4 rounded"
+                      className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
                     >
                       Submit
                     </button>
@@ -1695,45 +1699,47 @@ export default function MyAttendance() {
         onOpenChange={setIsRegisterFaceModalOpen}
       >
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0  z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] p-6 rounded-lg max-w-md w-full">
-              <div className="flex justify-between">
-                <h3 className="text-md ">Register Faces (Upload 3 Images)</h3>
-                <Dialog.DialogClose>
-                  {" "}
-                  <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                  {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-5 hover:bg-white hover:text-black w-5" /> */}
+          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
+          <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+            <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+              <div className="flex border-b py-2  w-full justify-between ">
+                <Dialog.Title className="text-md   px-6 py-2 font-medium">
+                  Register Faces (Upload 3 Images)
+                </Dialog.Title>
+                <Dialog.DialogClose className=" px-6 py-2">
+                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                 </Dialog.DialogClose>
               </div>
 
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-                className="block w-full outline-none text-xs mt-4"
-              />
+              <div className="space-y-4 p-6">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="w-full text-sm   outline-none   bg-[#] flex gap-1 mt-auto text-gray-300"
+                />
 
-              <div className="grid grid-cols-3 mt-4 gap-4 mb-4">
-                {selectedImages?.length > 0 &&
-                  selectedImages.map((file, index) => (
-                    <div key={index}>
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={`preview-${index}`}
-                        className="w-full h-auto"
-                      />
-                    </div>
-                  ))}
+                <div className="grid grid-cols-3 mt-4 gap-4 mb-4">
+                  {selectedImages?.length > 0 &&
+                    selectedImages.map((file, index) => (
+                      <div key={index}>
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`preview-${index}`}
+                          className="w-full h-auto"
+                        />
+                      </div>
+                    ))}
+                </div>
+
+                <button
+                  onClick={handleFaceRegistrationSubmit}
+                  className="bg-[#815BF5] w-full text-sm cursor-pointer text-white px-4 mt-2 py-2 rounded"
+                >
+                  {isLoading ? <Loader /> : "Submit Face Registration"}
+                </button>
               </div>
-
-              <button
-                onClick={handleFaceRegistrationSubmit}
-                className="bg-[#815BF5] text-sm text-white py-2 px-4 rounded w-full"
-              >
-                {isLoading ? <Loader /> : "Submit Face Registration"}
-              </button>
             </div>
           </Dialog.Content>
         </Dialog.Portal>

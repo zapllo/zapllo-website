@@ -1,95 +1,114 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import axios from 'axios';
-import { X } from 'lucide-react';
-import { toast, Toaster } from 'sonner';
+import React, { useState } from "react";
+import axios from "axios";
+import { X } from "lucide-react";
+import { toast, Toaster } from "sonner";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 interface RegularizationApprovalModalProps {
-    regularizationId: string;
-    timestamp: string;
-    loginTime: string;
-    logoutTime: string;
-    remarks: string;
-    onClose: () => void;
-    onSubmit: () => void;
+  regularizationId: string;
+  timestamp: string;
+  loginTime: string;
+  logoutTime: string;
+  remarks: string;
+  onClose: () => void;
+  onSubmit: () => void;
 }
 
-const RegularizationApprovalModal: React.FC<RegularizationApprovalModalProps> = ({
-    regularizationId,
-    timestamp,
-    loginTime,
-    logoutTime,
-    remarks,
-    onClose,
-    onSubmit
+const RegularizationApprovalModal: React.FC<
+  RegularizationApprovalModalProps
+> = ({
+  regularizationId,
+  timestamp,
+  loginTime,
+  logoutTime,
+  remarks,
+  onClose,
+  onSubmit,
 }) => {
-    const [approvalRemarks, setApprovalRemarks] = useState<string>('');
-    const [loading, setLoading] = useState(false); // For handling loading state
+  const [approvalRemarks, setApprovalRemarks] = useState<string>("");
+  const [loading, setLoading] = useState(false); // For handling loading state
 
-    const handleSubmit = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.patch(`/api/regularization-approvals/${regularizationId}`, {
-                action: 'approve', // Automatically approving
-                notes: approvalRemarks,
-            });
-
-            if (response.data.success) {
-                onSubmit(); // Refresh data or perform other actions
-                toast.success("Regularization Request Approved")
-            } else {
-                throw new Error(response.data.message || 'Failed to approve regularization.');
-            }
-        } catch (error: any) {
-            console.error('Error approving regularization:', error.response?.data || error.message);
-            alert(error.message || 'An error occurred while approving the regularization.');
-        } finally {
-            setLoading(false);
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.patch(
+        `/api/regularization-approvals/${regularizationId}`,
+        {
+          action: "approve", // Automatically approving
+          notes: approvalRemarks,
         }
-    };
+      );
 
-    return (
-        <>
-            <Toaster />
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-[#1A1D21] rounded-lg p-6 mx-auto max-w-xl w-full">
-                    <div className="flex justify-between">
-                        <h2 className="text-sm text-white">Approve Regularization Request</h2>
-                        <X className="h-4 w-4 cursor-pointer" onClick={onClose} />
-                    </div>
-                    <p className="text-xs -2 text-gray-400">Please add a note before approving the regularization request.</p>
+      if (response.data.success) {
+        onSubmit(); // Refresh data or perform other actions
+        toast.success("Regularization Request Approved");
+      } else {
+        throw new Error(
+          response.data.message || "Failed to approve regularization."
+        );
+      }
+    } catch (error: any) {
+      console.error(
+        "Error approving regularization:",
+        error.response?.data || error.message
+      );
+      alert(
+        error.message || "An error occurred while approving the regularization."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    {/* <div className="mt-4">
+  return (
+    <>
+      <Toaster />
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full pb-6   max-w-md  rounded-lg">
+          <div className="flex border-b py-2  w-full justify-between">
+            <h2 className="text-md   px-6 py-2 font-medium">
+              Approve Regularization Request
+            </h2>
+            <button className=" px-6 py-2" onClick={onClose}>
+              <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+            </button>
+          </div>
+          <p className="text-xs mt-2 px-6 text-[#787CA5]">
+            Please add a note before approving the regularization request.
+          </p>
+
+          {/* <div className="mt-4">
                     <p className="text-xs text-gray-300"><strong>Date:</strong> {new Date(timestamp).toLocaleDateString()}</p>
                     <p className="text-xs text-gray-300"><strong>Login Time:</strong> {loginTime}</p>
                     <p className="text-xs text-gray-300"><strong>Logout Time:</strong> {logoutTime}</p>
                     <p className="text-xs text-gray-300"><strong>Remarks:</strong> {remarks}</p>
                 </div> */}
 
-                    <div className="mt-4">
-                        {/* <label className="text-sm text-white">Approval Note</label> */}
-                        <textarea
-                            value={approvalRemarks}
-                            onChange={(e) => setApprovalRemarks(e.target.value)}
-                            className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full text-sm mt-2"
-                            placeholder="Add a note before approval (optional)"
-                        />
-                    </div>
+          <div className="px-6">
+            {/* <label className="text-sm text-white">Approval Note</label> */}
+            <textarea
+              value={approvalRemarks}
+              onChange={(e) => setApprovalRemarks(e.target.value)}
+              className="w-full mt-4 p-2 text-xs  bg-[#0b0d29] outline-none  h-24 border rounded-md"
+              placeholder="Add a note before approval (optional)"
+            />
+          </div>
 
-                    <div className="mt-4 flex justify-end space-x-2">
-                        <button
-                            onClick={handleSubmit}
-                            disabled={loading}
-                            className="w-full text-white hover:bg-[#007A5A] text-sm bg-[#007A5A] py-2 rounded">
-                            {loading ? 'Approving...' : 'Approve'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </>
-
-    );
+          <div className="flex justify-end space-x-2 mt-6 px-6">
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-4 -mt-6 py-2 rounded"
+            >
+              {loading ? "Approving..." : "Approve"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default RegularizationApprovalModal;
