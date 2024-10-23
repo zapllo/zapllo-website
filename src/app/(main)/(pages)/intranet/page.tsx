@@ -2,8 +2,8 @@
 "use client";
 
 import IntranetTable from "@/components/tables/intranetTable";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
-  Dialog,
   DialogClose,
   DialogContent,
   DialogTitle,
@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 interface Category {
   _id: string;
@@ -92,7 +93,7 @@ const IntranetPage: React.FC = () => {
 
   return (
     <div className="p-6 mt-12">
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <div className="w-full space-x-4 flex justify-center">
           <DialogTrigger asChild>
             <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
@@ -119,18 +120,19 @@ const IntranetPage: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <DialogContent className="">
-          <div className="bg-[#0B0D29] z-[100] h-[320px] max-h-screen text-[#D0D3D3] w-[100%] rounded-lg p-4">
-            <div className="flex justify-between w-full">
-              <DialogTitle className="text-sm font-semibold">
+
+        {/* Add New Link Modal */}
+        <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg ">
+            <div className="flex border-b py-2  w-full justify-between">
+              <DialogTitle className="text-md   px-6 py-2 font-medium">
                 Add New Link
               </DialogTitle>
-              <DialogClose className="text-sm font-semibold">
-                {" "}
-                <X className="cursor-pointer border -mt-1 rounded-full border-white h-5 hover:bg-white hover:text-black w-5" />
+              <DialogClose className="px-6 py-2">
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
               </DialogClose>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <form onSubmit={handleSubmit} className="space-y-4 p-6">
               <div>
                 {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
                 <input
@@ -176,7 +178,7 @@ const IntranetPage: React.FC = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className="mt-1 block text-xs  outline-none w-full p-2 border rounded"
+                  className="mt-1  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
@@ -189,14 +191,14 @@ const IntranetPage: React.FC = () => {
 
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#017A5B] w-full text-sm text-white rounded hover:bg-[#017A5B]"
+                className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
               >
                 Submit
               </button>
             </form>
           </div>
-        </DialogContent>
-      </Dialog>
+        </Dialog.Content>
+      </Dialog.Root>
       <div className="w-full flex justify-center">
         <IntranetTable
           entries={entries}

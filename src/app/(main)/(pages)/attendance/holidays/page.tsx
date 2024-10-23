@@ -8,7 +8,7 @@ import { Plus, X } from "lucide-react";
 import HolidayForm from "@/components/forms/HolidayForm"; // Ensure you have this component to create holidays
 import HolidayList from "@/components/lists/HolidayList"; // Ensure you have this component to display holidays
 import { toast, Toaster } from "sonner";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { CrossCircledIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 
 const HolidayManager: React.FC = () => {
@@ -58,19 +58,21 @@ const HolidayManager: React.FC = () => {
 
         {/* Modal Content */}
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-          <Dialog.Content className="fixed z-[50]  inset-0 flex items-center justify-center">
-            <div className="bg-[#0B0D29] h-[235px] rounded-lg shadow-lg p-6 w-full max-w-lg">
-              <div className="flex justify-between mb-4">
-                <Dialog.Title className="text-md font-medium mb-2">
+          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
+          <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+            <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+              <div className="flex border-b py-2  w-full justify-between">
+                <Dialog.Title className="text-md   px-6 py-2 font-medium">
                   Add New Holiday
                 </Dialog.Title>
-                <Dialog.Close asChild>
-                  <X className="cursor-pointer border rounded-full border-white h-5 hover:bg-white hover:text-black w-5" />
-                </Dialog.Close>
+                <Dialog.DialogClose className=" px-6 py-2">
+                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                </Dialog.DialogClose>
               </div>
-              <HolidayForm onHolidayCreated={handleHolidayCreated} />{" "}
-              {/* Holiday Form Component */}
+              <div className="relative">
+                <HolidayForm onHolidayCreated={handleHolidayCreated} />{" "}
+                {/* Holiday Form Component */}
+              </div>
               <div className="flex justify-end mt-4"></div>
             </div>
           </Dialog.Content>
