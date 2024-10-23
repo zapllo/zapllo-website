@@ -7,8 +7,7 @@ import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 
 export async function POST(request: NextRequest) {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, userId, amount, planName } = await request.json();
-
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, userId, amount, planName, subscribedUserCount } = await request.json();
     // Compute the expected signature
     const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET as string);
     hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
@@ -53,11 +52,11 @@ export async function POST(request: NextRequest) {
 
             await Organization.updateOne(
                 { _id: user.organization },
-                { 
-                    $set: { 
-                        isPro: true, 
-                        subscriptionExpires 
-                    } 
+                {
+                    $set: {
+                        isPro: true,
+                        subscriptionExpires
+                    }
                 }
             );
         }
@@ -70,8 +69,9 @@ export async function POST(request: NextRequest) {
             amount: amount,
             planName: planName,
             creditedAmount: creditedAmount,
+            subscribedUserCount,
         });
-        
+
         await newOrder.save();
 
         return NextResponse.json({ success: true });

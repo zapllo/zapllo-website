@@ -7,9 +7,9 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         await connectDB(); // Ensure the database is connected
 
         const { userId } = params;
-        
+
         // Fetch orders by user ID
-        const userOrders = await Order.find({ userId }).exec();
+        const userOrders = await Order.find({ userId }).sort({ createdAt: -1 }).exec();
 
         if (!userOrders) {
             return NextResponse.json({ error: 'No orders found for this user' }, { status: 404 });

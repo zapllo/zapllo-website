@@ -9,12 +9,14 @@ import { Clock, Users2, Wallet } from "lucide-react";
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { DialogTitle } from '@radix-ui/react-dialog';
 
 type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
 
 export default function Billing() {
     const [activeTab, setActiveTab] = useState('Active');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isAddUserOpen, setIsAddUserOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState<PlanKeys | null>(null);
     const [userCount, setUserCount] = useState(5);
     const [rechargeAmount, setRechargeAmount] = useState(5000);
@@ -25,9 +27,12 @@ export default function Billing() {
     const [rechargeModalStep, setRechargeModalStep] = useState(1);
     const [gstNumber, setGstNumber] = useState('');
     const [rechargeGstNumber, setRechargeGstNumber] = useState('');
-    const [subscribedUserCount, setSubscribedUserCount] = useState<number>(0); // State for subscribed user count
+    const [subscribedUserCount, setSubscribedUserCount] = useState<number>(0); // State for subscribed user  
+    const [additionalUserCount, setAdditionalUserCount] = useState<number>(0);
+    const [totalUserCount, setTotalUserCount] = useState<number>(0); // Total after adding
     const [renewsOn, setRenewsOn] = useState<any>();
     const router = useRouter();
+
 
 
 
@@ -54,23 +59,138 @@ export default function Billing() {
             if (res.data.data._id) {
                 const orderRes = await axios.get(`/api/orders/user/${res.data.data._id}`);
                 const userOrder = orderRes.data.find((order: { planName: any; }) => order.planName === res.data.data.subscribedPlan);
+                console.log(userOrder, 'where the subscribedusercount')
 
                 if (userOrder) {
                     setSubscribedUserCount(userOrder.subscribedUserCount);
                     setDisplayedPlan(userOrder.planName);
+                    setTotalUserCount(userOrder.subscribedUserCount); // Initially, total count is the current subscribed user count
                 }
             }
         };
         getUserDetails();
     }, []);
+console.log(subscribedUserCount, 'subscribed user count for the latest order')
 
     const plans = {
         'Task Pro': 1999,
         'Money Saver Bundle': 3000,
     };
 
+    const handleOpenDialog = () => {
+        setIsAddUserOpen(true);
+        setAdditionalUserCount(0); // Reset the additional user count
+    };
+
+    const handleUserSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCount = parseInt(e.target.value);
+        setAdditionalUserCount(selectedCount);
+        setTotalUserCount(subscribedUserCount + selectedCount); // Update the total user count
+    };
+
+    const handleConfirmUsers = async () => {
+        try {
+            // Ensure a valid plan is selected
+            if (!selectedPlan || !(selectedPlan in plans)) {
+                console.error("Selected plan is invalid.");
+                return;
+            }
+    
+            const plan = selectedPlan as PlanKeys;
+            const planCost = plans[plan];
+    
+            // Calculate the total amount for the selected number of additional users
+            const amountExclGST = additionalUserCount * planCost;
+            const gstAmount = amountExclGST * 0.18; // 18% GST
+            const totalAmount = amountExclGST + gstAmount;
+    
+            const orderData = {
+                amount: totalAmount * 100, // Amount in paise
+                currency: 'INR',
+                subscribedUserCount: totalUserCount, // Pass the updated user count
+                planName: plan // Pass the selected plan
+            };
+    
+            // Create order on server and get order ID
+            const { data } = await axios.post('/api/create-order', orderData);
+            if (!data.orderId) {
+                throw new Error('Order ID not found in the response');
+            }
+    
+            // Razorpay payment options
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
+                amount: orderData.amount,
+                currency: orderData.currency,
+                name: plan,
+                description: `Payment for ${plan}`,
+                image: '/logo.png',
+                order_id: data.orderId,
+                handler: async (response: any) => {
+                    const paymentResult = {
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        planName: plan,
+                    };
+    
+                    try {
+                        // Verify the payment on the server
+                        const { data: verificationResult } = await axios.post('/api/payment-success', {
+                            ...paymentResult,
+                            userId: currentUser?._id,
+                            amount: orderData.amount / 100,
+                            gstNumber: gstNumber,
+                            subscribedUserCount: totalUserCount, // Update subscribed users
+                        });
+    
+                        if (verificationResult.success) {
+                            toast.success('Payment successful! Users added.');
+                            setSubscribedUserCount(totalUserCount); // Update the subscribed count locally
+                            setIsAddUserOpen(false);
+                        } else {
+                            router.push('/payment-failed'); // Redirect to payment failed page
+                        }
+                    } catch (error) {
+                        console.error('Error verifying payment: ', error);
+                        router.push('/payment-failed'); // Redirect to payment failed page
+                    }
+                },
+                prefill: {
+                    name: `${currentUser?.firstName} ${currentUser?.lastName}`,
+                    email: currentUser?.email,
+                    contact: currentUser?.whatsappNo,
+                },
+                notes: {
+                    address: 'Corporate Office',
+                },
+                theme: {
+                    color: '#007A5A',
+                },
+            };
+    
+            // Open the Razorpay payment modal
+            const rzp1 = new (window as any).Razorpay(options);
+            rzp1.open();
+        } catch (error) {
+            toast.error("Error adding users. Please try again.");
+            console.error('Error creating order: ', error);
+        }
+    };
+    
+
+
+
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
+        setUserCount(5);
+        setModalStep(1);
+        setGstNumber('');
+    };
+
+
+    const handleCloseAddDialog = () => {
+        setIsAddUserOpen(false);
         setUserCount(5);
         setModalStep(1);
         setGstNumber('');
@@ -157,6 +277,7 @@ export default function Billing() {
                             userId: currentUser?._id,
                             amount: orderData.amount / 100,
                             gstNumber: gstNumber,
+                            subscribedUserCount: userCount,
                         });
                         if (verificationResult.success) {
                             toast.success('Payment successful!');
@@ -234,6 +355,7 @@ export default function Billing() {
                                 userId: currentUser?._id,
                                 amount: orderData.amount / 100,
                                 gstNumber: rechargeGstNumber,
+                                subscribedUserCount: userCount,
                             });
                             if (verificationResult.success) {
                                 toast.success('Recharge successful!');
@@ -436,6 +558,84 @@ export default function Billing() {
                             </Dialog>
                         )}
 
+
+                        {isAddUserOpen && isValidPlan(selectedPlan) && (
+                            <Dialog open={isAddUserOpen} onOpenChange={handleCloseAddDialog}>
+                                <DialogOverlay />
+                                <DialogTitle>Add Users</DialogTitle>
+                                <DialogContent>
+                                    {modalStep === 1 && (
+                                        <>
+                                            <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                            <div className="flex gap-4 mt-4">
+                                                <div>Subscribe Users: {subscribedUserCount}</div>
+                                                <div>Valid Till: <span className="text-blue-500">Jul 3, 2025</span></div>
+                                            </div>
+
+                                            <div className="mt-4">
+                                                <label htmlFor="userCount" className="block">Select Number of Users To Add:</label>
+                                                <select
+                                                    id="userCount"
+                                                    className="border p-2 w-full mt-2 outline-none rounded"
+                                                    value={additionalUserCount}
+                                                    onChange={handleUserSelection}
+                                                >
+                                                    {[...Array(20)].map((_, i) => {
+                                                        const count = (i + 1) * 5;
+                                                        return (
+                                                            <option key={count} value={count}>{count}</option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div className="mt-4">
+                                                <h3>Total Users: {totalUserCount}</h3>
+                                            </div>
+                                            <div className="mt-4">
+                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={() => setModalStep(2)}>
+                                                    Next
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                    {modalStep === 2 && (
+                                        <>
+                                            <h2 className="text-xl font-bold">Payment Details</h2>
+                                            <div className='flex gap-4 mt-4'>
+                                                <h1>Amount (excluding GST) = </h1>
+                                                INR {additionalUserCount * plans[selectedPlan]}
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>GST (18%) = </h1>
+                                                INR {(additionalUserCount * plans[selectedPlan] * 0.18).toFixed(2)}
+                                            </div>
+                                            <div className='flex gap-4'>
+                                                <h1>Total Amount (including GST) = </h1>
+                                                INR {(additionalUserCount * plans[selectedPlan] * 1.18).toFixed(2)}
+                                            </div>
+                                            <div className="mt-4">
+                                                <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
+                                                <input
+                                                    id="gstNumber"
+                                                    type="text"
+                                                    className="border p-2 rounded outline-none w-full"
+                                                    value={gstNumber}
+                                                    onChange={(e) => setGstNumber(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="mt-4 flex gap-2">
+                                                <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setModalStep(1)}>
+                                                    Back
+                                                </Button>
+                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handleConfirmUsers}>
+                                                    Proceed to Payment
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                </DialogContent>
+                            </Dialog>
+                        )}
                         {isRechargeDialogOpen && (
                             <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
                                 <DialogOverlay />
@@ -536,7 +736,16 @@ export default function Billing() {
                                             </p>
                                         )}
                                         <div className="flex justify-center py-2 w-full">
-                                            <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6">Subscribed</Button>
+                                            <Button
+                                                className="bg-[#007A5A] hover:bg-[#007A5A] w-fit px-6"
+                                                onClick={() => {
+                                                    setSelectedPlan(displayedPlan); // Set the selected plan
+                                                    setIsAddUserOpen(true);          // Open the dialog to add more users
+                                                }}
+                                            >
+                                                Add Users
+                                            </Button>
+
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
@@ -576,8 +785,27 @@ export default function Billing() {
                                             {plans['Task Pro']}
                                             <h1 className="text-xs italic">(Per User Per Year)</h1>
                                         </CardDescription>
+                                        <p className="mt-2 text-sm justify-center flex gap-1">
+                                            <Clock className='h-5' />
+                                            Renews on: <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
+                                        </p>
+                                        {subscribedUserCount && (
+                                            <p className="mt-1 flex justify-center gap-1 text-sm">
+                                                <Users2 className='h-5' />
+                                                Subscribed Users: <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                            </p>
+                                        )}
                                         <div className="flex justify-center py-2 w-full">
-                                            <Button disabled className="bg-[#007A5A] cursor-not-allowed hover:bg-[#007A5A] w-fit px-6">Subscribed</Button>
+                                            <Button
+                                                className="bg-[#007A5A] hover:bg-[#007A5A] w-fit px-6"
+                                                onClick={() => {
+                                                    setSelectedPlan(displayedPlan); // Set the selected plan
+                                                    setIsAddUserOpen(true);          // Open the dialog to add more users
+                                                }}
+                                            >
+                                                Add Users
+                                            </Button>
+
                                         </div>
                                     </CardHeader>
                                     <div className='p-4'>
