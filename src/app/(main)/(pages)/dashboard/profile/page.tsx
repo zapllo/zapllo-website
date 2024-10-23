@@ -158,7 +158,7 @@ export default function Profile({ }: Props) {
               <DialogContent className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
                   <h2 className="text-lg font-bold mb-4">Add New User</h2>
-                  <p>This is a modal to add users' data in the application.</p>
+                  <p>This is a modal to add users data in the application.</p>
                   <Button
                     onClick={() => setIsModalOpen(false)}
                     className="mt-4"
