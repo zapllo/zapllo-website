@@ -175,19 +175,20 @@ const DashboardPage = () => {
           </div>
         </div>
         {calculateProgress() == 100 && (
-          <div className=' w-[50.33%] flex justify-start gap-4'>
+          <div className=' w-[50.33%] flex justify-start h-48 gap-4'>
             <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
               <div className='w-full m'>
                 <h1 className='text-lg font-medium flex gap-2'><Megaphone /> Events </h1>
-                <p className='text-sm py-4'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
-              </div>
-              <div className="flex justify-start ">
+                <p className='text-sm py-2'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
+                <div className="flex justify-start ">
                 <Link href="/dashboard/events">
-                  <Button className="bg-white text-black   hover:bg-white ">
+                  <Button className="bg-white text-black mt-4 text-sm hover:bg-white ">
                     Go To Events
                   </Button>
                 </Link>
               </div>
+              </div>
+             
             </div>
           </div>
         )}
@@ -226,7 +227,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="flex  gap-4 ">
-          <div className="p-4 w-full border border-[#E0E0E066] bg-[#221126]  m-4  text-white items-center flex justify-start rounded ">
+          <div className="p-4 w-full border border-[#E0E0E066] bg-[#] m-4  text-white items-center flex justify-start rounded-xl ">
             <div className=" font-bold text-xl space-y-1">
               <div className="rounded-full h-12 border-[#E0E0E066] border w-12">
                 <CalendarMinus className=" ml-[11px] mt-3 h-6     object-cover" />
@@ -242,7 +243,7 @@ const DashboardPage = () => {
                       Free Trial Expires {leavesRemainingTime}
                     </p>
                     <Link href="/attendance/my-leaves">
-                      <Button className="bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs">
+                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
                         Go To Leaves
                       </Button>
                     </Link>
@@ -250,7 +251,7 @@ const DashboardPage = () => {
                 ) : (
                   <Button
                     onClick={() => startTrial("leaves")}
-                    className="bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs"
+                    className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
                   >
                     {isFreeTrialLoading ? (
                       <span>Start trial</span>
@@ -285,7 +286,7 @@ const DashboardPage = () => {
                       Free Trial Expires {attendanceRemainingTime}
                     </p>
                     <Link href="/attendance/my-attendance">
-                      <Button className="bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs">
+                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
                         Go To Attendance
                       </Button>
                     </Link>
@@ -293,7 +294,7 @@ const DashboardPage = () => {
                 ) : (
                   <Button
                     onClick={() => startTrial("attendance")}
-                    className="bg-[#7C3886] py-1 hover:bg-[#7C3886] text-xs"
+                    className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
                   >
                     {isFreeTrialLoading ? (
                       <>

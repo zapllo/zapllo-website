@@ -270,9 +270,8 @@ export default function TasksTab({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
   // Add this state to the component
-  const [taskStatusFilter, setTaskStatusFilter] = useState<string | null>(
-    "pending"
-  );
+  const [taskStatusFilter, setTaskStatusFilter] = useState<string>("pending");
+
   const [selectedUserId, setSelectedUserId] = useState<User | null>(null);
 
   // Handlers to open date pickers
@@ -303,7 +302,7 @@ export default function TasksTab({
     setFrequencyFilter([]); // Reset frequency filter
     setPriorityFilterModal([]); // Reset priority filter
     setSelectedUserId(null); // Reset assigned user
-    setTaskStatusFilter(null); // Reset task status filter
+    setTaskStatusFilter(""); // Reset task status filter
   };
 
   // Render clear button based on the presence of any applied filters
@@ -933,7 +932,7 @@ export default function TasksTab({
     return `${day}-${month}-${year}`;
   };
 
-  const handleDelete = async (taskId: string) => {};
+  const handleDelete = async (taskId: string) => { };
 
   const handleEditClick = () => {
     setTaskToEdit(selectedTask);
@@ -1362,12 +1361,11 @@ export default function TasksTab({
                                 onClick={() => {
                                   setActiveDateFilter("custom"); // Set directly to "custom"
                                 }}
-                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${
-                                  activeDateFilter === "custom" ||
+                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${activeDateFilter === "custom" ||
                                   (customStartDate && customEndDate)
-                                    ? "bg-[#815BF5] text-white"
-                                    : ""
-                                }`}
+                                  ? "bg-[#815BF5] text-white"
+                                  : ""
+                                  }`}
                               >
                                 Custom
                               </Button>
@@ -1403,8 +1401,8 @@ export default function TasksTab({
                                             <Calendar className="h-4" />
                                             {customStartDate
                                               ? new Date(
-                                                  customStartDate
-                                                ).toLocaleDateString()
+                                                customStartDate
+                                              ).toLocaleDateString()
                                               : "Start Date"}
                                           </div>
                                         </button>
@@ -1423,8 +1421,8 @@ export default function TasksTab({
                                             <Calendar className="h-4" />
                                             {customEndDate
                                               ? new Date(
-                                                  customEndDate
-                                                ).toLocaleDateString()
+                                                customEndDate
+                                              ).toLocaleDateString()
                                               : "End Date"}
                                           </div>
                                         </button>
@@ -2162,94 +2160,96 @@ export default function TasksTab({
                                   </div>
                                 )}
                               </div>
-                              <div className="flex gap-2 ml- mb-4 justify-center mt-2">
-                                {/* Overdue Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "overdue"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CircleAlert className="text-red-500 h-3  " />
-                                  Overdue ({myTasksOverdueCount})
-                                </Button>
+                              <div className="flex gap-4  mb-4    w-full justify-center">
+                                <div className="w-fit  border-b-2 ">
+                                  {/* Overdue Filter */}
+                                  <Tabs2
+                                    defaultValue={taskStatusFilter}
+                                    onValueChange={setTaskStatusFilter}
+                                    className="gap-2"
+                                  >
+                                    <TabsList2 className="flex gap-2 justify-center mt-2">
+                                      {/* Overdue Filter */}
+                                      <TabsTrigger2
+                                        value="overdue"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "overdue"
+                                          ? "bg-[#] hover:bg-[#]  borde]"
+                                          : "bg-[#] hover:bg-[#] "
+                                          }`}
+                                      >
+                                        <CircleAlert className="text-red-500 h-3" />
+                                        Overdue ({myTasksOverdueCount})
+                                      </TabsTrigger2>
 
-                                {/* Pending Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "pending"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <Circle className="text-red-400 h-3 " />
-                                  Pending ({myTasksPendingCount})
-                                </Button>
+                                      {/* Pending Filter */}
+                                      <TabsTrigger2
+                                        value="pending"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "pending"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <Circle className="text-red-400 h-3" />
+                                        Pending ({myTasksPendingCount})
+                                      </TabsTrigger2>
 
-                                {/* In Progress Filter */}
-                                <Button
-                                  onClick={() =>
-                                    setTaskStatusFilter("inProgress")
-                                  }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "inProgress"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <IconProgress className="text-orange-500 h-3 " />
-                                  In Progress ({myTasksInProgressCount})
-                                </Button>
+                                      {/* In Progress Filter */}
+                                      <TabsTrigger2
+                                        value="inProgress"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inProgress"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <IconProgress className="text-orange-500 h-3" />
+                                        In Progress ({myTasksInProgressCount})
+                                      </TabsTrigger2>
 
-                                {/* Completed Filter */}
-                                <Button
-                                  onClick={() =>
-                                    setTaskStatusFilter("completed")
-                                  }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "completed"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CheckCircle className="text-green-500 h-3 " />
-                                  Completed ({myTasksCompletedCount})
-                                </Button>
+                                      {/* Completed Filter */}
+                                      <TabsTrigger2
+                                        value="completed"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "completed"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <CheckCircle className="text-green-500 h-3" />
+                                        Completed ({myTasksCompletedCount})
+                                      </TabsTrigger2>
 
-                                {/* In Time Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "inTime"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <Clock className="text-green-500 h-3 " />
-                                  In Time ({myTasksInTimeCount})
-                                </Button>
+                                      {/* In Time Filter */}
+                                      <TabsTrigger2
+                                        value="inTime"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inTime"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <Clock className="text-green-500 h-3" />
+                                        In Time ({myTasksInTimeCount})
+                                      </TabsTrigger2>
 
-                                {/* Delayed Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "delayed"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CheckCircle className="text-red-500 h-3 " />
-                                  Delayed ({myTasksDelayedCount})
-                                </Button>
+                                      {/* Delayed Filter */}
+                                      <TabsTrigger2
+                                        value="delayed"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "delayed"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <CheckCircle className="text-red-500 h-3" />
+                                        Delayed ({myTasksDelayedCount})
+                                      </TabsTrigger2>
+                                    </TabsList2>
+                                  </Tabs2>
+
+                                </div>
                               </div>
                               {filteredTasks && filteredTasks.length > 0 ? (
                                 filteredTasks?.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[100%] ml- mb-2   border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[100.7%] ml- mb-2   border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -2581,88 +2581,90 @@ export default function TasksTab({
                                   </div>
                                 )}
                               </div>
-                              <div className="flex gap-2 ml-52 mb-4 justify-center ">
-                                {/* Overdue Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "overdue"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CircleAlert className="text-red-500 h-3  " />
-                                  Overdue ({delegatedTasksOverdueCount})
-                                </Button>
+                              <div className="flex gap-4  mb-4 ml-24    w-full justify-center">
+                                <div className="w-fit ml-4  border-b-2 ">
+                                  {/* Overdue Filter */}
+                                  <Tabs2
+                                    defaultValue={taskStatusFilter}
+                                    onValueChange={setTaskStatusFilter}
+                                    className="gap-2"
+                                  >
+                                    <TabsList2 className="flex gap-2 justify-center mt-2">
+                                      {/* Overdue Filter */}
+                                      <TabsTrigger2
+                                        value="overdue"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "overdue"
+                                          ? "bg-[#] hover:bg-[#]  borde]"
+                                          : "bg-[#] hover:bg-[#] "
+                                          }`}
+                                      >
+                                        <CircleAlert className="text-red-500 h-3" />
+                                        Overdue ({myTasksOverdueCount})
+                                      </TabsTrigger2>
 
-                                {/* Pending Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "pending"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <Circle className="text-red-400 h-3 " />
-                                  Pending ({delegatedTasksPendingCount})
-                                </Button>
+                                      {/* Pending Filter */}
+                                      <TabsTrigger2
+                                        value="pending"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "pending"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <Circle className="text-red-400 h-3" />
+                                        Pending ({myTasksPendingCount})
+                                      </TabsTrigger2>
 
-                                {/* In Progress Filter */}
-                                <Button
-                                  onClick={() =>
-                                    setTaskStatusFilter("inProgress")
-                                  }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "inProgress"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <IconProgress className="text-orange-500 h-3 " />
-                                  In Progress ({delegatedTasksInProgressCount})
-                                </Button>
+                                      {/* In Progress Filter */}
+                                      <TabsTrigger2
+                                        value="inProgress"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inProgress"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <IconProgress className="text-orange-500 h-3" />
+                                        In Progress ({myTasksInProgressCount})
+                                      </TabsTrigger2>
 
-                                {/* Completed Filter */}
-                                <Button
-                                  onClick={() =>
-                                    setTaskStatusFilter("completed")
-                                  }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "completed"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CheckCircle className="text-green-500 h-3 " />
-                                  Completed ({delegatedTasksCompletedCount})
-                                </Button>
+                                      {/* Completed Filter */}
+                                      <TabsTrigger2
+                                        value="completed"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "completed"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <CheckCircle className="text-green-500 h-3" />
+                                        Completed ({myTasksCompletedCount})
+                                      </TabsTrigger2>
 
-                                {/* In Time Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "inTime"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <Clock className="text-green-500 h-3 " />
-                                  In Time ({delegatedTasksInTimeCount})
-                                </Button>
+                                      {/* In Time Filter */}
+                                      <TabsTrigger2
+                                        value="inTime"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inTime"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <Clock className="text-green-500 h-3" />
+                                        In Time ({myTasksInTimeCount})
+                                      </TabsTrigger2>
 
-                                {/* Delayed Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "delayed"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CheckCircle className="text-red-500 h-3 " />
-                                  Delayed ({delegatedTasksDelayedCount})
-                                </Button>
+                                      {/* Delayed Filter */}
+                                      <TabsTrigger2
+                                        value="delayed"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "delayed"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <CheckCircle className="text-red-500 h-3" />
+                                        Delayed ({myTasksDelayedCount})
+                                      </TabsTrigger2>
+                                    </TabsList2>
+                                  </Tabs2>
+
+                                </div>
                               </div>
                               {filteredTasks!.length > 0 ? (
                                 filteredTasks!.map((task) => (
@@ -2964,88 +2966,90 @@ export default function TasksTab({
                                   </div>
                                 )}
                               </div>
-                              <div className="flex gap-2 ml-52 mb-4 justify-center ">
-                                {/* Overdue Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("overdue")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "overdue"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CircleAlert className="text-red-500 h-3  " />
-                                  Overdue ({overdueTasks})
-                                </Button>
+                              <div className="flex gap-4  mb-4 ml-24   w-full justify-center">
+                                <div className="w-fit ml-4  border-b-2 ">
+                                  {/* Overdue Filter */}
+                                  <Tabs2
+                                    defaultValue={taskStatusFilter}
+                                    onValueChange={setTaskStatusFilter}
+                                    className="gap-2"
+                                  >
+                                    <TabsList2 className="flex gap-2 justify-center mt-2">
+                                      {/* Overdue Filter */}
+                                      <TabsTrigger2
+                                        value="overdue"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "overdue"
+                                          ? "bg-[#] hover:bg-[#]  borde]"
+                                          : "bg-[#] hover:bg-[#] "
+                                          }`}
+                                      >
+                                        <CircleAlert className="text-red-500 h-3" />
+                                        Overdue ({myTasksOverdueCount})
+                                      </TabsTrigger2>
 
-                                {/* Pending Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("pending")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "pending"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <Circle className="text-red-400 h-3 " />
-                                  Pending ({pendingTasks})
-                                </Button>
+                                      {/* Pending Filter */}
+                                      <TabsTrigger2
+                                        value="pending"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "pending"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <Circle className="text-red-400 h-3" />
+                                        Pending ({myTasksPendingCount})
+                                      </TabsTrigger2>
 
-                                {/* In Progress Filter */}
-                                <Button
-                                  onClick={() =>
-                                    setTaskStatusFilter("inProgress")
-                                  }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "inProgress"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <IconProgress className="text-orange-500 h-3 " />
-                                  In Progress ({inProgressTasks})
-                                </Button>
+                                      {/* In Progress Filter */}
+                                      <TabsTrigger2
+                                        value="inProgress"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inProgress"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <IconProgress className="text-orange-500 h-3" />
+                                        In Progress ({myTasksInProgressCount})
+                                      </TabsTrigger2>
 
-                                {/* Completed Filter */}
-                                <Button
-                                  onClick={() =>
-                                    setTaskStatusFilter("completed")
-                                  }
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "completed"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CheckCircle className="text-green-500 h-3 " />
-                                  Completed ({completedTasks})
-                                </Button>
+                                      {/* Completed Filter */}
+                                      <TabsTrigger2
+                                        value="completed"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "completed"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <CheckCircle className="text-green-500 h-3" />
+                                        Completed ({myTasksCompletedCount})
+                                      </TabsTrigger2>
 
-                                {/* In Time Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("inTime")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "inTime"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <Clock className="text-green-500 h-3 " />
-                                  In Time ({inTimeTasks})
-                                </Button>
+                                      {/* In Time Filter */}
+                                      <TabsTrigger2
+                                        value="inTime"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inTime"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <Clock className="text-green-500 h-3" />
+                                        In Time ({myTasksInTimeCount})
+                                      </TabsTrigger2>
 
-                                {/* Delayed Filter */}
-                                <Button
-                                  onClick={() => setTaskStatusFilter("delayed")}
-                                  className={`h-8 w-36 flex gap-1 text-xs   ${
-                                    taskStatusFilter === "delayed"
-                                      ? "bg-[#28152E] hover:bg-[#28152E] h-8 w-36 flex gap-1 text-xs  border border-[#7c3987]"
-                                      : " bg-[#28152e] hover:bg-[#28152e]   h-8 w-36 flex gap-1 text-xs  "
-                                  }`}
-                                >
-                                  <CheckCircle className="text-red-500 h-3 " />
-                                  Delayed ({delayedTasks})
-                                </Button>
+                                      {/* Delayed Filter */}
+                                      <TabsTrigger2
+                                        value="delayed"
+                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "delayed"
+                                          ? ""
+                                          : ""
+                                          }`}
+                                      >
+                                        <CheckCircle className="text-red-500 h-3" />
+                                        Delayed ({myTasksDelayedCount})
+                                      </TabsTrigger2>
+                                    </TabsList2>
+                                  </Tabs2>
+
+                                </div>
                               </div>
                               {filteredTasks!.length > 0 ? (
                                 filteredTasks!.map((task) => (

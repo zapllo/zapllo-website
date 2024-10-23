@@ -1050,7 +1050,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("today")}
           className={`px-4 h-fit py-2 text-xs rounded ${
-            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#37384B] "
+            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
           }`}
         >
           Today
@@ -1058,7 +1058,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("yesterday")}
           className={`px-4 h-fit py-2 text-xs rounded ${
-            activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#37384B]"
+            activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
           }`}
         >
           Yesterday
@@ -1066,7 +1066,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("thisWeek")}
           className={`px-4 py-2 h-fit text-xs rounded ${
-            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#37384B]"
+            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
           }`}
         >
           This Week
@@ -1074,7 +1074,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("lastWeek")}
           className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#37384B]"
+            activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
           }`}
         >
           Last Week
@@ -1082,7 +1082,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("thisMonth")}
           className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#37384B]"
+            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
           }`}
         >
           This Month
@@ -1090,7 +1090,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("lastMonth")}
           className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#37384B]"
+            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
           }`}
         >
           Last Month
@@ -1098,7 +1098,7 @@ export default function MyAttendance() {
         <button
           onClick={() => setActiveTab("allTime")}
           className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#37384B]"
+            activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
           }`}
         >
           All Time

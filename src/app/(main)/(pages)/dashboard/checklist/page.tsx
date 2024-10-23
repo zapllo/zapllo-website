@@ -65,7 +65,7 @@ export default function ChecklistPage({ }) {
 
         if (isCompleted) {
             setShowConfetti(true); // Show confetti on completion
-            setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
+            setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 3 seconds
         }
 
         try {
@@ -122,7 +122,11 @@ export default function ChecklistPage({ }) {
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 h-[600px]  overflow-y-scroll scrollbar-hide  w-full">
                             <div className="p-4 w-full ">
-                                {showConfetti && <Confetti />} {/* Render confetti if needed */}
+                                {showConfetti &&
+                                    <div className=''>
+                                        <Confetti />
+                                    </div>
+                                } {/* Render confetti if needed */}
                                 <div className='border border-[#E0E0E066] mt-20  rounded p-4 w-full'>
                                     <h1 className="text-font-bold mb-4">Checklist Progress</h1>
                                     <Progress value={calculateProgress()} className='mb-4' />

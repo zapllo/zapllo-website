@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         // Calculate the amount before GST
         const amountWithoutGST = amount / (1 + gstRate);
         // Calculate the net credited amount after deducting Razorpay's fee
-        const creditedAmount = amountWithoutGST * (1 + razorpayFeeRate);
+        const creditedAmount = amountWithoutGST 
 
         // Update the user document
         const user = await User.findByIdAndUpdate(

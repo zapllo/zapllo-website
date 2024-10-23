@@ -138,7 +138,7 @@ export default function CustomAudioPlayer({
   };
 
   return (
-    <div className="bg-[#282D32] rounded-lg shadow-md p-4 max-w-md w-full">
+    <div className="bg-[#] border border-dashed border-[#815BF5] rounded-lg shadow-md p-2 max-w-md w-full">
       {audioSrc && (
         <div className="space-y-2">
           <div className="flex justify-between items-center">

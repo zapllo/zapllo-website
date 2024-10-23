@@ -111,7 +111,7 @@ const Layout = (props: Props) => {
   return (
     <div>
       {isVisible && (
-        <div className="p-2 flex fixed top-0 w-full justify-center gap-2 bg-[#75517B] border">
+        <div className="p-2 flex fixed top-0 w-full justify-center gap-2 bg-[#37384B] border">
           <div className="flex gap-2 justify-center w-full">
             <h1 className="text-center mt-1 flex text-white text-xs">
               {isTrialExpired ? (
@@ -123,7 +123,7 @@ const Layout = (props: Props) => {
               Upgrade now for uninterrupted access
             </h1>
             <Link href="/dashboard/billing">
-              <Button className="h-5 rounded dark:bg-[#822b90] w-fit px-2 py-3 text-xs text-white">
+              <Button className="h-5 rounded dark:bg-[#017a5b] w-fit px-2 py-3 text-xs text-white">
                 Upgrade Now
               </Button>
             </Link>
