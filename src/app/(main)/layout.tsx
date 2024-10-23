@@ -50,14 +50,14 @@ const Layout = (props: Props) => {
       const updateTimeMessage = () => {
         const now = new Date();
         const trialEnd = new Date(trialExpires);
-
+  
         if (isTrialExpired) {
           // Calculate elapsed time since expiration
           const duration = intervalToDuration({ start: trialEnd, end: now });
           const message =
-            duration.days > 0
+            (duration.days || 0) > 0
               ? `${duration.days} days ago`
-              : `${duration.hours}h ${duration.minutes}m since trial expired`;
+              : `${duration.hours || 0}h ${duration.minutes || 0}m since trial expired`;
           setTimeMessage(message);
         } else {
           // Calculate remaining time until expiration
@@ -65,13 +65,14 @@ const Layout = (props: Props) => {
           setTimeMessage(remaining);
         }
       };
-
+  
       updateTimeMessage(); // Initial call
       const intervalId = setInterval(updateTimeMessage, 1000 * 60); // Update every minute
-
+  
       return () => clearInterval(intervalId); // Cleanup on unmount
     }
   }, [isTrialExpired, trialExpires]);
+  
 
   const isDynamicRoute = pathname.match(/^\/dashboard\/tickets\/[^/]+$/);
 

@@ -67,28 +67,37 @@ export const FloatingNav = ({
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
-                                            className="absolute space-y-12 gap-y-6 top-8 left-0  h-48 w-72 mt-2 bg-white dark:bg-[#000000] shadow-lg rounded-lg py-2 px-4 z-10"
+                                            className="absolute space-y-12 gap-y-6 top-8 left-0  h-fit w-64 mt-2 bg-white dark:bg-[#000000] shadow-lg rounded-lg py-2 px-4 z-10"
                                         >
-                                            <Link href="/products/zapllo-work">
+                                            <Link href="/products/zapllo-teams">
                                                 <p className="p-2 mt-2 text-sm flex gap-1 hover:bg-[#B77EF1] rounded-md">
-                                                    <img src="/icons/task.png" className="h-5" />  Zapllo Tasks
+                                                    <img src="/branding/teams.png" className="w-36" />
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-people">
-                                                <p className="py-2 mt-2 px-1 text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
-                                                    <Calendar className="h-5" />      Zapllo Payroll
+                                            <Link href="/products/zapllo-attendance">
+                                                <p className="p-2 mt-2  text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
+                                                <img src="/branding/attendance.png" className="w-40" />
+
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-clients">
+                                            <Link href="/products/zapllo-ai">
                                                 <p className="p-2 text-sm mt-2 flex gap-1 hover:bg-[#B77EF1]   rounded-md">
-                                                    <img src="/icons/crm.png" className="h-4 invert-[100]" />    Zapllo CRM (Coming Soon)
+                                                    <img src="/branding/ai.png" className="w-28" />  
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-people">
-                                                <p className="p-2 mt-2 px-1 text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
-                                                    <File className="h-5" />     Invoice by Zapllo (Coming Soon)
+                                            <Link href="/products/zapllo-crm">
+                                                <p className="p-2 mt-2  text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
+                                                <img src="/branding/crm.png" className="w-28" />  
+                                                 
                                                 </p>
                                             </Link>
+                                            <Link href="/products/zapllo-invoice">
+                                                <p className="p-2 mt-2  text-sm flex gap-1 hover:bg-[#B77EF1]   rounded-md">
+                                                <img src="/branding/invoice.png" className="w-32" />  
+                                                 
+                                                </p>
+                                            </Link>
+                                            
                                         </motion.div>
                                     )}
                                 </AnimatePresence>

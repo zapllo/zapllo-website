@@ -6,59 +6,70 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { toast, Toaster } from "sonner";
+import Loader from "@/components/ui/loader";
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.patch("/api/changePassword", {
         currentPassword,
         newPassword,
       });
       setMessage(response.data.message);
+      toast.success(response.data.message);
+      setCurrentPassword("");
+      setNewPassword("");
+      setLoading(false);
     } catch (error: any) {
       setMessage(error.response?.data?.error || "An error occurred");
     }
   };
 
-    return (
-        <Card className="p-6  bg-transparent m-6 s">
-            <CardTitle className="text-start">Change Your Password</CardTitle>
-            <form onSubmit={handleSubmit}>
-                <div className="mt-4">
-                    {/* <Label htmlFor="currentPassword">Current Password</Label> */}
-                    <input
-                        type="password"
-                        id="currentPassword"
-                        value={currentPassword}
-                        placeholder="Current Password"
-                        className="mt-2 p-2 w-full rounded outline-none bg-transparent border"
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    {/* <Label htmlFor="newPassword">New Password</Label> */}
-                    <input
-                        type="password"
-                        id="newPassword"
-                        value={newPassword}
-                        className="mt-2 p-2 w-full rounded outline-none bg-transparent border"
-                        placeholder="New Password"
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <Button className="mt-4 bg-[#815BF5] hover:bg-[#815BF5]" type="submit">Change Password</Button>
-                {message && <p>{message}</p>}
-            </form>
+  return (
+    <Card className="p-6  bg-transparent m-6 s">
+      <CardTitle className="text-start">Change Your Password</CardTitle>
+      <Toaster />
+      <form onSubmit={handleSubmit}>
+        <div className="mt-4">
+          {/* <Label htmlFor="currentPassword">Current Password</Label> */}
+          <input
 
-        </Card>
-    );
+            id="currentPassword"
+            value={currentPassword}
+            placeholder="Current Password"
+            className="mt-2 p-2 w-full text-xs rounded outline-none bg-transparent border"
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          {/* <Label htmlFor="newPassword">New Password</Label> */}
+          <input
+
+            id="newPassword"
+            value={newPassword}
+            className="mt-2 p-2 w-full text-xs rounded outline-none bg-transparent border"
+            placeholder="New Password"
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+        </div>
+        <Button className="mt-4 bg-[#017a5b] text-xs hover:bg-[#017a5b]" type="submit">
+          {loading ? <Loader /> : "Change Password"}
+        </Button>
+        {/* {message && <p>{message}</p>} */}
+      </form>
+
+    </Card>
+  );
 };
 
 export default ChangePassword;

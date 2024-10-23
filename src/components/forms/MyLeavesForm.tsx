@@ -378,6 +378,10 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
     const stopRecording = () => {
         mediaRecorderRef.current?.stop();
+        // Stop all tracks of the media stream to release the microphone
+        if (mediaRecorderRef.current?.stream) {
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+        }
     };
 
     const calculateTotalAppliedDays = () => {

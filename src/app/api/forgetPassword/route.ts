@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.RESET_PASSWORD_SECRET!, { expiresIn: '1h' });
-        const resetLink = `http://localhost:3000/dashboard/reset-password?token=${token}`;
+        const resetLink = `http://localhost:3000/reset-password?token=${token}`;
 
         const emailOptions: SendEmailOptions = {
             to: email,

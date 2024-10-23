@@ -3,6 +3,7 @@
 // Import statements corrected for paths and dependencies
 import React, {
   Dispatch,
+  ReactEventHandler,
   SetStateAction,
   useEffect,
   useRef,
@@ -26,7 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CaretDownIcon, CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { CaretDownIcon, CaretSortIcon, CheckIcon, CrossCircledIcon, StopIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import {
@@ -148,6 +149,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   const [whatsappReminderType, setWhatsappReminderType] = useState("minutes");
   const [whatsappReminderValue, setWhatsappReminderValue] = useState(0);
   const [reminderDate, setReminderDate] = useState<Date | null>(null); // Explicitly typed as Date or null
+  const intervalRef = useRef<number | null>(null);
+  const [recordingTime, setRecordingTime] = useState(0);
   const controls = useAnimation();
 
   const modalVariants = {
@@ -198,9 +201,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     if (audioBlob) {
       const audioURL = URL.createObjectURL(audioBlob);
       setAudioURL(audioURL);
+      // Cleanup URL to avoid memory leaks
+      return () => URL.revokeObjectURL(audioURL);
     }
   }, [audioBlob]);
 
+
+  // Handle audio recording logic
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -227,43 +234,53 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
       mediaRecorder.onstop = () => {
         setRecording(false);
+        if (intervalRef.current !== null) {
+          clearInterval(intervalRef.current); // Clear the timer
+          intervalRef.current = null; // Reset the ref
+        }
+        setRecordingTime(0); // Reset timer
       };
 
       mediaRecorder.start();
       setRecording(true);
 
+      // Start timer
+      intervalRef.current = window.setInterval(() => {
+        setRecordingTime((prevTime) => prevTime + 1);
+      }, 1000);
+
       // Real-time waveform visualization
+      // Real-time waveform visualization (Bars Version)
       const canvas = canvasRef.current;
+      console.log(canvas);
       if (canvas) {
         const canvasCtx = canvas.getContext("2d");
         if (canvasCtx) {
           const drawWaveform = () => {
             if (analyserRef.current) {
               requestAnimationFrame(drawWaveform);
-              analyserRef.current.getByteTimeDomainData(dataArray);
-              canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-              canvasCtx.lineWidth = 2;
-              canvasCtx.strokeStyle = "green";
-              canvasCtx.beginPath();
+              analyserRef.current.getByteFrequencyData(dataArray);
 
-              const sliceWidth = (canvas.width * 1.0) / bufferLength;
-              let x = 0;
+              // Clear the canvas before rendering bars
+              canvasCtx.fillStyle = "rgb(0, 0, 0)";
+              canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-              for (let i = 0; i < bufferLength; i++) {
-                const v = dataArray[i] / 128.0; // Convert to 0.0 to 1.0
-                const y = (v * canvas.height) / 2; // Convert to canvas height
+              const bars = 40;
+              const barWidth = 2;
+              const totalBarWidth = bars * barWidth;
+              const gapWidth = (canvas.width - totalBarWidth) / (bars - 1);
+              const step = Math.floor(bufferLength / bars); // Number of bars to draw
 
-                if (i === 0) {
-                  canvasCtx.moveTo(x, y);
-                } else {
-                  canvasCtx.lineTo(x, y);
-                }
+              for (let i = 0; i < bars; i++) {
+                const barHeight =
+                  (dataArray[i * step] / 255) * canvas.height * 0.8; // Normalizing bar height
+                const x = i * (barWidth + gapWidth);
+                const y = (canvas.height - barHeight) / 2; // Center the bars vertically
 
-                x += sliceWidth;
+                // Draw each bar
+                canvasCtx.fillStyle = "rgb(99, 102, 241)"; // Bar color
+                canvasCtx.fillRect(x, y, barWidth, barHeight);
               }
-
-              canvasCtx.lineTo(canvas.width, canvas.height / 2);
-              canvasCtx.stroke();
             }
           };
 
@@ -276,6 +293,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       console.error("Error accessing microphone:", error);
     }
   };
+
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
@@ -445,7 +463,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     }
   };
 
-  const handleAssignTask = async () => {
+  const handleAssignTask = async (e: React.FormEvent) => {
+    e.preventDefault();  // Prevent form submission refresh
     if (!dueDate || !dueTime) {
       alert("Due date and time are required.");
       return; // Stop execution if validation fails
@@ -697,21 +716,19 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       <Toaster />
 
       <motion.div
-        className="bg-[#0B0D29] z-[100] h-[510px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
+        className="bg-[#0B0D29] z-[100] h-[520px] overflow-y-scroll scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
         variants={modalVariants}
         initial="hidden"
         animate={controls}
       >
-        <div className="flex justify-between">
-          <h2 className="text-lg font-bold mb-4 -mt-4  ">Assign New Task</h2>
+        <div className="flex justify-between  items-center  px-8 py-3 border-b w-full">
+          <h2 className="text-lg font-bold   ">Assign New Task</h2>
 
-          <X
-            onClick={closeModal}
-            className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6"
-          />
+          <CrossCircledIcon onClick={closeModal} className='scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+
         </div>
 
-        <form className="text-sm space-y-2 overflow-y-scroll scrollbar-hide h-full max-h-4xl">
+        <form className="text-sm space-y-2 overflow-y-scroll px-8 py-4 scrollbar-hide h-full max-h-4xl">
           <div className="grid grid-cols-1 gap-2">
             <div className="">
               {/* <Label htmlFor="title" className="block text-[#D0D3D3] text-xs font-semibold">Title</Label> */}
@@ -811,8 +828,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     <label
                       key={level}
                       className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
-                          ? "bg-[#017A5B]  text-white"
-                          : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
+                        ? "bg-[#815BF5]  text-white"
+                        : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
                         }`}
                     >
                       <input
@@ -983,8 +1000,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   setIsLinkModalOpen(true);
                 }}
                 className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter((link) => link).length > 0
-                    ? "border-[#017A5B]"
-                    : ""
+                  ? "border-[#815BF5]"
+                  : ""
                   }`}
               >
                 <Link className="h-5 text-center m-auto mt-1" />
@@ -1001,7 +1018,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsAttachmentModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? "border-[#017A5B]" : ""
+                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? "border-[#815BF5]" : ""
                   }`}
               >
                 <Paperclip className="h-5 text-center m-auto mt-1" />
@@ -1029,7 +1046,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={stopRecording}
                 className="h-8 mt-4 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500"
               >
-                <Mic className="h-5 text-center m-auto mt-1" />
+                <Mic className="h-5 text-center  m-auto mt-1" />
               </div>
             ) : (
               <div
@@ -1040,11 +1057,23 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               </div>
             )}
           </div>
-
-          <canvas
-            ref={canvasRef}
-            className={` ${recording ? `w-1/2 h-12` : "hidden"} `}
-          ></canvas>
+          <div className={` ${recording ? `w-full ` : "hidden"} border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}>
+            <canvas
+              ref={canvasRef}
+              className={` ${recording ? `w-full h-12` : "hidden"} `}
+            ></canvas>
+            {recording && (
+              <div className="flex justify-center items-center">
+                <Button
+                  type="button"
+                  onClick={stopRecording} // Call the stopRecording function when clicked
+                  className="bg- flex gap-2 border hover:bg-gray-400 bg-gray-300 text-black px-4 py-2 rounded ml-4"
+                >
+                  <StopIcon className=" bg-red-500 text-red-500 h-3 w-3" />  Stop
+                </Button>
+              </div>
+            )}
+          </div>
           {audioBlob && (
             <CustomAudioPlayer
               audioBlob={audioBlob}
@@ -1095,7 +1124,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   <Button
                     type="button"
                     onClick={addLinkField}
-                    className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded"
+                    className="bg-transparent border border-[#505356] text-white hover:bg-[#815BF5] px-4 py-2 flex gap-2 rounded"
                   >
                     Add Link
                     <Plus />
@@ -1103,7 +1132,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   <Button
                     type="button"
                     onClick={handleSaveLinks}
-                    className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded"
+                    className="bg-[#017a5b] text-white hover:bg-[#017a5b] px-4 py-2 rounded"
                   >
                     Save Links
                   </Button>
@@ -1163,7 +1192,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 )}
               </div>
               <Button
-                className="bg-[#017A5B] hover:bg-[#017A5B]"
+                className="bg-[#017a5b] hover:bg-[#017a5b]"
                 onClick={() => setIsAttachmentModalOpen(false)}
               >
                 Save Attachments
@@ -1277,7 +1306,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 </div>
 
                 <Button
-                  className="hover:bg-[#007A5A] bg-[#007A5A]"
+                  className="hover:bg-[#017a5b] bg-[#017a5b]"
                   onClick={() => setIsReminderModalOpen(false)}
                 >
                   Save Reminders
@@ -1308,7 +1337,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             <Button
               type="button"
               onClick={handleAssignTask}
-              className="bg-[#017A5B] hover:bg-[#017A5B]  selection:-500 text-white px-4 py-2 w-full mt-2 mb-2 rounded"
+              className="bg-[#815BF5] hover:bg-[#815BF5]  selection:-500 text-white px-4 py-2 w-full mt-2 mb-2 rounded"
             >
               {" "}
               {loading ? <Loader /> : "Assign Task →"}
@@ -1352,7 +1381,7 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       border: 0,
       boxShadow: "none", // Remove focus outline
       ":hover": {
-        borderColor: "#017A5B", // Custom border color on hover
+        borderColor: "#815BF5", // Custom border color on hover
       },
     }),
     menu: (provided) => ({
@@ -1368,13 +1397,13 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       backgroundColor: state.isSelected
         ? "#FC8929"
         : state.isFocused
-          ? "#017A5B"
+          ? "#815BF5"
           : "#282D32", // Custom background color for options
       color: "white", // Custom text color
     }),
     multiValue: (provided) => ({
       ...provided,
-      backgroundColor: "#017A5B", // Custom background color for selected values
+      backgroundColor: "#815BF5", // Custom background color for selected values
       color: "white", // Custom text color
     }),
     multiValueLabel: (provided) => ({
@@ -1385,7 +1414,7 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       ...provided,
       color: "white", // Custom text color for remove icon
       ":hover": {
-        backgroundColor: "#017a5b", // Custom background color for remove icon hover state
+        backgroundColor: "#815BF5", // Custom background color for remove icon hover state
         color: "white",
       },
     }),

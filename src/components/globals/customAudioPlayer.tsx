@@ -138,29 +138,43 @@ export default function CustomAudioPlayer({
   };
 
   return (
-    <div className="bg-[#] border border-dashed border-[#815BF5] rounded-lg shadow-md p-2 max-w-md w-full">
+    <div className="bg-[#] border-dashed border border-[#815BF5] rounded-lg shadow-md  p-2 mb-2 w-full">
       {audioSrc && (
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
+        <div className="space-y-2 px-4 mb-2 ">
+          <div className="flex  justify-between items-center">
             <div>
               <h2 className="text-md font-semibold">Voice Note</h2>
               <p className="text-sm text-gray-500">{formatTime(currentTime)}</p>
             </div>
-            <button
-              onClick={handlePlayPause}
-              className="bg-green-500 text-white rounded-full p-3 hover:bg-green-600 transition-colors"
-              aria-label={isPlaying ? "Pause" : "Play"}
-            >
-              {isPlaying ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4" />
+            <div className="flex gap-2">
+              <button
+                onClick={handlePlayPause}
+                type="button"
+                className="bg-[#017a5b] text-white rounded-full p-3 hover:bg-[#017a5b] transition-colors"
+                aria-label={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? (
+                  <Pause className="w-4 h-4" />
+                ) : (
+                  <Play className="w-4 h-4" />
+                )}
+              </button>
+              {setAudioBlob && (
+                <div className="flex items-center">
+                  <button
+                    onClick={handleClear}
+                    className="bg- text-white border bg-red-700 px-2 py-1 text-xs rounded-md hover:bg-red-600 transition-colors flex items-center space-x-1"
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Clear</span>
+                  </button>
+                </div>
               )}
-            </button>
+            </div>
           </div>
           <div
             ref={progressRef}
-            className="relative w-full h-2 bg-gray-200 rounded cursor-pointer"
+            className="relative w-full h-2   bg-[#282d32] rounded cursor-pointer"
             onClick={handleSeek}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragEnd}
@@ -173,17 +187,7 @@ export default function CustomAudioPlayer({
               }}
             ></div>
           </div>
-          {setAudioBlob && (
-            <div className="flex justify-end">
-              <button
-                onClick={handleClear}
-                className="bg-gray-700 text-gray-600 px-2 py-1 text-xs rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-1"
-              >
-                <X className="w-4 h-4" />
-                <span>Clear</span>
-              </button>
-            </div>
-          )}
+
           <audio ref={audioRef} className="hidden" />
         </div>
       )}

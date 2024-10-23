@@ -11,6 +11,8 @@ import { businessCategories } from '@/lib/constants';
 import { toast, Toaster } from 'sonner';
 import Loader from '@/components/ui/loader';
 import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 interface Category {
     _id: string;
@@ -21,6 +23,8 @@ interface Category {
 const Categories: React.FC = () => {
     const [newCategory, setNewCategory] = useState<string>('');
     const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+    const [suggestedCategories, setSuggestedCategories] = useState<Category[]>([]);
     const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
     const [editCategoryName, setEditCategoryName] = useState<string>('');
     const [role, setRole] = useState("role");
@@ -29,21 +33,25 @@ const Categories: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
+    const [industry, setIndustry] = useState<string>("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog
+    const [loadingAI, setLoadingAI] = useState(false); // State for AI loader
+
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get('/api/category/get');
+            if (response.status === 200) {
+                setCategories(response.data.data);
+            } else {
+                console.error('Error fetching categories:', response.data.error);
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get('/api/category/get');
-                if (response.status === 200) {
-                    setCategories(response.data.data);
-                } else {
-                    console.error('Error fetching categories:', response.data.error);
-                }
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            }
-        };
-
         fetchCategories();
     }, []);
 
@@ -59,6 +67,7 @@ const Categories: React.FC = () => {
 
             if (response.status === 200) {
                 setCategories([...categories, response.data.data]);
+                fetchCategories();
                 setNewCategory('');
                 setLoading(false);
 
@@ -94,6 +103,9 @@ const Categories: React.FC = () => {
             const res = await axios.get('/api/users/me');
             const user = res.data.data;
             setRole(user.role);
+            const response = await axios.get("/api/organization/getById");
+            const organization = response.data.data;
+            setIndustry(organization.industry);
             const trialStatusRes = await axios.get('/api/organization/trial-status');
             setIsTrialExpired(trialStatusRes.data.isExpired);
         };
@@ -101,7 +113,7 @@ const Categories: React.FC = () => {
     }, []);
 
     const filteredCategories = categories.filter(cat =>
-        cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+        cat?.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     if (isTrialExpired) {
@@ -117,27 +129,28 @@ const Categories: React.FC = () => {
     }
 
     const handleAddSuggestedCategories = async () => {
-        setLoading(true);
+        setLoadingAI(true);
 
         try {
-            // Create categories in parallel
-            const promises = businessCategories.map(category =>
-                axios.post('/api/category/create', { name: category })
-            );
-
-            // Wait for all promises to resolve
-            const responses = await Promise.all(promises);
-
-            // Update state with new categories
-            const newCategories = responses.map(response => response.data.data);
-            setCategories([...categories, ...newCategories]);
-            toast.success("Categories added successfully");
-            setLoading(false);
+            const response = await axios.post('/api/category/suggest', { industry });
+            if (response.status === 200) {
+                const { categories } = response.data;
+                setSuggestedCategories(categories);
+                toast.success("Suggested categories generated successfully.");
+                fetchCategories();
+                setIsDialogOpen(true); // Open the dialog when categories are fetched
+            } else {
+                toast.error("Failed to generate suggested categories.");
+            }
         } catch (error) {
-            console.error('Error creating suggested categories:', error);
-            setLoading(false);
+            console.error('Error suggesting categories:', error);
+            toast.error('Error generating suggested categories');
+        } finally {
+            setLoadingAI(false);
         }
     };
+
+
     const handleDeleteCategory = async () => {
         if (!deleteEntryId) return; // No ID to delete
 
@@ -162,8 +175,29 @@ const Categories: React.FC = () => {
         setIsDeleteDialogOpen(true);
     };
 
+    const handleCreateCategoriesFromSelection = async () => {
+        try {
+            setLoading(true);
+            const promises = selectedCategories.map((category) =>
+                axios.post('/api/category/create', { name: category })
+            );
+            await Promise.all(promises);
+
+            setCategories([...categories, ...selectedCategories]);
+            setSelectedCategories([]); // Clear selected categories after adding
+            setIsDialogOpen(false); // Close dialog when done
+            toast.success('Categories added successfully.');
+        } catch (error) {
+            console.error('Error adding categories:', error);
+            toast.error('Failed to add categories.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
-        <div className='p-4'>
+        <div className='p-4 h-screen overflow-y-scroll scrollbar-hide '>
             {/* <h1 className='text- text-xl font-medium bg-[#0A0D28]   py-2 rounded px-2'>Category</h1> */}
             <Toaster />
             <div className='flex justify-start bg- rounded '>
@@ -182,7 +216,7 @@ const Categories: React.FC = () => {
                         <div className='mt-4'>
                             <button
                                 onClick={handleCreateCategory}
-                                className="ml-2 px-3 py-2  bg-[#815BF5] text-sm text-white rounded"
+                                className="ml-2 px-3 py-2  bg-[#017a5b] text-sm text-white rounded"
                             >
                                 {loading ? 'Creating...' : 'Create'}
                             </button>
@@ -190,32 +224,102 @@ const Categories: React.FC = () => {
 
                     </div>
                 )}
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                    <div className='  rounded-lg w-72 border mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
+                        <div className='flex gap-2 items-center text-muted-foreground'>
 
-            </div>
-            <div className='flex gap-2 border rounded-lg w-fit hover:bg-[#815BF5]  mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
-                <h1 className='text-xs'>Add Suggested Categories</h1>
-                <Plus className='h-4' />
-            </div>
+                            <img src='/branding/AII.png' className='h-10' />
+                            <img src='/branding/zapllo ai.png' className='h-5 mt-2' />
+
+                        </div>
+                        <p className='text-muted-foreground text-xs w-fit mt-4'>
+                            Use our intelligent AI engine to analyze your industry and carefully curate a selection of categories for your workflow.
+                        </p>
+                        <Button className='flex gap-2 mt-4 bg-[#815BF5] hover:bg-[#815BF5]'>
+                            <Plus className='h-4' />
+                            <h1 className='text-xs font-medium'>Add Suggested Categories</h1>
+                        </Button>
+                    </div>
+                </DialogTrigger>
+
+                <DialogContent>
+                    <div className='flex justify-between'>
+                        <div className=''>
+                            <div className='flex gap-2 items-center text-muted-foreground'>
+
+                                <img src='/branding/AII.png' className='h-7' />
+                                <img src='/branding/zapllo ai.png' className='h-4 mt-2' />
+
+                            </div>
+                            {/* <DialogTitle className='text-md mt-4 '>✨ Suggested Categories
+
+                            </DialogTitle> */}
+
+                            <DialogDescription className='mt-4 ml-1 text-xs '>
+                                Our intelligent AI engine has analyzed your industry and carefully curated a selection of categories. Choose the ones that suit your business, and let’s add them to your workflow effortlessly!
+                            </DialogDescription>
+                        </div>
+                        <div>
+                            <DialogClose>
+                                <CrossCircledIcon className='scale-150 mt-1 cursor-pointer hover:bg-white rounded-full hover:text-[#815BF5]' />
+                            </DialogClose>
+                        </div>
+                    </div>
+                    {loadingAI && <Loader />} {/* Show loader while fetching AI categories */}
+                    <div className="grid grid-cols-3 gap-4 mt-6 ">
+                        {suggestedCategories.map((category, index) => (
+                            <div
+                                key={index}
+                                onClick={() => {
+                                    if (selectedCategories.includes(category)) {
+                                        setSelectedCategories(selectedCategories.filter(cat => cat !== category));
+                                    } else {
+                                        setSelectedCategories([...selectedCategories, category]);
+                                    }
+                                }}
+                                className={`cursor-pointer border-2 text-xs rounded-lg p-2 hover:shadow-lg transition-all ${selectedCategories.includes(category)
+                                    ? 'bg-gradient-to-l from-[#815BF5] to-purple-900 text-white border-transparent'
+                                    : 'border text-white -700 '
+                                    }`}
+                            >
+                                <h3 className="font-medium">{typeof category === 'string' ? category : category.name}</h3>
+                                <p className="text-xs mt-1 text-muted-foreground">Tap to select</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <DialogFooter>
+                        <Button onClick={handleCreateCategoriesFromSelection} className="mt-6 bg-[#017a5b] text-white hover:bg-[#017a5b] w-full">
+                            {loading ? <Loader /> : "Confirm & Save"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+
             <div className={`${loading ? "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" : ""}`}>
                 {loading ? <Loader /> : ''}
             </div>
 
-            <div className="flex justify-start bg-[#0A0D28] w-full mt-12">
+
+            <div className="flex justify-start items-center bg-[#0A0D28] w-full mt-12">
                 {/* <Label>Search Categories</Label> */}
                 <h1 className='text-start text-sm font-medium  p-4'>Categories</h1>
-                <div className='mt-1 ml-auto'>
+                <div className=' ml-auto'>
                     <input
                         type="text"
                         placeholder="Search Categories"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className=" outline-none text-xs text-white bg-[#0B0D29] border rounded px-4 py-3 mx-4"
+                        className=" outline-none text-xs text-white bg-[#0B0D29] border rounded px-4 py-2 mx-4"
                     />
                 </div>
             </div>
 
 
-            <div className="mt-4 grid grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-3 gap-4 mb-16">
                 {filteredCategories.map((cat) => (
                     <div key={cat._id} className="border px-2 py-1 text-sm">
                         {editingCategoryId === cat._id ? (
