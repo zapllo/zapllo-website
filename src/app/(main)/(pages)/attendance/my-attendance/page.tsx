@@ -37,7 +37,7 @@ import RegularizationDetails from "@/components/sheets/regularizationDetails";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-// import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const mapContainerStyle = {
   height: "400px",
@@ -760,8 +760,8 @@ export default function MyAttendance() {
                     entry.approvalStatus === "Approved"
                       ? "bg-[#017a5b] px-2 py-1 rounded-xl"
                       : entry.approvalStatus === "Rejected"
-                      ? "bg-red-800 rounded-xl px-2 py-1"
-                      : "bg-orange-800 px-2 py-1 rounded-xl"
+                        ? "bg-red-800 rounded-xl px-2 py-1"
+                        : "bg-orange-800 px-2 py-1 rounded-xl"
                   }
                 >
                   {/* {`Approval Status: `} */}
@@ -798,18 +798,29 @@ export default function MyAttendance() {
       : filterRegularizationEntries(filteredEntries);
 
   const calculateHoursBetweenLoginLogout = (entries: LoginEntry[]) => {
-    const login = entries?.find((entry) => entry.action === "login");
-    const logout = entries?.find((entry) => entry.action === "logout");
+    let totalHours = 0;
+    let lastLoginTime: number | null = null; // To track the last login time
 
-    if (login && logout) {
-      const loginTime = new Date(login.timestamp).getTime();
-      const logoutTime = new Date(logout.timestamp).getTime();
-      const diffMs = logoutTime - loginTime; // This will now work, as .getTime() returns a number
-      const diffHours = diffMs / (1000 * 60 * 60); // Convert milliseconds to hours
-      return diffHours.toFixed(2); // Hours rounded to 2 decimal places
-    }
-    return "0";
+    // Sort entries by timestamp to ensure they are in order
+    const sortedEntries = entries.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    sortedEntries.forEach((entry) => {
+      const entryTime = new Date(entry.timestamp).getTime();
+
+      if (entry.action === "login") {
+        // Store the login time if it's a login action
+        lastLoginTime = entryTime;
+      } else if (entry.action === "logout" && lastLoginTime !== null) {
+        // If it's a logout and there's a previous login, calculate the time difference
+        const hoursBetween = (entryTime - lastLoginTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+        totalHours += hoursBetween; // Sum up the hours
+        lastLoginTime = null; // Reset after pairing login with logout
+      }
+    });
+
+    return totalHours.toFixed(2); // Return total hours rounded to 2 decimal places
   };
+
 
   // Define state variables for counts and hours
   const [daysCount, setDaysCount] = useState(0);
@@ -870,7 +881,7 @@ export default function MyAttendance() {
     });
   };
 
-  const todayEntries = filterTodayEntries(filteredEntries);
+  const todayEntries = filterTodayEntries(loginEntries);
 
   // Handle accordion toggling
   const toggleDayExpansion = (date: string) => {
@@ -938,9 +949,8 @@ export default function MyAttendance() {
         {hasRegisteredFaces ? (
           <button
             onClick={handleLoginLogout}
-            className={`bg-${
-              isLoggedIn ? "red-800" : "[#017a5b]"
-            } -500 text-white py-2 px-4 rounded text-sm`}
+            className={`bg-${isLoggedIn ? "red-800" : "[#017a5b]"
+              } -500 text-white py-2 px-4 rounded text-sm`}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
@@ -987,10 +997,10 @@ export default function MyAttendance() {
               });
               const formattedLogoutTime = entry.logoutTime
                 ? new Date(entry.logoutTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
                 : null;
               const date = new Date(entry.loginTime);
               return (
@@ -1011,11 +1021,10 @@ export default function MyAttendance() {
                     </div>
                   )}
                   <div
-                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${
-                      entry.action === "login"
-                        ? "bg-green-800 text-xs"
-                        : "bg-[#8A3D17] text-xs"
-                    }`}
+                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === "login"
+                      ? "bg-green-800 text-xs"
+                      : "bg-[#8A3D17] text-xs"
+                      }`}
                   >
                     <h1 className="text-xs">{entry.action.toUpperCase()}</h1>
                   </div>
@@ -1049,67 +1058,59 @@ export default function MyAttendance() {
       <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
         <button
           onClick={() => setActiveTab("today")}
-          className={`px-4 h-fit py-2 text-xs rounded ${
-            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
-          }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
+            }`}
         >
           Today
         </button>
         <button
           onClick={() => setActiveTab("yesterday")}
-          className={`px-4 h-fit py-2 text-xs rounded ${
-            activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setActiveTab("thisWeek")}
-          className={`px-4 py-2 h-fit text-xs rounded ${
-            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 h-fit text-xs rounded ${activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           This Week
         </button>
         <button
           onClick={() => setActiveTab("lastWeek")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           Last Week
         </button>
         <button
           onClick={() => setActiveTab("thisMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           This Month
         </button>
         <button
           onClick={() => setActiveTab("lastMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setActiveTab("allTime")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           All Time
         </button>
         <button
           onClick={openCustomModal}
-          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${
-            customDateRange.start && customDateRange.end
-              ? "bg-[#815BF5] text-white"
-              : "bg-transparent"
-          }`}
+          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end
+            ? "bg-[#815BF5] text-white"
+            : "bg-transparent"
+            }`}
         >
           Custom
         </button>
@@ -1117,22 +1118,20 @@ export default function MyAttendance() {
       <div className="flex justify-center gap-4 mt-2 mb-6">
         <button
           onClick={() => setActiveAttendanceTab("dailyReport")}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${
-            activeAttendanceTab === "dailyReport"
-              ? "bg-[#815BF5]"
-              : "bg-[#37384B] "
-          }`}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === "dailyReport"
+            ? "bg-[#815BF5]"
+            : "bg-[#37384B] "
+            }`}
         >
           <img src="/icons/report.png" className="invert-[100] h-4" />
           Daily Report
         </button>
         <button
           onClick={() => setActiveAttendanceTab("regularization")}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${
-            activeAttendanceTab === "regularization"
-              ? "bg-[#815BF5]"
-              : "bg-[#37384B] "
-          }`}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === "regularization"
+            ? "bg-[#815BF5]"
+            : "bg-[#37384B] "
+            }`}
         >
           <Users2 className="h-4" />
           Regularization
@@ -1144,11 +1143,8 @@ export default function MyAttendance() {
         {activeAttendanceTab === "dailyReport" ? (
           <>
             {Object.keys(groupedEntries)?.length === 0 ? (
-              <p className="text-center text-gray-600">
-                No Entries for the selected time frame!
-              </p>
-            ) : (
-              <>
+              <div>
+
                 <div className="flex justify-center mb-4 gap-4">
                   <div className="text-xs flex  border px-4 py-2 ">
                     <Calendar className="h-4 text-blue-500 mt-[1px]" />
@@ -1172,7 +1168,36 @@ export default function MyAttendance() {
                     <h1 className="text-xs mt-[1px]">Hours: {totalHours}</h1>
                   </div>
                 </div>
+                <p className="text-center text-gray-600">
+                  No Entries for the selected time frame!
+                </p>
+              </div>
+            ) : (
+              <>
 
+                <div className="flex justify-center mb-4 gap-4">
+                  <div className="text-xs flex  border px-4 py-2 ">
+                    <Calendar className="h-4 text-blue-500 mt-[1px]" />
+                    <h1 className="text-xs mt-[1px] ">Days: {daysCount}</h1>
+                  </div>
+                  <div className="text-xs flex border px-4 py-2">
+                    <CheckCircle className="h-4 text-green-500 mt-[1px]" />
+                    <h1 className="text-xs mt-[1px]">
+                      {" "}
+                      Verified: {verifiedCount}
+                    </h1>
+                  </div>
+                  <div className="text-xs flex  border px-4 py-2">
+                    <CalendarClock className="h-4 text-white" />
+                    <h1 className="mt-[1px]">
+                      Regularized: {regularizedCount}
+                    </h1>
+                  </div>
+                  <div className="text-xs border flex px-4 py-2">
+                    <Clock className="h-4 mt-[1px] text-orange-600" />
+                    <h1 className="text-xs mt-[1px]">Hours: {totalHours}</h1>
+                  </div>
+                </div>
                 {Object.keys(groupedEntries || {}).map((date, index) => (
                   <div key={index} className="mb-4 ">
                     <div
@@ -1189,9 +1214,8 @@ export default function MyAttendance() {
                       </div>
                       <div className="flex justify-end">
                         <span
-                          className={`transition-transform duration-300 ${
-                            expandedDays[date] ? "rotate-180" : "rotate-0"
-                          }`}
+                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"
+                            }`}
                         >
                           {/* Use a caret icon (chevron-down) */}
                           <svg
@@ -1217,17 +1241,15 @@ export default function MyAttendance() {
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
                             <span>
-                              {`${
-                                entry.action.charAt(0).toUpperCase() +
+                              {`${entry.action.charAt(0).toUpperCase() +
                                 entry.action.slice(1)
-                              }: ${formatTimeToAMPM(entry.timestamp)}`}
+                                }: ${formatTimeToAMPM(entry.timestamp)}`}
                             </span>
                             <span
-                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${
-                                entry.action === "login"
-                                  ? "bg-[#017a5b]"
-                                  : "bg-[#8a3d17]"
-                              }`}
+                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login"
+                                ? "bg-[#017a5b]"
+                                : "bg-[#8a3d17]"
+                                }`}
                             >
                               {entry.action.toUpperCase()}
                             </span>
@@ -1342,7 +1364,23 @@ export default function MyAttendance() {
                   <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                 </Dialog.DialogClose>
               </div>
-
+              <div className="">
+                {mapCoords && (
+                  <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k"> {/* Replace with your API key */}
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={mapCoords}
+                      zoom={13}
+                      options={{
+                        disableDefaultUI: true, // Disable default UI if you want
+                        zoomControl: true, // Show zoom control
+                      }}
+                    >
+                      <Marker position={mapCoords} />
+                    </GoogleMap>
+                  </LoadScript>
+                )}
+              </div>
               {/* {mapCoords && (
                 <MapContainer
                   center={[mapCoords.lat, mapCoords.lng]}
@@ -1555,7 +1593,7 @@ export default function MyAttendance() {
                                 // Manually extract the local date (year, month, day)
                                 const localDate = new Date(
                                   newDate.getTime() -
-                                    newDate.getTimezoneOffset() * 60000
+                                  newDate.getTimezoneOffset() * 60000
                                 )
                                   .toISOString()
                                   .split("T")[0];
@@ -1744,6 +1782,6 @@ export default function MyAttendance() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </div>
+    </div >
   );
 }

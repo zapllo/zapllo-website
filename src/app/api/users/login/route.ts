@@ -56,7 +56,16 @@ export async function POST(request: NextRequest) {
             maxAge: 24 * 60 * 60,  // The duration (in seconds) for which the cookie will be valid (1 day here)
             path: "/",  // The path scope of the cookie
         });
-
+        
+        // Set the loginTime as an HTTP-only cookie (current time in milliseconds)
+        const loginTime = new Date().getTime();
+        response.cookies.set("loginTime", loginTime.toString(), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60, // 1 day
+            path: "/",
+        });
 
         return response;
 

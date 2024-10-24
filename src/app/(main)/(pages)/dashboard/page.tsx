@@ -181,7 +181,7 @@ const DashboardPage = () => {
                 <h1 className='text-lg font-medium flex gap-2'><Megaphone /> Events </h1>
                 <p className='text-sm py-2'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
                 <div className="flex justify-start ">
-                <Link href="/dashboard/events">
+                <Link href="/help/events">
                   <Button className="bg-white text-black mt-4 text-sm hover:bg-white ">
                     Go To Events
                   </Button>

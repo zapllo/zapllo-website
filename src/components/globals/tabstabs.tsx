@@ -223,6 +223,7 @@ export default function TeamTabs() {
           reportingManager: '',
           country: '',
         });
+        setSelectedManager("");
         toast.success("New member added successfully!");
       } else {
         // Display error toast for existing email
@@ -592,23 +593,22 @@ export default function TeamTabs() {
 
                   <div className="justify-end px-8 w-full flex">
                     <div
-                      className={`w-fit px-4 py-1 rounded text-xs ${
-                        user.role === "orgAdmin"
+                      className={`w-fit px-4 py-1 rounded text-xs ${user.role === "orgAdmin"
                           ? "bg-[#B4173B]"
                           : user.role === "manager"
-                          ? "bg-orange-500"
-                          : user.role === "member"
-                          ? "bg-[#007A5A]"
-                          : "bg-gray-500"
-                      }`}
+                            ? "bg-orange-500"
+                            : user.role === "member"
+                              ? "bg-[#007A5A]"
+                              : "bg-gray-500"
+                        }`}
                     >
                       {user.role === "orgAdmin"
                         ? "Admin"
                         : user.role === "member"
-                        ? "Member"
-                        : user.role === "manager"
-                        ? "Manager"
-                        : user.role}
+                          ? "Member"
+                          : user.role === "manager"
+                            ? "Manager"
+                            : user.role}
                     </div>
                   </div>
 
@@ -651,7 +651,7 @@ export default function TeamTabs() {
             <input
               placeholder="First Name"
               value={editedUser.firstName}
-              className="py-2 px-2 text-xs bg-[#292c32] rounded outline-none"
+              className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
               onChange={(e) =>
                 setEditedUser({ ...editedUser, firstName: e.target.value })
               }
@@ -659,25 +659,25 @@ export default function TeamTabs() {
             <input
               placeholder="Last Name"
               value={editedUser.lastName}
-              className="py-2 px-2 text-xs bg-[#121212] rounded outline-none"
+              className="py-2 px-2 text-xs  border bg-transparent rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
             />
             <input
               placeholder="Email"
               value={editedUser.email}
-              className="py-2 px-2 text-xs bg-[#121212] rounded outline-none"
+              className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
             />
             <input
               placeholder="Password"
               value={editedUser.password}
-              className="py-2 px-2 text-xs bg-[#121212] rounded outline-none"
+              className="py-2 px-2 text-xs bg-transparent border rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, password: e.target.value })}
             />
             <select
               value={editedUser.role}
               onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
-              className="block w-full px-2 py-2 bg-[#121212]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+              className="block w-full px-2 py-2 bg-[#0b0d29]  text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="member" className="text-xs">
                 Team Member
@@ -691,10 +691,10 @@ export default function TeamTabs() {
             </select>
             <select
               value={updateModalReportingManager || editedUser.reportingManager}
-              className="block w-full px-2 py-2 bg-[#292c32] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="block w-full px-2 py-2 bg-[#0b0d29] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
               onChange={(e) => setUpdateModalReportingManager(e.target.value)} // Update selected reporting manager
             >
-              <option value="">Select Reporting Manager</option>
+              {/* <option value="">Select Reporting Manager</option> */}
               {users.map((user) => (
                 <option key={user._id} className="text-xs" value={user._id}>
                   {user.firstName} {user.lastName}
@@ -707,7 +707,7 @@ export default function TeamTabs() {
               onCountrySelect={handleCountrySelect}
             />
             <div className="flex items-center">
-              <span className="py-2 px-2 bg-[#121212] rounded-l text-xs">{countryCode}</span>
+              <span className="py-2 px-2 bg-[#0A0D28] rounded-l text-xs">{countryCode}</span>
               <input
                 placeholder="WhatsApp Number"
                 value={editedUser.whatsappNo}

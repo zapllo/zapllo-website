@@ -1,5 +1,6 @@
 'use client'
 
+import DeleteConfirmationDialog from '@/components/modals/deleteConfirmationDialog'
 import ChecklistSidebar from '@/components/sidebar/checklistSidebar'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog'
@@ -38,6 +39,8 @@ export default function Tickets() {
     const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Track submission
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false); // For delete confirmation
+    const [ticketToDelete, setTicketToDelete] = useState<Ticket | null>(null); // Store the ticket to delete
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -62,6 +65,31 @@ export default function Tickets() {
         };
         fetchTickets();
     }, []);
+
+    const handleDeleteTicket = async () => {
+        if (!ticketToDelete) return;
+        try {
+            const response = await fetch(`/api/tickets/${ticketToDelete._id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                setTickets(tickets.filter(ticket => ticket._id !== ticketToDelete._id));
+                toast.success('Ticket deleted successfully');
+            } else {
+                toast.error('Failed to delete ticket');
+            }
+        } catch (error) {
+            console.error('Error deleting ticket:', error);
+            toast.error('Error deleting ticket');
+        }
+        setIsDeleteDialogOpen(false);
+    };
+
+
+    const handleOpenDeleteDialog = (ticket: Ticket) => {
+        setTicketToDelete(ticket);
+        setIsDeleteDialogOpen(true);
+    };
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files;
@@ -347,14 +375,19 @@ export default function Tickets() {
                                                             {new Date(ticket.createdAt).toLocaleDateString()}
                                                         </td>
                                                         <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-                                                            <div className='flex gap-2'>
+                                                            <div className='flex gap-2 items-center'>
                                                                 <div
                                                                     onClick={() => handleViewDetails(ticket)}
                                                                     className='text-[#] -600 cursor-pointer hover:text-[#007A5A] -900'
                                                                 >
                                                                     <Eye className='h-5 w-5' />
                                                                 </div>
-                                                                <Trash2 className='text-red-500 h-5 cursor-pointer' />
+                                                                <div
+                                                                    onClick={() => handleOpenDeleteDialog(ticket)}
+                                                                    className='text-red-500 cursor-pointer hover:text-red-800'
+                                                                >
+                                                                    <Trash2 className='h-5 w-5' />
+                                                                </div>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -362,6 +395,12 @@ export default function Tickets() {
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    <DeleteConfirmationDialog
+                                        isOpen={isDeleteDialogOpen}
+                                        onClose={() => setIsDeleteDialogOpen(false)}
+                                        onConfirm={handleDeleteTicket}
+                                    />
 
                                     {selectedTicket && (
                                         <Dialog open={isViewDialogOpen} onOpenChange={() => setIsViewDialogOpen(false)}>

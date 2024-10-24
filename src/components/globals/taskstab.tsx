@@ -1722,21 +1722,6 @@ export default function TasksTab({
                                         .toLowerCase()
                                         .includes(query);
                                     })
-                                    .filter((category) => {
-                                      // Fetch task stats for the category
-                                      const {
-                                        overdueTasks,
-                                        inProgressTasks,
-                                        pendingTasks,
-                                      } = getCategoryTaskStats(category._id);
-
-                                      // Only include categories with at least one relevant task count
-                                      return (
-                                        overdueTasks > 0 ||
-                                        pendingTasks > 0 ||
-                                        inProgressTasks > 0
-                                      );
-                                    })
                                     .map((category) => {
                                       const {
                                         overdueTasks,
@@ -2743,32 +2728,70 @@ export default function TasksTab({
                                       <div className="">
                                         <div className="flex ">
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                            <Button
-                                              onClick={() => {
-                                                setStatusToUpdate(
-                                                  "In Progress"
-                                                );
-                                                setIsDialogOpen(true);
-                                              }}
-                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
-                                            >
-                                              <Play className="h-4 w-4 text-orange-400" />
-                                              <h1 className="text-xs">
-                                                In Progress
-                                              </h1>
-                                            </Button>
-                                            <Button
-                                              onClick={() => {
-                                                setStatusToUpdate("Completed");
-                                                setIsCompleteDialogOpen(true);
-                                              }}
-                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
-                                            >
-                                              <CheckCircle className="h-4 rounded-full text-green-400" />
-                                              <h1 className="text-xs">
-                                                Completed
-                                              </h1>
-                                            </Button>
+                                            {task.status === "Completed" ? (
+                                              <>
+                                                {/* Reopen Button */}
+                                                <Button
+                                                  onClick={() => {
+                                                    setStatusToUpdate("Reopen");
+                                                    setIsReopenDialogOpen(true);
+                                                  }}
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                >
+                                                  <Repeat className="h-4 w-4 text-blue-400" />
+                                                  <h1 className="text-xs">
+                                                    Reopen
+                                                  </h1>
+                                                </Button>
+                                                {/* Delete Button */}
+                                                <Button
+                                                  onClick={() =>
+                                                    handleDelete(task._id)
+                                                  }
+                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                >
+                                                  <Trash className="h-4 rounded-full text-red-400" />
+                                                  <h1 className="text-xs">
+                                                    Delete
+                                                  </h1>
+                                                </Button>
+                                              </>
+                                            ) : (
+                                              <>
+                                                {/* In Progress Button */}
+                                                <Button
+                                                  onClick={() => {
+                                                    setStatusToUpdate(
+                                                      "In Progress"
+                                                    );
+                                                    setIsDialogOpen(true);
+                                                  }}
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                >
+                                                  <Play className="h-4 w-4 text-orange-400" />
+                                                  <h1 className="text-xs">
+                                                    In Progress
+                                                  </h1>
+                                                </Button>
+                                                {/* Completed Button */}
+                                                <Button
+                                                  onClick={() => {
+                                                    setStatusToUpdate(
+                                                      "Completed"
+                                                    );
+                                                    setIsCompleteDialogOpen(
+                                                      true
+                                                    );
+                                                  }}
+                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                >
+                                                  <CheckCircle className="h-4 rounded-full text-green-400" />
+                                                  <h1 className="text-xs">
+                                                    Completed
+                                                  </h1>
+                                                </Button>
+                                              </>
+                                            )}
                                           </div>
                                         </div>
 
@@ -3128,32 +3151,70 @@ export default function TasksTab({
                                       <div className="">
                                         <div className="flex ">
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
-                                            <Button
-                                              onClick={() => {
-                                                setStatusToUpdate(
-                                                  "In Progress"
-                                                );
-                                                setIsDialogOpen(true);
-                                              }}
-                                              className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent  hover:bg-[#007A5A]  rounded border-gray-600 w-fit"
-                                            >
-                                              <Play className="h-4 w-4 text-orange-400" />
-                                              <h1 className="text-xs">
-                                                In Progress
-                                              </h1>
-                                            </Button>
-                                            <Button
-                                              onClick={() => {
-                                                setStatusToUpdate("Completed");
-                                                setIsCompleteDialogOpen(true);
-                                              }}
-                                              className=" border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A]  border-gray-600 w-fit "
-                                            >
-                                              <CheckCircle className="h-4 rounded-full text-green-400" />
-                                              <h1 className="text-xs">
-                                                Completed
-                                              </h1>
-                                            </Button>
+                                            {task.status === "Completed" ? (
+                                              <>
+                                                {/* Reopen Button */}
+                                                <Button
+                                                  onClick={() => {
+                                                    setStatusToUpdate("Reopen");
+                                                    setIsReopenDialogOpen(true);
+                                                  }}
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                >
+                                                  <Repeat className="h-4 w-4 text-blue-400" />
+                                                  <h1 className="text-xs">
+                                                    Reopen
+                                                  </h1>
+                                                </Button>
+                                                {/* Delete Button */}
+                                                <Button
+                                                  onClick={() =>
+                                                    handleDelete(task._id)
+                                                  }
+                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                >
+                                                  <Trash className="h-4 rounded-full text-red-400" />
+                                                  <h1 className="text-xs">
+                                                    Delete
+                                                  </h1>
+                                                </Button>
+                                              </>
+                                            ) : (
+                                              <>
+                                                {/* In Progress Button */}
+                                                <Button
+                                                  onClick={() => {
+                                                    setStatusToUpdate(
+                                                      "In Progress"
+                                                    );
+                                                    setIsDialogOpen(true);
+                                                  }}
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                >
+                                                  <Play className="h-4 w-4 text-orange-400" />
+                                                  <h1 className="text-xs">
+                                                    In Progress
+                                                  </h1>
+                                                </Button>
+                                                {/* Completed Button */}
+                                                <Button
+                                                  onClick={() => {
+                                                    setStatusToUpdate(
+                                                      "Completed"
+                                                    );
+                                                    setIsCompleteDialogOpen(
+                                                      true
+                                                    );
+                                                  }}
+                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                >
+                                                  <CheckCircle className="h-4 rounded-full text-green-400" />
+                                                  <h1 className="text-xs">
+                                                    Completed
+                                                  </h1>
+                                                </Button>
+                                              </>
+                                            )}
                                           </div>
                                         </div>
 

@@ -136,6 +136,7 @@ const Categories: React.FC = () => {
             if (response.status === 200) {
                 const { categories } = response.data;
                 setSuggestedCategories(categories);
+                fetchCategories();
                 toast.success("Suggested categories generated successfully.");
                 fetchCategories();
                 setIsDialogOpen(true); // Open the dialog when categories are fetched
@@ -227,20 +228,22 @@ const Categories: React.FC = () => {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <div className='  rounded-lg w-72 border mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
-                        <div className='flex gap-2 items-center text-muted-foreground'>
+                    <div className=''>
+                        <div className='  rounded-lg w-72 border  mt-2 px-4 py-2 cursor-pointer' onClick={handleAddSuggestedCategories}>
+                            <div className='flex gap-2  mt-4 items-center text-muted-foreground'>
 
-                            <img src='/branding/AII.png' className='h-10' />
-                            <img src='/branding/zapllo ai.png' className='h-5 mt-2' />
+                                <img src='/branding/AII.png' className='h-10' />
+                                <img src='/branding/zapllo ai.png' className='h-5 mt-2' />
 
+                            </div>
+                            <p className='text-muted-foreground text-xs w-fit mt-4'>
+                                Use our intelligent AI engine to analyze your industry and carefully curate a selection of categories for your workflow.
+                            </p>
+                            <Button className='flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#815BF5]'>
+                                <Plus className='h-4' />
+                                <h1 className='text-xs font-medium'>Add Suggested Categories</h1>
+                            </Button>
                         </div>
-                        <p className='text-muted-foreground text-xs w-fit mt-4'>
-                            Use our intelligent AI engine to analyze your industry and carefully curate a selection of categories for your workflow.
-                        </p>
-                        <Button className='flex gap-2 mt-4 bg-[#815BF5] hover:bg-[#815BF5]'>
-                            <Plus className='h-4' />
-                            <h1 className='text-xs font-medium'>Add Suggested Categories</h1>
-                        </Button>
                     </div>
                 </DialogTrigger>
 
@@ -354,7 +357,7 @@ const Categories: React.FC = () => {
                                 ) : (
                                     <FallbackImage name={cat.name} />
                                 )}
-                                <span className='text-sm'>{cat.name}</span>
+                                <span className='text-xs'>{cat.name}</span>
                                 {role === "orgAdmin" && (
                                     <div>
                                         <button

@@ -1,6 +1,7 @@
 import { createContext, useReducer, useEffect } from "react";
 import reducers from "./Reducers";
 import { getData } from "../utils/fetchData";
+import Cookies from 'js-cookie';
 
 export const DataContext = createContext();
 
@@ -20,6 +21,7 @@ export const DataProvider = ({ children }) => {
       if (elapsedTime > 3600000) {
         localStorage.removeItem("firstLogin");
         localStorage.removeItem("loginTime");
+        Cookies.remove('token');  // Remove the token cookie as well
         dispatch({ type: "LOGOUT" });
         return;
       }
@@ -28,6 +30,7 @@ export const DataProvider = ({ children }) => {
         if (res.err) {
           localStorage.removeItem("firstLogin");
           localStorage.removeItem("loginTime");
+          Cookies.remove('token');  // Remove the token cookie on error
           return;
         }
 

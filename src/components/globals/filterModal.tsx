@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface FilterModalProps {
     isOpen: boolean;
@@ -16,11 +17,11 @@ interface FilterModalProps {
 
 const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categories, users, applyFilters, initialSelectedCategories, initialSelectedFrequency, initialSelectedPriority, initialSelectedUsers }) => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>(initialSelectedCategories);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>(initialSelectedUsers);
-  const [selectedFrequency, setSelectedFrequency] = useState<string[]>(initialSelectedFrequency);
-  const [selectedPriority, setSelectedPriority] = useState<string[]>(initialSelectedPriority);
-  const [activeSection, setActiveSection] = useState<string>('Category');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedUsers, setSelectedUsers] = useState<string[]>(initialSelectedUsers);
+    const [selectedFrequency, setSelectedFrequency] = useState<string[]>(initialSelectedFrequency);
+    const [selectedPriority, setSelectedPriority] = useState<string[]>(initialSelectedPriority);
+    const [activeSection, setActiveSection] = useState<string>('Category');
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
     const toggleSelection = (selectedItems: string[], setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
         if (selectedItems.includes(item)) {
@@ -63,7 +64,16 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <div className="grid grid-cols-1 px-2 py-1 max-h-48 h-full overflow-y-scroll scrollbar-hide gap-2">
                             {categories.filter(category => category.name.toLowerCase().includes(lowercasedSearchTerm)).map(category => (
                                 <div key={category._id} className="flex gap-2 items-center">
-                                    <img src={`/icons/${category.name.toLowerCase()}.png`} />
+                                    <Avatar className="h-9 w-9 rounded-full flex border-[#815BF5] items-center">
+                                        {/* <AvatarImage className='h-6 w-6 ml-1 ' src={`/icons/${category.name.toLowerCase()}.png`} /> */}
+                                        <AvatarFallback className="">
+                                            <h1 className="text-sm">
+                                                {`${category.name}`.slice(0, 1)}
+                                                {/* {`${user.lastName}`.slice(0, 1)} */}
+                                            </h1>
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    {/* <img src={`/icons/${category.name.toLowerCase()}.png`} /> */}
                                     <div className='flex justify-between w-full p-2'>
                                         <label className="flex items-center justify-between w-full cursor-pointer">
                                             {category.name}

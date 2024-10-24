@@ -790,27 +790,7 @@ export default function Approvals() {
               }
               )
             </button>
-            <button
-              onClick={() => setStatusFilter("Approved")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${
-                statusFilter === "Approved"
-                  ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
-                  : "bg-[#] border text-white  hover:border-green-500"
-              }`}
-            >
-              <CheckCircle
-                className={`h-4 text-green-500 ${
-                  statusFilter === "Approved" ? "text-white" : ""
-                } `}
-              />
-              Approved (
-              {
-                finalFilteredLeaves.filter(
-                  (leave) => leave.status === "Approved"
-                ).length
-              }
-              )
-            </button>
+   
 
             {/* <button
               onClick={() => setStatusFilter("Rejected")}
@@ -853,27 +833,7 @@ export default function Approvals() {
               }
               )
             </button>
-            <button
-              onClick={() => setStatusFilter("Rejected")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${
-                statusFilter === "Rejected"
-                  ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
-                  : "bg-[#] text-white border hover:border-red-500"
-              }`}
-            >
-              <Cross1Icon
-                className={`h-4 text-red-500 ${
-                  statusFilter === "Rejected" ? "text-white" : ""
-                } `}
-              />
-              Rejected (
-              {
-                finalFilteredLeaves.filter(
-                  (leave) => leave.status === "Rejected"
-                ).length
-              }
-              )
-            </button>
+        
           </>
         ) : (
           <>

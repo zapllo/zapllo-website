@@ -131,7 +131,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                 <SheetContent className="max-w-4xl  w-full ">
                     <SheetHeader>
                         <div className="flex gap-2">
-                            <ArrowLeft className="cursor-pointer h-7 w-7 bg-[#121212] border border-white rounded-full" onClick={() => setSelectedTask(null)} />
+                            <ArrowLeft className="cursor-pointer h-7 w-7 bg-[#121212] hover:bg-white hover:text-black border border-white rounded-full" onClick={() => setSelectedTask(null)} />
                             <SheetTitle className="text-white mb-4">
                                 Task details
                             </SheetTitle>
@@ -381,12 +381,11 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                         </div>
 
 
-
-                        <div className="p-4 w-1/2 border ml-2 bg-[#121212]">
-                            {selectedTask.audioUrl && (
+                        {selectedTask.audioUrl && (
+                            <div className="p-4 w-1/2 border ml-2 bg-[#121212]">
                                 <CustomAudioPlayer audioUrl={selectedTask.audioUrl} />
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         <div className="gap-2 w-1/2 px-4 mt-4 mb-4 flex">
                             {selectedTask.status === "Completed" ? (
