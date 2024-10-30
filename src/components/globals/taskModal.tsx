@@ -787,7 +787,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       <Toaster />
 
       <motion.div
-        className="bg-[#0B0D29] z-[100] h-[520px] overflow-y-scroll scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
+        className="bg-[#0B0D29] z-[100] h-[520px]  scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
         variants={modalVariants}
         initial="hidden"
         animate={controls}
