@@ -2,13 +2,17 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { DialogClose, DialogTitle } from "@/components/ui/dialog";
+import Loader from "@/components/ui/loader";
 import { Dialog, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoPersonAddSharp } from "react-icons/io5";
+import { toast, Toaster } from "sonner";
 
 type Props = {};
 
@@ -34,6 +38,12 @@ export default function Profile({ }: Props) {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [whatsappNotifications, setWhatsappNotifications] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [profilePic, setProfilePic] = useState<string>('');
+  const [userProfile, setUserProfile] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
 
   useEffect(() => {
     // Fetch categories from the server
@@ -90,8 +100,10 @@ export default function Profile({ }: Props) {
     const getUserDetails = async () => {
       const res = await axios.get('/api/users/me');
       const user = res.data.data;
+      console.log(user)
       setFirstName(user.firstName);
       setLastName(user.lastName);
+      setUserProfile(user.profilePic);
       setRole(user.role);
       setEmail(user.email);
       setWhatsAppNo(user.whatsappNo);
@@ -138,33 +150,92 @@ export default function Profile({ }: Props) {
     }
   }
 
+
+
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleUploadProfilePic = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('files', selectedFile);
+
+    try {
+      setLoading(true);
+
+      // Upload the file to S3 using the existing upload endpoint
+      const uploadResponse = await axios.post('/api/upload', formData);
+      const uploadedImageUrl = uploadResponse.data.fileUrls[0];
+
+      // Update the user's profilePic field in the database
+      await axios.patch('/api/users/profilePic', { profilePic: uploadedImageUrl });
+      setProfilePic(uploadedImageUrl);
+      setLoading(false);
+      toast.success("Profile picture updated successfully!");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      toast.error("Failed to upload profile picture.");
+    }
+  };
+
+  console.log(userProfile, 'profile')
   return (
     <div className="mt-16">
       <div className="flex justify-center w-full p-2">
         <div className="flex cursor-pointer bg-transparent border border-lg w-fit rounded text-xs px-4 py-2 items-center justify-center">
           <div className="flex items-center text-[#E0E0E0] gap-4">
             {/* Dialog to open Modal */}
+            <Toaster />
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
                 <div
                   className="w-[40px] h-[40px] flex items-center justify-center rounded-full bg-[#815BF5]"
                   onClick={() => setIsModalOpen(true)}
                 >
-                  <IoPersonAddSharp className="h-4 w-4 text-white" />
+                  {userProfile ? (
+                    <img src={userProfile} className="w-full h-full border rounded-full" alt="Profile" />
+                  ) : (
+                    <IoPersonAddSharp className="h-4 w-4 text-white" />
+                  )}
                 </div>
               </DialogTrigger>
 
               {/* Fullscreen Modal */}
               <DialogContent className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                  <h2 className="text-lg font-bold mb-4">Add New User</h2>
-                  <p>This is a modal to add users data in the application.</p>
-                  <Button
-                    onClick={() => setIsModalOpen(false)}
-                    className="mt-4"
-                  >
-                    Close
-                  </Button>
+                <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+                  <div className="flex border-b py-2  w-full justify-between ">
+                    <DialogTitle className="text-lg   px-6 py-2 font-medium">Update Profile Pic</DialogTitle>
+                    <DialogClose className=" px-6 py-2">
+                      <CrossCircledIcon className='scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+                    </DialogClose>
+                  </div>
+                  <div className="bg-[#0b0d29] p-8 flex flex-col items-center">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="Preview" className="w-24 h-24 rounded-full object-cover mb-4" />
+                    ) : (
+                      <div className="w-24 h-24 bg- border border-dashed  rounded-full flex items-center justify-center text-gray-400">
+                        No Preview
+                      </div>
+                    )}
+                    <label className="text-white bg-[#815BF5] hover:bg-[#815BF5] rounded-lg px-4 py-2 cursor-pointer mt-4">
+                      Choose a Picture
+                      <input type="file" onChange={handleFileChange} className="hidden" />
+                    </label>
+                    <div className="flex gap-2 mt-6 w-full">
+                      <Button className="bg-[#017a5b] hover:bg-[#018a5b] w-full" onClick={handleUploadProfilePic}>
+                        {loading ? <Loader /> : "Update Profile Picture"}
+                      </Button>
+                      {/* <Button onClick={() => setIsModalOpen(false)}>Cancel</Button> */}
+                    </div>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -245,6 +316,6 @@ export default function Profile({ }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

@@ -237,8 +237,8 @@ export default function SignupPage() {
                     <span
                       onClick={() => handlenOnCategorySelect(category)}
                       key={category}
-                      className={`px-1 text-sm py-1 text-center text-white font-medium cursor-pointer rounded-xl bg-[#28152E] ${organization.categories.includes(category)
-                        ? "bg-[#7C3987] text-white"
+                      className={`px-1 text-sm py-1 text-center text-white font-medium cursor-pointer rounded-xl bg-[#] border ${organization.categories.includes(category)
+                        ? "bg-[#815BF5] text-white"
                         : "text-gray-600"
                         }`}
                     >

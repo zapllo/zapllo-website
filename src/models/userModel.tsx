@@ -37,6 +37,7 @@ export interface IUser extends Document {
     faceDescriptors: number[][]; // An array of face descriptors (each descriptor is an array of numbers)
     imageUrls: { type: [String], default: [] };
     country: string;
+    profilePic: string;
 }
 
 // Define the schema
@@ -83,6 +84,9 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
         default: [],
     },
     country: {
+        type: String,
+    },
+    profilePic: {
         type: String,
     },
 }, { timestamps: true });

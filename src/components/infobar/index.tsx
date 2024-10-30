@@ -49,6 +49,7 @@ const InfoBar = (props: Props) => {
   const [firstName, setFirstName] = useState("User");
   const [lastName, setLastName] = useState("User");
   const [role, setRole] = useState("role");
+  const [profilePic, setProfilePic] = useState("");
   const [trialExpires, setTrialExpires] = useState<Date | null>(null);
   const [remainingTime, setRemainingTime] = useState("");
   const [userLoading, setUserLoading] = useState<boolean | null>(false);
@@ -60,6 +61,7 @@ const InfoBar = (props: Props) => {
         const userRes = await axios.get("/api/users/me");
         setFirstName(userRes.data.data.firstName);
         setLastName(userRes.data.data.lastName);
+        setProfilePic(userRes.data.data.profilePic);
         setRole(userRes.data.data.role);
         setUserLoading(false);
         // Fetch trial status
@@ -194,9 +196,8 @@ const InfoBar = (props: Props) => {
         <div className="gap-6 ml-12 border-b  items-center px-4 py-2 w-[100%] z-[10] flex flex-row  bg-[#04061e]">
           {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
           <div
-            className={`flex ml-4   ${
-              pathName === "/dashboard" ? "text-center ml-[48%] w-screen" : ""
-            }`}
+            className={`flex ml-4   ${pathName === "/dashboard" ? "text-center ml-[48%] w-screen" : ""
+              }`}
           >
             <h1 className={`text-md mt-1 text-white font-bold `}>
               {getPageTitle()}
@@ -233,12 +234,17 @@ const InfoBar = (props: Props) => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className="flex gap-2 ">
-                  <div className="h-9 text-xs  items-center cursor-pointer flex justify-center w-9 border bg-[#815BF5] -500 rounded-full ">
-                    {/* <User className='h-5 w-5' />
-                     */}
-                    {`${firstName}`.slice(0, 1)}
-                    {`${lastName}`.slice(0, 1)}
+                  <div className="h-9 w-9 text-xs items-center cursor-pointer flex justify-center border bg-[#815BF5] rounded-full">
+                    {profilePic ? (
+                      <img src={profilePic} alt="Profile" className="h-full w-full rounded-full object-cover" />
+                    ) : (
+                      <>
+                        {firstName.slice(0, 1)}
+                        {lastName.slice(0, 1)}
+                      </>
+                    )}
                   </div>
+
                   <div>
                     <h1 className="text-[#ffffff] text-sm ">{firstName}</h1>
                     {role === "orgAdmin" ? (
