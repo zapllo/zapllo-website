@@ -4,6 +4,10 @@ import React, { useState, useEffect } from "react";
 import Loader from "@/components/ui/loader";
 import * as Dialog from "@radix-ui/react-dialog";
 import Webcam from "react-webcam";
+// import CustomTimePicker from "./CustomTimePicker";
+// Adjust the path to where CustomTimePicker is located
+import { Separator } from "@/components/ui/separator";
+import CustomTimePicker from "@/components/globals/time-picker";
 import {
   BookIcon,
   Calendar,
@@ -37,7 +41,7 @@ import RegularizationDetails from "@/components/sheets/regularizationDetails";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 const mapContainerStyle = {
   height: "400px",
@@ -101,6 +105,52 @@ export default function MyAttendance() {
     end: null,
   });
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+
+  // Login Time
+
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+  // const [regularizationLoginTime, setRegularizationLoginTime] = useState<
+  //   string | null
+  // >(null);
+
+  const handleTimeChange = (time: string) => {
+    setRegularizationLoginTime(time);
+  };
+
+  const openTimePicker = () => {
+    setIsTimePickerOpen(true); // Open the time picker
+  };
+
+  const handleCancel = () => {
+    setIsTimePickerOpen(false); // Close the time picker without changes
+  };
+
+  const handleAccept = () => {
+    setIsTimePickerOpen(false); // Close the time picker after selecting time
+  };
+
+  // Logout picker
+
+  const [isLogoutTimePickerOpen, setIsLogoutTimePickerOpen] = useState(false);
+  // const [regularizationLogoutTime, setRegularizationLogoutTime] = useState<
+  //   string | null
+  // >(null);
+
+  const handleLogoutTimeChange = (time: string) => {
+    setRegularizationLogoutTime(time);
+  };
+
+  const openLogoutTimePicker = () => {
+    setIsLogoutTimePickerOpen(true); // Open the time picker for logout
+  };
+
+  const handleLogoutCancel = () => {
+    setIsLogoutTimePickerOpen(false); // Close the time picker without changes
+  };
+
+  const handleLogoutAccept = () => {
+    setIsLogoutTimePickerOpen(false); // Close the time picker after selecting time
+  };
 
   // For Face Login Modal
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -760,8 +810,8 @@ export default function MyAttendance() {
                     entry.approvalStatus === "Approved"
                       ? "bg-[#017a5b] px-2 py-1 rounded-xl"
                       : entry.approvalStatus === "Rejected"
-                        ? "bg-red-800 rounded-xl px-2 py-1"
-                        : "bg-orange-800 px-2 py-1 rounded-xl"
+                      ? "bg-red-800 rounded-xl px-2 py-1"
+                      : "bg-orange-800 px-2 py-1 rounded-xl"
                   }
                 >
                   {/* {`Approval Status: `} */}
@@ -802,7 +852,10 @@ export default function MyAttendance() {
     let lastLoginTime: number | null = null; // To track the last login time
 
     // Sort entries by timestamp to ensure they are in order
-    const sortedEntries = entries.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const sortedEntries = entries.sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
 
     sortedEntries.forEach((entry) => {
       const entryTime = new Date(entry.timestamp).getTime();
@@ -820,7 +873,6 @@ export default function MyAttendance() {
 
     return totalHours.toFixed(2); // Return total hours rounded to 2 decimal places
   };
-
 
   // Define state variables for counts and hours
   const [daysCount, setDaysCount] = useState(0);
@@ -949,8 +1001,9 @@ export default function MyAttendance() {
         {hasRegisteredFaces ? (
           <button
             onClick={handleLoginLogout}
-            className={`bg-${isLoggedIn ? "red-800" : "[#017a5b]"
-              } -500 text-white py-2 px-4 rounded text-sm`}
+            className={`bg-${
+              isLoggedIn ? "red-800" : "[#017a5b]"
+            } -500 text-white py-2 px-4 rounded text-sm`}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
@@ -997,10 +1050,10 @@ export default function MyAttendance() {
               });
               const formattedLogoutTime = entry.logoutTime
                 ? new Date(entry.logoutTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
                 : null;
               const date = new Date(entry.loginTime);
               return (
@@ -1021,10 +1074,11 @@ export default function MyAttendance() {
                     </div>
                   )}
                   <div
-                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === "login"
-                      ? "bg-green-800 text-xs"
-                      : "bg-[#8A3D17] text-xs"
-                      }`}
+                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${
+                      entry.action === "login"
+                        ? "bg-green-800 text-xs"
+                        : "bg-[#8A3D17] text-xs"
+                    }`}
                   >
                     <h1 className="text-xs">{entry.action.toUpperCase()}</h1>
                   </div>
@@ -1058,59 +1112,67 @@ export default function MyAttendance() {
       <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
         <button
           onClick={() => setActiveTab("today")}
-          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
-            }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${
+            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
+          }`}
         >
           Today
         </button>
         <button
           onClick={() => setActiveTab("yesterday")}
-          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${
+            activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setActiveTab("thisWeek")}
-          className={`px-4 py-2 h-fit text-xs rounded ${activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 h-fit text-xs rounded ${
+            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           This Week
         </button>
         <button
           onClick={() => setActiveTab("lastWeek")}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           Last Week
         </button>
         <button
           onClick={() => setActiveTab("thisMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           This Month
         </button>
         <button
           onClick={() => setActiveTab("lastMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setActiveTab("allTime")}
-          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
-            }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${
+            activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
+          }`}
         >
           All Time
         </button>
         <button
           onClick={openCustomModal}
-          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end
-            ? "bg-[#815BF5] text-white"
-            : "bg-transparent"
-            }`}
+          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${
+            customDateRange.start && customDateRange.end
+              ? "bg-[#815BF5] text-white"
+              : "bg-transparent"
+          }`}
         >
           Custom
         </button>
@@ -1118,20 +1180,22 @@ export default function MyAttendance() {
       <div className="flex justify-center gap-4 mt-2 mb-6">
         <button
           onClick={() => setActiveAttendanceTab("dailyReport")}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === "dailyReport"
-            ? "bg-[#815BF5]"
-            : "bg-[#37384B] "
-            }`}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${
+            activeAttendanceTab === "dailyReport"
+              ? "bg-[#815BF5]"
+              : "bg-[#37384B] "
+          }`}
         >
           <img src="/icons/report.png" className="invert-[100] h-4" />
           Daily Report
         </button>
         <button
           onClick={() => setActiveAttendanceTab("regularization")}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === "regularization"
-            ? "bg-[#815BF5]"
-            : "bg-[#37384B] "
-            }`}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${
+            activeAttendanceTab === "regularization"
+              ? "bg-[#815BF5]"
+              : "bg-[#37384B] "
+          }`}
         >
           <Users2 className="h-4" />
           Regularization
@@ -1144,7 +1208,6 @@ export default function MyAttendance() {
           <>
             {Object.keys(groupedEntries)?.length === 0 ? (
               <div>
-
                 <div className="flex justify-center mb-4 gap-4">
                   <div className="text-xs flex  border px-4 py-2 ">
                     <Calendar className="h-4 text-blue-500 mt-[1px]" />
@@ -1174,7 +1237,6 @@ export default function MyAttendance() {
               </div>
             ) : (
               <>
-
                 <div className="flex justify-center mb-4 gap-4">
                   <div className="text-xs flex  border px-4 py-2 ">
                     <Calendar className="h-4 text-blue-500 mt-[1px]" />
@@ -1214,8 +1276,9 @@ export default function MyAttendance() {
                       </div>
                       <div className="flex justify-end">
                         <span
-                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"
-                            }`}
+                          className={`transition-transform duration-300 ${
+                            expandedDays[date] ? "rotate-180" : "rotate-0"
+                          }`}
                         >
                           {/* Use a caret icon (chevron-down) */}
                           <svg
@@ -1241,15 +1304,17 @@ export default function MyAttendance() {
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
                             <span>
-                              {`${entry.action.charAt(0).toUpperCase() +
+                              {`${
+                                entry.action.charAt(0).toUpperCase() +
                                 entry.action.slice(1)
-                                }: ${formatTimeToAMPM(entry.timestamp)}`}
+                              }: ${formatTimeToAMPM(entry.timestamp)}`}
                             </span>
                             <span
-                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login"
-                                ? "bg-[#017a5b]"
-                                : "bg-[#8a3d17]"
-                                }`}
+                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${
+                                entry.action === "login"
+                                  ? "bg-[#017a5b]"
+                                  : "bg-[#8a3d17]"
+                              }`}
                             >
                               {entry.action.toUpperCase()}
                             </span>
@@ -1285,13 +1350,24 @@ export default function MyAttendance() {
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
           <Dialog.Content className="fixed inset-0 flex justify-center items-center">
             <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-md w-full relative">
+              <div className="flex gap-2  items-center ">
+                <img src="/branding/AII.png" className="h-10" />
+                <img src="/branding/zapllo ai.png" className="h-5 mt-2" />
+                <Dialog.DialogClose className=" px-60">
+                  <CrossCircledIcon className="scale-150 -mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                </Dialog.DialogClose>
+              </div>
+
+              <Separator className="my-4" />
               <div className="w-full flex mb-4 justify-between">
                 <h3 className="text-sm text-white text-center ">
                   {isLoggedIn
                     ? `Logout at ${new Date().toLocaleTimeString()}`
                     : `Login at ${new Date().toLocaleTimeString()}`}
                 </h3>
-                <Dialog.DialogClose className="">X</Dialog.DialogClose>
+                {/* <Dialog.DialogClose className="">
+                  <CrossCircledIcon className="scale-150 -mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                </Dialog.DialogClose> */}
               </div>
               {/* Webcam or Captured Image Display */}
               <div className="relative w-full h-auto mb-4">
@@ -1334,14 +1410,27 @@ export default function MyAttendance() {
               </button>
 
               {/* Display Lat and Long */}
-              <div className="text-center flex w-full justify-center text-xs text-white -400">
+
+              {/* <div className="text-center flex w-full justify-center text-xs text-white -400">
                 <p className="flex gap-2 text-sm">
                   <MapPinIcon className="h-4" />
                   {location
                     ? `Lat: ${location.lat}, Long: ${location.lng}`
                     : "Fetching location..."}
                 </p>
+              </div> */}
+
+              <div className="text-center flex w-full justify-center text-xs text-white -400 mt-4">
+                <div className="bg-[#1E2A38] rounded-lg py-2 px-4 flex items-center gap-2 shadow-lg">
+                  <MapPinIcon className="h-4 text-[#FC8929]" />
+                  <p className="text-sm text-white font-semibold">
+                    {location
+                      ? `Lat: ${location.lat}, Long: ${location.lng}`
+                      : "Fetching location..."}
+                  </p>
+                </div>
               </div>
+
               {/* Show Loader if submitting */}
               {isLoading && <Loader />}
             </div>
@@ -1366,7 +1455,9 @@ export default function MyAttendance() {
               </div>
               <div className="">
                 {mapCoords && (
-                  <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k"> {/* Replace with your API key */}
+                  <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k">
+                    {" "}
+                    {/* Replace with your API key */}
                     <GoogleMap
                       mapContainerStyle={mapContainerStyle}
                       center={mapCoords}
@@ -1565,9 +1656,9 @@ export default function MyAttendance() {
                       <button
                         type="button"
                         onClick={() => setIsDatePickerOpen(true)}
-                        className="rounded border w-full px-3 flex gap-1 py-2"
+                        className="rounded border w-full  flex gap-1 py-2"
                       >
-                        <Calendar className="h-5 text-sm" />
+                        <Calendar className="h-4 mt-0.5 text-sm" />
                         {regularizationDate ? (
                           // Show the selected date if a date has been picked
                           <h1 className="text-xs mt-1">{regularizationDate}</h1>
@@ -1593,7 +1684,7 @@ export default function MyAttendance() {
                                 // Manually extract the local date (year, month, day)
                                 const localDate = new Date(
                                   newDate.getTime() -
-                                  newDate.getTimezoneOffset() * 60000
+                                    newDate.getTimezoneOffset() * 60000
                                 )
                                   .toISOString()
                                   .split("T")[0];
@@ -1610,87 +1701,95 @@ export default function MyAttendance() {
                 </div>
 
                 {/* Login Time Input */}
-                {/* <div className="relative ">
-                  <label
-                    htmlFor="loginTime"
-                    className="absolute bg-[#0B0D29] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
-                  >
-                    Login Time
-                  </label>
-                  <input
-                    type="time"
-                    id="loginTime"
-                    value={regularizationLoginTime}
-                    onChange={(e) => setRegularizationLoginTime(e.target.value)}
-                    required
-                    className="w-full text-sm p-2 outline-none border opacity-65 rounded bg-transparent"
-                  />
-                </div> */}
-                {/* <div className="relative">
-                  <label
-                    htmlFor="loginTime"
-                    className="absolute bg-[#0B0D29] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
-                  >
-                    Login Time
-                  </label>
-                  <input
-                    type="time"
-                    id="loginTime"
-                    value={regularizationLoginTime}
-                    onChange={(e) => setRegularizationLoginTime(e.target.value)}
-                    onClick={(e) => e.target.showPicker()}
-                    onFocus={(e) => e.target.showPicker()} // Trigger the picker when the input is focused
-                    required
-                    className="w-full text-sm p-2 outline-none border opacity-65 rounded bg-transparent cursor-pointer" // Added cursor-pointer for clickable effect
-                  />
-                </div> */}
+
                 <div className="relative">
-                  <label
-                    htmlFor="loginTime"
-                    className="absolute bg-[#0B0D29] ml-2 text-xs z-[100] -mt-2 px-1 text-white"
+                  <Dialog.Root
+                    open={isTimePickerOpen}
+                    onOpenChange={setIsTimePickerOpen}
                   >
-                    Login Time
-                  </label>
-                  <input
-                    type="time"
-                    id="loginTime"
-                    value={regularizationLoginTime}
-                    onChange={(e) => setRegularizationLoginTime(e.target.value)}
-                    onClick={(e) =>
-                      (e.target as HTMLInputElement).showPicker?.()
-                    } // Cast to HTMLInputElement
-                    onFocus={(e) =>
-                      (e.target as HTMLInputElement).showPicker?.()
-                    } // Cast to HTMLInputElement
-                    required
-                    className="w-full text-sm p-2 outline-none border opacity-65 rounded bg-transparent cursor-pointer"
-                  />
+                    <Dialog.DialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="rounded border w-full  flex gap-1 py-2"
+                        onClick={openTimePicker}
+                      >
+                        <Clock className="h-4 mt-1 text-sm" />
+                        {regularizationLoginTime ? (
+                          <h1 className="text-xs mt-1">
+                            {formatTimeToAMPM(regularizationLoginTime)}
+                          </h1>
+                        ) : (
+                          <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
+                            Login Time
+                          </h1>
+                        )}
+                      </button>
+                    </Dialog.DialogTrigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
+                      <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
+                        <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
+                          <div className="w-full flex mb-4 justify-between">
+                            <CustomTimePicker
+                              selectedTime={regularizationLoginTime}
+                              onTimeChange={handleTimeChange}
+                              onCancel={handleCancel}
+                              onAccept={handleAccept}
+                              onBackToDatePicker={() =>
+                                setIsTimePickerOpen(false)
+                              }
+                            />
+                          </div>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
                 </div>
 
-                {/* Logout Time Input */}
+                {/* Logout Time Iput*/}
+
                 <div className="relative">
-                  <label
-                    htmlFor="logoutTime"
-                    className="absolute bg-[#0B0D29] ml-2 z-[100] text-xs -mt-2 px-1 text-white -400"
+                  <Dialog.Root
+                    open={isLogoutTimePickerOpen}
+                    onOpenChange={setIsLogoutTimePickerOpen}
                   >
-                    Logout Time
-                  </label>
-                  <input
-                    type="time"
-                    id="logoutTime"
-                    value={regularizationLogoutTime}
-                    onChange={(e) =>
-                      setRegularizationLogoutTime(e.target.value)
-                    }
-                    onClick={(e) =>
-                      (e.target as HTMLInputElement).showPicker?.()
-                    } // Cast to HTMLInputElement
-                    onFocus={(e) =>
-                      (e.target as HTMLInputElement).showPicker?.()
-                    } // Cast to HTMLInputElement
-                    required
-                    className="w-full text-sm p-2 outline-none border rounded opacity-65 bg-transparent cursor-pointer"
-                  />
+                    <Dialog.DialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="rounded border w-full  flex gap-1 py-2"
+                        onClick={openLogoutTimePicker}
+                      >
+                        <Clock className="h-4 mt-1 text-sm" />
+                        {regularizationLogoutTime ? (
+                          <h1 className="text-xs mt-1">
+                            {formatTimeToAMPM(regularizationLogoutTime)}
+                          </h1>
+                        ) : (
+                          <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
+                            Logout Time
+                          </h1>
+                        )}
+                      </button>
+                    </Dialog.DialogTrigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
+                      <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
+                        <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
+                          <div className="w-full flex mb-4 justify-between">
+                            <CustomTimePicker
+                              selectedTime={regularizationLogoutTime}
+                              onTimeChange={handleLogoutTimeChange}
+                              onCancel={handleLogoutCancel}
+                              onAccept={handleLogoutAccept}
+                              onBackToDatePicker={() =>
+                                setIsLogoutTimePickerOpen(false)
+                              }
+                            />
+                          </div>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
                 </div>
 
                 {/* Remarks Textarea */}
@@ -1782,6 +1881,6 @@ export default function MyAttendance() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </div >
+    </div>
   );
 }
