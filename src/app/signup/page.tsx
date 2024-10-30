@@ -44,8 +44,7 @@ export default function SignupPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [emailError, setEmailError] = useState<string>('');
-
+  const [emailError, setEmailError] = useState<string>("");
 
   // Handle category selection
   const handlenOnCategorySelect = (category: string) => {
@@ -64,8 +63,8 @@ export default function SignupPage() {
 
   // Toggle show/hide password
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
-
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
   // Handler to receive selected country code from CountryDrop
   const handleCountrySelect = (countryCode: string) => {
@@ -109,7 +108,10 @@ export default function SignupPage() {
         router.push("/login"); // Redirect after signup
       }
     } catch (error: any) {
-      if (error.response?.status === 400 && error.response?.data?.error.includes("email")) {
+      if (
+        error.response?.status === 400 &&
+        error.response?.data?.error.includes("email")
+      ) {
         setEmailError(error.response.data.error);
         toast.error("This Email is already registered");
       } else {
@@ -141,14 +143,16 @@ export default function SignupPage() {
             <img src="/logo.png" className="h-7" alt="Logo" />
           </div>
           <p className="text-neutral-600 text-sm font-bold text-center max-w-sm mt-2 dark:text-neutral-300">
-          Let’s get started by filling up the form below
+            Let’s get started by filling up the form below
           </p>
           {showOrganizationForm ? (
             <div className="my-8">
               {/* Organization Form */}
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                 <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]">Company Name</h1>
+                  <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                    Company Name
+                  </h1>
                   <Input
                     id="companyName"
                     type="text"
@@ -181,13 +185,19 @@ export default function SignupPage() {
                   <option value="Retail/E-Commerce">Retail/E-Commerce</option>
                   <option value="Technology">Technology</option>
                   <option value="Service Provider">Service Provider</option>
-                  <option value="Healthcare(Doctors/Clinics/Physicians/Hospital)">Healthcare(Doctors/Clinics/Physicians/Hospital)</option>
+                  <option value="Healthcare(Doctors/Clinics/Physicians/Hospital)">
+                    Healthcare(Doctors/Clinics/Physicians/Hospital)
+                  </option>
                   <option value="Logistics">Logistics</option>
-                  <option value="Financial Consultants">Financial Consultants</option>
+                  <option value="Financial Consultants">
+                    Financial Consultants
+                  </option>
                   <option value="Trading">Trading</option>
                   <option value="Education">Education</option>
                   <option value="Manufacturing">Manufacturing</option>
-                  <option value="Real Estate/Construction/Interior/Architects">Real Estate/Construction/Interior/Architects</option>
+                  <option value="Real Estate/Construction/Interior/Architects">
+                    Real Estate/Construction/Interior/Architects
+                  </option>
                   <option value="Other">Other</option>
                 </select>
               </LabelInputContainer>
@@ -214,7 +224,9 @@ export default function SignupPage() {
                 </select>
               </LabelInputContainer>
               <LabelInputContainer className="mb-8">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">Company Description</h1>
+                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  Company Description
+                </h1>
                 <Textarea
                   id="description"
                   value={organization.description}
@@ -247,7 +259,8 @@ export default function SignupPage() {
                   ))}
                 </div>
                 <span className="text-sm pt-5">
-                  Don&apos;t worry, you can add and change these categories later
+                  Don&apos;t worry, you can add and change these categories
+                  later
                 </span>
               </LabelInputContainer>
 
@@ -268,12 +281,15 @@ export default function SignupPage() {
                 {loading
                   ? "Signing up..."
                   : showOrganizationForm
-                    ? "Sign up →"
-                    : "Sign up →"}
+                  ? "Sign up →"
+                  : "Sign up →"}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">
-                <Link href="/login" className="text-center hover:underline mt-2">
+                <Link
+                  href="/login"
+                  className="text-center hover:underline mt-2"
+                >
                   Already a{" "}
                   <span className="bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent font-bold">
                     Zapllonian
@@ -299,7 +315,9 @@ export default function SignupPage() {
                   <Home selected />
                 </div>
                 <Link href="/">
-                  <h1 className="hover:underline cursor-pointer">Back to Home</h1>
+                  <h1 className="hover:underline cursor-pointer">
+                    Back to Home
+                  </h1>
                 </Link>
               </div>
             </div>
@@ -308,7 +326,9 @@ export default function SignupPage() {
               {/* User Signup Form */}
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                 <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]">First name</h1>
+                  <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                    First name
+                  </h1>
                   <Input
                     id="firstName"
                     type="text"
@@ -320,7 +340,9 @@ export default function SignupPage() {
                   />
                 </LabelInputContainer>
                 <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]">Last name</h1>
+                  <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                    Last name
+                  </h1>
                   <Input
                     id="lastName"
                     type="text"
@@ -333,7 +355,9 @@ export default function SignupPage() {
                 </LabelInputContainer>
               </div>
               <LabelInputContainer className="mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">Email address</h1>
+                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  Email address
+                </h1>
                 <Input
                   id="email"
                   type="email"
@@ -341,7 +365,6 @@ export default function SignupPage() {
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
                   placeholder="example@gmail.com"
                 />
-
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
                 <h1 className="text-xs absolute ml-2 bg-[#000101]">Password</h1>
@@ -352,17 +375,19 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setUser({ ...user, password: e.target.value })
                   }
-                // placeholder="••••••••"
+                  // placeholder="••••••••"
                 />
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={togglePasswordVisibility}
                 >
-                  {showPassword ? <Eye size={18} /> :   <EyeOff size={18} />}
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                 </div>
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">Confirm Password</h1>
+                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  Confirm Password
+                </h1>
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
@@ -370,13 +395,17 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setUser({ ...user, confirmPassword: e.target.value })
                   }
-                // placeholder="••••••••"
+                  // placeholder="••••••••"
                 />
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={toggleConfirmPasswordVisibility}
                 >
-                  {showConfirmPassword ? <Eye size={18} />  :  <EyeOff size={18} />}
+                  {showConfirmPassword ? (
+                    <Eye size={18} />
+                  ) : (
+                    <EyeOff size={18} />
+                  )}
                 </div>
               </LabelInputContainer>
               <CountryDrop
@@ -384,7 +413,9 @@ export default function SignupPage() {
                 onCountrySelect={handleCountrySelect}
               />
               <LabelInputContainer className="mb-8">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">Whatsapp No</h1>
+                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  Whatsapp No
+                </h1>
                 <Input
                   id="whatsappNo"
                   type="text"
@@ -404,8 +435,8 @@ export default function SignupPage() {
                 {loading
                   ? "Signing up..."
                   : showOrganizationForm
-                    ? "Sign up →"
-                    : "Next →"}
+                  ? "Sign up →"
+                  : "Next →"}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">

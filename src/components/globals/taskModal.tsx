@@ -22,12 +22,19 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+// import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CaretDownIcon, CaretSortIcon, CheckIcon, CrossCircledIcon, StopIcon } from "@radix-ui/react-icons";
+import {
+  CaretDownIcon,
+  CaretSortIcon,
+  CheckIcon,
+  CrossCircledIcon,
+  StopIcon,
+} from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import {
@@ -47,6 +54,8 @@ import {
   Tag,
   User,
   X,
+  AlarmClock,
+  Bell,
 } from "lucide-react";
 import {
   Dialog,
@@ -74,7 +83,11 @@ import { AvatarFallback } from "@radix-ui/react-avatar";
 interface TaskModalProps {
   closeModal: () => void;
 }
-
+interface Reminder {
+  type: "minutes" | "hours" | "days";
+  value: number;
+  notificationType: "email" | "whatsapp";
+}
 interface Category {
   _id: string;
   name: string;
@@ -153,6 +166,64 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   const [recordingTime, setRecordingTime] = useState(0);
   const controls = useAnimation();
 
+  // Working On Reminder Module
+
+  // Reminder state and handlers
+  const [reminders, setReminders] = useState<Reminder[]>([]); // State to store reminders
+
+  // States for input controls
+  const [reminderType, setReminderType] = useState<"email" | "whatsapp">(
+    "email"
+  );
+  const [reminderValue, setReminderValue] = useState<number>(0);
+  const [timeUnit, setTimeUnit] = useState<"minutes" | "hours" | "days">(
+    "minutes"
+  );
+
+  // Add reminder handler with constraints
+
+  const addReminder = () => {
+    if (reminders.length >= 5) {
+      toast.error("You can only add up to 5 reminders");
+      return;
+    }
+
+    const newReminder = {
+      notificationType: reminderType,
+      value: reminderValue,
+      type: timeUnit,
+    };
+
+    // Check for duplicate reminders
+    const duplicateReminder = reminders.some(
+      (r) =>
+        r.notificationType === newReminder.notificationType &&
+        r.value === newReminder.value &&
+        r.type === newReminder.type
+    );
+
+    if (duplicateReminder) {
+      toast.error("Duplicate reminders are not allowed");
+      return;
+    }
+
+    setReminders((prevReminders) => [...prevReminders, newReminder]);
+  };
+
+  // Remove reminder
+  const removeReminder = (index: number) => {
+    setReminders((prevReminders) =>
+      prevReminders.filter((_, i) => i !== index)
+    );
+  };
+
+  // Handle saving reminders (when clicking the save button)
+  const handleSaveReminders = () => {
+    // Only save reminders when the save button is clicked
+    toast.success("Reminders saved successfully!");
+    setIsReminderModalOpen(false);
+  };
+
   const modalVariants = {
     hidden: {
       opacity: 0,
@@ -205,7 +276,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       return () => URL.revokeObjectURL(audioURL);
     }
   }, [audioBlob]);
-
 
   // Handle audio recording logic
   const startRecording = async () => {
@@ -294,12 +364,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     }
   };
 
-
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
     // Stop all tracks of the media stream to release the microphone
     if (mediaRecorderRef.current?.stream) {
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      mediaRecorderRef.current.stream
+        .getTracks()
+        .forEach((track) => track.stop());
     }
   };
 
@@ -464,7 +535,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   };
 
   const handleAssignTask = async (e: React.FormEvent) => {
-    e.preventDefault();  // Prevent form submission refresh
+    e.preventDefault(); // Prevent form submission refresh
     if (!dueDate || !dueTime) {
       alert("Due date and time are required.");
       return; // Stop execution if validation fails
@@ -527,20 +598,20 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
           emailReminderType === "specific"
             ? null
             : {
-              type: emailReminderType,
-              value: emailReminderValue,
-            },
+                type: emailReminderType,
+                value: emailReminderValue,
+              },
         whatsapp:
           whatsappReminderType === "specific"
             ? null
             : {
-              type: whatsappReminderType,
-              value: whatsappReminderValue,
-            },
+                type: whatsappReminderType,
+                value: whatsappReminderValue,
+              },
         specific: reminderDate
           ? {
-            date: reminderDate.toISOString(),
-          }
+              date: reminderDate.toISOString(),
+            }
           : null,
       },
     };
@@ -724,8 +795,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         <div className="flex justify-between  items-center  px-8 py-3 border-b w-full">
           <h2 className="text-lg font-bold   ">Assign New Task</h2>
 
-          <CrossCircledIcon onClick={closeModal} className='scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
-
+          <CrossCircledIcon
+            onClick={closeModal}
+            className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+          />
         </div>
 
         <form className="text-sm space-y-2 overflow-y-scroll px-8 py-4 scrollbar-hide h-full max-h-4xl">
@@ -827,10 +900,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   {["High", "Medium", "Low"].map((level) => (
                     <label
                       key={level}
-                      className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
-                        ? "bg-[#815BF5]  text-white"
-                        : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
-                        }`}
+                      className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${
+                        priority === level
+                          ? "bg-[#815BF5]  text-white"
+                          : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
+                      }`}
                     >
                       <input
                         type="radio"
@@ -999,10 +1073,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsLinkModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter((link) => link).length > 0
-                  ? "border-[#815BF5]"
-                  : ""
-                  }`}
+                className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${
+                  links.filter((link) => link).length > 0
+                    ? "border-[#815BF5]"
+                    : ""
+                }`}
               >
                 <Link className="h-5 text-center m-auto mt-1" />
               </div>
@@ -1018,8 +1093,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsAttachmentModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? "border-[#815BF5]" : ""
-                  }`}
+                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
+                  files.length > 0 ? "border-[#815BF5]" : ""
+                }`}
               >
                 <Paperclip className="h-5 text-center m-auto mt-1" />
               </div>
@@ -1057,7 +1133,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               </div>
             )}
           </div>
-          <div className={` ${recording ? `w-full ` : "hidden"} border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}>
+          <div
+            className={` ${
+              recording ? `w-full ` : "hidden"
+            } border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}
+          >
             <canvas
               ref={canvasRef}
               className={` ${recording ? `w-full h-12` : "hidden"} `}
@@ -1069,7 +1149,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   onClick={stopRecording} // Call the stopRecording function when clicked
                   className="bg- flex gap-2 border hover:bg-gray-400 bg-gray-300 text-black px-4 py-2 rounded ml-4"
                 >
-                  <StopIcon className=" bg-red-500 text-red-500 h-3 w-3" />  Stop
+                  <StopIcon className=" bg-red-500 text-red-500 h-3 w-3" /> Stop
                 </Button>
               </div>
             )}
@@ -1199,121 +1279,206 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               </Button>
             </DialogContent>
           </Dialog>
-          <Dialog
-            open={isReminderModalOpen}
-            onOpenChange={setIsReminderModalOpen}
+
+          {/* Add Reminder Module  */}
+
+          <motion.div
+            className="bg-[#0B0D29] z-[100] h-[520px] overflow-y-scroll scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
+            variants={modalVariants}
+            initial="hidden"
+            animate={controls}
           >
-            <DialogContent>
-              <div className="flex justify-between">
-                <DialogTitle>Set a Reminder</DialogTitle>
-                <img
-                  className="cursor-pointer  h-fit"
-                  src="/icons/x.png"
-                  onClick={() => setIsReminderModalOpen(false)}
-                />
-              </div>
-
-              <DialogDescription>
-                Set a reminder for the task.
-              </DialogDescription>
-              <div className="reminder-section grid grid-cols-1 gap-4">
-                {/* WhatsApp Reminder Row */}
-
-                <div className="email-reminder flex items-center gap-4">
-                  <img src="/whatsapp.png" className="h-6 w-6" />
-                  <div className="reminder-type-select grid grid-cols-2 gap-2">
-                    <select
-                      value={whatsappReminderType}
-                      className="p-2 outline-none"
-                      onChange={(e) => setWhatsappReminderType(e.target.value)}
-                    >
-                      <option value="minutes">Minutes</option>
-                      <option value="hours">Hours</option>
-                      <option value="days">Days</option>
-                      <option value="specific">Specific Date & Time</option>
-                    </select>
-                    {whatsappReminderType !== "specific" && (
-                      <input
-                        type="number"
-                        className="p-2 outline-none"
-                        value={whatsappReminderValue}
-                        onChange={(e) =>
-                          setWhatsappReminderValue(parseInt(e.target.value))
-                        }
-                        placeholder={`Enter number of ${whatsappReminderType}`}
-                      />
-                    )}
-                    {whatsappReminderType === "specific" && (
-                      <input
-                        type="datetime-local"
-                        className="p-2 outline-none"
-                        value={
-                          reminderDate
-                            ? reminderDate.toISOString().slice(0, 16)
-                            : ""
-                        }
-                        onChange={(e) =>
-                          setReminderDate(
-                            e.target.value ? new Date(e.target.value) : null
-                          )
-                        }
-                      />
-                    )}
+            <Dialog
+              open={isReminderModalOpen}
+              onOpenChange={setIsReminderModalOpen}
+            >
+              <DialogContent className="max-w-lg mx-auto">
+                <div className="flex justify-between items-center ">
+                  <div className="flex items-center gap-2">
+                    <AlarmClock className="h-6 w-6" />
+                    <DialogTitle>Add Task Reminders</DialogTitle>
                   </div>
+                  <X
+                    className="cursor-pointer"
+                    onClick={() => setIsReminderModalOpen(false)}
+                  />
                 </div>
-                {/* Email Reminder Row */}
-                <div className="email-reminder flex items-center gap-4">
-                  <MailIcon className="h-8" />
-                  <div className="reminder-type-select grid grid-cols-2 gap-2">
+                <Separator className="" />
+                <div className=" ">
+                  {/* Input fields for adding reminders */}
+                  <div className="grid grid-cols-4 gap-2 mx-6 items-center pl-12 mb-4">
                     <select
-                      value={emailReminderType}
-                      className="p-2 outline-none"
-                      onChange={(e) => setEmailReminderType(e.target.value)}
+                      value={reminderType}
+                      onChange={(e) =>
+                        setReminderType(e.target.value as "email" | "whatsapp")
+                      }
+                      className=" border bg-transparent bg-[#1A1C20]  rounded h-full"
                     >
-                      <option value="minutes">Minutes</option>
-                      <option value="hours">Hours</option>
-                      <option value="days">Days</option>
-                      <option value="specific">Specific Date & Time</option>
+                      <option className="bg-[#1A1C20]" value="email">
+                        Email
+                      </option>
+                      <option className="bg-[#1A1C20]" value="whatsapp">
+                        WhatsApp
+                      </option>
                     </select>
-                    {emailReminderType !== "specific" && (
-                      <input
-                        type="number"
-                        className="p-2 outline-none"
-                        value={emailReminderValue}
-                        onChange={(e) =>
-                          setEmailReminderValue(parseInt(e.target.value))
-                        }
-                        placeholder={`Enter number of ${emailReminderType}`}
-                      />
-                    )}
-                    {emailReminderType === "specific" && (
-                      <input
-                        type="datetime-local"
-                        className="p-2 outline-none"
-                        value={
-                          reminderDate
-                            ? reminderDate.toISOString().slice(0, 16)
-                            : ""
-                        }
-                        onChange={(e) =>
-                          setReminderDate(
-                            e.target.value ? new Date(e.target.value) : null
-                          )
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
 
-                <Button
-                  className="hover:bg-[#017a5b] bg-[#017a5b]"
-                  onClick={() => setIsReminderModalOpen(false)}
-                >
-                  Save Reminders
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+                    <input
+                      type="number"
+                      value={reminderValue}
+                      onChange={(e) => setReminderValue(Number(e.target.value))}
+                      className=" p-1 border bg-transparent bg-[#1A1C20] rounded h-full"
+                      placeholder="Enter value"
+                    />
+
+                    <select
+                      value={timeUnit}
+                      onChange={(e) =>
+                        setTimeUnit(
+                          e.target.value as "minutes" | "hours" | "days"
+                        )
+                      }
+                      className="  bg-[#1A1C20] border bg-transparent rounded h-full"
+                    >
+                      <option className="bg-[#1A1C20]" value="minutes">
+                        minutes
+                      </option>
+                      <option className="bg-[#1A1C20]" value="hours">
+                        hours
+                      </option>
+                      <option className="bg-[#1A1C20]" value="days">
+                        days
+                      </option>
+                    </select>
+
+                    <button
+                      onClick={addReminder}
+                      // className="bg-green-500 rounded-full flex items-center justify-center h-full"
+                      className="bg-[#017A5B] rounded-full h-10 w-10 flex items-center justify-center"
+                    >
+                      <Plus className="text-white" />
+                    </button>
+                  </div>
+
+                  <Separator className="my-2" />
+                  {/* Display added reminders */}
+
+                  <ul className="grid grid-cols-4 gap-2 mx-6 pl-12 items-center">
+                    {reminders.map((reminder, index) => (
+                      <React.Fragment key={index}>
+                        {/* Editable Notification Type Select */}
+                        <select
+                          value={reminder.notificationType}
+                          onChange={(e) => {
+                            const updatedType = e.target.value as
+                              | "email"
+                              | "whatsapp";
+
+                            // Check for duplicate before updating
+                            const isDuplicate = reminders.some(
+                              (r, i) =>
+                                i !== index &&
+                                r.notificationType === updatedType &&
+                                r.value === reminder.value &&
+                                r.type === reminder.type
+                            );
+
+                            if (isDuplicate) {
+                              toast.error(
+                                "Duplicate reminders are not allowed"
+                              );
+                              return;
+                            }
+
+                            // Update if no duplicate is found
+                            const updatedReminders = reminders.map((r, i) =>
+                              i === index
+                                ? { ...r, notificationType: updatedType }
+                                : r
+                            );
+                            setReminders(updatedReminders as Reminder[]);
+                          }}
+                          className="border rounded bg-transparent bg-[#1A1C20] h-full flex"
+                        >
+                          <option className="bg-[#1A1C20]" value="email">
+                            Email
+                          </option>
+                          <option className="bg-[#1A1C20]" value="whatsapp">
+                            WhatsApp
+                          </option>
+                        </select>
+
+                        {/* Reminder Value (Styled as Text) */}
+                        <li className="p-2 border rounded h-full flex items-center">
+                          <span>{reminder.value}</span>
+                        </li>
+
+                        {/* Editable Time Unit Select */}
+                        <select
+                          value={reminder.type}
+                          onChange={(e) => {
+                            const updatedType = e.target.value as
+                              | "minutes"
+                              | "hours"
+                              | "days";
+
+                            // Check for duplicate before updating
+                            const isDuplicate = reminders.some(
+                              (r, i) =>
+                                i !== index &&
+                                r.notificationType ===
+                                  reminder.notificationType &&
+                                r.value === reminder.value &&
+                                r.type === updatedType
+                            );
+
+                            if (isDuplicate) {
+                              toast.error(
+                                "Duplicate reminders are not allowed"
+                              );
+                              return;
+                            }
+
+                            // Update if no duplicate is found
+                            const updatedReminders = reminders.map((r, i) =>
+                              i === index ? { ...r, type: updatedType } : r
+                            );
+                            setReminders(updatedReminders as Reminder[]);
+                          }}
+                          className="border rounded h-full bg-[#1A1C20] bg-transparent flex items-center"
+                        >
+                          <option className="bg-[#1A1C20]" value="minutes">
+                            minutes
+                          </option>
+                          <option className="bg-[#1A1C20]" value="hours">
+                            hours
+                          </option>
+                          <option className="bg-[#1A1C20]" value="days">
+                            days
+                          </option>
+                        </select>
+
+                        {/* Delete Button */}
+                        <li className="">
+                          <button onClick={() => removeReminder(index)}>
+                            <X className="cursor-pointer rounded-full text-red-500 flex items-center justify-center" />
+                          </button>
+                        </li>
+                      </React.Fragment>
+                    ))}
+                  </ul>
+                </div>
+                {/* Save button */}
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    onClick={handleSaveReminders}
+                    className="bg-[#017A5B]  hover:bg-[#017A5B] text-white"
+                  >
+                    Save Reminders
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </motion.div>
 
           <Dialog
             open={isRecordingModalOpen}
@@ -1397,8 +1562,8 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       backgroundColor: state.isSelected
         ? "#FC8929"
         : state.isFocused
-          ? "#815BF5"
-          : "#282D32", // Custom background color for options
+        ? "#815BF5"
+        : "#282D32", // Custom background color for options
       color: "white", // Custom text color
     }),
     multiValue: (provided) => ({
