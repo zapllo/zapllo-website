@@ -318,6 +318,26 @@ const AttendanceDashboard: React.FC = () => {
     fetchAttendanceData();
   }, [selectedAttendanceDate]);
 
+
+  useEffect(() => {
+    async function fetchAttendanceData() {
+      setAttendanceLoading(true);
+      try {
+        const response = await fetch(`/api/userAttendance?date=${selectedAttendanceDate}`);
+        const data = await response.json();
+
+        // Update state with the user-specific report
+        setMonthlyReport(data.monthlyReport);
+        setAttendanceLoading(false);
+
+      } catch (error) {
+        console.error('Error fetching attendance data:', error);
+      }
+    }
+
+    fetchAttendanceData();
+  }, [selectedAttendanceDate]);
+
   // Function to fetch the daily report from the server
   const fetchDailyReport = async (date: string) => {
     try {
@@ -565,31 +585,65 @@ const AttendanceDashboard: React.FC = () => {
             </select>
           </div>
         </div>
-      
+
       </div>
 
-  {/* Summary */}
-  <div className="mb-4 mt-4 flex w-full justify-start space-x-2">
-          <span className="border text-xs bg-blue-900 text-white p-2 rounded">
-            Total Days: {totalDays}
-          </span>
-          <span className="border text-xs bg-yellow-600 text-white p-2 rounded">
-            Total Employees: {employees.length}
-          </span>
-          <span className="border text-xs bg-green-700 text-white p-2 rounded">
-            Present: {presentCount}
-          </span>
-          <span className="border text-xs bg-red-700 text-white p-2 rounded">
-            Leave: {leaveCount}
-          </span>
-          <span className="border text-xs bg-gray-700 text-white p-2 rounded">
-            Absent: {absentCount}
-          </span>
-          <span className="border text-xs bg-purple-700 text-white p-2 rounded">
-            Holidays: {holidayCount}
-          </span>
+      {/* Summary */}
+      <div className="mb-4 mt-4 flex w-full justify-start space-x-2">
+        <span className="border text-xs bg-blue-900 text-white p-2 rounded">
+          Total Days: {totalDays}
+        </span>
+        <span className="border text-xs bg-yellow-600 text-white p-2 rounded">
+          Total Employees: {employees.length}
+        </span>
+        <span className="border text-xs bg-green-700 text-white p-2 rounded">
+          Present: {presentCount}
+        </span>
+        <span className="border text-xs bg-red-700 text-white p-2 rounded">
+          Leave: {leaveCount}
+        </span>
+        <span className="border text-xs bg-gray-700 text-white p-2 rounded">
+          Absent: {absentCount}
+        </span>
+        <span className="border text-xs bg-purple-700 text-white p-2 rounded">
+          Holidays: {holidayCount}
+        </span>
+      </div>
+      {/* // Table rendering */}
+      {/* <div className="relative mt-2 mb-12">
+        <div className="h-full rounded-md">
+          <table className="w-full border-collapse border">
+            <thead className='bg-[#0A0D28]'>
+              <tr>
+                <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
+                <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
+                <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
+                <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
+                <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
+              </tr>
+            </thead>
+            <tbody>
+              {monthlyReport.map((day, index) => (
+                <tr key={index} className="border-b">
+                  <td className="px-4 py-2 text-xs">
+                    {format(new Date(day.date), 'dd MMM yyyy')}
+                  </td>
+                  <td className="px-4 py-2 text-xs">{day.day}</td>
+                  <td className="px-4 py-2 text-center">
+                    <input type="checkbox" checked={day.present} readOnly />
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <input type="checkbox" checked={day.leave} readOnly />
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <input type="checkbox" checked={day.holiday} readOnly />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
+      </div> */}
       {/* Monthly Attendance Report */}
       <div className="relative mt-2 mb-12">
         <div className="h-full  rounded-md">
