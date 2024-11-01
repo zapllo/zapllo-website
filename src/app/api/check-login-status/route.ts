@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'; // Add this line
 import { NextRequest, NextResponse } from 'next/server';
 import LoginEntry from '@/models/loginEntryModel'; // Import LoginEntry model
-import User from '@/models/userModel'; // Import User model to check faceDescriptors
+import FaceRegistrationRequest from '@/models/faceRegistrationRequest'; // Import FaceRegistrationRequest model
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Extract userId from token
 
 export async function GET(request: NextRequest) {
@@ -12,22 +12,15 @@ export async function GET(request: NextRequest) {
         // Fetch the latest login entry for the user
         const lastEntry = await LoginEntry.findOne({ userId }).sort({ timestamp: -1 }).exec();
 
-        // Fetch the user's faceDescriptors to check if they have registered faces
-        const user = await User.findById(userId).select('faceDescriptors').exec();
-
-        if (!user) {
-            return NextResponse.json({ success: false, error: 'User not found' });
-        }
-
-        // Check if the user has any registered face descriptors
-        const hasRegisteredFaces = user.faceDescriptors && user.faceDescriptors.length > 0;
+        // Check if the user has any approved face registration requests
+        const hasApprovedFaceRegistration = await FaceRegistrationRequest.exists({ userId, status: 'approved' });
 
         // If no login history, return logged out status and check for face registration
         if (!lastEntry) {
-            return NextResponse.json({ 
-                success: true, 
-                isLoggedIn: false, 
-                hasRegisteredFaces,
+            return NextResponse.json({
+                success: true,
+                isLoggedIn: false,
+                hasRegisteredFaces: Boolean(hasApprovedFaceRegistration),
                 message: 'No login history found'
             });
         }
@@ -35,10 +28,10 @@ export async function GET(request: NextRequest) {
         // Check if the last action was 'login'
         const isLoggedIn = lastEntry.action === 'login';
 
-        return NextResponse.json({ 
-            success: true, 
-            isLoggedIn, 
-            hasRegisteredFaces 
+        return NextResponse.json({
+            success: true,
+            isLoggedIn,
+            hasRegisteredFaces: Boolean(hasApprovedFaceRegistration)
         });
     } catch (error) {
         console.error('Error fetching login status:', error);

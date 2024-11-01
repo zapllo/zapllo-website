@@ -238,16 +238,6 @@ export default function MyAttendance() {
         const resEntries = await fetch("/api/loginEntries");
         const dataEntries = await resEntries.json();
         setLoginEntries(dataEntries.entries);
-
-        // Check if the user's face registration is approved
-        const resFaceStatus = await fetch(
-          "/api/check-face-registration-status"
-        );
-        const dataFaceStatus = await resFaceStatus.json();
-
-        if (dataFaceStatus.success) {
-          setHasRegisteredFaces(dataFaceStatus.isFaceRegistered);
-        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -810,8 +800,8 @@ export default function MyAttendance() {
                     entry.approvalStatus === "Approved"
                       ? "bg-[#017a5b] px-2 py-1 rounded-xl"
                       : entry.approvalStatus === "Rejected"
-                      ? "bg-red-800 rounded-xl px-2 py-1"
-                      : "bg-orange-800 px-2 py-1 rounded-xl"
+                        ? "bg-red-800 rounded-xl px-2 py-1"
+                        : "bg-orange-800 px-2 py-1 rounded-xl"
                   }
                 >
                   {/* {`Approval Status: `} */}
@@ -998,12 +988,13 @@ export default function MyAttendance() {
         </div>
       )}
       <div className="login-section flex justify-center mb-6">
-        {hasRegisteredFaces ? (
+        {displayLoader ? (
+          <div>Loading...</div>
+        ) : hasRegisteredFaces  ? (
           <button
             onClick={handleLoginLogout}
-            className={`bg-${
-              isLoggedIn ? "red-800" : "[#017a5b]"
-            } -500 text-white py-2 px-4 rounded text-sm`}
+            className={`bg-${isLoggedIn ? "red-800" : "[#017a5b]"
+              } text-white py-2 px-4 rounded text-sm`}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
@@ -1016,6 +1007,7 @@ export default function MyAttendance() {
           </button>
         )}
       </div>
+
       {/* Login/Logout Button */}
       {/* <div className="login-section flex justify-center mb-6">
                 <button
@@ -1050,10 +1042,10 @@ export default function MyAttendance() {
               });
               const formattedLogoutTime = entry.logoutTime
                 ? new Date(entry.logoutTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
                 : null;
               const date = new Date(entry.loginTime);
               return (
@@ -1074,11 +1066,10 @@ export default function MyAttendance() {
                     </div>
                   )}
                   <div
-                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${
-                      entry.action === "login"
-                        ? "bg-green-800 text-xs"
-                        : "bg-[#8A3D17] text-xs"
-                    }`}
+                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === "login"
+                      ? "bg-green-800 text-xs"
+                      : "bg-[#8A3D17] text-xs"
+                      }`}
                   >
                     <h1 className="text-xs">{entry.action.toUpperCase()}</h1>
                   </div>
@@ -1112,67 +1103,59 @@ export default function MyAttendance() {
       <div className="tabs mb-6 flex flex-wrap justify-center space-x-2">
         <button
           onClick={() => setActiveTab("today")}
-          className={`px-4 h-fit py-2 text-xs rounded ${
-            activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
-          }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "today" ? "bg-[#815BF5]" : "bg-[#] border "
+            }`}
         >
           Today
         </button>
         <button
           onClick={() => setActiveTab("yesterday")}
-          className={`px-4 h-fit py-2 text-xs rounded ${
-            activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 h-fit py-2 text-xs rounded ${activeTab === "yesterday" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setActiveTab("thisWeek")}
-          className={`px-4 py-2 h-fit text-xs rounded ${
-            activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 h-fit text-xs rounded ${activeTab === "thisWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           This Week
         </button>
         <button
           onClick={() => setActiveTab("lastWeek")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastWeek" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           Last Week
         </button>
         <button
           onClick={() => setActiveTab("thisMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "thisMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           This Month
         </button>
         <button
           onClick={() => setActiveTab("lastMonth")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "lastMonth" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setActiveTab("allTime")}
-          className={`px-4 py-2 text-xs h-fit rounded ${
-            activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 text-xs h-fit rounded ${activeTab === "allTime" ? "bg-[#815BF5]" : "bg-[#] border"
+            }`}
         >
           All Time
         </button>
         <button
           onClick={openCustomModal}
-          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${
-            customDateRange.start && customDateRange.end
-              ? "bg-[#815BF5] text-white"
-              : "bg-transparent"
-          }`}
+          className={`px-4 py-2 rounded bg-[#37384B] text-xs border ${customDateRange.start && customDateRange.end
+            ? "bg-[#815BF5] text-white"
+            : "bg-transparent"
+            }`}
         >
           Custom
         </button>
@@ -1180,22 +1163,20 @@ export default function MyAttendance() {
       <div className="flex justify-center gap-4 mt-2 mb-6">
         <button
           onClick={() => setActiveAttendanceTab("dailyReport")}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${
-            activeAttendanceTab === "dailyReport"
-              ? "bg-[#815BF5]"
-              : "bg-[#37384B] "
-          }`}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === "dailyReport"
+            ? "bg-[#815BF5]"
+            : "bg-[#37384B] "
+            }`}
         >
           <img src="/icons/report.png" className="invert-[100] h-4" />
           Daily Report
         </button>
         <button
           onClick={() => setActiveAttendanceTab("regularization")}
-          className={`px-4 flex gap-2 py-2 text-xs rounded ${
-            activeAttendanceTab === "regularization"
-              ? "bg-[#815BF5]"
-              : "bg-[#37384B] "
-          }`}
+          className={`px-4 flex gap-2 py-2 text-xs rounded ${activeAttendanceTab === "regularization"
+            ? "bg-[#815BF5]"
+            : "bg-[#37384B] "
+            }`}
         >
           <Users2 className="h-4" />
           Regularization
@@ -1276,9 +1257,8 @@ export default function MyAttendance() {
                       </div>
                       <div className="flex justify-end">
                         <span
-                          className={`transition-transform duration-300 ${
-                            expandedDays[date] ? "rotate-180" : "rotate-0"
-                          }`}
+                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"
+                            }`}
                         >
                           {/* Use a caret icon (chevron-down) */}
                           <svg
@@ -1304,17 +1284,15 @@ export default function MyAttendance() {
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
                             <span>
-                              {`${
-                                entry.action.charAt(0).toUpperCase() +
+                              {`${entry.action.charAt(0).toUpperCase() +
                                 entry.action.slice(1)
-                              }: ${formatTimeToAMPM(entry.timestamp)}`}
+                                }: ${formatTimeToAMPM(entry.timestamp)}`}
                             </span>
                             <span
-                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${
-                                entry.action === "login"
-                                  ? "bg-[#017a5b]"
-                                  : "bg-[#8a3d17]"
-                              }`}
+                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login"
+                                ? "bg-[#017a5b]"
+                                : "bg-[#8a3d17]"
+                                }`}
                             >
                               {entry.action.toUpperCase()}
                             </span>
@@ -1684,7 +1662,7 @@ export default function MyAttendance() {
                                 // Manually extract the local date (year, month, day)
                                 const localDate = new Date(
                                   newDate.getTime() -
-                                    newDate.getTimezoneOffset() * 60000
+                                  newDate.getTimezoneOffset() * 60000
                                 )
                                   .toISOString()
                                   .split("T")[0];

@@ -445,7 +445,6 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
                             <div className="flex justify-between space-x-4">
                                 <div className="relative w-full">
-
                                     <button
                                         type="button"
                                         onClick={() => setIsFromDatePickerOpen(true)}

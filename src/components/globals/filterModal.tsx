@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 interface FilterModalProps {
     isOpen: boolean;
@@ -57,7 +58,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <input
                             type="text"
                             placeholder="Search categories"
-                            className="w-full px-2 py-2 bg-[#282D32] border outline-none  mb-4 rounded-md"
+                            className="w-full px-2 py-2 text-[#787CA5] bg-transparent border outline-none  mb-4 rounded-md"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -96,7 +97,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <input
                             type="text"
                             placeholder="Search users"
-                            className="w-full px-2 py-2 bg-[#282D32] border mb-4 rounded-md"
+                            className="w-full px-2 py-2 bg-transparent outline-none text-[#787CA5]  border mb-4 rounded-md"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -104,7 +105,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                             {users.filter(user => (`${user.firstName} ${user.lastName}`).toLowerCase().includes(lowercasedSearchTerm)).map(user => (
                                 <label key={user._id} className='flex justify-between cursor-pointer'>
                                     <div className='flex items-center'>
-                                        <div className='h-8 w-8 bg-red-700 text-center text-lg rounded-full'>
+                                        <div className='h-8 w-8 bg-[#815BF5] text-center text-lg rounded-full'>
                                             <h1 className='mt-[1.5px]'>
                                                 {`${user.firstName}`.slice(0, 1)}{`${user.lastName}`.slice(0, 1)}
                                             </h1>
@@ -136,7 +137,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <input
                             type="text"
                             placeholder="Search frequency"
-                            className="w-full px-2 py-2 bg-[#282D32] border border-gray-600 mb-4 rounded-md"
+                            className="w-full px-2 py-2 bg-transparent border outline-none text-[#787CA5] mb-4 rounded-md"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -172,7 +173,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <input
                             type="text"
                             placeholder="Search priority"
-                            className="w-full px-2 py-2 bg-[#282D32] border border-gray-600 mb-4 rounded-md"
+                            className="w-full px-2 py-2 bg-transparent outline-none border text-[#787CA5] mb-4 rounded-md"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -219,10 +220,16 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                 </div>
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
                 &#8203;
-                <div className="inline-block align-bottom max-h-4xl z-[60] h-[450px] bg-[#1A1D21]  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full  py-6">
-                    <div className='flex border-b  justify-end px-4 py-2'>
-                        <h3 className="text-lg leading-6 font-medium text-white mb-4">Filter Tasks</h3>
-                        <h1 className='ml-auto cursor-pointer' onClick={closeModal}>X</h1>
+                <div className="inline-block align-bottom  z-[60] h-[450px] bg-[#0B0D29]  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-xl sm:w-full ">
+                    <div className='flex border-b items-center  py-4  w-full justify-between px-6'>
+                        <div>
+                            <h3 className="text-lg leading-6  font-medium  text-white ">Filter Tasks</h3>
+
+                        </div>
+                        <CrossCircledIcon
+                            onClick={closeModal}
+                            className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                        />
                     </div>
                     <div>
 
@@ -256,14 +263,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                         <div className=" -mt-24 sm:flex px-6 gap-6 sm:flex-row-reverse">
                             <button
                                 type="button"
-                                className="inline-flex justify-center  rounded-md border border-transparent px-4 py-2 bg-green-700 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-400 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                                className="inline-flex justify-center  rounded-md border border-transparent px-4 py-2 bg-[#017a5b] text-base leading-6 font-medium text-white shadow-sm hover:bg-[#017a5b] focus:outline-none focus:border-[#017a5b] focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                                 onClick={handleApplyFilters}
                             >
                                 Apply Filters
                             </button>
                             <button
                                 type="button"
-                                className="inline-flex justify-center w- gap-2  rounded-md border border- px-4 py-2 bg-transparent  text-base leading-6 font-medium text-white shadow-sm hover:bg-red-400 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                                className="inline-flex justify-center w- gap-2  rounded-md border border- px-4 py-2 bg-transparent  text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                                 onClick={handleClearFilters}
                             >
                                 <img src='/icons/clear.png' />    Clear

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import FaceRegistrationRequest from '@/models/faceRegistrationRequest';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 import connectDB from '@/lib/db';
+export const dynamic = 'force-dynamic'; // Add this line
+
 
 export async function GET(request: NextRequest) {
     try {

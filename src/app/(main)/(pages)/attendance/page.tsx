@@ -136,9 +136,9 @@ const AttendanceDashboard: React.FC = () => {
   const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   const [weekOffs, setWeekOffs] = useState<number>(0);
   const [attendanceLoading, setAttendanceLoading] = useState<boolean | null>(false);
-  const [totalDailyDays, setTotalDailyDays] = useState(1); // Total days for daily report (default 1)
-  const [holidaysDaily, setHolidaysDaily] = useState(0);   // Number of holidays in the daily report
-  const [weekOffsDaily, setWeekOffsDaily] = useState(0);   // Number of week offs (0 or 1)
+  // const [totalDailyDays, setTotalDailyDays] = useState(1); // Total days for daily report (default 1)
+  // const [holidaysDaily, setHolidaysDaily] = useState(0);   // Number of holidays in the daily report
+  // const [weekOffsDaily, setWeekOffsDaily] = useState(0);   // Number of week offs (0 or 1)
   const [dailytotalCount, setDailyTotalCount] = useState<number>(0);
   const [dailypresentCount, setDailyPresentCount] = useState<number>(0);
   const [dailyonLeaveCount, setDailyOnLeaveCount] = useState<number>(0);
@@ -319,24 +319,24 @@ const AttendanceDashboard: React.FC = () => {
   }, [selectedAttendanceDate]);
 
 
-  useEffect(() => {
-    async function fetchAttendanceData() {
-      setAttendanceLoading(true);
-      try {
-        const response = await fetch(`/api/userAttendance?date=${selectedAttendanceDate}`);
-        const data = await response.json();
+  // useEffect(() => {
+  //   async function fetchAttendanceData() {
+  //     setAttendanceLoading(true);
+  //     try {
+  //       const response = await fetch(`/api/userAttendance?date=${selectedAttendanceDate}`);
+  //       const data = await response.json();
 
-        // Update state with the user-specific report
-        setMonthlyReport(data.monthlyReport);
-        setAttendanceLoading(false);
+  //       // Update state with the user-specific report
+  //       setMonthlyReport(data.monthlyReport);
+  //       setAttendanceLoading(false);
 
-      } catch (error) {
-        console.error('Error fetching attendance data:', error);
-      }
-    }
+  //     } catch (error) {
+  //       console.error('Error fetching attendance data:', error);
+  //     }
+  //   }
 
-    fetchAttendanceData();
-  }, [selectedAttendanceDate]);
+  //   fetchAttendanceData();
+  // }, [selectedAttendanceDate]);
 
   // Function to fetch the daily report from the server
   const fetchDailyReport = async (date: string) => {
@@ -532,7 +532,6 @@ const AttendanceDashboard: React.FC = () => {
                   <option value="lastMonth">Last Month</option>
                 </select>
               </div>
-
             </div>
             <div className="flex space-x-4 justify-center mb-2 mt-2">
               <span className="border text-xs text-blue-400 text-= p-2 rounded">Total Days: {totalCumulativeDays}</span>
@@ -647,28 +646,28 @@ const AttendanceDashboard: React.FC = () => {
       {/* Monthly Attendance Report */}
       <div className="relative mt-2 mb-12">
         <div className="h-full  rounded-md">
-          <table className="w-full border-collapse border">
+          <table className="w-full text-end border-collapse border">
             <thead className='bg-[#0A0D28]'>
-              <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
-              <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
-              <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
-              <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
-              <th className="text-sm text-start w-24 font-medium p-2 px-4">Absent</th>
-              <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
-              <th className="text-sm w-24 rounded-r font-medium p-2 px-4">Total</th>
+              <th className="rounded-l text-sm font-medium text-end p-2 w-24 px-4">Date</th>
+              <th className="text-sm text-end font-medium w-24 p-2 px-4">Day</th>
+              <th className="text-sm text-end w-24 font-medium p-2 px-4">Present</th>
+              <th className="text-sm text-end w-24 font-medium p-2 px-4">Leave</th>
+              <th className="text-sm text-end w-24 font-medium p-2 px-4">Absent</th>
+              <th className="text-sm text-end w-24 font-medium p-2 px-4">Holiday</th>
+              <th className="text-sm w-24 text-end rounded-r font-medium p-2 px-4">Total</th>
             </thead>
             <tbody>
               {monthlyReport.map((day, index) => (
-                <tr key={index} className="border-b">
+                <tr key={index} className="border-b text-end">
                   <td className="px-4 py-2 text-xs">
                     {format(new Date(day.date), 'dd MMM yyyy')}
                   </td>
-                  <td className="px-4 py-2 text-xs">{day.day}</td>
-                  <td className="px-4 py-2 text-xs">{day.present}</td>
-                  <td className="px-4 py-2 text-xs">{day.leave}</td>
-                  <td className="px-4 py-2 text-xs">{day.absent}</td>
-                  <td className="px-4 py-2 text-xs">{day.holiday}</td>
-                  <td className="px-4 py-2 text-xs">{day.total}</td>
+                  <td className="px-4 py-2 text-end text-xs">{day.day}</td>
+                  <td className="px-4 py-2 text-end text-xs">{day.present}</td>
+                  <td className="px-4 py-2 text-end text-xs">{day.leave}</td>
+                  <td className="px-4 py-2 text-end  text-xs">{day.absent}</td>
+                  <td className="px-4 py-2 text-end text-xs">{day.holiday}</td>
+                  <td className="px-4 py-2 text-end text-xs">{day.total}</td>
                 </tr>
               ))}
             </tbody>

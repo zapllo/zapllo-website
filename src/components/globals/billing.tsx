@@ -10,6 +10,7 @@ import axios from 'axios';
 import { toast, Toaster } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
 
@@ -70,7 +71,7 @@ export default function Billing() {
         };
         getUserDetails();
     }, []);
-console.log(subscribedUserCount, 'subscribed user count for the latest order')
+    console.log(subscribedUserCount, 'subscribed user count for the latest order')
 
     const plans = {
         'Task Pro': 1999,
@@ -95,28 +96,28 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
                 console.error("Selected plan is invalid.");
                 return;
             }
-    
+
             const plan = selectedPlan as PlanKeys;
             const planCost = plans[plan];
-    
+
             // Calculate the total amount for the selected number of additional users
             const amountExclGST = additionalUserCount * planCost;
             const gstAmount = amountExclGST * 0.18; // 18% GST
             const totalAmount = amountExclGST + gstAmount;
-    
+
             const orderData = {
                 amount: totalAmount * 100, // Amount in paise
                 currency: 'INR',
                 subscribedUserCount: totalUserCount, // Pass the updated user count
                 planName: plan // Pass the selected plan
             };
-    
+
             // Create order on server and get order ID
             const { data } = await axios.post('/api/create-order', orderData);
             if (!data.orderId) {
                 throw new Error('Order ID not found in the response');
             }
-    
+
             // Razorpay payment options
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
@@ -133,7 +134,7 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
                         razorpay_signature: response.razorpay_signature,
                         planName: plan,
                     };
-    
+
                     try {
                         // Verify the payment on the server
                         const { data: verificationResult } = await axios.post('/api/payment-success', {
@@ -143,7 +144,7 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
                             gstNumber: gstNumber,
                             subscribedUserCount: totalUserCount, // Update subscribed users
                         });
-    
+
                         if (verificationResult.success) {
                             toast.success('Payment successful! Users added.');
                             setSubscribedUserCount(totalUserCount); // Update the subscribed count locally
@@ -168,7 +169,7 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
                     color: '#007A5A',
                 },
             };
-    
+
             // Open the Razorpay payment modal
             const rzp1 = new (window as any).Razorpay(options);
             rzp1.open();
@@ -177,7 +178,7 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
             console.error('Error creating order: ', error);
         }
     };
-    
+
 
 
 
@@ -488,7 +489,14 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
                                 <DialogContent>
                                     {modalStep === 1 && (
                                         <>
-                                            <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                            <div className='flex justify-between w-full'>
+                                                <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                                <DialogClose>
+                                                    <CrossCircledIcon
+                                                        className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                                    />
+                                                </DialogClose>
+                                            </div>
                                             <p className="mt-2">This plan costs ₹{plans[selectedPlan]} per user per year.</p>
                                             <div className="mt-4 flex gap-4">
                                                 <label htmlFor="userCount" className="block mb-2">Select Number of Users To Add:</label>
@@ -644,7 +652,11 @@ console.log(subscribedUserCount, 'subscribed user count for the latest order')
                                         <>
                                             <div className='flex justify-between'>
                                                 <h2 className="text-md font-bold">Recharge Wallet</h2>
-                                                <DialogClose><img src='/icons/cross.png' className='h-6 hover:bg-[#121212] rounded-full' /></DialogClose>
+                                                <DialogClose>
+                                                    <CrossCircledIcon
+                                                        className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                                    />
+                                                </DialogClose>
                                             </div>
                                             <div className="mt-4">
                                                 <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount (minimum ₹5000):</label>
