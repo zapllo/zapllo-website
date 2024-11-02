@@ -130,7 +130,7 @@ const DashboardPage = () => {
         product,
         trialExpires: trialDate,
       });
-      // fetchTrialStatus(); // Refresh the trial status after starting the trial
+     await  fetchTrialStatus(); // Refresh the trial status after starting the trial
     } catch (error) {
       console.error("Error starting trial:", error);
     } finally {

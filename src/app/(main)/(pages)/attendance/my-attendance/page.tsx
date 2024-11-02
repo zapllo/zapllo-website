@@ -988,13 +988,11 @@ export default function MyAttendance() {
         </div>
       )}
       <div className="login-section flex justify-center mb-6">
-        {displayLoader ? (
-          <div>Loading...</div>
-        ) : hasRegisteredFaces  ? (
+        {hasRegisteredFaces ? (
           <button
             onClick={handleLoginLogout}
             className={`bg-${isLoggedIn ? "red-800" : "[#017a5b]"
-              } text-white py-2 px-4 rounded text-sm`}
+              } -500 text-white py-2 px-4 rounded text-sm`}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
@@ -1007,7 +1005,6 @@ export default function MyAttendance() {
           </button>
         )}
       </div>
-
       {/* Login/Logout Button */}
       {/* <div className="login-section flex justify-center mb-6">
                 <button

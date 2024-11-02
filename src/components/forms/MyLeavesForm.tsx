@@ -568,7 +568,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                                 <ul className='list-disc list-inside'>
                                     {files.map((file, index) => (
                                         <li key={index} className='flex justify-between items-center'>
-                                            {file.name}
+                                            {file.name.slice(0, 7)}....
                                             <button onClick={() => removeFile(index)} className='text-red-500 ml-2'>
                                                 <FaTimes className='h-4 w-4' />
                                             </button>
