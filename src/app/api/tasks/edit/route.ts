@@ -7,7 +7,7 @@ connectDB();
 
 export async function PATCH(request: NextRequest) {
     try {
-        const { id, title, description, priority, category, assignedUser, repeat, repeatType, dueDate, reminder, days, dates, attachment, links, status } = await request.json();
+        const { id, title, description, priority, category, assignedUser, repeat, repeatType, dueDate, reminders, days, dates, attachment, links, status } = await request.json();
 
         // Find the task by ID
         const task = await Task.findById(id);
@@ -17,25 +17,36 @@ export async function PATCH(request: NextRequest) {
         }
 
         // Update task properties
-        task.title = title || task.title;
-        task.description = description || task.description;
-        task.priority = priority || task.priority;
-        task.category = category || task.category;
-        task.assignedUser = assignedUser || task.assignedUser;
-        task.repeat = repeat || task.repeat;
-        task.repeatType = repeatType || task.repeatType;
-        task.dueDate = dueDate || task.dueDate;
-        task.days = days || task.days;
-        task.dates = dates || task.dates;
-        task.attachment = attachment || task.attachment;
-        task.links = links || task.links;
-        task.reminder = reminder || task.reminder;
-        task.status = status || task.status;
+        task.title = title ?? task.title;
+        task.description = description ?? task.description;
+        task.priority = priority ?? task.priority;
+        task.category = category ?? task.category;
+        task.assignedUser = assignedUser ?? task.assignedUser;
+        task.repeat = repeat ?? task.repeat;
+        task.repeatType = repeatType ?? task.repeatType;
+        task.dueDate = dueDate ?? task.dueDate;
+        task.days = days ?? task.days;
+        task.dates = dates ?? task.dates;
+        task.attachment = attachment ?? task.attachment;
+        task.links = links ?? task.links;
+        task.status = status ?? task.status;
+
+        // Update reminders, ensuring we overwrite it with a new array if provided
+        if (reminders) {
+            task.reminders = reminders.map((reminder: any) => ({
+                notificationType: reminder.notificationType,
+                type: reminder.type,
+                value: reminder.value,
+                date: reminder.date ? new Date(reminder.date) : undefined,
+                sent: reminder.sent ?? false,
+            }));
+        }
 
         await task.save();
-        console.log(task, 'wow')
+        console.log(task, 'Task updated successfully');
         return NextResponse.json({ message: 'Task updated successfully', data: task }, { status: 200 });
     } catch (error) {
+        console.error("Error updating task:", error);
         return NextResponse.json({ error: 'Error updating task' }, { status: 500 });
     }
 }
