@@ -10,7 +10,7 @@ connectDB();
 
 const sendWebhookNotification = async (taskData: any, taskCreator: any, assignedUser: any, status: any, userName: any, comment: any, taskCategory: any) => {
     const payload = {
-        phoneNumber: assignedUser.whatsappNo,
+        phoneNumber: taskCreator.whatsappNo,
         templateName: 'taskupdate',
         bodyVariables: [
             taskCreator.firstName,
@@ -99,7 +99,7 @@ export async function PATCH(request: NextRequest) {
         // Send Email to the task creator
         if (assignedUser.notifications.email) { // Check if email notifications are enabled
             const emailOptions: SendEmailOptions = {
-                to: assignedUser.email,
+                to: taskCreator.email,
                 subject: "Task Status Updates",
                 text: `Task '${task.title}' has been updated.`,
                 html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">

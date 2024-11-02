@@ -21,6 +21,7 @@ interface User {
     organization: string;
     email: string;
     role: string;
+    profilePic: string;
 }
 
 interface Reminder {
@@ -206,16 +207,29 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             </Label>
                             <div className="flex gap-2 ml-3  justify-start">
                                 {/* <Repeat className="h-5" /> */}
-                                <h1 id="assignedUser" className="col-span-3 text-xs">
+                                <h1 id="assignedUser" className="col-span-3 flex  text-xs">
                                     {selectedTask.repeatType ? selectedTask.repeatType : "Once"}
+                                    <span>
+                                        {selectedTask.repeatType && (
+                                            <div className="ml-2">
+                                                {selectedTask.days && selectedTask.days.length > 0 ? (
+                                                    <h1>({selectedTask.days.join(', ')})</h1>
+                                                ) : null}
+                                            </div>
+                                        )}
+                                    </span>
+                                    <span>
+                                        {selectedTask.repeatType && (
+                                            <div className="ml-2">
+                                                {selectedTask.dates && selectedTask.dates.length > 0 ? (
+                                                    <h1>({selectedTask.dates.join(', ')})</h1>
+                                                ) : null}
+                                            </div>
+                                        )}
+                                    </span>
                                 </h1>
-                                {selectedTask.repeatType && (
-                                    <div className="ml-2">
-                                        {selectedTask.dates && selectedTask.dates.length > 0 ? (
-                                            <h1>{selectedTask.dates.join(', ')}</h1>
-                                        ) : null}
-                                    </div>
-                                )}
+
+
                             </div>
                         </div>
 
@@ -382,7 +396,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
 
 
                         {selectedTask.audioUrl && (
-                            <div className="p-4 w-1/2 border ml-2 bg-[#121212]">
+                            <div className="p-4 w-1/2 border rounded-xl ml-2 bg-[#121212]">
                                 <CustomAudioPlayer audioUrl={selectedTask.audioUrl} />
                             </div>
                         )}

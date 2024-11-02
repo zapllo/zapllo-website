@@ -62,6 +62,7 @@ interface User {
     organization: string;
     email: string;
     role: string;
+    profilePic: string;
 }
 
 
@@ -457,7 +458,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
 
     return (
         <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#0B0D29] border max-h-screen h-[450px] overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
+            <div className="bg-[#0B0D29] border max-h-screen h-fit m-auto overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
                 <div className='flex w-full justify-between mb-4'>
                     <h2 className="text-lg font-medium ">Edit Task</h2>
                     <button className='cursor-pointer  text-lg' onClick={onClose}>
@@ -1013,7 +1014,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, onClose, task, on
                         onClick={handleSubmit}
                         className="bg-[#017A5B]  w-full text-white p-2 rounded"
                     >
-                        {loading ? <Loader />:"Update Task"}
+                        {loading ? <Loader /> : "Update Task"}
                     </button>
                 </div>
             </div >

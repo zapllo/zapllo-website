@@ -112,7 +112,7 @@ const Layout = (props: Props) => {
   return (
     <div>
       {isVisible && (
-        <div className="p-2 flex fixed top-0 w-full justify-center gap-2 bg-[#37384B] border">
+        <div className="p-2 flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border">
           <div className="flex gap-2 justify-center w-full">
             <h1 className="text-center mt-1 flex text-white text-xs">
               {isTrialExpired ? (

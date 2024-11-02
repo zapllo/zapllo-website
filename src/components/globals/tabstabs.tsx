@@ -37,6 +37,7 @@ interface User {
   lastName: string;
   whatsappNo: string;
   reportingManager: string;
+  profilePic: string;
   country: string;
 }
 
@@ -77,6 +78,7 @@ export default function TeamTabs() {
     lastName: "",
     whatsappNo: "",
     reportingManager: "",
+    profilePic: "",
     country: "IN",
   });
   const [selectedManager, setSelectedManager] = useState("");
@@ -564,7 +566,16 @@ export default function TeamTabs() {
                     <div className="flex gap-2">
                       <Avatar className="scale-75">
                         <AvatarImage src="/placeholder-user.jpg" />
-                        <AvatarFallback className="bg-[#815BF5]">{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
+                        {user.profilePic ? (
+                          <img
+                            src={user.profilePic}
+                            alt={`${user.firstName} ${user.lastName}`}
+                            className="h-full w-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <AvatarFallback className="bg-[#815BF5]">{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
+                        )}
+
                       </Avatar>
                       <div>
                         <p className="font-medium w-[210px] mt-2 text-sm">
@@ -594,12 +605,12 @@ export default function TeamTabs() {
                   <div className="justify-end px-8 w-full flex">
                     <div
                       className={`w-fit px-4 py-1 rounded text-xs ${user.role === "orgAdmin"
-                          ? "bg-[#B4173B]"
-                          : user.role === "manager"
-                            ? "bg-orange-500"
-                            : user.role === "member"
-                              ? "bg-[#007A5A]"
-                              : "bg-gray-500"
+                        ? "bg-[#B4173B]"
+                        : user.role === "manager"
+                          ? "bg-orange-500"
+                          : user.role === "member"
+                            ? "bg-[#007A5A]"
+                            : "bg-gray-500"
                         }`}
                     >
                       {user.role === "orgAdmin"
@@ -625,6 +636,7 @@ export default function TeamTabs() {
                           whatsappNo: user.whatsappNo,
                           country: user?.country,
                           reportingManager: selectedManager,
+                          profilePic: user.profilePic,
                         });
                         setIsEditModalOpen(true);
                       }}>

@@ -109,6 +109,7 @@ import Loader from "../ui/loader";
 import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
 import { BackgroundGradientAnimation } from "../ui/backgroundGradientAnimation";
 import CustomDatePicker from "./date-picker";
+import { ClearIcon } from "@mui/x-date-pickers/icons";
 
 type DateFilter =
   | "today"
@@ -129,6 +130,7 @@ interface User {
   organization: string;
   email: string;
   role: string;
+  profilePic: string;
 }
 
 interface Reminder {
@@ -212,6 +214,7 @@ export default function TasksTab({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageOrVideo, setImageOrVideo] = useState<File | null>(null);
   const [otherFile, setOtherFile] = useState<File | null>(null);
+  const [profilePic, setProfilePic] = useState("");
 
   const [activeDateFilter, setActiveDateFilter] = useState<string | undefined>(
     "thisWeek"
@@ -281,6 +284,10 @@ export default function TasksTab({
   // Handler to close date pickers
   const closeDatePicker = () => setDatePickerType(null);
 
+  const handleClearSelection = () => {
+    setSelectedUserId(null);
+  };
+
   // Handler to set selected dates
   const handleDateChange = (date: Date) => {
     if (datePickerType === "start") {
@@ -297,6 +304,7 @@ export default function TasksTab({
   };
 
   const clearFilters = () => {
+    toast.success("All Filters Cleared")
     setCategoryFilter([]); // Reset category filter
     setAssignedByFilter([]); // Reset assigned by filter
     setFrequencyFilter([]); // Reset frequency filter
@@ -544,6 +552,10 @@ export default function TasksTab({
       : null;
     const now = new Date();
 
+    // 1. Filter by selected user if a user card was clicked (critical filter applied first)
+    if (selectedUserId && selectedUserId._id) {
+      isFiltered = task.assignedUser?._id === selectedUserId._id;
+    }
     // Apply "Assigned To" filter
     if (assignedToFilter && task.assignedUser?._id !== assignedToFilter) {
       isFiltered = false;
@@ -769,6 +781,7 @@ export default function TasksTab({
       try {
         setUserLoading(true);
         const userRes = await axios.get("/api/users/me");
+        setProfilePic(userRes.data.data.profilePic);
         const userData = userRes.data.data;
         setUserDetails(userData);
         setUserLoading(false);
@@ -1620,16 +1633,25 @@ export default function TasksTab({
                                         >
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#815BF5] -400">
-                                              <h1 className="text-center text-sm mt-1 uppercase">
-                                                {`${user?.firstName?.slice(
-                                                  0,
-                                                  1
-                                                )}`}
-                                                {`${user?.lastName?.slice(
-                                                  0,
-                                                  1
-                                                )}`}
-                                              </h1>
+                                              {user.profilePic ? (
+                                                <img
+                                                  src={user.profilePic}
+                                                  alt={`${user.firstName} ${user.lastName}`}
+                                                  className="h-full w-full rounded-full object-cover"
+                                                />
+                                              ) : (
+
+                                                <h1 className="text-center text-sm mt-1 uppercase">
+                                                  {`${user?.firstName?.slice(
+                                                    0,
+                                                    1
+                                                  )}`}
+                                                  {`${user?.lastName?.slice(
+                                                    0,
+                                                    1
+                                                  )}`}
+                                                </h1>
+                                              )}
                                             </div>
                                             <h2 className="text-sm mt-1 font-medium">
                                               {user.firstName} {user.lastName}
@@ -2080,9 +2102,9 @@ export default function TasksTab({
                                 {areFiltersApplied && (
                                   <Button
                                     onClick={clearFilters}
-                                    className="bg-transparent hover:bg-transparent mt-4 h-8"
+                                    className="bg-transparent border hover:bg-red-500 gap-2 mt-4 h-8"
                                   >
-                                    <FilterIcon className="h-4" /> Clear
+                                    <img src='/icons/clear.png' className="h-3" />  Clear
                                   </Button>
                                 )}
                               </div>
@@ -2912,9 +2934,9 @@ export default function TasksTab({
                                   {areFiltersApplied && (
                                     <Button
                                       onClick={clearFilters}
-                                      className="bg-transparent hover:bg-transparent mt-4 h-8"
+                                      className="bg-transparent hover:bg-transparent border hover:bg-red-500 mt-4 gap-2 h-8"
                                     >
-                                      <FilterIcon className="h-4" /> Clear
+                                      <img src='/icons/clear.png' className="h-3" />  Clear
                                     </Button>
                                   )}
                                 </div>
@@ -2928,6 +2950,13 @@ export default function TasksTab({
                                         Assigned To: {selectedUserId.firstName}{" "}
                                         {selectedUserId.lastName}
                                       </h1>
+                                      <button
+                                        onClick={handleClearSelection}
+                                        className="text-red-500 hover:text-red-700  "
+                                        aria-label="Clear Selection"
+                                      >
+                                        <X className="h-4" />
+                                      </button>
                                     </div>
                                   )}
                                 </div>

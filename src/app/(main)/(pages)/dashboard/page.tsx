@@ -141,11 +141,11 @@ const DashboardPage = () => {
   return (
 
     <div className=' dark:bg-[#04061e] mb-16 overflow-y-scroll
-     pt-2 scale-95 mt-16 h-screen gap- relative overflow-x-hidden scrollbar-hide'>
+     pt-2 scale-95 h-screen gap- relative overflow-x-hidden scrollbar-hide'>
 
       {/* <h1 className='text-xl gap-2 sticky top-0 z-[10] -mt-12   dark:bg-[#04071F] backdrop-blur-lg flex items-center border-b'>   <Home className='h-5' />  Dashboard
       </h1> */}
-      <div className="w-full mb-2 flex">
+      <div className="w-full mb-2 mt-12 flex">
         {calculateProgress() < 100 && (
           <div className=' w-[50.33%] flex justify-start gap-4'>
             <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
@@ -181,14 +181,14 @@ const DashboardPage = () => {
                 <h1 className='text-lg font-medium flex gap-2'><Megaphone /> Events </h1>
                 <p className='text-sm py-2'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
                 <div className="flex justify-start ">
-                <Link href="/help/events">
-                  <Button className="bg-white text-black mt-4 text-sm hover:bg-white ">
-                    Go To Events
-                  </Button>
-                </Link>
+                  <Link href="/help/events">
+                    <Button className="bg-white text-black mt-4 text-sm hover:bg-white ">
+                      Go To Events
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              </div>
-             
+
             </div>
           </div>
         )}
@@ -200,7 +200,7 @@ const DashboardPage = () => {
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/atask.png' className=' ml-[15px] mt-3 h-6     object-cover' />
               </div>
-              <h1 className='text-lg font-medium'>Automate Tasks</h1>
+              <h1 className='text-lg font-medium'>Zapllo Tasks</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>
@@ -216,7 +216,7 @@ const DashboardPage = () => {
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <Globe className=' ml-[11px] mt-3 h-6     object-cover' />
               </div>
-              <h1 className='text-lg font-medium'>Automate Intranet</h1>
+              <h1 className='text-lg font-medium'>Zapllo Intranet</h1>
               <p className='text-xs font-medium'>Manage all your Important Company Links</p>
               <div className='pt-2'>
                 <Link href='/intranet'>
@@ -227,12 +227,12 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="flex  gap-4 ">
-          <div className="p-4 w-full border border-[#E0E0E066] bg-[#] m-4  text-white items-center flex justify-start rounded-xl ">
+          <div className="p-4 w-full border border-[#E0E0E066] bg-[#] m-4  text-white items-center relative flex justify-start rounded-xl ">
             <div className=" font-bold text-xl space-y-1">
               <div className="rounded-full h-12 border-[#E0E0E066] border w-12">
                 <CalendarMinus className=" ml-[11px] mt-3 h-6     object-cover" />
               </div>
-              <h1 className="text-lg font-medium">Automate Leaves</h1>
+              <h1 className="text-lg font-medium">Zapllo Leaves</h1>
               <p className="text-xs font-medium">
                 Manage your Employee Leaves & Holidays
               </p>
@@ -264,6 +264,9 @@ const DashboardPage = () => {
                 )}
               </div>
             </div>
+            {/* <div className="absolute top-2 right-2">
+              <img src="/branding/payroll.png" className="h-6 mt-2" />
+            </div> */}
           </div>
         </div>
       </div>
@@ -275,7 +278,7 @@ const DashboardPage = () => {
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
               </div>
-              <h1 className="text-lg font-medium">Automate Attendance</h1>
+              <h1 className="text-lg font-medium">Zapllo Attendance</h1>
               <p className="text-xs font-medium">
                 Track your Team Attendance & Breaks
               </p>
@@ -318,7 +321,7 @@ const DashboardPage = () => {
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/whatsapp.png' className=' ml-3 mt-[10px] h-6     object-cover' />
               </div>
-              <h1 className='text-lg font-medium'>Automate WA</h1>
+              <h1 className='text-lg font-medium'>Zapllo WABA</h1>
               <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
               <div className='pt-2'>
                 <Link href='https://app.zapllo.com/signup'>
@@ -334,7 +337,7 @@ const DashboardPage = () => {
               <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
                 <img src='/icons/crm.png' className=' ml-[10px] mt-3 h-6  invert-[100]    object-cover' />
               </div>
-              <h1 className='text-lg font-medium'>Automate CRM</h1>
+              <h1 className='text-lg font-medium'>Zapllo CRM</h1>
               <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
               <div className='pt-2'>
                 <Link href='/dashboard/tasks'>

@@ -64,7 +64,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "../ui/dialog";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import CustomDatePicker from "./date-picker";
 import CustomTimePicker from "./time-picker";
 import { Separator } from "../ui/separator";
@@ -170,7 +170,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
   // Reminder state and handlers
   const [reminders, setReminders] = useState<Reminder[]>([]); // State to store reminders
-
+  const [tempReminders, setTempReminders] = useState<Reminder[]>([]);
   // States for input controls
   const [reminderType, setReminderType] = useState<"email" | "whatsapp">(
     "email"
@@ -180,10 +180,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     "minutes"
   );
 
-  // Add reminder handler with constraints
-
+  // Add Reminder
   const addReminder = () => {
-    if (reminders.length >= 5) {
+    if (tempReminders.length >= 5) {
       toast.error("You can only add up to 5 reminders");
       return;
     }
@@ -195,7 +194,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     };
 
     // Check for duplicate reminders
-    const duplicateReminder = reminders.some(
+    const duplicateReminder = tempReminders.some(
       (r) =>
         r.notificationType === newReminder.notificationType &&
         r.value === newReminder.value &&
@@ -207,21 +206,38 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       return;
     }
 
-    setReminders((prevReminders) => [...prevReminders, newReminder]);
+    setTempReminders((prevReminders) => [...prevReminders, newReminder]);
   };
 
-  // Remove reminder
+  // Remove Reminder
   const removeReminder = (index: number) => {
-    setReminders((prevReminders) =>
+    setTempReminders((prevReminders) =>
       prevReminders.filter((_, i) => i !== index)
     );
   };
 
-  // Handle saving reminders (when clicking the save button)
+  // Handle Save Reminders
   const handleSaveReminders = () => {
-    // Only save reminders when the save button is clicked
+    setReminders(tempReminders); // Save the reminders
     toast.success("Reminders saved successfully!");
+    // setTempReminders([]); // Clear the temporary reminders
     setIsReminderModalOpen(false);
+  };
+
+  const openReminderModal = (isOpen: boolean) => {
+    if (isOpen) {
+      setTempReminders([...reminders]); // Load existing reminders into temporary state
+    } else {
+      // Clear temporary reminders and reset the input values if dialog is closed without saving
+      // Clear tempReminders and reset input fields only if there are no existing reminders
+      if (reminders.length === 0) {
+        setTempReminders([]);
+      }
+      setReminderType("email"); // Default value
+      setReminderValue(0); // Reset to default or empty value
+      setTimeUnit("minutes"); // Default value
+    }
+    setIsReminderModalOpen(isOpen);
   };
 
   const modalVariants = {
@@ -722,6 +738,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     setIsTimePickerOpen(false); // Close time picker
   };
 
+
   // Handle closing the time picker without saving (Cancel)
   const handleCancel = () => {
     setIsTimePickerOpen(false); // Simply close the time picker modal
@@ -783,11 +800,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   };
 
   return (
-    <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
+    <div className="absolute overflow-y-scroll scrollbar-hide z-[100] h-screen max-h-screen inset-0 bg-black -900  bg-opacity-50 rounded-xl flex justify-center items-center">
       <Toaster />
 
       <motion.div
-        className="bg-[#0B0D29] z-[100] h-[520px]  scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
+        className="bg-[#0B0D29] z-[100] h-fit m-auto   scrollbar-hide  text-[#D0D3D3] w-[50%] rounded-lg "
         variants={modalVariants}
         initial="hidden"
         animate={controls}
@@ -1016,7 +1033,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             >
               <Calendar className="h-5 text-sm" />
               {dueDate && dueTime ? (
-                `${format(dueDate, "PPP")} ${dueTime}`
+                <h1> {format(dueDate, "PPP")}
+                  <span className="ml-2">{format(parse(dueTime, "HH:mm", new Date()), "hh:mm a")}
+                  </span>
+                </h1>
               ) : (
                 <h1 className="text-xs">Select Date & Time</h1>
               )}
@@ -1103,14 +1123,24 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               )}
             </div>
 
-            <div
-              onClick={() => {
-                setIsReminderModalOpen(true);
-              }}
-              className="h-8 mt-4 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] "
-            >
-              <Clock className="h-5 text-center m-auto mt-1" />
+            <div className="flex gap-4">
+              <div className="flex mt-4 mb-2 gap-2">
+                <div
+                  onClick={() => {
+                    setIsReminderModalOpen(true);
+                  }}
+                  className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${reminders.length > 0 ? "border-[#815BF5]" : ""}`}
+                >
+                  <Clock className="h-5 text-center m-auto mt-1" />
+                </div>
+                {reminders.length > 0 && (
+                  <span className="text-xs mt-2">
+                    {reminders.length} Reminders
+                  </span> // Display the count of reminders
+                )}
+              </div>
             </div>
+
             {/* <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div> */}
@@ -1150,18 +1180,19 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               </div>
             )}
           </div>
-          {audioBlob && (
-            <CustomAudioPlayer
-              audioBlob={audioBlob}
-              setAudioBlob={setAudioBlob}
-            />
-          )}
-
-          <div></div>
-          <div className="flex items-center -mt-4 justify-end space-x-4">
+          <div className="mb-2">
+            {audioBlob && (
+              <CustomAudioPlayer
+                audioBlob={audioBlob}
+                setAudioBlob={setAudioBlob}
+              />
+            )}
+          </div>
+          <div className=""></div>
+          <div className="flex items-center   justify-end space-x-4">
             <Switch
               id="assign-more-tasks"
-              className="scale-125"
+              className="scale-125 mt-2 "
               checked={assignMoreTasks}
               onCheckedChange={handleCheckboxChange}
             />
@@ -1286,7 +1317,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
           >
             <Dialog
               open={isReminderModalOpen}
-              onOpenChange={setIsReminderModalOpen}
+              onOpenChange={openReminderModal}
             >
               <DialogContent className="max-w-lg mx-auto">
                 <div className="flex justify-between items-center ">
@@ -1294,10 +1325,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     <AlarmClock className="h-6 w-6" />
                     <DialogTitle>Add Task Reminders</DialogTitle>
                   </div>
-                  <CrossCircledIcon
-                    onClick={() => setIsReminderModalOpen(false)}
-                    className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
-                  />
+                  <DialogClose>
+                    <CrossCircledIcon
+                      className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                    />
+                  </DialogClose>
                 </div>
                 <Separator className="" />
                 <div className=" ">
@@ -1359,7 +1391,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   {/* Display added reminders */}
 
                   <ul className=" gap-2 mx-6 pl-12 items-center">
-                    {reminders.map((reminder, index) => (
+                    {tempReminders.map((reminder, index) => (
                       <React.Fragment key={index}>
 
                         {/* Editable Notification Type Select */}
@@ -1611,6 +1643,7 @@ interface User {
   _id: string;
   firstName: string;
   lastName: string;
+  profilePic: string;
   email: string;
 }
 
@@ -1687,12 +1720,21 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
               >
                 <div className="flex gap-2">
                   <Avatar className="h-8 w-8 rounded-full flex bg-[#815BF5] items-center">
-                    <AvatarFallback className="ml-2">
-                      <h1 className="text-sm">
-                        {`${user.firstName}`.slice(0, 1)}
-                        {`${user.lastName}`.slice(0, 1)}
-                      </h1>
-                    </AvatarFallback>
+                    {user.profilePic ? (
+                      <img
+                        src={user.profilePic}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        className="h-full w-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <AvatarFallback className="ml-2">
+
+                        <h1 className="text-sm">
+                          {`${user.firstName}`.slice(0, 1)}
+                          {`${user.lastName}`.slice(0, 1)}
+                        </h1>
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   <div>
                     <h1 className="text-sm">
