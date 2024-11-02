@@ -55,7 +55,7 @@ const sendReminderNotification = async (task: any, reminder: any, assignedUser: 
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply</p>
+                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply.</p>
             </div>
         </div>
     </div>
