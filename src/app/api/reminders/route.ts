@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Task from '../../../models/taskModal'; // Adjust the path based on your project structure
-import User, { IUser } from '../../../models/userModel'; // Adjust the path based on your project structure
+import Task from '../../../models/taskModal';
+import User, { IUser } from '../../../models/userModel';
 import connectDB from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import Category from '@/models/categoryModel';
@@ -20,16 +20,16 @@ const formatDate = (dateInput: string | Date): string => {
     return `${formattedDate} ${formattedTimeUppercase}`;
 };
 
-const sendReminderNotification = async (task: any, assignedUser: any) => {
-    console.log('Sending reminder notification for task:', task.title, 'to user:', assignedUser.email);
+const sendReminderNotification = async (task: any, reminder: any, assignedUser: any) => {
+    console.log(`Sending ${reminder.notificationType} reminder for task: ${task.title} to user: ${assignedUser.email}`);
 
-    const reminderTime = `${task.reminder.email?.value ?? 'N/A'}`;
+    const reminderTime = `${reminder.value ?? 'N/A'}`;
     const formattedDueDate = formatDate(task.dueDate);
 
     // Email Reminder
-    if (task.reminder.email && !task.reminder.email.sent && assignedUser.notifications.email) {
+    if (reminder.notificationType === 'email' && !reminder.sent && assignedUser.notifications.email) {
         console.log('Preparing to send email reminder');
-        if (task.reminder.email.value > 0) { // Check for non-zero value
+        if (reminder.value > 0) {
             console.log('Sending email reminder to', assignedUser.email);
             const emailOptions: SendEmailOptions = {
                 to: `${assignedUser.email}`,
@@ -62,9 +62,10 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
 </body>`,
             };
             try {
+                console.log('sending email')
                 await sendEmail(emailOptions);
                 console.log('Email sent successfully to', assignedUser.email);
-                task.reminder.email.sent = true;
+                reminder.sent = true; // Mark this specific reminder as sent
             } catch (error) {
                 console.error('Error sending email:', error);
                 throw new Error('Failed to send email notification');
@@ -76,54 +77,7 @@ const sendReminderNotification = async (task: any, assignedUser: any) => {
         console.log('Email reminder already sent or user has disabled email notifications');
     }
 
-    // WhatsApp Reminder
-    if (task.reminder.whatsapp && !task.reminder.whatsapp.sent && assignedUser.whatsappNo) {
-        console.log('Preparing to send WhatsApp reminder');
-        if (task.reminder.whatsapp.value > 0) { // Check for non-zero value
-            console.log('Sending WhatsApp reminder to', assignedUser.whatsappNo);
-            const reminderTime = `${task.reminder.whatsapp.value ?? 'N/A'}`;
-            const payload = {
-                phoneNumber: assignedUser.whatsappNo,
-                bodyVariables: [
-                    assignedUser.firstName,
-                    reminderTime,
-                    task.category.name,
-                    task.title,
-                    formattedDueDate,
-                    task.priority
-                ],
-                templateName: 'reminder_template',
-            };
-            console.log('WhatsApp payload:', JSON.stringify(payload));
-
-            try {
-                const response = await fetch('https://zapllo.com/api/webhook', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (!response.ok) {
-                    const responseData = await response.json();
-                    console.error('WhatsApp Webhook API error:', responseData.message);
-                    throw new Error(`WhatsApp Webhook API error: ${responseData.message}`);
-                } else {
-                    console.log('WhatsApp notification sent successfully');
-                    task.reminder.whatsapp.sent = true;
-                }
-            } catch (error) {
-                console.error('Error sending WhatsApp notification:', error);
-                throw new Error('Failed to send WhatsApp notification');
-            }
-        } else {
-            console.log('WhatsApp reminder value is zero or less; skipping WhatsApp reminder');
-        }
-    } else {
-        console.log('WhatsApp reminder already sent or user has no WhatsApp number');
-    }
-
+    // Save task to update reminder sent status
     try {
         await task.save();
         console.log('Task updated with sent reminders');
@@ -139,13 +93,6 @@ export async function GET(req: NextRequest) {
         const nowUTC = new Date(now.toISOString());
 
         console.log('Current UTC time:', nowUTC.toISOString());
-        console.log('Registered Models:', mongoose.models);
-
-        const users = await User.find({});
-        console.log(`Found ${users.length} users`);
-
-        const category = await Category.find({});
-        console.log(`Found ${category.length} categories`);
 
         const tasks = await Task.find()
             .populate<{ assignedUser: IUser }>('assignedUser')
@@ -155,82 +102,39 @@ export async function GET(req: NextRequest) {
 
         for (const task of tasks) {
             console.log(`Processing task: ${task.title}, dueDate: ${task.dueDate}`);
-            if (task.reminder) {
-                let emailReminderDate = new Date(task.dueDate);
-                let whatsappReminderDate = new Date(task.dueDate);
+            
+            for (const reminder of task.reminders) {
+                let reminderDate = new Date(task.dueDate);
 
-                // Adjust for email reminder
-                if (task.reminder.email) {
-                    console.log(`Email reminder settings: type=${task.reminder.email.type}, value=${task.reminder.email.value}`);
-                    if (task.reminder.email.type === 'minutes' && task.reminder.email.value) {
-                        emailReminderDate.setMinutes(emailReminderDate.getMinutes() - task.reminder.email.value);
-                    } else if (task.reminder.email.type === 'hours' && task.reminder.email.value) {
-                        emailReminderDate.setHours(emailReminderDate.getHours() - task.reminder.email.value);
-                    } else if (task.reminder.email.type === 'days' && task.reminder.email.value) {
-                        emailReminderDate.setDate(emailReminderDate.getDate() - task.reminder.email.value);
-                    }
-                    console.log(`Calculated emailReminderDate: ${emailReminderDate.toISOString()}`);
+                // Adjust reminderDate based on the reminder type
+                if (reminder.type === 'minutes' && reminder.value) {
+                    reminderDate.setMinutes(reminderDate.getMinutes() - reminder.value);
+                } else if (reminder.type === 'hours' && reminder.value) {
+                    reminderDate.setHours(reminderDate.getHours() - reminder.value);
+                } else if (reminder.type === 'days' && reminder.value) {
+                    reminderDate.setDate(reminderDate.getDate() - reminder.value);
+                } else if (reminder.type === 'specific' && reminder.date) {
+                    reminderDate = new Date(reminder.date);
                 }
 
-                // Adjust for WhatsApp reminder
-                if (task.reminder.whatsapp) {
-                    console.log(`WhatsApp reminder settings: type=${task.reminder.whatsapp.type}, value=${task.reminder.whatsapp.value}`);
-                    if (task.reminder.whatsapp.type === 'minutes' && task.reminder.whatsapp.value) {
-                        whatsappReminderDate.setMinutes(whatsappReminderDate.getMinutes() - task.reminder.whatsapp.value);
-                    } else if (task.reminder.whatsapp.type === 'hours' && task.reminder.whatsapp.value) {
-                        whatsappReminderDate.setHours(whatsappReminderDate.getHours() - task.reminder.whatsapp.value);
-                    } else if (task.reminder.whatsapp.type === 'days' && task.reminder.whatsapp.value) {
-                        whatsappReminderDate.setDate(whatsappReminderDate.getDate() - task.reminder.whatsapp.value);
-                    }
-                    console.log(`Calculated whatsappReminderDate: ${whatsappReminderDate.toISOString()}`);
-                }
+                console.log(`Calculated reminderDate for ${reminder.notificationType}: ${reminderDate.toISOString()}`);
 
-                // Handle specific reminder dates for email
-                if (task.reminder.email?.type === 'specific' && task.reminder.email.date) {
-                    const specificEmailReminderDate = new Date(task.reminder.email.date);
-                    console.log(`Specific email reminder date: ${specificEmailReminderDate.toISOString()}`);
-                    if (specificEmailReminderDate <= nowUTC) {
-                        console.log('Email reminder is due now or overdue');
-                        const assignedUser = task.assignedUser;
-                        if (!assignedUser || !assignedUser.notifications.email) {
-                            console.error('User or email notification setting is missing');
-                            continue;
-                        }
-                        await sendReminderNotification(task, assignedUser);
-                    }
-                }
-
-                // Handle specific reminder dates for WhatsApp
-                if (task.reminder.whatsapp?.type === 'specific' && task.reminder.whatsapp.date) {
-                    const specificWhatsAppReminderDate = new Date(task.reminder.whatsapp.date);
-                    console.log(`Specific WhatsApp reminder date: ${specificWhatsAppReminderDate.toISOString()}`);
-                    if (specificWhatsAppReminderDate <= nowUTC) {
-                        console.log('WhatsApp reminder is due now or overdue');
-                        const assignedUser = task.assignedUser;
-                        if (!assignedUser || !assignedUser.whatsappNo) {
-                            console.error('User or WhatsApp number is missing');
-                            continue;
-                        }
-                        await sendReminderNotification(task, assignedUser);
-                    }
-                }
-
-                // Check if general reminder is due
-                if (emailReminderDate <= nowUTC || whatsappReminderDate <= nowUTC) {
-                    console.log('General reminder is due now or overdue');
+                // Check if the reminder is due
+                if (reminderDate <= nowUTC && !reminder.sent) {
+                    console.log(`${reminder.notificationType} reminder is due now or overdue`);
                     const assignedUser = task.assignedUser;
                     if (!assignedUser) {
                         console.error('Assigned user is missing');
                         continue;
                     }
-                    await sendReminderNotification(task, assignedUser);
+                    console.log('sending email')
+                    await sendReminderNotification(task, reminder, assignedUser);
                 } else {
-                    console.log('No reminders are due for this task');
+                    console.log(`No due reminders for this task: ${task.title}`);
                 }
-            } else {
-                console.log('No reminders set for this task');
             }
         }
+
         return new Response(JSON.stringify({ message: 'Reminders processed successfully.' }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },

@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
             user: userId,
             organization: authenticatedUser.organization,
         };
+        console.log(taskData, 'task data')
 
         const newTask = new Task(taskData);
 

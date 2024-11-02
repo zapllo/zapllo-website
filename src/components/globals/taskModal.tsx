@@ -551,10 +551,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   };
 
   const handleAssignTask = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent form submission refresh
+    e.preventDefault();
     if (!dueDate || !dueTime) {
       alert("Due date and time are required.");
-      return; // Stop execution if validation fails
+      return;
     }
     setLoading(true);
 
@@ -595,6 +595,33 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       }
     }
 
+    // Format reminders as an array of objects
+    const reminders = [];
+    if (emailReminderType && emailReminderValue) {
+      reminders.push({
+        notificationType: "email",
+        type: emailReminderType,
+        value: emailReminderValue,
+      });
+    }
+
+    if (whatsappReminderType && whatsappReminderValue) {
+      reminders.push({
+        notificationType: "whatsapp",
+        type: whatsappReminderType,
+        value: whatsappReminderValue,
+      });
+    }
+
+    // Add specific reminder if provided
+    if (reminderDate) {
+      reminders.push({
+        notificationType: "specific",
+        type: "specific",
+        date: reminderDate.toISOString(),
+      });
+    }
+
     const taskData = {
       title,
       description,
@@ -609,28 +636,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       attachment: fileUrls, // Use the URLs from S3 upload
       audioUrl, // Add the audio URL here
       links,
-      reminder: {
-        email:
-          emailReminderType === "specific"
-            ? null
-            : {
-              type: emailReminderType,
-              value: emailReminderValue,
-            },
-        whatsapp:
-          whatsappReminderType === "specific"
-            ? null
-            : {
-              type: whatsappReminderType,
-              value: whatsappReminderValue,
-            },
-        specific: reminderDate
-          ? {
-            date: reminderDate.toISOString(),
-          }
-          : null,
-      },
+      reminders: tempReminders, // Include the formatted reminders array
     };
+    // Log taskData before sending to ensure reminders are included
+    console.log("Task data being sent:", taskData);
 
     try {
       const response = await fetch("/api/tasks/create", {
@@ -649,7 +658,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         toast.success("Task created successfully!");
 
         if (assignMoreTasks) {
-          // Clear fields when "Assign More Tasks" is checked
           clearFormFields();
         } else {
           closeModal();
@@ -663,6 +671,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       toast.error(error.message);
     }
   };
+
+  console.log(tempReminders, 'reminders')
 
   const clearFormFields = () => {
     setTitle("");
