@@ -14,6 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import {
   CheckCheck,
@@ -77,7 +78,6 @@ import {
 } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogOverlay,
@@ -304,7 +304,7 @@ export default function TasksTab({
   };
 
   const clearFilters = () => {
-    toast.success("All Filters Cleared")
+    toast.success("All Filters Cleared");
     setCategoryFilter([]); // Reset category filter
     setAssignedByFilter([]); // Reset assigned by filter
     setFrequencyFilter([]); // Reset frequency filter
@@ -945,7 +945,7 @@ export default function TasksTab({
     return `${day}-${month}-${year}`;
   };
 
-  const handleDelete = async (taskId: string) => { };
+  const handleDelete = async (taskId: string) => {};
 
   const handleEditClick = () => {
     setTaskToEdit(selectedTask);
@@ -1374,11 +1374,12 @@ export default function TasksTab({
                                 onClick={() => {
                                   setActiveDateFilter("custom"); // Set directly to "custom"
                                 }}
-                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${activeDateFilter === "custom" ||
+                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${
+                                  activeDateFilter === "custom" ||
                                   (customStartDate && customEndDate)
-                                  ? "bg-[#815BF5] text-white"
-                                  : ""
-                                  }`}
+                                    ? "bg-[#815BF5] text-white"
+                                    : ""
+                                }`}
                               >
                                 Custom
                               </Button>
@@ -1414,8 +1415,8 @@ export default function TasksTab({
                                             <Calendar className="h-4" />
                                             {customStartDate
                                               ? new Date(
-                                                customStartDate
-                                              ).toLocaleDateString()
+                                                  customStartDate
+                                                ).toLocaleDateString()
                                               : "Start Date"}
                                           </div>
                                         </button>
@@ -1434,8 +1435,8 @@ export default function TasksTab({
                                             <Calendar className="h-4" />
                                             {customEndDate
                                               ? new Date(
-                                                customEndDate
-                                              ).toLocaleDateString()
+                                                  customEndDate
+                                                ).toLocaleDateString()
                                               : "End Date"}
                                           </div>
                                         </button>
@@ -1640,7 +1641,6 @@ export default function TasksTab({
                                                   className="h-full w-full rounded-full object-cover"
                                                 />
                                               ) : (
-
                                                 <h1 className="text-center text-sm mt-1 uppercase">
                                                   {`${user?.firstName?.slice(
                                                     0,
@@ -2104,7 +2104,11 @@ export default function TasksTab({
                                     onClick={clearFilters}
                                     className="bg-transparent border hover:bg-red-500 gap-2 mt-4 h-8"
                                   >
-                                    <img src='/icons/clear.png' className="h-3" />  Clear
+                                    <img
+                                      src="/icons/clear.png"
+                                      className="h-3"
+                                    />{" "}
+                                    Clear
                                   </Button>
                                 )}
                               </div>
@@ -2179,10 +2183,11 @@ export default function TasksTab({
                                       {/* Overdue Filter */}
                                       <TabsTrigger2
                                         value="overdue"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "overdue"
-                                          ? "bg-[#] hover:bg-[#]  borde]"
-                                          : "bg-[#] hover:bg-[#] "
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "overdue"
+                                            ? "bg-[#] hover:bg-[#]  borde]"
+                                            : "bg-[#] hover:bg-[#] "
+                                        }`}
                                       >
                                         <CircleAlert className="text-red-500 h-3" />
                                         Overdue ({myTasksOverdueCount})
@@ -2191,10 +2196,11 @@ export default function TasksTab({
                                       {/* Pending Filter */}
                                       <TabsTrigger2
                                         value="pending"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "pending"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "pending"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <Circle className="text-red-400 h-3" />
                                         Pending ({myTasksPendingCount})
@@ -2203,10 +2209,11 @@ export default function TasksTab({
                                       {/* In Progress Filter */}
                                       <TabsTrigger2
                                         value="inProgress"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inProgress"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "inProgress"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <IconProgress className="text-orange-500 h-3" />
                                         In Progress ({myTasksInProgressCount})
@@ -2215,10 +2222,11 @@ export default function TasksTab({
                                       {/* Completed Filter */}
                                       <TabsTrigger2
                                         value="completed"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "completed"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "completed"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <CheckCircle className="text-green-500 h-3" />
                                         Completed ({myTasksCompletedCount})
@@ -2227,10 +2235,11 @@ export default function TasksTab({
                                       {/* In Time Filter */}
                                       <TabsTrigger2
                                         value="inTime"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inTime"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "inTime"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <Clock className="text-green-500 h-3" />
                                         In Time ({myTasksInTimeCount})
@@ -2239,17 +2248,17 @@ export default function TasksTab({
                                       {/* Delayed Filter */}
                                       <TabsTrigger2
                                         value="delayed"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "delayed"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "delayed"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <CheckCircle className="text-red-500 h-3" />
                                         Delayed ({myTasksDelayedCount})
                                       </TabsTrigger2>
                                     </TabsList2>
                                   </Tabs2>
-
                                 </div>
                               </div>
                               {filteredTasks && filteredTasks.length > 0 ? (
@@ -2600,10 +2609,11 @@ export default function TasksTab({
                                       {/* Overdue Filter */}
                                       <TabsTrigger2
                                         value="overdue"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "overdue"
-                                          ? "bg-[#] hover:bg-[#]  borde]"
-                                          : "bg-[#] hover:bg-[#] "
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "overdue"
+                                            ? "bg-[#] hover:bg-[#]  borde]"
+                                            : "bg-[#] hover:bg-[#] "
+                                        }`}
                                       >
                                         <CircleAlert className="text-red-500 h-3" />
                                         Overdue ({myTasksOverdueCount})
@@ -2612,10 +2622,11 @@ export default function TasksTab({
                                       {/* Pending Filter */}
                                       <TabsTrigger2
                                         value="pending"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "pending"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "pending"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <Circle className="text-red-400 h-3" />
                                         Pending ({myTasksPendingCount})
@@ -2624,10 +2635,11 @@ export default function TasksTab({
                                       {/* In Progress Filter */}
                                       <TabsTrigger2
                                         value="inProgress"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inProgress"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "inProgress"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <IconProgress className="text-orange-500 h-3" />
                                         In Progress ({myTasksInProgressCount})
@@ -2636,10 +2648,11 @@ export default function TasksTab({
                                       {/* Completed Filter */}
                                       <TabsTrigger2
                                         value="completed"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "completed"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "completed"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <CheckCircle className="text-green-500 h-3" />
                                         Completed ({myTasksCompletedCount})
@@ -2648,10 +2661,11 @@ export default function TasksTab({
                                       {/* In Time Filter */}
                                       <TabsTrigger2
                                         value="inTime"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inTime"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "inTime"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <Clock className="text-green-500 h-3" />
                                         In Time ({myTasksInTimeCount})
@@ -2660,17 +2674,17 @@ export default function TasksTab({
                                       {/* Delayed Filter */}
                                       <TabsTrigger2
                                         value="delayed"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "delayed"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "delayed"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <CheckCircle className="text-red-500 h-3" />
                                         Delayed ({myTasksDelayedCount})
                                       </TabsTrigger2>
                                     </TabsList2>
                                   </Tabs2>
-
                                 </div>
                               </div>
                               {filteredTasks!.length > 0 ? (
@@ -2936,7 +2950,11 @@ export default function TasksTab({
                                       onClick={clearFilters}
                                       className="bg-transparent hover:bg-transparent border hover:bg-red-500 mt-4 gap-2 h-8"
                                     >
-                                      <img src='/icons/clear.png' className="h-3" />  Clear
+                                      <img
+                                        src="/icons/clear.png"
+                                        className="h-3"
+                                      />{" "}
+                                      Clear
                                     </Button>
                                   )}
                                 </div>
@@ -3030,10 +3048,11 @@ export default function TasksTab({
                                       {/* Overdue Filter */}
                                       <TabsTrigger2
                                         value="overdue"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "overdue"
-                                          ? "bg-[#] hover:bg-[#]  borde]"
-                                          : "bg-[#] hover:bg-[#] "
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "overdue"
+                                            ? "bg-[#] hover:bg-[#]  borde]"
+                                            : "bg-[#] hover:bg-[#] "
+                                        }`}
                                       >
                                         <CircleAlert className="text-red-500 h-3" />
                                         Overdue ({myTasksOverdueCount})
@@ -3042,10 +3061,11 @@ export default function TasksTab({
                                       {/* Pending Filter */}
                                       <TabsTrigger2
                                         value="pending"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "pending"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "pending"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <Circle className="text-red-400 h-3" />
                                         Pending ({myTasksPendingCount})
@@ -3054,10 +3074,11 @@ export default function TasksTab({
                                       {/* In Progress Filter */}
                                       <TabsTrigger2
                                         value="inProgress"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inProgress"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "inProgress"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <IconProgress className="text-orange-500 h-3" />
                                         In Progress ({myTasksInProgressCount})
@@ -3066,10 +3087,11 @@ export default function TasksTab({
                                       {/* Completed Filter */}
                                       <TabsTrigger2
                                         value="completed"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "completed"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "completed"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <CheckCircle className="text-green-500 h-3" />
                                         Completed ({myTasksCompletedCount})
@@ -3078,10 +3100,11 @@ export default function TasksTab({
                                       {/* In Time Filter */}
                                       <TabsTrigger2
                                         value="inTime"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "inTime"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "inTime"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <Clock className="text-green-500 h-3" />
                                         In Time ({myTasksInTimeCount})
@@ -3090,17 +3113,17 @@ export default function TasksTab({
                                       {/* Delayed Filter */}
                                       <TabsTrigger2
                                         value="delayed"
-                                        className={`h-6 w-fit flex gap-1 text-xs ${taskStatusFilter === "delayed"
-                                          ? ""
-                                          : ""
-                                          }`}
+                                        className={`h-6 w-fit flex gap-1 text-xs ${
+                                          taskStatusFilter === "delayed"
+                                            ? ""
+                                            : ""
+                                        }`}
                                       >
                                         <CheckCircle className="text-red-500 h-3" />
                                         Delayed ({myTasksDelayedCount})
                                       </TabsTrigger2>
                                     </TabsList2>
                                   </Tabs2>
-
                                 </div>
                               </div>
                               {filteredTasks!.length > 0 ? (
@@ -3321,87 +3344,112 @@ export default function TasksTab({
                       {/** Completed Modal */}
 
                       {isCompleteDialogOpen && (
-                        <Dialog open={isCompleteDialogOpen}>
-                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21] rounded-lg p-6 mx-auto max-w-2xl">
-                            <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">
-                                Task Update
-                              </DialogTitle>
-                              <DialogClose
-                                onClick={() => setIsCompleteDialogOpen(false)}
-                              >
-                                X
-                              </DialogClose>
-                            </div>
-                            <p className="text-xs -mt-2">
-                              Please add a note before marking the task as
-                              completed
-                            </p>
-                            <div className="mt-2">
-                              <Label className="text-sm">Comment</Label>
-                              <textarea
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
-                              />
-
-                              <div className="flex mb-4  mt-4 gap-4">
-                                <div
-                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
-                                  onClick={triggerImageOrVideoUpload}
-                                >
-                                  <Files className="h-5 text-center m-auto mt-1" />
-                                </div>
-                                <h1 className="text-xs mt-2">
-                                  Attach a File (All File Types Accepted)
-                                </h1>
-
-                                <input
-                                  ref={imageInputRef}
-                                  type="file"
-                                  style={{ display: "none" }}
-                                  onChange={handleImageOrVideoUpload}
-                                />
-                              </div>
-                              <div className="file-previews">
-                                {filePreviews.map((preview, index) => (
-                                  <div
-                                    key={index}
-                                    className="file-preview-item relative inline-block"
+                        <Dialog.Root open={isCompleteDialogOpen}>
+                          <Dialog.Portal>
+                            <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
+                            <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+                              <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+                                {/* <div className="flex justify-between w-full">
+                                  <DialogTitle className="text-sm">
+                                    Task Update
+                                  </DialogTitle>
+                                  <DialogClose
+                                    onClick={() =>
+                                      setIsCompleteDialogOpen(false)
+                                    }
                                   >
-                                    {files[index].type.startsWith("image/") ? (
-                                      <img
-                                        src={preview}
-                                        alt={`Preview ${index}`}
-                                        className="w-28 h-28 object-cover rounded-lg"
-                                      />
-                                    ) : (
-                                      <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
-                                        {files[index].name}
-                                      </div>
-                                    )}
-                                    <button
-                                      type="button"
-                                      onClick={() => handleRemoveFile(index)}
-                                      className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
+                                    X
+                                  </DialogClose>
+                                </div> */}
+                                <div className="flex border-b py-2  w-full justify-between ">
+                                  <Dialog.Title className="text-md   px-6 py-2 font-medium">
+                                    Task Update
+                                  </Dialog.Title>
+                                  <Dialog.DialogClose
+                                    className=" px-6 py-2"
+                                    onClick={() =>
+                                      setIsCompleteDialogOpen(false)
+                                    }
+                                  >
+                                    <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                                  </Dialog.DialogClose>
+                                </div>
+                                <p className="text-xs mt-2 px-6 text-[#787CA5]">
+                                  Please add a note before marking the task as
+                                  completed
+                                </p>
+                                <div className=" mt-4 p-6">
+                                  <Label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                                    <h1 className="text-[#787CA5]">Comment </h1>
+                                  </Label>
+                                  <textarea
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    className="border-gray-600  bg-[#0b0d29] border rounded outline-none px-2 py-2 h-24 w-full "
+                                  />
+
+                                  <div className="flex mb-4  mt-4 gap-4">
+                                    <div
+                                      className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
+                                      onClick={triggerImageOrVideoUpload}
                                     >
-                                      <X className="h-3 w-3" />
-                                    </button>
+                                      <Files className="h-5 text-center m-auto mt-1" />
+                                    </div>
+                                    <h1 className="text-xs mt-2">
+                                      Attach a File (All File Types Accepted)
+                                    </h1>
+
+                                    <input
+                                      ref={imageInputRef}
+                                      type="file"
+                                      style={{ display: "none" }}
+                                      onChange={handleImageOrVideoUpload}
+                                    />
                                   </div>
-                                ))}
+                                  <div className="file-previews">
+                                    {filePreviews.map((preview, index) => (
+                                      <div
+                                        key={index}
+                                        className="file-preview-item relative inline-block"
+                                      >
+                                        {files[index].type.startsWith(
+                                          "image/"
+                                        ) ? (
+                                          <img
+                                            src={preview}
+                                            alt={`Preview ${index}`}
+                                            className="w-28 h-28 object-cover rounded-lg"
+                                          />
+                                        ) : (
+                                          <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
+                                            {files[index].name}
+                                          </div>
+                                        )}
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleRemoveFile(index)
+                                          }
+                                          className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="flex justify-end space-x-2 mt-6 mb-6 px-6">
+                                  <Button
+                                    onClick={handleUpdateTaskStatus}
+                                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-4 -mt-6 py-2 rounded"
+                                  >
+                                    {loading ? <Loader /> : "Update Task"}
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                            <div className="mt-4 flex justify-end space-x-2">
-                              <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
-                              >
-                                {loading ? <Loader /> : "Update Task"}
-                              </Button>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                            </Dialog.Content>
+                          </Dialog.Portal>
+                        </Dialog.Root>
                       )}
 
                       <DeleteConfirmationDialog
@@ -3414,7 +3462,7 @@ export default function TasksTab({
                       {/** In Progress Modal */}
 
                       {isDialogOpen && (
-                        <Dialog open={isDialogOpen}>
+                        <Dialog.Root open={isDialogOpen}>
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
                           <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
@@ -3500,7 +3548,7 @@ export default function TasksTab({
                               </Button>
                             </div>
                           </DialogContent>
-                        </Dialog>
+                        </Dialog.Root>
                       )}
 
                       {/** Reopen Modal */}
