@@ -1,4 +1,5 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+'use client'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Separator } from '../ui/separator';
 import { UpdateIcon } from '@radix-ui/react-icons';
@@ -11,6 +12,8 @@ import { IconCopy } from '@tabler/icons-react';
 import CustomAudioPlayer from './customAudioPlayer';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { formatDistanceToNow, intervalToDuration } from 'date-fns';
+import { usePathname, useRouter } from 'next/navigation';
 
 type Props = {}
 
@@ -51,10 +54,10 @@ interface Task {
     completionDate: string;
     attachment?: string[];
     links?: string[];
-    reminder: {
-        email?: Reminder | null;  // Use the updated Reminder type
-        whatsapp?: Reminder | null;  // Use the updated Reminder type
-    } | null;
+    // reminder: [{
+    //     email?: Reminder | null;  // Use the updated Reminder type
+    //     whatsapp?: Reminder | null;  // Use the updated Reminder type
+    // }] | null;
     status: string;
     comments: Comment[];
     createdAt: string;
@@ -126,10 +129,70 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
     categories,
     formatTaskDate, }) => {
 
+    const router = useRouter();
+    const pathname = usePathname();
+    const [isVisible, setIsVisible] = useState(true);
+    const [isTrialExpired, setIsTrialExpired] = useState(false);
+    const [trialExpires, setTrialExpires] = useState<Date | null>(null);
+    const [timeMessage, setTimeMessage] = useState("");
+    const [userLoading, setUserLoading] = useState<boolean | null>(false);
+
+    const handleClose = () => setIsVisible(false);
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            try {
+                setUserLoading(true);
+                const userRes = await axios.get("/api/users/me");
+                const response = await axios.get("/api/organization/getById");
+
+                const organization = response.data.data;
+                const trialEnd = new Date(organization.trialExpires);
+                const expired = trialEnd <= new Date();
+
+                setTrialExpires(trialEnd);
+                setIsTrialExpired(expired);
+                setUserLoading(false);
+            } catch (error) {
+                console.error("Error fetching user details:", error);
+            }
+        };
+
+        getUserDetails();
+    }, []);
+
+    useEffect(() => {
+        if (trialExpires) {
+            const updateTimeMessage = () => {
+                const now = new Date();
+                const trialEnd = new Date(trialExpires);
+
+                if (isTrialExpired) {
+                    // Calculate elapsed time since expiration
+                    const duration = intervalToDuration({ start: trialEnd, end: now });
+                    const message =
+                        (duration.days || 0) > 0
+                            ? `${duration.days} days ago`
+                            : `${duration.hours || 0}h ${duration.minutes || 0}m since trial expired`;
+                    setTimeMessage(message);
+                } else {
+                    // Calculate remaining time until expiration
+                    const remaining = formatDistanceToNow(trialEnd, { addSuffix: true });
+                    setTimeMessage(remaining);
+                }
+            };
+
+            updateTimeMessage(); // Initial call
+            const intervalId = setInterval(updateTimeMessage, 1000 * 60); // Update every minute
+
+            return () => clearInterval(intervalId); // Cleanup on unmount
+        }
+    }, [isTrialExpired, trialExpires]);
+
     return (
         <div>
             <Sheet open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-                <SheetContent className="max-w-4xl  w-full ">
+                <SheetContent className={`max-w-4xl scrollbar-hide z-[100] w-full `}>
                     <SheetHeader>
                         <div className="flex gap-2">
                             <ArrowLeft className="cursor-pointer h-7 w-7 bg-[#121212] hover:bg-white hover:text-black border border-white rounded-full" onClick={() => setSelectedTask(null)} />
@@ -155,9 +218,9 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                         </div>
                                         <h1 id="assignedUser" className="col-span-3 text-sm">{`${selectedTask.assignedUser.firstName} ${selectedTask.assignedUser.lastName}`}</h1>
 
-                                    </div>
+                                    </div >
                                 ) : null}
-                            </div>
+                            </div >
                             <div className=" flex items-center gap-4">
                                 <Label htmlFor="user" className="text-right text-xs">
                                     Assigned By
@@ -176,7 +239,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                     </div>
                                 ) : null}
                             </div>
-                        </div>
+                        </div >
                         <div className=" flex items-center gap-1 mt-4">
                             <Calendar className="h-4 text-[#E94C4C]" />
                             <Label htmlFor="user" className="text-right text-sm">
@@ -361,7 +424,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             </div>
 
                         </div>
-                        <div className="px-4">
+                        {/* <div className="px-4">
                             {selectedTask.reminder ? (
                                 <div className="flex flex-col gap-2">
                                     {(selectedTask.reminder.email?.value ?? 0) > 0 && (
@@ -392,14 +455,16 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             ) : (
                                 <p className='text-xs '>No reminders set.</p>
                             )}
-                        </div>
+                        </div> */}
 
 
-                        {selectedTask.audioUrl && (
-                            <div className="p-4 w-1/2 border rounded-xl ml-2 bg-[#121212]">
-                                <CustomAudioPlayer audioUrl={selectedTask.audioUrl} />
-                            </div>
-                        )}
+                        {
+                            selectedTask.audioUrl && (
+                                <div className="p-4 w-1/2 border rounded-xl ml-2 bg-[#121212]">
+                                    <CustomAudioPlayer audioUrl={selectedTask.audioUrl} />
+                                </div>
+                            )
+                        }
 
                         <div className="gap-2 w-1/2 px-4 mt-4 mb-4 flex">
                             {selectedTask.status === "Completed" ? (
@@ -479,7 +544,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             />
                         </div>
 
-                    </div>
+                    </div >
 
                     <Separator />
                     <div className=" rounded-xl bg-[#] p-4 mt-4 mb-4">
@@ -567,9 +632,9 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                     <SheetFooter>
 
                     </SheetFooter>
-                </SheetContent>
-            </Sheet>
-        </div>
+                </SheetContent >
+            </Sheet >
+        </div >
     )
 }
 

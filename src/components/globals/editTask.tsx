@@ -77,10 +77,10 @@ interface Task {
   completionDate: string;
   attachment?: string[];
   links?: string[];
-  reminder: {
-    email?: Reminder | null; // Use the updated Reminder type
-    whatsapp?: Reminder | null; // Use the updated Reminder type
-  } | null;
+  // reminder: [{
+  //   email?: Reminder | null; // Use the updated Reminder type
+  //   whatsapp?: Reminder | null; // Use the updated Reminder type
+  // }] | null;
   status: string;
   comments: Comment[];
   createdAt: string;
@@ -143,20 +143,20 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
     attachment: [] as string[],
     links: [] as string[],
     status: "Pending",
-    reminder: {
-      email: {
-        type: "minutes" as "minutes" | "hours" | "days" | "specific",
-        value: 0, // Default to 0 or another reasonable default
-        date: new Date(), // Ensure this is provided
-        sent: false, // Ensure this is provided
-      },
-      whatsapp: {
-        type: "minutes" as "minutes" | "hours" | "days" | "specific",
-        value: 0, // Default to 0 or another reasonable default
-        date: new Date(), // Ensure this is provided
-        sent: false, // Ensure this is provided
-      },
-    },
+    // reminder: [{
+    //   email: {
+    //     type: "minutes" as "minutes" | "hours" | "days" | "specific",
+    //     value: 0, // Default to 0 or another reasonable default
+    //     date: new Date(), // Ensure this is provided
+    //     sent: false, // Ensure this is provided
+    //   },
+    //   whatsapp: {
+    //     type: "minutes" as "minutes" | "hours" | "days" | "specific",
+    //     value: 0, // Default to 0 or another reasonable default
+    //     date: new Date(), // Ensure this is provided
+    //     sent: false, // Ensure this is provided
+    //   },
+    // }],
   });
   const [links, setLinks] = useState<string[]>([""]);
   const [files, setFiles] = useState<File[]>([]); // Updated to handle array of files
@@ -336,6 +336,21 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
         attachment: task.attachment || [],
         links: task.links || [],
         status: task.status || "Pending",
+        // reminder: [{
+        //   email: task.reminder?.email || {
+        //     type: "minutes",
+        //     value: undefined,
+        //     date: undefined,
+        //     sent: false,
+        //   },
+        //   whatsapp: task.reminder?.whatsapp || {
+        //     type: "minutes",
+        //     value: undefined,
+        //     date: undefined,
+        //     sent: false,
+        //   },
+        // },
+        // }]
         // reminder: {
         //   email: task.reminder?.email || {
         //     type: "minutes",
@@ -350,298 +365,298 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
         //     sent: false,
         //   },
         // },
-        reminder: {
-          email: task.reminder?.email || {
-            type: "minutes",
-            value: 0, // Default value
-            date: new Date(), // Default value
-            sent: false, // Default value
-          },
-          whatsapp: task.reminder?.whatsapp || {
-            type: "minutes",
-            value: 0, // Default value
-            date: new Date(), // Default value
-            sent: false, // Default value
-          },
-        },
+        // reminder: [{
+        //   email: task.reminder?.email || {
+        //     type: "minutes",
+        //     value: 0, // Default value
+        //     date: new Date(), // Default value
+        //     sent: false, // Default value
+        //   },
+        //   whatsapp: task.reminder?.whatsapp || {
+        //     type: "minutes",
+        //     value: 0, // Default value
+        //     date: new Date(), // Default value
+        //     sent: false, // Default value
+        //   },
+        // }],
       });
-    }
+}
   }, [task]);
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
+const handleChange = (
+  e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+) => {
+  const { name, value, type } = e.target;
 
-    if (type === "checkbox") {
-      // Handle checkbox change
-      const input = e.target as HTMLInputElement;
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: input.checked,
-      }));
-    } else {
-      // Handle other input types
-      const input = e.target as
-        | HTMLInputElement
-        | HTMLSelectElement
-        | HTMLTextAreaElement;
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: input.value,
-      }));
+  if (type === "checkbox") {
+    // Handle checkbox change
+    const input = e.target as HTMLInputElement;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: input.checked,
+    }));
+  } else {
+    // Handle other input types
+    const input = e.target as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: input.value,
+    }));
 
-      // Trigger modal when `repeatType` changes to "Monthly"
-      if (name === "repeatType" && input.value === "Monthly") {
-        setIsMonthlyDaysModalOpen(true);
-      }
+    // Trigger modal when `repeatType` changes to "Monthly"
+    if (name === "repeatType" && input.value === "Monthly") {
+      setIsMonthlyDaysModalOpen(true);
     }
-  };
+  }
+};
 
-  // Helper function to format the date
-  function formatDate(date: any) {
-    if (!(date instanceof Date)) return "";
+// Helper function to format the date
+function formatDate(date: any) {
+  if (!(date instanceof Date)) return "";
 
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-    const month = monthNames[date.getMonth()];
-    const day = date.getDate();
-    const year = date.getFullYear();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+  const month = monthNames[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
 
-    // Function to get the ordinal suffix for the day
-    function getOrdinalSuffix(n: any) {
-      const s = ["th", "st", "nd", "rd"],
-        v = n % 100;
-      return s[(v - 20) % 10] || s[v] || s[0];
-    }
-
-    const dayWithSuffix = day + getOrdinalSuffix(day);
-
-    // Format time to always have two digits
-    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}`;
-
-    return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
+  // Function to get the ordinal suffix for the day
+  function getOrdinalSuffix(n: any) {
+    const s = ["th", "st", "nd", "rd"],
+      v = n % 100;
+    return s[(v - 20) % 10] || s[v] || s[0];
   }
 
-  const handleDaysChange = (day: string, pressed: boolean) => {
-    setFormData((prevFormData) => {
-      const updatedDays = pressed
-        ? [...prevFormData.days, day] // Add the day if pressed is true
-        : prevFormData.days.filter((d) => d !== day); // Remove the day if pressed is false
+  const dayWithSuffix = day + getOrdinalSuffix(day);
 
-      return {
-        ...prevFormData,
-        days: updatedDays,
-      };
+  // Format time to always have two digits
+  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
+
+  return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
+}
+
+const handleDaysChange = (day: string, pressed: boolean) => {
+  setFormData((prevFormData) => {
+    const updatedDays = pressed
+      ? [...prevFormData.days, day] // Add the day if pressed is true
+      : prevFormData.days.filter((d) => d !== day); // Remove the day if pressed is false
+
+    return {
+      ...prevFormData,
+      days: updatedDays,
+    };
+  });
+};
+
+console.log(formData, "form data");
+
+const handleLinkChange = (index: number, value: string) => {
+  const updatedLinks = [...formData.links];
+  updatedLinks[index] = value;
+  setFormData((prevState) => ({
+    ...prevState,
+    links: updatedLinks,
+  }));
+};
+
+const addLink = () => {
+  setFormData((prevState) => ({
+    ...prevState,
+    links: [...prevState.links, ""],
+  }));
+};
+
+const removeLink = (index: number) => {
+  const updatedLinks = formData.links.filter((_, i) => i !== index);
+  setFormData((prevState) => ({
+    ...prevState,
+    links: updatedLinks,
+  }));
+};
+
+const handleSubmit = async () => {
+  console.log(formData, "form data"); // Check that formData contains updated 'days' and 'dates'
+
+  try {
+    setLoading(true);
+    const response = await axios.patch("/api/tasks/edit", {
+      id: task?._id,
+      ...formData,
     });
-  };
 
-  console.log(formData, "form data");
-
-  const handleLinkChange = (index: number, value: string) => {
-    const updatedLinks = [...formData.links];
-    updatedLinks[index] = value;
-    setFormData((prevState) => ({
-      ...prevState,
-      links: updatedLinks,
-    }));
-  };
-
-  const addLink = () => {
-    setFormData((prevState) => ({
-      ...prevState,
-      links: [...prevState.links, ""],
-    }));
-  };
-
-  const removeLink = (index: number) => {
-    const updatedLinks = formData.links.filter((_, i) => i !== index);
-    setFormData((prevState) => ({
-      ...prevState,
-      links: updatedLinks,
-    }));
-  };
-
-  const handleSubmit = async () => {
-    console.log(formData, "form data"); // Check that formData contains updated 'days' and 'dates'
-
-    try {
-      setLoading(true);
-      const response = await axios.patch("/api/tasks/edit", {
-        id: task?._id,
-        ...formData,
-      });
-
-      if (response.status === 200) {
-        // Ensure success response
-        onTaskUpdate(response.data.data);
-        setLoading(false);
-        onClose(); // Close the dialog on success
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error updating task:", error); // Improve error logging
-      alert("Failed to update task. Please try again."); // Provide user feedback
+    if (response.status === 200) {
+      // Ensure success response
+      onTaskUpdate(response.data.data);
+      setLoading(false);
+      onClose(); // Close the dialog on success
+    } else {
+      console.error("Unexpected response status:", response.status);
     }
-  };
+  } catch (error) {
+    console.error("Error updating task:", error); // Improve error logging
+    alert("Failed to update task. Please try again."); // Provide user feedback
+  }
+};
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedFiles = event.target.files;
+const handleFileUpload = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const selectedFiles = event.target.files;
 
-    if (selectedFiles && selectedFiles.length > 0) {
-      const validFiles: File[] = [];
-      for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
-        validFiles.push(file);
-      }
+  if (selectedFiles && selectedFiles.length > 0) {
+    const validFiles: File[] = [];
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      validFiles.push(file);
+    }
 
-      if (validFiles.length > 0) {
-        try {
-          // Prepare the form data with the selected files for upload
-          const formData = new FormData();
-          validFiles.forEach((file) => formData.append("files", file));
+    if (validFiles.length > 0) {
+      try {
+        // Prepare the form data with the selected files for upload
+        const formData = new FormData();
+        validFiles.forEach((file) => formData.append("files", file));
 
-          // Upload the files to S3
-          const s3Response = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
+        // Upload the files to S3
+        const s3Response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-          if (s3Response.ok) {
-            const s3Data = await s3Response.json();
-            const fileUrls = s3Data.fileUrls || [];
+        if (s3Response.ok) {
+          const s3Data = await s3Response.json();
+          const fileUrls = s3Data.fileUrls || [];
 
-            // Update the formData state with the file URLs from S3
-            setFormData((prevState) => ({
-              ...prevState,
-              attachment: [...prevState.attachment, ...fileUrls],
-            }));
-          } else {
-            console.error("Failed to upload files to S3");
-          }
-        } catch (error) {
-          console.error("Error uploading files:", error);
+          // Update the formData state with the file URLs from S3
+          setFormData((prevState) => ({
+            ...prevState,
+            attachment: [...prevState.attachment, ...fileUrls],
+          }));
+        } else {
+          console.error("Failed to upload files to S3");
         }
+      } catch (error) {
+        console.error("Error uploading files:", error);
       }
     }
-  };
+  }
+};
 
-  const handleRemoveFile = (fileUrl: string) => {
-    // Remove the URL from formData state
-    setFormData((prevState) => ({
-      ...prevState,
-      attachment: prevState.attachment.filter((url) => url !== fileUrl),
-    }));
-  };
+const handleRemoveFile = (fileUrl: string) => {
+  // Remove the URL from formData state
+  setFormData((prevState) => ({
+    ...prevState,
+    attachment: prevState.attachment.filter((url) => url !== fileUrl),
+  }));
+};
 
-  const handleReminderChange = (
-    type: "email" | "whatsapp",
-    field: "type" | "value" | "date",
-    value: any
-  ) => {
-    console.log(`Updating ${type} reminder:`, field, value); // Debugging line
-    setFormData((prevState) => ({
-      ...prevState,
-      reminder: {
-        ...prevState.reminder,
-        [type]: {
-          ...prevState.reminder[type],
-          [field]: value,
-        },
-      },
-    }));
-  };
+// const handleReminderChange = (
+//   type: "email" | "whatsapp",
+//   field: "type" | "value" | "date",
+//   value: any
+// ) => {
+//   console.log(`Updating ${type} reminder:`, field, value); // Debugging line
+//   setFormData((prevState) => ({
+//     ...prevState,
+//     reminder: {
+//       ...prevState.reminder,
+//       [type]: {
+//         ...prevState.reminder[type],
+//         [field]: value,
+//       },
+//     },
+//   }));
+// };
 
-  // const handleCloseMonthlyDaysModal = (selectedDays: number[]) => {
-  //     setFormData(prevState => ({
-  //         ...prevState,
-  //         dates: selectedDays,
-  //     }));
-  //     setIsMonthlyDaysModalOpen(false);
-  // };
+// const handleCloseMonthlyDaysModal = (selectedDays: number[]) => {
+//     setFormData(prevState => ({
+//         ...prevState,
+//         dates: selectedDays,
+//     }));
+//     setIsMonthlyDaysModalOpen(false);
+// };
 
-  const handleLinkInputChange = (index: number, value: string) => {
-    const updatedLinks = [...linkInputs];
-    updatedLinks[index] = value;
-    setLinkInputs(updatedLinks);
-  };
+const handleLinkInputChange = (index: number, value: string) => {
+  const updatedLinks = [...linkInputs];
+  updatedLinks[index] = value;
+  setLinkInputs(updatedLinks);
+};
 
-  const removeLinkInputField = (index: number) => {
-    const updatedLinks = linkInputs.filter((_, i) => i !== index);
-    setLinkInputs(updatedLinks);
-  };
+const removeLinkInputField = (index: number) => {
+  const updatedLinks = linkInputs.filter((_, i) => i !== index);
+  setLinkInputs(updatedLinks);
+};
 
-  const addLinkInputField = () => {
-    setLinkInputs([...linkInputs, ""]);
-  };
+const addLinkInputField = () => {
+  setLinkInputs([...linkInputs, ""]);
+};
 
-  const handleSaveLinks = () => {
-    setFormData((prevState) => ({
-      ...prevState,
-      links: linkInputs,
-    }));
-    setIsLinkModalOpen(false);
-  };
+const handleSaveLinks = () => {
+  setFormData((prevState) => ({
+    ...prevState,
+    links: linkInputs,
+  }));
+  setIsLinkModalOpen(false);
+};
 
-  const nonEmptyLinksCount = formData.links.filter(
-    (link) => link.trim() !== ""
-  ).length;
+const nonEmptyLinksCount = formData.links.filter(
+  (link) => link.trim() !== ""
+).length;
 
-  console.log(formData, "formdata");
-  if (!open) return null; // Render nothing if the dialog is not open
+console.log(formData, "formdata");
+if (!open) return null; // Render nothing if the dialog is not open
 
-  return (
-    <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[#0B0D29] border max-h-screen h-fit m-auto overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
-        <div className="flex w-full justify-between mb-4">
-          <h2 className="text-lg font-medium ">Edit Task</h2>
-          <button className="cursor-pointer  text-lg" onClick={onClose}>
-            <img
-              src="/icons/cross.png"
-              className="rounded-full h-6  hover:bg-[#121212]"
-            />
-          </button>
-        </div>
+return (
+  <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-[#0B0D29] border max-h-screen h-fit m-auto overflow-y-scroll scrollbar-hide p-6 text-xs rounded-lg max-w-screen w-[50%] shadow-lg">
+      <div className="flex w-full justify-between mb-4">
+        <h2 className="text-lg font-medium ">Edit Task</h2>
+        <button className="cursor-pointer  text-lg" onClick={onClose}>
+          <img
+            src="/icons/cross.png"
+            className="rounded-full h-6  hover:bg-[#121212]"
+          />
+        </button>
+      </div>
 
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          className="w-full p-2 border bg-transparent outline-none rounded "
-        />
+      <input
+        type="text"
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
+        className="w-full p-2 border bg-transparent outline-none rounded "
+      />
 
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          className="w-full bg-transparent outline-none p-2 h-12  border rounded mt-2"
-          rows={4}
-        />
+      <textarea
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        className="w-full bg-transparent outline-none p-2 h-12  border rounded mt-2"
+        rows={4}
+      />
 
-        <div className="grid gap-2 grid-cols-2 mt-2">
-          <div className="flex justify-between gap-2 w-full">
-            {/* <div className='w-full'>
+      <div className="grid gap-2 grid-cols-2 mt-2">
+        <div className="flex justify-between gap-2 w-full">
+          {/* <div className='w-full'>
                             <label className="block mb-2">
 
                                 <select
@@ -658,54 +673,54 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
                                 </select>
                             </label>
                         </div> */}
-            <div className="w-full">
-              <button
-                type="button"
-                className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
-                onClick={handleOpen}
-              >
-                {formData ? (
-                  formData.assignedUserFirstName
-                ) : (
-                  <h1 className="flex gap-2">
-                    <User className="h-4" /> Select User{" "}
-                  </h1>
-                )}
-                <CaretDownIcon />
-              </button>
-            </div>
-
-            {openUser && (
-              <UserSelectPopup
-                users={users}
-                assignedUser={formData.assignedUser}
-                setAssignedUser={setAssignedUser}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                onClose={handleCloseUserPopup}
-                closeOnSelectUser={handleUserClose}
-              />
-            )}
-          </div>
           <div className="w-full">
             <button
               type="button"
-              className="p-2 text-xs flex border-2   bg-transparent justify-between w-full text-start  rounded"
-              onClick={handleCategoryOpen}
+              className="p-2 flex text-xs justify-between border-2  bg-transparent w-full text-start  rounded"
+              onClick={handleOpen}
             >
               {formData ? (
-                formData.categoryName
+                formData.assignedUserFirstName
               ) : (
                 <h1 className="flex gap-2">
-                  <Tag className="h-4" /> Select Category{" "}
+                  <User className="h-4" /> Select User{" "}
                 </h1>
               )}
               <CaretDownIcon />
             </button>
           </div>
 
-          <div className="   rounded-lg flex gap-2 ml-auto">
-            {/* <label className="block mb-2 ">
+          {openUser && (
+            <UserSelectPopup
+              users={users}
+              assignedUser={formData.assignedUser}
+              setAssignedUser={setAssignedUser}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onClose={handleCloseUserPopup}
+              closeOnSelectUser={handleUserClose}
+            />
+          )}
+        </div>
+        <div className="w-full">
+          <button
+            type="button"
+            className="p-2 text-xs flex border-2   bg-transparent justify-between w-full text-start  rounded"
+            onClick={handleCategoryOpen}
+          >
+            {formData ? (
+              formData.categoryName
+            ) : (
+              <h1 className="flex gap-2">
+                <Tag className="h-4" /> Select Category{" "}
+              </h1>
+            )}
+            <CaretDownIcon />
+          </button>
+        </div>
+
+        <div className="   rounded-lg flex gap-2 ml-auto">
+          {/* <label className="block mb-2 ">
                             <select
                                 name="category"
                                 value={formData.category}
@@ -719,275 +734,272 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
                                 ))}
                             </select>
                         </label> */}
-            {categoryOpen && (
-              <CategorySelectPopup
-                categories={categories}
-                category={formData.category}
-                setCategory={setCategory}
-                newCategory={newCategory}
-                setNewCategory={setNewCategory}
-                searchCategoryQuery={searchCategoryQuery}
-                setSearchCategoryQuery={setSearchCategoryQuery}
-                onClose={handleCloseCategoryPopup}
-                closeOnSelect={handleCategoryClose}
-              />
-            )}
-          </div>
-        </div>
-        <div className="w-full flex justify-between">
-          <div className="block mb-2">
-            <div className="flex gap-2 border px-4 py-5 w-full rounded ">
-              <h1 className="text-xs font-bold">Priority:</h1>
-
-              <div className="">
-                {["High", "Medium", "Low"].map((level) => (
-                  <label
-                    key={level}
-                    className={`px-4 py-1 text-xs border border-[#505356] font-medium cursor-pointer ${
-                      formData.priority === level
-                        ? "bg-[#017A5B] text-white"
-                        : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="priority"
-                      value={level}
-                      checked={formData.priority === level}
-                      onChange={handleChange}
-                      className="hidden"
-                    />
-                    {level}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-2 ml-40 items-center ">
-            <Repeat className="h-4" />
-            <Label htmlFor="repeat" className="font-semibold text-xs ">
-              Repeat
-            </Label>
-            <input
-              type="checkbox"
-              name="repeat"
-              checked={formData.repeat}
-              onChange={handleChange}
-              className="mr-2"
+          {categoryOpen && (
+            <CategorySelectPopup
+              categories={categories}
+              category={formData.category}
+              setCategory={setCategory}
+              newCategory={newCategory}
+              setNewCategory={setNewCategory}
+              searchCategoryQuery={searchCategoryQuery}
+              setSearchCategoryQuery={setSearchCategoryQuery}
+              onClose={handleCloseCategoryPopup}
+              closeOnSelect={handleCategoryClose}
             />
-          </div>
+          )}
         </div>
-        {formData.repeat && (
-          <div className="flex w-full relative justify-end">
-            <label className="block absolute mb-2">
-              Repeat Type:
-              <select
-                name="repeatType"
-                value={formData.repeatType}
-                onChange={handleChange}
-                className="w-full p-2 border outline-none rounded mt-1"
-              >
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Monthly">Monthly</option>
-              </select>
-            </label>
-          </div>
-        )}
+      </div>
+      <div className="w-full flex justify-between">
+        <div className="block mb-2">
+          <div className="flex gap-2 border px-4 py-5 w-full rounded ">
+            <h1 className="text-xs font-bold">Priority:</h1>
 
-        {formData.repeatType === "Weekly" && formData.repeat && (
-          <div className="mb-4 ml-2 mt-12">
-            <Label className="block font-medium mb-2">Select Days</Label>
-            <div className="grid grid-cols-7 p-2 rounded">
-              {[
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-              ].map((day) => (
-                <div
-                  key={day}
-                  className="flex gap-2 cursor-pointer items-center"
+            <div className="">
+              {["High", "Medium", "Low"].map((level) => (
+                <label
+                  key={level}
+                  className={`px-4 py-1 text-xs border border-[#505356] font-medium cursor-pointer ${formData.priority === level
+                    ? "bg-[#017A5B] text-white"
+                    : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
+                    }`}
                 >
-                  <Toggle
-                    variant="outline"
-                    aria-label={`${day}`}
-                    pressed={formData.days.includes(day)} // Set pressed state based on inclusion in formData.days
-                    onPressedChange={(pressed) =>
-                      handleDaysChange(day, pressed)
-                    } // Update handler to pass the pressed state
-                    className={
-                      formData.days.includes(day)
-                        ? "text-white cursor-pointer"
-                        : "text-black cursor-pointer"
-                    }
-                  >
-                    <Label
-                      htmlFor={day}
-                      className="font-semibold cursor-pointer"
-                    >
-                      {day.slice(0, 1)}
-                    </Label>
-                  </Toggle>
-                </div>
+                  <input
+                    type="radio"
+                    name="priority"
+                    value={level}
+                    checked={formData.priority === level}
+                    onChange={handleChange}
+                    className="hidden"
+                  />
+                  {level}
+                </label>
               ))}
             </div>
           </div>
-        )}
+        </div>
 
-        {formData.repeatType === "Monthly" && formData.repeat && (
-          <div>
-            {isMonthlyDaysModalOpen && (
-              <DaysSelectModal
-                isOpen={isMonthlyDaysModalOpen}
-                onOpenChange={setIsMonthlyDaysModalOpen}
-                selectedDays={formData.dates}
-                setSelectedDays={(update) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    dates:
-                      typeof update === "function"
-                        ? update(prev.dates)
-                        : update, // Handles both function and direct state
-                  }))
-                }
-              />
-            )}
-          </div>
-        )}
-        <div className="flex gap-2 ">
-          <label className="block mb-2">
-            <Button
-              type="button"
-              onClick={() => setIsDateTimeModalOpen(true)}
-              className=" border-2 text-xs rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
+        <div className="flex gap-2 ml-40 items-center ">
+          <Repeat className="h-4" />
+          <Label htmlFor="repeat" className="font-semibold text-xs ">
+            Repeat
+          </Label>
+          <input
+            type="checkbox"
+            name="repeat"
+            checked={formData.repeat}
+            onChange={handleChange}
+            className="mr-2"
+          />
+        </div>
+      </div>
+      {formData.repeat && (
+        <div className="flex w-full relative justify-end">
+          <label className="block absolute mb-2">
+            Repeat Type:
+            <select
+              name="repeatType"
+              value={formData.repeatType}
+              onChange={handleChange}
+              className="w-full p-2 border outline-none rounded mt-1"
             >
-              <Calendar className="h-5 text-sm" />
-              {formData.dueDate ? (
-                <span>{formatDate(formData.dueDate)}</span>
-              ) : (
-                <h1 className="text-xs">Select Date & Time</h1>
-              )}
-            </Button>
-            {/* <input
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+            </select>
+          </label>
+        </div>
+      )}
+
+      {formData.repeatType === "Weekly" && formData.repeat && (
+        <div className="mb-4 ml-2 mt-12">
+          <Label className="block font-medium mb-2">Select Days</Label>
+          <div className="grid grid-cols-7 p-2 rounded">
+            {[
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ].map((day) => (
+              <div
+                key={day}
+                className="flex gap-2 cursor-pointer items-center"
+              >
+                <Toggle
+                  variant="outline"
+                  aria-label={`${day}`}
+                  pressed={formData.days.includes(day)} // Set pressed state based on inclusion in formData.days
+                  onPressedChange={(pressed) =>
+                    handleDaysChange(day, pressed)
+                  } // Update handler to pass the pressed state
+                  className={
+                    formData.days.includes(day)
+                      ? "text-white cursor-pointer"
+                      : "text-black cursor-pointer"
+                  }
+                >
+                  <Label
+                    htmlFor={day}
+                    className="font-semibold cursor-pointer"
+                  >
+                    {day.slice(0, 1)}
+                  </Label>
+                </Toggle>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {formData.repeatType === "Monthly" && formData.repeat && (
+        <div>
+          {isMonthlyDaysModalOpen && (
+            <DaysSelectModal
+              isOpen={isMonthlyDaysModalOpen}
+              onOpenChange={setIsMonthlyDaysModalOpen}
+              selectedDays={formData.dates}
+              setSelectedDays={(update) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  dates:
+                    typeof update === "function"
+                      ? update(prev.dates)
+                      : update, // Handles both function and direct state
+                }))
+              }
+            />
+          )}
+        </div>
+      )}
+      <div className="flex gap-2 ">
+        <label className="block mb-2">
+          <Button
+            type="button"
+            onClick={() => setIsDateTimeModalOpen(true)}
+            className=" border-2 text-xs rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
+          >
+            <Calendar className="h-5 text-sm" />
+            {formData.dueDate ? (
+              <span>{formatDate(formData.dueDate)}</span>
+            ) : (
+              <h1 className="text-xs">Select Date & Time</h1>
+            )}
+          </Button>
+          {/* <input
                             type="date"
                             name="dueDate"
                             value={formData.dueDate}
                             onChange={handleChange}
                             className=" p-2 ml-1 border rounded mt-1"
                         /> */}
-          </label>
-        </div>
-        {isDateTimeModalOpen && (
-          <Dialog
-            open={isDateTimeModalOpen}
-            onOpenChange={() => setIsDateTimeModalOpen(false)}
+        </label>
+      </div>
+      {isDateTimeModalOpen && (
+        <Dialog
+          open={isDateTimeModalOpen}
+          onOpenChange={() => setIsDateTimeModalOpen(false)}
+        >
+          <DialogContent className="scale-75">
+            <DialogDescription>
+              <div className="flex flex-col w-full  ">
+                <AnimatePresence>
+                  {isDatePickerVisible ? (
+                    <motion.div
+                      key="date-picker"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      className=""
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.3, ease: "linear" }}
+                    >
+                      <CustomDatePicker
+                        selectedDate={formData.dueDate ?? new Date()}
+                        onDateChange={(date: Date) => {
+                          setDueDate(date);
+                          setIsDatePickerVisible(false);
+                        }}
+                        onCloseDialog={() => setIsDateTimeModalOpen(false)} // Add this line to fix the error
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="time-picker"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.3, ease: "linear" }}
+                    >
+                      <CustomTimePicker
+                        onCancel={() => setIsDateTimeModalOpen(false)}
+                        onAccept={() => setIsDateTimeModalOpen(false)}
+                        onBackToDatePicker={() =>
+                          setIsDatePickerVisible(true)
+                        }
+                        selectedTime={dueTime}
+                        onTimeChange={setDueTime}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          onClick={() => setIsDatePickerVisible(true)}
+                          className="bg-gray-600 hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
+                        >
+                          Back to Date Picker
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={handleUpdateDateTime}
+                          className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
+                        >
+                          Update Time & Date
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      )}
+      <div className="flex    gap-4">
+        <div className="flex mt-4 gap-2">
+          <div
+            onClick={() => {
+              setIsLinkModalOpen(true);
+            }}
+            className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${nonEmptyLinksCount > 0 ? "border-[#017A5B]" : ""
+              }`}
           >
-            <DialogContent className="scale-75">
-              <DialogDescription>
-                <div className="flex flex-col w-full  ">
-                  <AnimatePresence>
-                    {isDatePickerVisible ? (
-                      <motion.div
-                        key="date-picker"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        className=""
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.3, ease: "linear" }}
-                      >
-                        <CustomDatePicker
-                          selectedDate={formData.dueDate ?? new Date()}
-                          onDateChange={(date: Date) => {
-                            setDueDate(date);
-                            setIsDatePickerVisible(false);
-                          }}
-                          onCloseDialog={() => setIsDateTimeModalOpen(false)} // Add this line to fix the error
-                        />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="time-picker"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.3, ease: "linear" }}
-                      >
-                        <CustomTimePicker
-                          onCancel={() => setIsDateTimeModalOpen(false)}
-                          onAccept={() => setIsDateTimeModalOpen(false)}
-                          onBackToDatePicker={() =>
-                            setIsDatePickerVisible(true)
-                          }
-                          selectedTime={dueTime}
-                          onTimeChange={setDueTime}
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            onClick={() => setIsDatePickerVisible(true)}
-                            className="bg-gray-600 hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
-                          >
-                            Back to Date Picker
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={handleUpdateDateTime}
-                            className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
-                          >
-                            Update Time & Date
-                          </Button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </DialogDescription>
-            </DialogContent>
-          </Dialog>
-        )}
-        <div className="flex    gap-4">
-          <div className="flex mt-4 gap-2">
-            <div
-              onClick={() => {
-                setIsLinkModalOpen(true);
-              }}
-              className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
-                nonEmptyLinksCount > 0 ? "border-[#017A5B]" : ""
-              }`}
-            >
-              <Link className="h-5 text-center m-auto mt-1" />
-            </div>
-            {nonEmptyLinksCount > 0 && (
-              <span className="text-xs mt-2">{nonEmptyLinksCount} Links</span>
-            )}
+            <Link className="h-5 text-center m-auto mt-1" />
           </div>
+          {nonEmptyLinksCount > 0 && (
+            <span className="text-xs mt-2">{nonEmptyLinksCount} Links</span>
+          )}
+        </div>
 
-          <div className="flex mt-4 gap-2">
-            <div
-              onClick={() => {
-                setIsAttachmentModalOpen(true);
-              }}
-              className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
-                formData.attachment.length > 0 ? "border-[#017A5B]" : ""
+        <div className="flex mt-4 gap-2">
+          <div
+            onClick={() => {
+              setIsAttachmentModalOpen(true);
+            }}
+            className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${formData.attachment.length > 0 ? "border-[#017A5B]" : ""
               }`}
-            >
-              <Paperclip className="h-5 text-center m-auto mt-1" />
-            </div>
-            {formData.attachment.length > 0 && (
-              <span className="text-xs mt-2 text">
-                {formData.attachment.length} Attachments
-              </span> // Display the count
-            )}
+          >
+            <Paperclip className="h-5 text-center m-auto mt-1" />
           </div>
+          {formData.attachment.length > 0 && (
+            <span className="text-xs mt-2 text">
+              {formData.attachment.length} Attachments
+            </span> // Display the count
+          )}
+        </div>
 
-          <div className="flex gap-4">
-            <div className="flex mt-4 mb-2 gap-2">
-              {/* <div
+        <div className="flex gap-4">
+          <div className="flex mt-4 mb-2 gap-2">
+            {/* <div
                 onClick={() => {
                   setIsReminderModalOpen(true);
                 }}
@@ -995,27 +1007,26 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
               >
                 <Clock className="h-5 text-center m-auto mt-1" />
               </div> */}
-              <div
-                onClick={() => {
-                  setIsReminderModalOpen(true);
-                }}
-                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
-                  reminders.length > 0 ? "border-[#815BF5]" : ""
+            <div
+              onClick={() => {
+                setIsReminderModalOpen(true);
+              }}
+              className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${reminders.length > 0 ? "border-[#815BF5]" : ""
                 }`}
-              >
-                <Clock className="h-5 text-center m-auto mt-1" />
-              </div>
-              {reminders.length > 0 && (
-                <span className="text-xs mt-2">
-                  {reminders.length} Reminders
-                </span> // Display the count of reminders
-              )}
+            >
+              <Clock className="h-5 text-center m-auto mt-1" />
             </div>
+            {reminders.length > 0 && (
+              <span className="text-xs mt-2">
+                {reminders.length} Reminders
+              </span> // Display the count of reminders
+            )}
           </div>
-          {/* <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
+        </div>
+        {/* <div onClick={() => { setIsRecordingModalOpen(true) }} className='h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] '>
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div> */}
-          {/* {recording ? (
+        {/* {recording ? (
                         <div onClick={stopRecording} className='h-8 mt-4 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500'>
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div>
@@ -1024,344 +1035,344 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
                             <Mic className='h-5 text-center m-auto mt-1' />
                         </div>
                     )} */}
-        </div>
-        <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
-          <DialogContent>
-            <div className="flex justify-between">
-              <DialogTitle>Add Links</DialogTitle>
-              <DialogClose>X</DialogClose>
-            </div>
-            <DialogDescription>Attach Links to the Task.</DialogDescription>
-            <div className="mb-4">
-              <Label className="block font-semibold mb-2">Links</Label>
-              {/* {links.map((link, index) => (
+      </div>
+      <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
+        <DialogContent>
+          <div className="flex justify-between">
+            <DialogTitle>Add Links</DialogTitle>
+            <DialogClose>X</DialogClose>
+          </div>
+          <DialogDescription>Attach Links to the Task.</DialogDescription>
+          <div className="mb-4">
+            <Label className="block font-semibold mb-2">Links</Label>
+            {/* {links.map((link, index) => (
                                 <div key={index} className="flex gap-2 items-center mb-2">
                                     <input type="text" value={link} onChange={(e) => handleLinkChange(index, e.target.value)} className="w-full outline-none border-[#505356]  bg-transparent border rounded px-3 py-2 mr-2" />
                                     <Button type="button" onClick={() => removeLinkField(index)} className="bg-red-500 hover:bg-red-500 text-white rounded">Remove</Button>
                                 </div>
                             ))} */}
-              {linkInputs.map((link, index) => (
-                <div key={index} className="flex items-center mb-2">
-                  <input
-                    type="text"
-                    value={link}
-                    onChange={(e) =>
-                      handleLinkInputChange(index, e.target.value)
-                    }
-                    className="w-full p-2 border outline-none rounded mr-2"
-                  />
-                  <button
-                    onClick={() => removeLinkInputField(index)}
-                    className="bg-red-500 text-white p-2 rounded"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-
-              <div className="w-full flex justify-between mt-6">
-                <Button
-                  type="button"
-                  onClick={addLinkInputField}
-                  className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded"
+            {linkInputs.map((link, index) => (
+              <div key={index} className="flex items-center mb-2">
+                <input
+                  type="text"
+                  value={link}
+                  onChange={(e) =>
+                    handleLinkInputChange(index, e.target.value)
+                  }
+                  className="w-full p-2 border outline-none rounded mr-2"
+                />
+                <button
+                  onClick={() => removeLinkInputField(index)}
+                  className="bg-red-500 text-white p-2 rounded"
                 >
-                  Add Link
-                  <Plus />
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleSaveLinks}
-                  className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded"
-                >
-                  Save Links
-                </Button>
+                  Remove
+                </button>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-        <Dialog
-          open={isAttachmentModalOpen}
-          onOpenChange={setIsAttachmentModalOpen}
-        >
-          <DialogContent>
-            <div className="flex w-full justify-between">
-              <DialogTitle>Add an Attachment</DialogTitle>
-              <DialogClose>X</DialogClose>
-            </div>
-            <DialogDescription>Add Attachments to the Task.</DialogDescription>
-            <div className="flex items-center space-x-2">
-              <input
-                id="file-upload"
-                type="file"
-                multiple
-                onChange={handleFileUpload}
-                style={{ display: "none" }} // Hide the file input
-              />
+            ))}
 
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer flex items-center space-x-2"
+            <div className="w-full flex justify-between mt-6">
+              <Button
+                type="button"
+                onClick={addLinkInputField}
+                className="bg-transparent border border-[#505356] text-white hover:bg-[#017A5B] px-4 py-2 flex gap-2 rounded"
               >
-                <FaUpload className="h-5 w-5" />
-                <span>Attach Files</span>
-              </label>
+                Add Link
+                <Plus />
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSaveLinks}
+                className="bg-[#017A5B] text-white hover:bg-[#017A5B] px-4 py-2 rounded"
+              >
+                Save Links
+              </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isAttachmentModalOpen}
+        onOpenChange={setIsAttachmentModalOpen}
+      >
+        <DialogContent>
+          <div className="flex w-full justify-between">
+            <DialogTitle>Add an Attachment</DialogTitle>
+            <DialogClose>X</DialogClose>
+          </div>
+          <DialogDescription>Add Attachments to the Task.</DialogDescription>
+          <div className="flex items-center space-x-2">
+            <input
+              id="file-upload"
+              type="file"
+              multiple
+              onChange={handleFileUpload}
+              style={{ display: "none" }} // Hide the file input
+            />
 
-            {/* Display selected file names */}
-            <div>
-              {formData.attachment.length > 0 && (
-                <ul className="list-disc list-inside">
-                  <div className="grid grid-cols-2 gap-3">
-                    {formData.attachment.map((fileUrl, index) => {
-                      // Determine if the fileUrl is an image based on its extension or content type
-                      const isImage = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(
-                        fileUrl
-                      );
-
-                      return (
-                        <li key={index} className="flex items-center space-x-2">
-                          {isImage ? (
-                            <img
-                              src={fileUrl}
-                              alt={`Attachment ${index}`}
-                              className="h-12 w-12 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span>{fileUrl.split("/").pop()}</span>
-                          )}
-
-                          <button
-                            className="text-red-500"
-                            onClick={() => handleRemoveFile(fileUrl)}
-                          >
-                            Remove
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </div>
-                </ul>
-              )}
-            </div>
-
-            <Button
-              className="bg-[#017A5B] hover:bg-[#017A5B]"
-              onClick={() => setIsAttachmentModalOpen(false)}
+            <label
+              htmlFor="file-upload"
+              className="cursor-pointer flex items-center space-x-2"
             >
-              Save Attachments
-            </Button>
+              <FaUpload className="h-5 w-5" />
+              <span>Attach Files</span>
+            </label>
+          </div>
+
+          {/* Display selected file names */}
+          <div>
+            {formData.attachment.length > 0 && (
+              <ul className="list-disc list-inside">
+                <div className="grid grid-cols-2 gap-3">
+                  {formData.attachment.map((fileUrl, index) => {
+                    // Determine if the fileUrl is an image based on its extension or content type
+                    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(
+                      fileUrl
+                    );
+
+                    return (
+                      <li key={index} className="flex items-center space-x-2">
+                        {isImage ? (
+                          <img
+                            src={fileUrl}
+                            alt={`Attachment ${index}`}
+                            className="h-12 w-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span>{fileUrl.split("/").pop()}</span>
+                        )}
+
+                        <button
+                          className="text-red-500"
+                          onClick={() => handleRemoveFile(fileUrl)}
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    );
+                  })}
+                </div>
+              </ul>
+            )}
+          </div>
+
+          <Button
+            className="bg-[#017A5B] hover:bg-[#017A5B]"
+            onClick={() => setIsAttachmentModalOpen(false)}
+          >
+            Save Attachments
+          </Button>
+        </DialogContent>
+      </Dialog>
+      <motion.div
+        className="bg-[#0B0D29] z-[100]  overflow-y-scroll scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
+        variants={modalVariants}
+        initial="hidden"
+        animate={controls}
+      >
+        <Dialog open={isReminderModalOpen} onOpenChange={openReminderModal}>
+          <DialogContent className="max-w-lg mx-auto">
+            <div className="flex justify-between items-center ">
+              <div className="flex items-center gap-2">
+                <AlarmClock className="h-6 w-6" />
+                <DialogTitle>Add Task Reminders</DialogTitle>
+              </div>
+              <DialogClose>
+                <CrossCircledIcon className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
+            </div>
+            <Separator className="" />
+            <div className=" ">
+              {/* Input fields for adding reminders */}
+              <div className="flex  justify-center w-full gap-2 items-center  mb-4">
+                <select
+                  value={reminderType}
+                  onChange={(e) =>
+                    setReminderType(e.target.value as "email" | "whatsapp")
+                  }
+                  className=" border bg-transparent outline-none p-2 bg-[#1A1C20]  rounded h-full"
+                >
+                  <option className="bg-[#1A1C20]" value="email">
+                    Email
+                  </option>
+                  <option className="bg-[#1A1C20]" value="whatsapp">
+                    WhatsApp
+                  </option>
+                </select>
+
+                <input
+                  type="number"
+                  value={reminderValue}
+                  onChange={(e) => setReminderValue(Number(e.target.value))}
+                  className=" p-2 w-24 border bg-transparent outline-none  bg-[#1A1C20] rounded h-full"
+                  placeholder="Enter value"
+                />
+
+                <select
+                  value={timeUnit}
+                  onChange={(e) =>
+                    setTimeUnit(
+                      e.target.value as "minutes" | "hours" | "days"
+                    )
+                  }
+                  className=" p-2 outline-none bg-[#1A1C20] border bg-transparent rounded h-full"
+                >
+                  <option className="bg-[#1A1C20]" value="minutes">
+                    minutes
+                  </option>
+                  <option className="bg-[#1A1C20]" value="hours">
+                    hours
+                  </option>
+                  <option className="bg-[#1A1C20]" value="days">
+                    days
+                  </option>
+                </select>
+
+                <button
+                  onClick={addReminder}
+                  // className="bg-green-500 rounded-full flex items-center justify-center h-full"
+                  className="bg-[#017A5B] hover:bg-[#017A5B] rounded-full h-10 w-10 flex items-center justify-center"
+                >
+                  <Plus className="text-white" />
+                </button>
+              </div>
+
+              <Separator className="my-2" />
+              {/* Display added reminders */}
+
+              <ul className=" gap-2 mx-6 pl-12 items-center">
+                {tempReminders.map((reminder, index) => (
+                  <React.Fragment key={index}>
+                    {/* Editable Notification Type Select */}
+                    <div className="flex gap-4 my-2">
+                      <select
+                        value={reminder.notificationType}
+                        onChange={(e) => {
+                          const updatedType = e.target.value as
+                            | "email"
+                            | "whatsapp";
+
+                          // Check for duplicate before updating
+                          const isDuplicate = reminders.some(
+                            (r, i) =>
+                              i !== index &&
+                              r.notificationType === updatedType &&
+                              r.value === reminder.value &&
+                              r.type === reminder.type
+                          );
+
+                          if (isDuplicate) {
+                            toast.error(
+                              "Duplicate reminders are not allowed"
+                            );
+                            return;
+                          }
+
+                          // Update if no duplicate is found
+                          const updatedReminders = reminders.map((r, i) =>
+                            i === index
+                              ? { ...r, notificationType: updatedType }
+                              : r
+                          );
+                          setReminders(updatedReminders as Reminder[]);
+                        }}
+                        className="border outline-none p-2 rounded bg-transparent bg-[#1A1C20] h-full flex"
+                      >
+                        <option className="bg-[#1A1C20]" value="email">
+                          Email
+                        </option>
+                        <option className="bg-[#1A1C20]" value="whatsapp">
+                          WhatsApp
+                        </option>
+                      </select>
+
+                      {/* Reminder Value (Styled as Text) */}
+                      <li className="p-2 w-12 border rounded h-full flex items-center">
+                        <span>{reminder.value}</span>
+                      </li>
+
+                      {/* Editable Time Unit Select */}
+                      <select
+                        value={reminder.type}
+                        onChange={(e) => {
+                          const updatedType = e.target.value as
+                            | "minutes"
+                            | "hours"
+                            | "days";
+
+                          // Check for duplicate before updating
+                          const isDuplicate = reminders.some(
+                            (r, i) =>
+                              i !== index &&
+                              r.notificationType ===
+                              reminder.notificationType &&
+                              r.value === reminder.value &&
+                              r.type === updatedType
+                          );
+
+                          if (isDuplicate) {
+                            toast.error(
+                              "Duplicate reminders are not allowed"
+                            );
+                            return;
+                          }
+
+                          // Update if no duplicate is found
+                          const updatedReminders = reminders.map((r, i) =>
+                            i === index ? { ...r, type: updatedType } : r
+                          );
+                          setReminders(updatedReminders as Reminder[]);
+                        }}
+                        className="border rounded p-2 outline-none h-full bg-[#1A1C20] bg-transparent flex items-center"
+                      >
+                        <option className="bg-[#1A1C20]" value="minutes">
+                          minutes
+                        </option>
+                        <option className="bg-[#1A1C20]" value="hours">
+                          hours
+                        </option>
+                        <option className="bg-[#1A1C20]" value="days">
+                          days
+                        </option>
+                      </select>
+
+                      {/* Delete Button */}
+                      <li className="">
+                        <button
+                          className="p-2"
+                          onClick={() => removeReminder(index)}
+                        >
+                          <X className="cursor-pointer  rounded-full text-red-500 flex items-center justify-center" />
+                        </button>
+                      </li>
+                    </div>
+                  </React.Fragment>
+                ))}
+              </ul>
+            </div>
+            {/* Save button */}
+            <div className="mt-4 flex justify-center">
+              <Button
+                onClick={handleSaveReminders}
+                className="bg-[#017A5B]  hover:bg-[#017A5B] text-white"
+              >
+                Save Reminders
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
-        <motion.div
-          className="bg-[#0B0D29] z-[100]  overflow-y-scroll scrollbar-hide max-h-screen text-[#D0D3D3] w-[50%] rounded-lg "
-          variants={modalVariants}
-          initial="hidden"
-          animate={controls}
+      </motion.div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleSubmit}
+          className="bg-[#017A5B]  w-full text-white p-2 rounded"
         >
-          <Dialog open={isReminderModalOpen} onOpenChange={openReminderModal}>
-            <DialogContent className="max-w-lg mx-auto">
-              <div className="flex justify-between items-center ">
-                <div className="flex items-center gap-2">
-                  <AlarmClock className="h-6 w-6" />
-                  <DialogTitle>Add Task Reminders</DialogTitle>
-                </div>
-                <DialogClose>
-                  <CrossCircledIcon className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                </DialogClose>
-              </div>
-              <Separator className="" />
-              <div className=" ">
-                {/* Input fields for adding reminders */}
-                <div className="flex  justify-center w-full gap-2 items-center  mb-4">
-                  <select
-                    value={reminderType}
-                    onChange={(e) =>
-                      setReminderType(e.target.value as "email" | "whatsapp")
-                    }
-                    className=" border bg-transparent outline-none p-2 bg-[#1A1C20]  rounded h-full"
-                  >
-                    <option className="bg-[#1A1C20]" value="email">
-                      Email
-                    </option>
-                    <option className="bg-[#1A1C20]" value="whatsapp">
-                      WhatsApp
-                    </option>
-                  </select>
-
-                  <input
-                    type="number"
-                    value={reminderValue}
-                    onChange={(e) => setReminderValue(Number(e.target.value))}
-                    className=" p-2 w-24 border bg-transparent outline-none  bg-[#1A1C20] rounded h-full"
-                    placeholder="Enter value"
-                  />
-
-                  <select
-                    value={timeUnit}
-                    onChange={(e) =>
-                      setTimeUnit(
-                        e.target.value as "minutes" | "hours" | "days"
-                      )
-                    }
-                    className=" p-2 outline-none bg-[#1A1C20] border bg-transparent rounded h-full"
-                  >
-                    <option className="bg-[#1A1C20]" value="minutes">
-                      minutes
-                    </option>
-                    <option className="bg-[#1A1C20]" value="hours">
-                      hours
-                    </option>
-                    <option className="bg-[#1A1C20]" value="days">
-                      days
-                    </option>
-                  </select>
-
-                  <button
-                    onClick={addReminder}
-                    // className="bg-green-500 rounded-full flex items-center justify-center h-full"
-                    className="bg-[#017A5B] hover:bg-[#017A5B] rounded-full h-10 w-10 flex items-center justify-center"
-                  >
-                    <Plus className="text-white" />
-                  </button>
-                </div>
-
-                <Separator className="my-2" />
-                {/* Display added reminders */}
-
-                <ul className=" gap-2 mx-6 pl-12 items-center">
-                  {tempReminders.map((reminder, index) => (
-                    <React.Fragment key={index}>
-                      {/* Editable Notification Type Select */}
-                      <div className="flex gap-4 my-2">
-                        <select
-                          value={reminder.notificationType}
-                          onChange={(e) => {
-                            const updatedType = e.target.value as
-                              | "email"
-                              | "whatsapp";
-
-                            // Check for duplicate before updating
-                            const isDuplicate = reminders.some(
-                              (r, i) =>
-                                i !== index &&
-                                r.notificationType === updatedType &&
-                                r.value === reminder.value &&
-                                r.type === reminder.type
-                            );
-
-                            if (isDuplicate) {
-                              toast.error(
-                                "Duplicate reminders are not allowed"
-                              );
-                              return;
-                            }
-
-                            // Update if no duplicate is found
-                            const updatedReminders = reminders.map((r, i) =>
-                              i === index
-                                ? { ...r, notificationType: updatedType }
-                                : r
-                            );
-                            setReminders(updatedReminders as Reminder[]);
-                          }}
-                          className="border outline-none p-2 rounded bg-transparent bg-[#1A1C20] h-full flex"
-                        >
-                          <option className="bg-[#1A1C20]" value="email">
-                            Email
-                          </option>
-                          <option className="bg-[#1A1C20]" value="whatsapp">
-                            WhatsApp
-                          </option>
-                        </select>
-
-                        {/* Reminder Value (Styled as Text) */}
-                        <li className="p-2 w-12 border rounded h-full flex items-center">
-                          <span>{reminder.value}</span>
-                        </li>
-
-                        {/* Editable Time Unit Select */}
-                        <select
-                          value={reminder.type}
-                          onChange={(e) => {
-                            const updatedType = e.target.value as
-                              | "minutes"
-                              | "hours"
-                              | "days";
-
-                            // Check for duplicate before updating
-                            const isDuplicate = reminders.some(
-                              (r, i) =>
-                                i !== index &&
-                                r.notificationType ===
-                                  reminder.notificationType &&
-                                r.value === reminder.value &&
-                                r.type === updatedType
-                            );
-
-                            if (isDuplicate) {
-                              toast.error(
-                                "Duplicate reminders are not allowed"
-                              );
-                              return;
-                            }
-
-                            // Update if no duplicate is found
-                            const updatedReminders = reminders.map((r, i) =>
-                              i === index ? { ...r, type: updatedType } : r
-                            );
-                            setReminders(updatedReminders as Reminder[]);
-                          }}
-                          className="border rounded p-2 outline-none h-full bg-[#1A1C20] bg-transparent flex items-center"
-                        >
-                          <option className="bg-[#1A1C20]" value="minutes">
-                            minutes
-                          </option>
-                          <option className="bg-[#1A1C20]" value="hours">
-                            hours
-                          </option>
-                          <option className="bg-[#1A1C20]" value="days">
-                            days
-                          </option>
-                        </select>
-
-                        {/* Delete Button */}
-                        <li className="">
-                          <button
-                            className="p-2"
-                            onClick={() => removeReminder(index)}
-                          >
-                            <X className="cursor-pointer  rounded-full text-red-500 flex items-center justify-center" />
-                          </button>
-                        </li>
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </ul>
-              </div>
-              {/* Save button */}
-              <div className="mt-4 flex justify-center">
-                <Button
-                  onClick={handleSaveReminders}
-                  className="bg-[#017A5B]  hover:bg-[#017A5B] text-white"
-                >
-                  Save Reminders
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </motion.div>
-
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={handleSubmit}
-            className="bg-[#017A5B]  w-full text-white p-2 rounded"
-          >
-            {loading ? <Loader /> : "Update Task"}
-          </button>
-        </div>
+          {loading ? <Loader /> : "Update Task"}
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default EditTaskDialog;
