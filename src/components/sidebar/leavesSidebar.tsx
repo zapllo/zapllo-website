@@ -82,7 +82,7 @@ const LeavesSidebar: React.FC = () => {
                 </div>
 
                 {/* Show Approvals for non-members (admin/manager) */}
-                {isAdminOrManager && (
+                {/* {isAdminOrManager && ( */}
                     <div className='flex justify-center'>
                         <Button
                             className={`w-[90%] rounded-lg text-xs gap-2 px-4  h-8 bg-transparent justify-start hover:bg-[#37384B] mb-2 ${isActive('/attendance/approvals') ? 'bg-[#815BF5] text-white' : 'hover:text-white text-gray-400'}`}
@@ -91,7 +91,7 @@ const LeavesSidebar: React.FC = () => {
                             <Stamp className='h-4' /> Approvals
                         </Button>
                     </div>
-                )}
+                {/* )} */}
 
                 {/* Show the following only for orgAdmin */}
                 {isOrgAdmin && (

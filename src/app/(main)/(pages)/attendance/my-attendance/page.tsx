@@ -731,21 +731,19 @@ export default function MyAttendance() {
     return entries?.filter((entry) => entry.action === "regularization");
   };
 
-  function formatTimeToAMPM(timeString: string | undefined): string {
-    if (!timeString) {
-      return ""; // Return an empty string or a placeholder if timeString is undefined
+  function formatTimeToAMPM(utcTimestamp: string | undefined): string {
+    if (!utcTimestamp) {
+      return ""; // Return an empty string or a placeholder if utcTimestamp is undefined
     }
-
-    const [hours, minutes] = timeString.split(":");
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString("en-US", {
+  
+    const localDate = new Date(utcTimestamp); // Convert the UTC timestamp to a Date object
+    return localDate.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     });
   }
-
+  
   const [selectedRegularization, setSelectedRegularization] =
     useState<LoginEntry | null>(null);
 
@@ -947,6 +945,7 @@ export default function MyAttendance() {
       return true;
     });
   };
+  
 
   // Grouped entries by day
   const groupedEntries = groupEntriesByDay(
@@ -1322,8 +1321,8 @@ export default function MyAttendance() {
       <Dialog.Root open={isModalOpen} onOpenChange={handleModalChange}>
         <Dialog.Trigger asChild></Dialog.Trigger>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 flex justify-center items-center">
+          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
+          <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
             <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-md w-full relative">
               <div className="flex gap-2  items-center ">
                 <img src="/branding/AII.png" className="h-10" />
