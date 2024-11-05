@@ -159,10 +159,10 @@ interface Task {
   completionDate: string;
   attachment?: string[];
   links?: string[];
-  reminder: {
-    email?: Reminder | null; // Use the updated Reminder type
-    whatsapp?: Reminder | null; // Use the updated Reminder type
-  } | null;
+  // reminder: {
+  //   email?: Reminder | null; // Use the updated Reminder type
+  //   whatsapp?: Reminder | null; // Use the updated Reminder type
+  // } | null;
   status: string;
   comments: Comment[];
   createdAt: string;
