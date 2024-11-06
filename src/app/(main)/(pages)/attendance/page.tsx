@@ -377,6 +377,8 @@ const AttendanceDashboard: React.FC = () => {
   };
 
   const allowedRoles = ['orgAdmin', 'manager'];
+  const disallowedRoles = ['user'];
+
   useEffect(() => {
     const getUserDetails = async () => {
       const res = await axios.get('/api/users/me')
@@ -412,7 +414,7 @@ const AttendanceDashboard: React.FC = () => {
               className="border rounded text-xs border-[] bg-[#04061E]  outline-none p-2"
               onChange={(e) => setManagerId(e.target.value)}
             >
-              <option value="bg-black">Select Manager</option>
+              <option value="">Select Manager</option>
               {managers?.map((manager) => (
                 <option key={manager._id} value={manager._id}>
                   {manager.firstName} {manager.lastName}
@@ -580,48 +582,52 @@ const AttendanceDashboard: React.FC = () => {
           </div>
         </div>
       )}
-      <div className="mb-4 flex gap-2 w-full">
-        <div className='flex gap-2 w-full'>
-          <div>
-            <h2 className="text-lg font-semibold 4">My Report</h2>
+      {disallowedRoles.includes(role) && (
+        <div className="mb-4 flex gap-2 w-full">
+          <div className='flex gap-2 w-full'>
+            <div>
+              <h2 className="text-lg font-semibold 4">My Report</h2>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="relative mt-2 mb-12">
-        <div className="h-full rounded-md">
-          <table className="w-full border-collapse border">
-            <thead className='bg-[#0A0D28]'>
-              <tr>
-                <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
-                <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
-                <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
-              </tr>
-            </thead>
-            <tbody>
-              {monthlyReport.map((day, index) => (
-                <tr key={index} className="border-b">
-                  <td className="px-4 py-2 text-xs">
-                    {format(new Date(day.date), 'dd MMM yyyy')}
-                  </td>
-                  <td className="px-4 py-2 text-xs">{day.day}</td>
-                  <td className="px-4 py-2 text-start">
-                    <input type="checkbox" className='text-[#017a5b]' checked={!!day.present} readOnly />
-                  </td>
-                  <td className="px-4 py-2 text-start">
-                    <input type="checkbox" checked={!!day.leave} readOnly />
-                  </td>
-                  <td className="px-4 py-2 text-start">
-                    <input type="checkbox" checked={!!day.holiday} readOnly />
-                  </td>
+      )}
+      {disallowedRoles.includes(role) && (
+        <div className="relative mt-2 mb-12">
+          <div className="h-full rounded-md">
+            <table className="w-full border-collapse border">
+              <thead className='bg-[#0A0D28]'>
+                <tr>
+                  <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
+                  <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
+                  <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
+                  <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
+                  <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {monthlyReport.map((day, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="px-4 py-2 text-xs">
+                      {format(new Date(day.date), 'dd MMM yyyy')}
+                    </td>
+                    <td className="px-4 py-2 text-xs">{day.day}</td>
+                    <td className="px-4 py-2 text-start">
+                      <input type="checkbox" className='text-[#017a5b]' checked={!!day.present} readOnly />
+                    </td>
+                    <td className="px-4 py-2 text-start">
+                      <input type="checkbox" checked={!!day.leave} readOnly />
+                    </td>
+                    <td className="px-4 py-2 text-start">
+                      <input type="checkbox" checked={!!day.holiday} readOnly />
+                    </td>
+                  </tr>
+                ))}
 
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
       {allowedRoles.includes(role) && (
         <div className=" flex gap-2 w-full">
           <div className='flex gap-2 w-full'>
