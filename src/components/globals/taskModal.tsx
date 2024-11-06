@@ -672,7 +672,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     }
   };
 
-  console.log(tempReminders, 'reminders')
+  console.log(tempReminders, "reminders");
 
   const clearFormFields = () => {
     setTitle("");
@@ -747,7 +747,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     setDueTime(time);
     setIsTimePickerOpen(false); // Close time picker
   };
-
 
   // Handle closing the time picker without saving (Cancel)
   const handleCancel = () => {
@@ -927,10 +926,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   {["High", "Medium", "Low"].map((level) => (
                     <label
                       key={level}
-                      className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${priority === level
-                        ? "bg-[#815BF5]  text-white"
-                        : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
-                        }`}
+                      className={`px-4 py-1 text-xs   border border-[#505356]   font-semibold cursor-pointer ${
+                        priority === level
+                          ? "bg-[#815BF5]  text-white"
+                          : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
+                      }`}
                     >
                       <input
                         type="radio"
@@ -1043,8 +1043,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             >
               <Calendar className="h-5 text-sm" />
               {dueDate && dueTime ? (
-                <h1> {format(dueDate, "PPP")}
-                  <span className="ml-2">{format(parse(dueTime, "HH:mm", new Date()), "hh:mm a")}
+                <h1>
+                  {" "}
+                  {format(dueDate, "PPP")}
+                  <span className="ml-2">
+                    {format(parse(dueTime, "HH:mm", new Date()), "hh:mm a")}
                   </span>
                 </h1>
               ) : (
@@ -1102,10 +1105,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsLinkModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${links.filter((link) => link).length > 0
-                  ? "border-[#815BF5]"
-                  : ""
-                  }`}
+                className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32] ${
+                  links.filter((link) => link).length > 0
+                    ? "border-[#815BF5]"
+                    : ""
+                }`}
               >
                 <Link className="h-5 text-center m-auto mt-1" />
               </div>
@@ -1121,8 +1125,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 onClick={() => {
                   setIsAttachmentModalOpen(true);
                 }}
-                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${files.length > 0 ? "border-[#815BF5]" : ""
-                  }`}
+                className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
+                  files.length > 0 ? "border-[#815BF5]" : ""
+                }`}
               >
                 <Paperclip className="h-5 text-center m-auto mt-1" />
               </div>
@@ -1139,7 +1144,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   onClick={() => {
                     setIsReminderModalOpen(true);
                   }}
-                  className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${reminders.length > 0 ? "border-[#815BF5]" : ""}`}
+                  className={`h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32] ${
+                    reminders.length > 0 ? "border-[#815BF5]" : ""
+                  }`}
                 >
                   <Clock className="h-5 text-center m-auto mt-1" />
                 </div>
@@ -1171,8 +1178,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             )}
           </div>
           <div
-            className={` ${recording ? `w-full ` : "hidden"
-              } border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}
+            className={` ${
+              recording ? `w-full ` : "hidden"
+            } border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}
           >
             <canvas
               ref={canvasRef}
@@ -1325,10 +1333,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             initial="hidden"
             animate={controls}
           >
-            <Dialog
-              open={isReminderModalOpen}
-              onOpenChange={openReminderModal}
-            >
+            <Dialog open={isReminderModalOpen} onOpenChange={openReminderModal}>
               <DialogContent className="max-w-lg mx-auto">
                 <div className="flex justify-between items-center ">
                   <div className="flex items-center gap-2">
@@ -1336,9 +1341,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     <DialogTitle>Add Task Reminders</DialogTitle>
                   </div>
                   <DialogClose>
-                    <CrossCircledIcon
-                      className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
-                    />
+                    <CrossCircledIcon className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                   </DialogClose>
                 </div>
                 <Separator className="" />
@@ -1403,7 +1406,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   <ul className=" gap-2 mx-6 pl-12 items-center">
                     {tempReminders.map((reminder, index) => (
                       <React.Fragment key={index}>
-
                         {/* Editable Notification Type Select */}
                         <div className="flex gap-4 my-2">
                           <select
@@ -1466,7 +1468,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                                 (r, i) =>
                                   i !== index &&
                                   r.notificationType ===
-                                  reminder.notificationType &&
+                                    reminder.notificationType &&
                                   r.value === reminder.value &&
                                   r.type === updatedType
                               );
@@ -1499,7 +1501,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
                           {/* Delete Button */}
                           <li className="">
-                            <button className="p-2" onClick={() => removeReminder(index)}>
+                            <button
+                              className="p-2"
+                              onClick={() => removeReminder(index)}
+                            >
                               <X className="cursor-pointer  rounded-full text-red-500 flex items-center justify-center" />
                             </button>
                           </li>
@@ -1603,8 +1608,8 @@ const CustomDaysSelect: React.FC<CustomDaysSelectProps> = ({
       backgroundColor: state.isSelected
         ? "#FC8929"
         : state.isFocused
-          ? "#815BF5"
-          : "#282D32", // Custom background color for options
+        ? "#815BF5"
+        : "#282D32", // Custom background color for options
       color: "white", // Custom text color
     }),
     multiValue: (provided) => ({
@@ -1738,7 +1743,6 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
                       />
                     ) : (
                       <AvatarFallback className="ml-2">
-
                         <h1 className="text-sm">
                           {`${user.firstName}`.slice(0, 1)}
                           {`${user.lastName}`.slice(0, 1)}

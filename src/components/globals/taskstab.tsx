@@ -1385,7 +1385,7 @@ export default function TasksTab({
                               </Button>
 
                               {activeDateFilter === "custom" && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                <div className="fixed inset-0 flex items-center bg-black/80 justify-center bg-black bg-opacity-50 z-50">
                                   <div className="bg-[#0B0D29] p-7 rounded-lg shadow-lg w-96 relative border">
                                     {/* Close Button */}
                                     <div className="w-full flex items-center justify-between mb-4">
@@ -1396,7 +1396,7 @@ export default function TasksTab({
                                         onClick={() =>
                                           setActiveDateFilter(undefined)
                                         }
-                                        className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                        className="scale-150 cursor-pointer  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
                                       />
                                     </div>
 
@@ -3347,20 +3347,8 @@ export default function TasksTab({
                         <Dialog.Root open={isCompleteDialogOpen}>
                           <Dialog.Portal>
                             <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
-                            <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+                            <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
                               <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
-                                {/* <div className="flex justify-between w-full">
-                                  <DialogTitle className="text-sm">
-                                    Task Update
-                                  </DialogTitle>
-                                  <DialogClose
-                                    onClick={() =>
-                                      setIsCompleteDialogOpen(false)
-                                    }
-                                  >
-                                    X
-                                  </DialogClose>
-                                </div> */}
                                 <div className="flex border-b py-2  w-full justify-between ">
                                   <Dialog.Title className="text-md   px-6 py-2 font-medium">
                                     Task Update
@@ -3463,98 +3451,120 @@ export default function TasksTab({
 
                       {isDialogOpen && (
                         <Dialog.Root open={isDialogOpen}>
-                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
-                            <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">
-                                Task Update
-                              </DialogTitle>
-                              <DialogClose
-                                onClick={() => setIsDialogOpen(false)}
-                              >
-                                X
-                              </DialogClose>
-                            </div>
-                            <p className="text-xs -mt-2">
-                              Please add a note before marking the task as in
-                              progress
-                            </p>
-                            <div className="mt-2">
-                              <Label className="text-sm">Comment</Label>
-                              <div
-                                ref={editorRef}
-                                contentEditable
-                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
-                                onInput={(e) => {
-                                  const target = e.target as HTMLDivElement;
-                                  setComment(target.innerHTML);
-                                }}
-                              ></div>
-
-                              <div className="flex mb-4  mt-4 gap-4">
-                                <div
-                                  className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
-                                  onClick={triggerImageOrVideoUpload}
-                                >
-                                  <Files className="h-5 text-center m-auto mt-1" />
-                                </div>
-                                <h1 className="text-xs mt-2">
-                                  Attach a File (All File Types Accepted)
-                                </h1>
-
-                                <input
-                                  ref={imageInputRef}
-                                  type="file"
-                                  style={{ display: "none" }}
-                                  onChange={handleImageOrVideoUpload}
-                                />
-                              </div>
-
-                              {/* <img src="/icons/image.png" alt="image icon" /> */}
-                            </div>
-                            <div className="file-previews">
-                              {filePreviews.map((preview, index) => (
-                                <div
-                                  key={index}
-                                  className="file-preview-item relative inline-block"
-                                >
-                                  {files[index].type.startsWith("image/") ? (
-                                    <img
-                                      src={preview}
-                                      alt={`Preview ${index}`}
-                                      className="w-28 h-28 object-cover rounded-lg"
-                                    />
-                                  ) : (
-                                    <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
-                                      {files[index].name}
-                                    </div>
-                                  )}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveFile(index)}
-                                    className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
+                          <Dialog.Portal>
+                            <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
+                            <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
+                              <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+                                <div className="flex border-b py-2  w-full justify-between ">
+                                  <Dialog.Title className="text-md   px-6 py-2 font-medium">
+                                    Task Update
+                                  </Dialog.Title>
+                                  {/* <DialogClose
+                                    onClick={() => setIsDialogOpen(false)}
                                   >
-                                    <X className="h-3 w-3" />
-                                  </button>
+                                    X
+                                  </DialogClose> */}
+                                  <Dialog.DialogClose
+                                    className=" px-6 py-2"
+                                    onClick={() => setIsDialogOpen(false)}
+                                  >
+                                    <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                                  </Dialog.DialogClose>
                                 </div>
-                              ))}
-                            </div>
-                            <div className="mt-4 flex justify-end space-x-2">
-                              <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
-                              >
-                                {loading ? <Loader /> : "Update Task"}
-                              </Button>
-                            </div>
-                          </DialogContent>
+                                <p className="text-xs mt-2 px-6 text-[#787CA5]">
+                                  Please add a note before marking the task as
+                                  in progress
+                                </p>
+                                <div className="mt-4 p-6">
+                                  <div className="mt-2">
+                                    <Label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                                      <h1 className="text-[#787CA5]">
+                                        {" "}
+                                        Comment
+                                      </h1>
+                                    </Label>
+                                    <div
+                                      ref={editorRef}
+                                      contentEditable
+                                      className="border-gray-600  bg-[#0b0d29] border rounded outline-none px-2 py-2 h-24 w-full"
+                                      onInput={(e) => {
+                                        const target =
+                                          e.target as HTMLDivElement;
+                                        setComment(target.innerHTML);
+                                      }}
+                                    ></div>
+
+                                    <div className="flex mb-4  mt-4 gap-4">
+                                      <div
+                                        className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
+                                        onClick={triggerImageOrVideoUpload}
+                                      >
+                                        <Files className="h-5 text-center m-auto mt-1" />
+                                      </div>
+                                      <h1 className="text-xs mt-2">
+                                        Attach a File (All File Types Accepted)
+                                      </h1>
+
+                                      <input
+                                        ref={imageInputRef}
+                                        type="file"
+                                        style={{ display: "none" }}
+                                        onChange={handleImageOrVideoUpload}
+                                      />
+                                    </div>
+
+                                    {/* <img src="/icons/image.png" alt="image icon" /> */}
+                                  </div>
+                                  <div className="file-previews">
+                                    {filePreviews.map((preview, index) => (
+                                      <div
+                                        key={index}
+                                        className="file-preview-item relative inline-block"
+                                      >
+                                        {files[index].type.startsWith(
+                                          "image/"
+                                        ) ? (
+                                          <img
+                                            src={preview}
+                                            alt={`Preview ${index}`}
+                                            className="w-28 h-28 object-cover rounded-lg"
+                                          />
+                                        ) : (
+                                          <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
+                                            {files[index].name}
+                                          </div>
+                                        )}
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleRemoveFile(index)
+                                          }
+                                          className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="flex justify-end space-x-2 mt-6 mb-6 px-6">
+                                  <Button
+                                    onClick={handleUpdateTaskStatus}
+                                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-4 -mt-6 py-2 rounded"
+                                  >
+                                    {loading ? <Loader /> : "Update Task"}
+                                  </Button>
+                                </div>
+                              </div>
+                            </Dialog.Content>
+                          </Dialog.Portal>
                         </Dialog.Root>
                       )}
 
                       {/** Reopen Modal */}
 
                       {isReopenDialogOpen && (
-                        <Dialog open={isReopenDialogOpen}>
+                        <Dialog.Root open={isReopenDialogOpen}>
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
                           <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
@@ -3634,7 +3644,7 @@ export default function TasksTab({
                               </Button>
                             </div>
                           </DialogContent>
-                        </Dialog>
+                        </Dialog.Root>
                       )}
                     </div>
                   </div>
