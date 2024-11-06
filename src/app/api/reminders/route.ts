@@ -76,11 +76,16 @@ const sendReminderNotification = async (task: any, reminder: any, assignedUser: 
     } else {
         console.log('Email reminder already sent or user has disabled email notifications');
     }
-
     // Save task to update reminder sent status
     try {
         await task.save();
         console.log('Task updated with sent reminders');
+        console.log('Registered Models:', mongoose.models);
+        const users = await User.find({});
+        console.log(`Found ${users.length} users`);
+        const category = await Category.find({});
+        console.log(`Found ${category.length} categories`);
+
     } catch (error) {
         console.error('Error saving task:', error);
         throw new Error('Failed to save task after sending reminders');
@@ -91,9 +96,7 @@ export async function GET(req: NextRequest) {
     try {
         const now = new Date();
         const nowUTC = new Date(now.toISOString());
-
         console.log('Current UTC time:', nowUTC.toISOString());
-
         const tasks = await Task.find()
             .populate<{ assignedUser: IUser }>('assignedUser')
             .populate('category')
@@ -102,7 +105,7 @@ export async function GET(req: NextRequest) {
 
         for (const task of tasks) {
             console.log(`Processing task: ${task.title}, dueDate: ${task.dueDate}`);
-            
+
             for (const reminder of task.reminders) {
                 let reminderDate = new Date(task.dueDate);
 
@@ -134,7 +137,6 @@ export async function GET(req: NextRequest) {
                 }
             }
         }
-
         return new Response(JSON.stringify({ message: 'Reminders processed successfully.' }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },

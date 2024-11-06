@@ -377,7 +377,7 @@ const AttendanceDashboard: React.FC = () => {
   };
 
   const allowedRoles = ['orgAdmin', 'manager'];
-  const disallowedRoles = ['user'];
+  const disallowedRoles = ['member'];
 
   useEffect(() => {
     const getUserDetails = async () => {

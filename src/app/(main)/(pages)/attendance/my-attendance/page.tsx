@@ -42,6 +42,7 @@ import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { format } from "date-fns";
 
 const mapContainerStyle = {
   height: "400px",
@@ -138,6 +139,12 @@ export default function MyAttendance() {
 
   const handleLogoutTimeChange = (time: string) => {
     setRegularizationLogoutTime(time);
+  };
+
+  // Formatting the time for display
+  const formatTimeForDisplay = (time: string | null): string => {
+    if (!time) return '';
+    return format(new Date(`1970-01-01T${time}:00`), 'hh:mm a'); // Convert to 12-hour format
   };
 
   const openLogoutTimePicker = () => {
@@ -731,19 +738,21 @@ export default function MyAttendance() {
     return entries?.filter((entry) => entry.action === "regularization");
   };
 
-  function formatTimeToAMPM(utcTimestamp: string | undefined): string {
-    if (!utcTimestamp) {
-      return ""; // Return an empty string or a placeholder if utcTimestamp is undefined
+  function formatTimeToAMPM(timeString: string | undefined): string {
+    if (!timeString) {
+      return ""; // Return an empty string or a placeholder if timeString is undefined
     }
-  
-    const localDate = new Date(utcTimestamp); // Convert the UTC timestamp to a Date object
-    return localDate.toLocaleTimeString("en-US", {
+
+    const [hours, minutes] = timeString.split(":");
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     });
   }
-  
+
   const [selectedRegularization, setSelectedRegularization] =
     useState<LoginEntry | null>(null);
 
@@ -837,30 +846,41 @@ export default function MyAttendance() {
 
   const calculateHoursBetweenLoginLogout = (entries: LoginEntry[]) => {
     let totalHours = 0;
-    let lastLoginTime: number | null = null; // To track the last login time
+    let lastLoginTime: number | null = null; // For standard login/logout
+    let lastRegularizationLoginTime: number | null = null; // For regularization entries
 
-    // Sort entries by timestamp to ensure they are in order
-    const sortedEntries = entries.sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
+    const sortedEntries = entries.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     sortedEntries.forEach((entry) => {
       const entryTime = new Date(entry.timestamp).getTime();
 
       if (entry.action === "login") {
-        // Store the login time if it's a login action
         lastLoginTime = entryTime;
       } else if (entry.action === "logout" && lastLoginTime !== null) {
-        // If it's a logout and there's a previous login, calculate the time difference
-        const hoursBetween = (entryTime - lastLoginTime) / (1000 * 60 * 60); // Convert milliseconds to hours
-        totalHours += hoursBetween; // Sum up the hours
+        const hoursBetween = (entryTime - lastLoginTime) / (1000 * 60 * 60);
+        totalHours += hoursBetween;
         lastLoginTime = null; // Reset after pairing login with logout
+      } else if (entry.action === "regularization") {
+        // Create a date object for loginTime using the entry's timestamp
+        if (entry.loginTime) {
+          const datePart = new Date(entry.timestamp).toISOString().split("T")[0]; // Get date part from timestamp
+          lastRegularizationLoginTime = new Date(`${datePart}T${entry.loginTime}:00Z`).getTime(); // Combine date with loginTime
+        }
+        // Create a date object for logoutTime
+        if (entry.logoutTime) {
+          const datePart = new Date(entry.timestamp).toISOString().split("T")[0]; // Ensure datePart is defined again
+          const regularizationEntryTime = new Date(`${datePart}T${entry.logoutTime}:00Z`).getTime(); // Combine date with logoutTime
+          if (lastRegularizationLoginTime !== null) {
+            const regularizationHoursBetween = (regularizationEntryTime - lastRegularizationLoginTime) / (1000 * 60 * 60);
+            totalHours += regularizationHoursBetween; // Only add if both times are valid
+          }
+        }
       }
     });
 
     return totalHours.toFixed(2); // Return total hours rounded to 2 decimal places
   };
+
 
   // Define state variables for counts and hours
   const [daysCount, setDaysCount] = useState(0);
@@ -873,13 +893,13 @@ export default function MyAttendance() {
     const dailyReportEntries = filterDailyReportEntries(filteredEntries);
 
     const uniqueDays = new Set(
-      dailyReportEntries?.map((entry) =>
-        new Date(entry.timestamp).toLocaleDateString()
-      )
+      dailyReportEntries?.map((entry) => new Date(entry.timestamp).toLocaleDateString())
     );
+
     const totalRegularized = dailyReportEntries?.filter(
       (entry) => entry.action === "regularization"
     ).length;
+
     const verifiedRegularized = dailyReportEntries?.filter(
       (entry) => entry.approvalStatus === "Approved"
     ).length;
@@ -889,10 +909,19 @@ export default function MyAttendance() {
       const entriesForDay = dailyReportEntries?.filter(
         (entry) => new Date(entry.timestamp).toLocaleDateString() === day
       );
-      totalHoursAcc += parseFloat(
-        calculateHoursBetweenLoginLogout(entriesForDay)
-      );
+
+      // Calculate total hours including regularization
+      totalHoursAcc += parseFloat(calculateHoursBetweenLoginLogout(entriesForDay));
     });
+
+    // Ensure this section handles regularization entries if they are not included
+    const regularizationEntriesForDay = dailyReportEntries?.filter(
+      (entry) => entry.action === "regularization"
+    );
+
+    if (regularizationEntriesForDay.length > 0) {
+      totalHoursAcc += parseFloat(calculateHoursBetweenLoginLogout(regularizationEntriesForDay));
+    }
 
     setDaysCount(uniqueDays.size);
     setRegularizedCount(totalRegularized);
@@ -945,7 +974,6 @@ export default function MyAttendance() {
       return true;
     });
   };
-  
 
   // Grouped entries by day
   const groupedEntries = groupEntriesByDay(
@@ -1241,7 +1269,7 @@ export default function MyAttendance() {
                   <div key={index} className="mb-4 ">
                     <div
                       onClick={() => toggleDayExpansion(date)}
-                      className="w-full grid cursor-pointer grid-cols-3 gap-2 text-xs text-left  border text-white px-4 py-2 rounded rounded-b-none"
+                      className="w-full grid cursor-pointer grid-cols-3 gap-2 text-xs text-left border text-white px-4 py-2 rounded rounded-b-none"
                     >
                       <div className="flex gap-2">
                         <Calendar className="h-4" /> {date}
@@ -1253,10 +1281,8 @@ export default function MyAttendance() {
                       </div>
                       <div className="flex justify-end">
                         <span
-                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"
-                            }`}
+                          className={`transition-transform duration-300 ${expandedDays[date] ? "rotate-180" : "rotate-0"}`}
                         >
-                          {/* Use a caret icon (chevron-down) */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"
@@ -1280,23 +1306,25 @@ export default function MyAttendance() {
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
                             <span>
-                              {`${entry.action.charAt(0).toUpperCase() +
-                                entry.action.slice(1)
-                                }: ${formatTimeToAMPM(entry.timestamp)}`}
+                              {entry.action === "regularization"
+                                ? `Login: ${formatTimeToAMPM(entry.loginTime)}`
+                                : `${entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}: ${formatTimeToAMPM(entry.timestamp)}`
+                              }
                             </span>
+                            {entry.action === "regularization" && (
+                              <span>
+                                Logout: {formatTimeToAMPM(entry.logoutTime)}
+                              </span>
+                            )}
                             <span
-                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login"
-                                ? "bg-[#017a5b]"
-                                : "bg-[#8a3d17]"
+                              className={`text-xs border h-fit w-fit px-2 py-1 rounded-2xl ${entry.action === "login" ? "bg-[#017a5b]" : "bg-[#8a3d17]"
                                 }`}
                             >
                               {entry.action.toUpperCase()}
                             </span>
                             {entry.lat && entry.lng && (
                               <button
-                                onClick={() =>
-                                  handleViewMap(entry.lat, entry.lng)
-                                }
+                                onClick={() => handleViewMap(entry.lat, entry.lng)}
                                 className="underline text-[#ffffff]"
                               >
                                 <MapPinIcon />
@@ -1308,6 +1336,7 @@ export default function MyAttendance() {
                     )}
                   </div>
                 ))}
+
               </>
             )}
           </>
@@ -1690,7 +1719,7 @@ export default function MyAttendance() {
                         <Clock className="h-4 mt-1 text-sm" />
                         {regularizationLoginTime ? (
                           <h1 className="text-xs mt-1">
-                            {formatTimeToAMPM(regularizationLoginTime)}
+                            {formatTimeForDisplay(regularizationLoginTime)}
                           </h1>
                         ) : (
                           <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
@@ -1736,7 +1765,7 @@ export default function MyAttendance() {
                         <Clock className="h-4 mt-1 text-sm" />
                         {regularizationLogoutTime ? (
                           <h1 className="text-xs mt-1">
-                            {formatTimeToAMPM(regularizationLogoutTime)}
+                            {formatTimeForDisplay(regularizationLogoutTime)}
                           </h1>
                         ) : (
                           <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">

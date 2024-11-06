@@ -1395,7 +1395,7 @@ export default function TasksTab({
                                         onClick={() =>
                                           setActiveDateFilter(undefined)
                                         }
-                                        className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                        className="scale-150  hover:bg-[#ffffff] rounded-full cursor-pointer hover:text-[#815BF5]"
                                       />
                                     </div>
 
