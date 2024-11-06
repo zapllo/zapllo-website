@@ -119,22 +119,18 @@ export default function TeamTabs() {
     for (const user of users) {
       if (user.reportingManager) {
         try {
-          const response = await axios.get(
-            `/api/users/${user.reportingManager}`
-          );
+          const response = await axios.get(`/api/users/${user.reportingManager}`);
           const { data } = response.data;
           managerNames[user._id] = `${data.firstName}`;
         } catch (error: any) {
-          console.error(
-            `Error fetching reporting manager for user ${user._id}:`,
-            error
-          );
+          console.error(`Error fetching reporting manager for user ${user._id}:`, error);
         }
       }
     }
 
     return managerNames;
   };
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -635,7 +631,7 @@ export default function TeamTabs() {
                           lastName: user.lastName,
                           whatsappNo: user.whatsappNo,
                           country: user?.country,
-                          reportingManager: selectedManager,
+                          reportingManager: user.reportingManager,
                           profilePic: user.profilePic,
                         });
                         setIsEditModalOpen(true);
@@ -654,7 +650,7 @@ export default function TeamTabs() {
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="w-[40%]">
+        <DialogContent className="w-[40%] z-[100]">
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
             Modify the details of the selected user.
@@ -703,7 +699,7 @@ export default function TeamTabs() {
             </select>
             <select
               value={updateModalReportingManager || editedUser.reportingManager}
-              className="block w-full px-2 py-2 bg-[#0b0d29] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="block w-full px-2  py-2 bg-[#0b0d29] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
               onChange={(e) => setUpdateModalReportingManager(e.target.value)} // Update selected reporting manager
             >
               {/* <option value="">Select Reporting Manager</option> */}

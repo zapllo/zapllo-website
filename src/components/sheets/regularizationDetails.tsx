@@ -63,7 +63,7 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
 
   return (
     <Sheet open={!!selectedRegularization} onOpenChange={onClose}>
-      <SheetContent className="max-w-4xl w-full">
+      <SheetContent className="max-w-4xl z-[100] w-full">
         <SheetHeader>
           <div className="flex gap-2">
             <ArrowLeft

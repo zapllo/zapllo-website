@@ -31,9 +31,9 @@ export async function PATCH(request: NextRequest) {
         task.links = links ?? task.links;
         task.status = status ?? task.status;
 
-        // Update reminders, ensuring we overwrite it with a new array if provided
-        if (reminders) {
-            task.reminders = reminders.map((reminder: any) => ({
+        // Handle reminders array update
+        if (Array.isArray(reminders)) {
+            task.reminders = reminders.map((reminder) => ({
                 notificationType: reminder.notificationType,
                 type: reminder.type,
                 value: reminder.value,

@@ -743,6 +743,8 @@ export default function MyAttendance() {
       return ""; // Return an empty string or a placeholder if timeString is undefined
     }
 
+
+
     const [hours, minutes] = timeString.split(":");
     const date = new Date();
     date.setHours(parseInt(hours), parseInt(minutes));
@@ -882,6 +884,7 @@ export default function MyAttendance() {
   };
 
 
+
   // Define state variables for counts and hours
   const [daysCount, setDaysCount] = useState(0);
   const [regularizedCount, setRegularizedCount] = useState(0);
@@ -1000,7 +1003,7 @@ export default function MyAttendance() {
         </div>
       )}
       {attendanceLoading && (
-        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#211024] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
+        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
           {/* <Toaster /> */}
           <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
             <div className="">
@@ -1077,7 +1080,7 @@ export default function MyAttendance() {
                   {entry.loginTime && (
                     <div>
                       <h1 className="text-xs py-1">
-                        Login: {formattedLoginTime}
+                        Login: {formatTimeToAMPM(entry.loginTime)}
                       </h1>{" "}
                       {/* Displaying the date */}
                     </div>
@@ -1305,10 +1308,11 @@ export default function MyAttendance() {
                             key={index}
                             className="flex justify-between items-center p-2 text-xs rounded mb-2"
                           >
+
                             <span>
                               {entry.action === "regularization"
                                 ? `Login: ${formatTimeToAMPM(entry.loginTime)}`
-                                : `${entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}: ${formatTimeToAMPM(entry.timestamp)}`
+                                : `${entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}: ${format(new Date(entry.timestamp), 'hh:mm a')}` // Format action timestamp
                               }
                             </span>
                             {entry.action === "regularization" && (

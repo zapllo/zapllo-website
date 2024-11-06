@@ -19,7 +19,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             message: "User found",
             data: {
                 firstName: user.firstName,
-                lastName: user.lastName,
             },
         });
     } catch (error: any) {

@@ -120,7 +120,7 @@ export default function AllLeaves() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [remarks, setRemarks] = useState<string>("");
-  const [tab, setTab] = useState<"applications" | "balances">("applications");
+  const [tab, setTab] = useState<"applications" | "balances">("balances");
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -483,16 +483,7 @@ export default function AllLeaves() {
       </div>
       {/* Tab Navigation with Counts */}
       <div className="flex justify-center gap-4 mb-6">
-        <button
-          onClick={() => setTab("applications")}
-          className={`px-4 text-xs py-2 flex  rounded ${tab === "applications"
-            ? "bg-[#815BF5] text-white"
-            : "bg-[#] border text-white"
-            }`}
-        >
-          <Calendar className="h-4" />
-          <h1 className="mt-[1px]">Leave Applications </h1>
-        </button>
+      
         <button
           onClick={() => setTab("balances")}
           className={`px-4 text-xs py-2 flex  rounded ${tab === "balances"
@@ -502,6 +493,16 @@ export default function AllLeaves() {
         >
           <WalletCards className="h-4" />
           Leave Balances 
+        </button>
+        <button
+          onClick={() => setTab("applications")}
+          className={`px-4 text-xs py-2 flex  rounded ${tab === "applications"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
+        >
+          <Calendar className="h-4" />
+          <h1 className="mt-[1px]">Leave Applications </h1>
         </button>
       </div>
       {tab === "balances" && (

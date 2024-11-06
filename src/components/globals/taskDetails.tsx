@@ -28,12 +28,12 @@ interface User {
 }
 
 interface Reminder {
-    type: 'minutes' | 'hours' | 'days' | 'specific'; // Added 'specific'
-    value: number | undefined;  // Make value required
-    date: Date | undefined;     // Make date required
-    sent: boolean;
+    notificationType: 'email' | 'whatsapp';
+    type: 'minutes' | 'hours' | 'days' | 'specific';
+    value?: number;  // Optional based on type
+    date?: Date;     // Optional for specific reminders
+    sent?: boolean;
 }
-
 
 // Define the Task interface
 interface Task {
@@ -42,7 +42,7 @@ interface Task {
     user: User;
     description: string;
     assignedUser: User;
-    category: { _id: string; name: string; }; // Update category type here
+    category: { _id: string; name: string }; // Update category type here
     priority: string;
     repeatType: string;
     repeat: boolean;
@@ -54,14 +54,15 @@ interface Task {
     completionDate: string;
     attachment?: string[];
     links?: string[];
-    // reminder: [{
-    //     email?: Reminder | null;  // Use the updated Reminder type
-    //     whatsapp?: Reminder | null;  // Use the updated Reminder type
-    // }] | null;
+    reminders: [{
+        email?: Reminder | null; // Use the updated Reminder type
+        whatsapp?: Reminder | null; // Use the updated Reminder type
+    }] | null;
     status: string;
     comments: Comment[];
     createdAt: string;
 }
+
 
 interface Comment {
     _id: string;

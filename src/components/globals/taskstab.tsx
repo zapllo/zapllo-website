@@ -134,10 +134,11 @@ interface User {
 }
 
 interface Reminder {
-  type: "minutes" | "hours" | "days" | "specific"; // Added 'specific'
-  value: number | undefined; // Make value required
-  date: Date | undefined; // Make date required
-  sent: boolean;
+  notificationType: 'email' | 'whatsapp';
+  type: 'minutes' | 'hours' | 'days' | 'specific';
+  value?: number;  // Optional based on type
+  date?: Date;     // Optional for specific reminders
+  sent?: boolean;
 }
 
 // Define the Task interface
@@ -159,14 +160,15 @@ interface Task {
   completionDate: string;
   attachment?: string[];
   links?: string[];
-  // reminder: {
-  //   email?: Reminder | null; // Use the updated Reminder type
-  //   whatsapp?: Reminder | null; // Use the updated Reminder type
-  // } | null;
+  reminders: [{
+    email?: Reminder | null; // Use the updated Reminder type
+    whatsapp?: Reminder | null; // Use the updated Reminder type
+  }] | null;
   status: string;
   comments: Comment[];
   createdAt: string;
 }
+
 
 interface DateRange {
   startDate?: Date;
@@ -668,7 +670,7 @@ export default function TasksTab({
             task.assignedUser?._id !== currentUser?._id) ||
           task.assignedUser?._id === currentUser?._id;
       } else if (activeTab === "allTasks") {
-        isFiltered = task.user?.organization === currentUser?.organization;
+        return tasks;
       }
 
       // Apply the other filters (this can be factored out or reused from the `filteredTasks` logic)
@@ -769,6 +771,7 @@ export default function TasksTab({
 
   // Count statuses for all tasks
   const allTasksCounts = countStatuses(allTasksByDate);
+  console.log(allTasksCounts, 'all count')
   const allTasksPendingCount = allTasksCounts["Pending"] || 0;
   const allTasksInProgressCount = allTasksCounts["In Progress"] || 0;
   const allTasksCompletedCount = allTasksCounts["Completed"] || 0;
@@ -1398,7 +1401,6 @@ export default function TasksTab({
                                         className="scale-150  hover:bg-[#ffffff] rounded-full cursor-pointer hover:text-[#815BF5]"
                                       />
                                     </div>
-
                                     {/* Date Selection Buttons */}
                                     <div className="flex justify-between gap-2">
                                       {/* Start Date Button */}
@@ -2256,7 +2258,7 @@ export default function TasksTab({
                                 filteredTasks?.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[100.7%] ml- mb-2   border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[100.7%] ml- mb-2   border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -2677,7 +2679,7 @@ export default function TasksTab({
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -3107,7 +3109,7 @@ export default function TasksTab({
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#74517A] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -3323,7 +3325,7 @@ export default function TasksTab({
                       {isCompleteDialogOpen && (
                         <Dialog open={isCompleteDialogOpen}>
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21] rounded-lg p-6 mx-auto max-w-2xl">
+                          <DialogContent className="bg-[#1A1D21] z-[100] rounded-lg p-6 mx-auto max-w-2xl">
                             <div className="flex justify-between w-full">
                               <DialogTitle className="text-sm">
                                 Task Update
@@ -3415,8 +3417,8 @@ export default function TasksTab({
 
                       {isDialogOpen && (
                         <Dialog open={isDialogOpen}>
-                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
+                          <DialogOverlay className="fixed inset-0 z-[100] bg-black bg-opacity-50" />
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg z-[100] p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
                               <DialogTitle className="text-sm">
                                 Task Update
@@ -3508,7 +3510,7 @@ export default function TasksTab({
                       {isReopenDialogOpen && (
                         <Dialog open={isReopenDialogOpen}>
                           <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg p-6 mx-auto  max-w-2xl ">
+                          <DialogContent className="bg-[#1A1D21]  rounded-lg z-[100] p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
                               <DialogTitle className="text-sm">
                                 Task Update

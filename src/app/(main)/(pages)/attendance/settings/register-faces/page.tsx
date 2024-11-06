@@ -632,7 +632,7 @@ export default function RegisterFace() {
                             onClick={() =>
                               handleStatusChange(request._id, "approved")
                             }
-                            className="bg-transparent flex gap-2 border text-white py-2 px-4 rounded"
+                            className="bg-transparent flex gap-2 hover:border-green-600 border text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
                             {request.isUpdating ? (
@@ -648,7 +648,7 @@ export default function RegisterFace() {
                             onClick={() =>
                               handleStatusChange(request._id, "rejected")
                             }
-                            className="border flex gap-2 bg-transparent text-white py-2 px-4 rounded"
+                            className="border flex gap-2 bg-transparent hover:border-red-600 text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
                             {request.isUpdating ? (

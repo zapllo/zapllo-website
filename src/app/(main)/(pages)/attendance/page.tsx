@@ -467,7 +467,7 @@ const AttendanceDashboard: React.FC = () => {
                         {/* <h1 className="text-xs">Select Date & Time</h1> */}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className='scale-75 w-[45%] h-[500px] max-w-screen'>
+                    <DialogContent className='scale-75 w-[45%] z-[100] h-[500px] max-w-screen'>
                       {/* <DialogClose className='ml-auto'>X</DialogClose> */}
                       <CustomDatePicker
                         selectedDate={new Date(selectedDate)} // Convert the string to a Date object
@@ -518,13 +518,13 @@ const AttendanceDashboard: React.FC = () => {
                       </td>
                       <td className="text-xs px-4 py-2">
                         {entry.loginTime !== 'N/A' && !isNaN(new Date(entry.loginTime).getTime())
-                          ? format(new Date(entry.loginTime), 'dd-MM-yy hh:mm a')
+                          ? format(new Date(entry.loginTime), 'hh:mm a')
                           : 'N/A'}
 
                       </td>
                       <td className="text-xs px-4 py-2">
                         {entry.logoutTime !== 'N/A' && !isNaN(new Date(entry.logoutTime).getTime())
-                          ? format(new Date(entry.logoutTime), 'dd-MM-yy hh:mm a')
+                          ? format(new Date(entry.logoutTime), 'hh:mm a')
                           : 'N/A'}
                       </td>
                       <td className="text-xs px-4 py-2">{entry.totalDuration}</td>

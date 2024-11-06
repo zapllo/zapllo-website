@@ -635,8 +635,8 @@ export default function Approvals() {
         <button
           onClick={() => setDateFilter("Today")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "Today"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Today
@@ -644,8 +644,8 @@ export default function Approvals() {
         <button
           onClick={() => setDateFilter("Yesterday")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "Yesterday"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Yesterday
@@ -653,8 +653,8 @@ export default function Approvals() {
         <button
           onClick={() => setDateFilter("ThisWeek")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisWeek"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           This Week
@@ -662,8 +662,8 @@ export default function Approvals() {
         <button
           onClick={() => setDateFilter("ThisMonth")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisMonth"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           This Month
@@ -671,8 +671,8 @@ export default function Approvals() {
         <button
           onClick={() => setDateFilter("LastMonth")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "LastMonth"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Last Month
@@ -680,8 +680,8 @@ export default function Approvals() {
         <button
           onClick={() => setDateFilter("AllTime")}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "AllTime"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           All Time
@@ -689,8 +689,8 @@ export default function Approvals() {
         <button
           onClick={() => setIsCustomModalOpen(true)}
           className={`px-4 text-xs h-8 rounded ${dateFilter === "Custom"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           Custom
@@ -702,8 +702,8 @@ export default function Approvals() {
         <button
           onClick={() => setFilter("Leave")}
           className={`px-4 text-xs py-2 rounded flex ${filter === "Leave"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           <Calendar className="h-4" />
@@ -712,8 +712,8 @@ export default function Approvals() {
         <button
           onClick={() => setFilter("Regularization")}
           className={`px-4 text-xs py-2 rounded flex ${filter === "Regularization"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
             }`}
         >
           <Users2 className="h-4" />
@@ -728,31 +728,26 @@ export default function Approvals() {
             <button
               onClick={() => setStatusFilter("All")}
               className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "All"
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border text-white"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border text-white"
                 }`}
             >
               <HamburgerMenuIcon />
-              All ({filteredLeaves.length})
+              All
             </button>
             <button
               onClick={() => setStatusFilter("Pending")}
               className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "Pending"
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border hover:border-orange-400 text-white"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border hover:border-orange-400 text-white"
                 }`}
             >
               <Circle
                 className={`h-4 text-red-500 ${statusFilter === "Pending" ? "text-white" : ""
                   } `}
               />
-              Pending (
-              {
-                finalFilteredLeaves.filter(
-                  (leave) => leave.status === "Pending"
-                ).length
-              }
-              )
+              Pending
+
             </button>
             {/* <button
               onClick={() => setStatusFilter("Approved")}
@@ -774,98 +769,61 @@ export default function Approvals() {
               }
               )
             </button> */}
-            <button
-              onClick={() => setStatusFilter("Approved")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
-                  ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
-                  : "bg-[#] border text-white  hover:border-green-500"
-                }`}
-            >
-              <CheckCircle
-                className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""
-                  } `}
-              />
-              Approved (
-              {
-                finalFilteredLeaves.filter(
-                  (leave) => leave.status === "Approved"
-                ).length
-              }
-              )
-            </button>
-
-
-            {/* <button
-              onClick={() => setStatusFilter("Rejected")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs ${
-                statusFilter === "Rejected"
-              className={`px-4 py-2 flex gap-2 rounded text-xs ${
-                statusFilter === "Rejected"
-                  ? "bg-[#7c3987] text-white"
-                  : "bg-[#28152e] text-white"
-              }`}
-              }`}
-            >
-              <Cross1Icon className="h-4 text-red-500" />
-              Rejected (
-              {
-                finalFilteredLeaves.filter(
-                  (leave) => leave.status === "Rejected"
-                ).length
-              }
-              )
-            </button> */}
-            <button
-              onClick={() => setStatusFilter("Rejected")}
-              className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
-                  ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
-                  : "bg-[#] text-white border hover:border-red-500"
-                }`}
-            >
-              <Cross1Icon
-                className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""
-                  } `}
-              />
-              Rejected (
-              {
-                finalFilteredLeaves.filter(
-                  (leave) => leave.status === "Rejected"
-                ).length
-              }
-              )
-            </button>
-
+            {currentUserRole === "orgAdmin" && (
+              <div className="flex">
+                <button
+                  onClick={() => setStatusFilter("Approved")}
+                  className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
+                    ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
+                    : "bg-[#] border text-white  hover:border-green-500"
+                    }`}
+                >
+                  <CheckCircle
+                    className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""
+                      } `}
+                  />
+                  Approved
+                </button>
+                <button
+                  onClick={() => setStatusFilter("Rejected")}
+                  className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
+                    ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
+                    : "bg-[#] text-white border hover:border-red-500"
+                    }`}
+                >
+                  <Cross1Icon
+                    className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""
+                      } `}
+                  />
+                  Rejected
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <>
             <button
               onClick={() => setStatusFilter("All")}
               className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "All"
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border text-white"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border text-white"
                 }`}
             >
               <HamburgerMenuIcon />
-              All ({filteredRegularizations.length})
+              All
             </button>
             <button
               onClick={() => setStatusFilter("Pending")}
               className={`px-4 py-2 flex gap-2 rounded text-xs ${statusFilter === "Pending"
-                  ? "bg-[#815BF5] text-white"
-                  : "bg-[#] border hover:border-orange-400 text-white"
+                ? "bg-[#815BF5] text-white"
+                : "bg-[#] border hover:border-orange-400 text-white"
                 }`}
             >
               <Circle
                 className={`h-4 text-red-500  ${statusFilter === "Pending" ? "text-white" : ""
                   } `}
               />
-              Pending (
-              {
-                filteredRegularizations.filter(
-                  (reg) => reg.approvalStatus === "Pending"
-                ).length
-              }
-              )
+              Pending
             </button>
             {/* <button
               onClick={() => setStatusFilter("Approved")}
@@ -890,21 +848,15 @@ export default function Approvals() {
             <button
               onClick={() => setStatusFilter("Approved")}
               className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
-                  ? "bg-[#815BF5] text-white border-transparent"
-                  : "bg-[#] border text-white border-transparent"
+                ? "bg-[#815BF5] text-white border-transparent"
+                : "bg-[#] border text-white border-transparent"
                 } hover:border-green-500`}
             >
               <CheckCircle
                 className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""
                   } `}
               />
-              Approved (
-              {
-                filteredRegularizations.filter(
-                  (reg) => reg.approvalStatus === "Approved"
-                ).length
-              }
-              )
+              Approved
             </button>
 
             {/* <button
@@ -929,21 +881,15 @@ export default function Approvals() {
             <button
               onClick={() => setStatusFilter("Rejected")}
               className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
-                  ? "bg-[#815BF5] text-white border-transparent"
-                  : "bg-[#] border text-white border-"
+                ? "bg-[#815BF5] text-white border-transparent"
+                : "bg-[#] border text-white border-"
                 } hover:border-red-500`}
             >
               <Cross1Icon
                 className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""
                   } `}
               />
-              Rejected (
-              {
-                filteredRegularizations.filter(
-                  (reg) => reg.approvalStatus === "Rejected"
-                ).length
-              }
-              )
+              Rejected
             </button>
           </>
         )}
@@ -1014,12 +960,12 @@ export default function Approvals() {
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs ${leave.status === "Pending"
-                        ? "bg-yellow-800 text-white"
-                        : leave.status === "Approved"
-                          ? "bg-green-800 text-white"
-                          : leave.status === "Rejected"
-                            ? "bg-red-800 text-white"
-                            : "bg-gray-500 text-white"
+                      ? "bg-yellow-800 text-white"
+                      : leave.status === "Approved"
+                        ? "bg-green-800 text-white"
+                        : leave.status === "Rejected"
+                          ? "bg-red-800 text-white"
+                          : "bg-gray-500 text-white"
                       }`}
                   >
                     {leave.status}
@@ -1097,48 +1043,54 @@ export default function Approvals() {
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs ${reg.approvalStatus === "Pending"
-                        ? "bg-yellow-800 text-white"
-                        : reg.approvalStatus === "Approved"
-                          ? "bg-green-800 text-white"
-                          : reg.approvalStatus === "Rejected"
-                            ? "bg-red-500 text-white"
-                            : "bg-gray-500 text-white"
+                      ? "bg-yellow-800 text-white"
+                      : reg.approvalStatus === "Approved"
+                        ? "bg-green-800 text-white"
+                        : reg.approvalStatus === "Rejected"
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-500 text-white"
                       }`}
                   >
                     {reg.approvalStatus}
                   </span>
                 </div>
-                {reg.approvalStatus === "Pending" && (
-                  <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
-                    <button
-                      className="bg-transparent py-2 flex gap-2 border text-xs text-white px-4 rounded"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering sheet
-                        handleApproval(reg, e);
-                      }}
-                    >
-                      <CheckCheck className="w-4 h-4 text-[#017a5b]" />
-                      Approve
-                    </button>
-                    <button
-                      className="bg-transparent border flex gap-2 text-white px-4 py-2 text-xs rounded"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering sheet
-                        handleReject(reg, e);
-                      }}
-                    >
-                      <X className="w-4 h-4 text-red-500" />
-                      Reject
-                    </button>
-                    <button
-                      className="bg-transparent flex gap-2 text-white px-4 py-2 text-xs rounded"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering sheet
-                        openRegularizationDeleteDialog(reg._id); // Open delete confirmation for Regularization
-                      }}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
+                {currentUserRole === "orgAdmin" && (
+                  <div>
+                    {
+                      reg.approvalStatus === "Pending" && (
+                        <div className="flex gap-2 ml-4 w-full mb-4 justify-start">
+                          <button
+                            className="bg-transparent py-2 flex gap-2 hover:border-green-600 border text-xs text-white px-4 rounded"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering sheet
+                              handleApproval(reg, e);
+                            }}
+                          >
+                            <CheckCheck className="w-4 h-4 text-[#017a5b]" />
+                            Approve
+                          </button>
+                          <button
+                            className="bg-transparent border flex gap-2 hover:border-red-600 text-white px-4 py-2 text-xs rounded"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering sheet
+                              handleReject(reg, e);
+                            }}
+                          >
+                            <X className="w-4 h-4 text-red-500" />
+                            Reject
+                          </button>
+                          <button
+                            className="bg-transparent flex gap-2 text-white px-4 py-2 text-xs rounded"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering sheet
+                              openRegularizationDeleteDialog(reg._id); // Open delete confirmation for Regularization
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </button>
+                        </div>
+                      )
+                    }
                   </div>
                 )}
               </div>

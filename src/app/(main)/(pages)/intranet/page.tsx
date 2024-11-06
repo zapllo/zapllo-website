@@ -122,8 +122,8 @@ const IntranetPage: React.FC = () => {
         </div>
 
         {/* Add New Link Modal */}
-        <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
-          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg ">
+        <Dialog.Content className="fixed z-[50] bg-black/50 inset-0 flex items-center justify-center">
+          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full z-[100]   max-w-md  rounded-lg ">
             <div className="flex border-b py-2  w-full justify-between">
               <DialogTitle className="text-md   px-6 py-2 font-medium">
                 Add New Link
