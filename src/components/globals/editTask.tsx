@@ -168,7 +168,8 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
   const [searchCategoryQuery, setSearchCategoryQuery] = useState<string>(""); // State for search query
   const [isMonthlyDaysModalOpen, setIsMonthlyDaysModalOpen] = useState(false);
   const [linkInputs, setLinkInputs] = useState<string[]>([]);
-  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false); // New state for time picker
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false); // For Date picker modal
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false); // For Time picker modal
   const [deletedReminders, setDeletedReminders] = useState<Reminder[]>([]);
 
 
@@ -179,10 +180,20 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
   const controls = useAnimation();
   const handleCategoryOpen = () => setCategoryOpen(true);
 
-  // const handleClose = (selectedValue: any) => {
-  //     setPopoverInputValue(selectedValue);
-  //     setOpen(false);
-  // };
+  // Open date picker
+  const handleOpenDatePicker = () => {
+    setIsDatePickerOpen(true);
+    setIsTimePickerOpen(false); // Close time picker if open
+  };
+
+
+  // Handle date selection
+  const handleDateChange = (date: Date) => {
+    setDueDate(date);
+    setIsDatePickerOpen(false); // Close date picker
+    setIsTimePickerOpen(true); // Open time picker
+  };
+
 
   const handleCategoryClose = (selectedValue: any) => {
     setPopoverCategoryInputValue(selectedValue);
@@ -205,8 +216,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
       const updatedDate = new Date(dueDate);
       updatedDate.setHours(hours, minutes);
       setFormData({ ...formData, dueDate: updatedDate }); // Keep date as Date object
-      setIsDateTimeModalOpen(false);
     }
+    setIsTimePickerOpen(false);
+
   };
 
   // Working On Add  Reminder
@@ -320,14 +332,11 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
     setFormData({ ...formData, assignedUser: userId });
   };
 
+
   useEffect(() => {
     if (task) {
-      const loadedReminders = task.reminders
-        ? task.reminders.flatMap(({ email, whatsapp }) => [
-          ...(email ? [email] : []),
-          ...(whatsapp ? [whatsapp] : []),
-        ])
-        : [];
+      // Directly assign the reminders array if it exists in task
+      const loadedReminders = (task.reminders || []) as Reminder[];
 
       setReminders(loadedReminders); // Set main reminders
       setTempReminders(loadedReminders); // Prefill tempReminders to be shown in modal
@@ -352,6 +361,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
       });
     }
   }, [task]);
+
+
+  console.log(tempReminders, 'temp Reminders  ')
 
 
   const handleChange = (
@@ -384,47 +396,42 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
     }
   };
 
-  // Helper function to format the date
-  function formatDate(date: any) {
-    if (!(date instanceof Date)) return "";
+// Helper function to format the date
+function formatDate(date: any) {
+  if (!(date instanceof Date)) return "";
 
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
-    const month = monthNames[date.getMonth()];
-    const day = date.getDate();
-    const year = date.getFullYear();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+  const month = monthNames[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  
+  // Convert hours to 12-hour format
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12; // Adjust for 12-hour format, 0 becomes 12
 
-    // Function to get the ordinal suffix for the day
-    function getOrdinalSuffix(n: any) {
-      const s = ["th", "st", "nd", "rd"],
-        v = n % 100;
-      return s[(v - 20) % 10] || s[v] || s[0];
-    }
-
-    const dayWithSuffix = day + getOrdinalSuffix(day);
-
-    // Format time to always have two digits
-    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}`;
-
-    return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
+  // Function to get the ordinal suffix for the day
+  function getOrdinalSuffix(n: number) {
+    const s = ["th", "st", "nd", "rd"],
+      v = n % 100;
+    return s[(v - 20) % 10] || s[v] || s[0];
   }
+
+  const dayWithSuffix = day + getOrdinalSuffix(day);
+
+  // Format time with leading zeros and AM/PM
+  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")} ${ampm}`;
+
+  return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
+}
+
 
   const handleDaysChange = (day: string, pressed: boolean) => {
     setFormData((prevFormData) => {
@@ -491,12 +498,26 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
     }
   };
 
-  // Handle date selection
-  const handleDateChange = (date: Date) => {
-    setDueDate(date);
-    setIsDateTimeModalOpen(false); // Close date picker
-    setIsTimePickerOpen(true); // Open time picker
+
+  // Handle time selection
+  const handleTimeChange = (time: string) => {
+    setDueTime(time);
+    setIsTimePickerOpen(false); // Close time picker
   };
+
+
+  // Handle closing the time picker without saving (Cancel)
+  const handleCancel = () => {
+    setIsTimePickerOpen(false); // Simply close the time picker modal
+    setIsDatePickerOpen(true);
+  };
+
+
+  // Handle saving the selected time and closing the time picker (OK)
+  const handleAccept = () => {
+    setIsTimePickerOpen(false); // Close the time picker modal after saving
+  };
+
 
 
   const handleFileUpload = async (
@@ -612,10 +633,8 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
         <div className="flex w-full justify-between mb-4">
           <h2 className="text-lg font-medium ">Edit Task</h2>
           <button className="cursor-pointer  text-lg" onClick={onClose}>
-            <img
-              src="/icons/cross.png"
-              className="rounded-full h-6  hover:bg-[#121212]"
-            />
+            <CrossCircledIcon className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+
           </button>
         </div>
 
@@ -740,7 +759,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
                   <label
                     key={level}
                     className={`px-4 py-1 text-xs border border-[#505356] font-medium cursor-pointer ${formData.priority === level
-                      ? "bg-[#017A5B] text-white"
+                      ? "bg-[#815BF5] text-white"
                       : "bg-[#282D32] text-gray-300 hover:bg-gray-600"
                       }`}
                   >
@@ -858,7 +877,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
           <label className="block mb-2">
             <Button
               type="button"
-              onClick={() => setIsDateTimeModalOpen(true)}
+              onClick={handleOpenDatePicker}
               className=" border-2 text-xs rounded bg-[#282D32] hover:bg-transparent px-3 flex gap-1  py-2"
             >
               <Calendar className="h-5 text-sm" />
@@ -877,78 +896,44 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
                         /> */}
           </label>
         </div>
-        {isDateTimeModalOpen && (
-          <div className="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-0">
-          </div>
-        )}
-        {isDateTimeModalOpen && (
 
+        <div>
+          {isDatePickerOpen && (
+            <Dialog
+              open={isDatePickerOpen}
+              onOpenChange={setIsDatePickerOpen}
+            >
+              <DialogContent className="scale-75 z-[100] ">
+                <CustomDatePicker
+                  selectedDate={formData.dueDate ?? new Date()}
+                  onDateChange={handleDateChange}
+                  onCloseDialog={() => setIsDatePickerOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+
+        {isTimePickerOpen && (
           <Dialog
-            open={isDateTimeModalOpen}
-            onOpenChange={() => setIsDateTimeModalOpen(false)}
+            open={isTimePickerOpen}
+            onOpenChange={setIsTimePickerOpen}
           >
             <DialogContent className="scale-75 z-[100]">
-              <DialogDescription>
-                <div className="flex flex-col w-full  z-[100] ">
-                  <AnimatePresence>
-                    {isDatePickerVisible && (
-                      <motion.div
-                        key="date-picker"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        className=" z-[100]"
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.3, ease: "linear" }}
-                      >
-                        <CustomDatePicker
-                          selectedDate={formData.dueDate ?? new Date()}
-                          onDateChange={handleDateChange}
-                          onCloseDialog={() => setIsDateTimeModalOpen(false)} // Add this line to fix t
-                        />
-                      </motion.div>
-                    )}
-                    {isTimePickerOpen && (
-                      <motion.div
-                        key="time-picker"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="z-[100]"
-                        transition={{ duration: 0.3, ease: "linear" }}
-                      >
-                        <CustomTimePicker
-                          onCancel={() => setIsDateTimeModalOpen(false)}
-                          onAccept={() => setIsDateTimeModalOpen(false)}
-                          onBackToDatePicker={() =>
-                            setIsDatePickerVisible(true)
-                          }
-                          selectedTime={dueTime}
-                          onTimeChange={setDueTime}
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            onClick={() => setIsDatePickerVisible(true)}
-                            className="bg-gray-600 hover:bg-gray-600 text-white rounded px-4 py-2 mt-2"
-                          >
-                            Back to Date Picker
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={handleUpdateDateTime}
-                            className="w-full bg-[#017A5B] hover:bg-[#017A5B] text-white rounded px-4 py-2 mt-2"
-                          >
-                            Update Time & Date
-                          </Button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </DialogDescription>
+              <CustomTimePicker
+                selectedTime={dueTime} // Pass the selected time
+                onTimeChange={(newTime) => setDueTime(newTime)} // Update dueTime when time changes
+                onCancel={() => setIsTimePickerOpen(false)}
+                onAccept={handleUpdateDateTime}
+                onBackToDatePicker={() => {
+                  setIsTimePickerOpen(false); // Close the time picker
+                  setIsDatePickerOpen(true); // Reopen the date picker
+                }}
+              />
             </DialogContent>
           </Dialog>
         )}
+
         <div className="flex    gap-4">
           <div className="flex mt-4 gap-2">
             <div
@@ -1025,7 +1010,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
           <DialogContent className="z-[100]">
             <div className="flex justify-between">
               <DialogTitle>Add Links</DialogTitle>
-              <DialogClose>X</DialogClose>
+              <DialogClose>
+                <CrossCircledIcon className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
             </div>
             <DialogDescription>Attach Links to the Task.</DialogDescription>
             <div className="mb-4">
@@ -1089,7 +1076,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
 
             <div className="flex w-full justify-between">
               <DialogTitle>Add an Attachment</DialogTitle>
-              <DialogClose>X</DialogClose>
+              <DialogClose>
+                <CrossCircledIcon className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
             </div>
             <DialogDescription>Add Attachments to the Task.</DialogDescription>
             <div className="flex items-center space-x-2">
@@ -1356,13 +1345,13 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
         <div className="flex justify-end mt-4">
           <button
             onClick={handleSubmit}
-            className="bg-[#017A5B]  w-full text-white p-2 rounded"
+            className="bg-[#815BF5]  w-full text-white p-2 rounded"
           >
             {loading ? <Loader /> : "Update Task"}
           </button>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
@@ -1453,11 +1442,23 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
                 onClick={() => handleSelectUser(user._id)}
               >
                 <div className="flex gap-2">
-                  <div className="h-8 w-8 rounded-full flex bg-[#815BF5] items-center">
-                    <span className="ml-2 text-sm">
-                      {`${user.firstName[0]}${user.lastName[0]}`}
-                    </span>
-                  </div>
+                  <Avatar className="h-8 w-8 rounded-full flex bg-[#815BF5] items-center">
+                    {user.profilePic ? (
+                      <img
+                        src={user.profilePic}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        className="h-full w-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <AvatarFallback className="ml-2">
+
+                        <h1 className="text-sm">
+                          {`${user.firstName}`.slice(0, 1)}
+                          {`${user.lastName}`.slice(0, 1)}
+                        </h1>
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
                   <div>
                     <h1 className="text-sm">
                       {user.firstName} {user.lastName}
@@ -1477,7 +1478,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

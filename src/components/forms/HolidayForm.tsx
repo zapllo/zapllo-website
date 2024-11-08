@@ -108,7 +108,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
                 )}
               </button>
             </DialogTrigger>
-            <DialogContent className="">
+            <DialogContent className="z-[100]">
               <div className="absolute z-[100] inset-0 bg-black -900 bg-opacity-50 rounded-xl flex justify-center items-center">
                 <div className="bg-[#0B0D29] z-[100] h-[510px] max-h-screen scale-75 text-[#D0D3D3] w-[100%] rounded-lg p-8">
                   <CustomDatePicker

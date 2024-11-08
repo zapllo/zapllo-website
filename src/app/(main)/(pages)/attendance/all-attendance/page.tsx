@@ -642,7 +642,7 @@ export default function AllAttendance() {
       )}
 
       <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 bg-[#0B0D29]">
+        <DialogContent className="w-96 bg-[#0B0D29] z-[100]">
           <div className="flex justify-between">
             <DialogTitle className="text-md font-medium text-white">
               Select Custom Date Range
@@ -736,7 +736,7 @@ export default function AllAttendance() {
 
       {/* Start Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-        <DialogContent className="w-full scale-75">
+        <DialogContent className="w-full scale-75 z-[100]">
           <div className="flex justify-between px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.start}
@@ -752,7 +752,7 @@ export default function AllAttendance() {
 
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-        <DialogContent className="w-full scale-75">
+        <DialogContent className="w-full scale-75 z-[100]">
           <div className="flex justify-between px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.end}

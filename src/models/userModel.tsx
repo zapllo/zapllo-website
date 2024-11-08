@@ -38,6 +38,8 @@ export interface IUser extends Document {
     imageUrls: { type: [String], default: [] };
     country: string;
     profilePic: string;
+    isLeaveAccess: boolean;
+    isTaskAccess: boolean;
 }
 
 // Define the schema
@@ -88,6 +90,14 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     },
     profilePic: {
         type: String,
+    },
+    isLeaveAccess: {
+        type: Boolean,
+        default: true,
+    },
+    isTaskAccess: {
+        type: Boolean,
+        default: true,
     },
 }, { timestamps: true });
 

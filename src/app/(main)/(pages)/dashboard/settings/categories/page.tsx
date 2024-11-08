@@ -161,9 +161,9 @@ const Categories: React.FC = () => {
       if (response.status === 200) {
         const { categories } = response.data;
         setSuggestedCategories(categories);
-        fetchCategories();
+        // fetchCategories();
         toast.success("Suggested categories generated successfully.");
-        fetchCategories();
+        // fetchCategories();
         setIsDialogOpen(true); // Open the dialog when categories are fetched
       } else {
         toast.error("Failed to generate suggested categories.");
@@ -201,6 +201,11 @@ const Categories: React.FC = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleClose = () => {
+    setSuggestedCategories([]);
+    setIsDialogOpen(false);
+  }
+
   const handleCreateCategoriesFromSelection = async () => {
     try {
       setLoading(true);
@@ -211,6 +216,7 @@ const Categories: React.FC = () => {
 
       setCategories([...categories, ...selectedCategories]);
       setSelectedCategories([]); // Clear selected categories after adding
+      fetchCategories();
       setIsDialogOpen(false); // Close dialog when done
       toast.success("Categories added successfully.");
     } catch (error) {
@@ -249,8 +255,8 @@ const Categories: React.FC = () => {
           </div>
         )}
       </div>
-      {role === "orgAdmin"  && (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {role === "orgAdmin" && (
+        <Dialog open={isDialogOpen} onOpenChange={handleClose}>
           <DialogTrigger asChild>
             <div className="">
               <div
@@ -275,8 +281,8 @@ const Categories: React.FC = () => {
             </div>
           </DialogTrigger>
 
-          <DialogContent>
-            <div className="flex justify-between">
+          <DialogContent className="z-[100] w-full max-w-3xl">
+            <div className="flex justify-between ">
               <div className="">
                 <div className="flex gap-2 items-center text-muted-foreground">
                   <img src="/branding/AII.png" className="h-7" />
@@ -339,7 +345,7 @@ const Categories: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
-       {role === "manager"  && (
+      {role === "manager" && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <div className="">
@@ -365,7 +371,7 @@ const Categories: React.FC = () => {
             </div>
           </DialogTrigger>
 
-          <DialogContent>
+          <DialogContent className="z-[100]">
             <div className="flex justify-between">
               <div className="">
                 <div className="flex gap-2 items-center text-muted-foreground">
@@ -479,11 +485,11 @@ const Categories: React.FC = () => {
             ) : (
               <div className=" flex justify-between w-full  ">
                 <div className="flex justify-between w-full ">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full">
                     <div className="px-1 scale-90 flex items-center">
                       <FallbackImage name={cat.name} />
                     </div>
-                    <span className="text-xs flex items-center">{cat.name}</span>
+                    <span className="text-xs w-full flex items-center">{cat.name}</span>
                   </div>
                   <div className="  w-full">
                     {role === "orgAdmin" && (

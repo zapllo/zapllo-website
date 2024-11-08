@@ -8,6 +8,7 @@ import { SendEmailOptions, sendEmail } from "@/lib/sendEmail";
 import { getDataFromToken } from "@/helper/getDataFromToken";
 import Leave from "@/models/leaveTypeModel";
 import { Types } from "mongoose";
+import Order from "@/models/orderModel";
 
 connectDB();
 
@@ -103,12 +104,32 @@ export async function POST(request: NextRequest) {
       categories = [], // Default to empty array if not provided
       reportingManagerId,
       country, // New field
+      isLeaveAccess,
+      isTaskAccess,
     } = reqBody;
 
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json({ error: "A user with this email already exists." }, { status: 400 });
+    }
+    let organizationId = authenticatedUser?.organization ?? null;
+
+    if (organizationId) {
+      // Retrieve the latest order for the user's organization
+      const latestOrder = await Order.findOne({ userId: userId })
+        .sort({ createdAt: -1 }) // Sort by most recent
+        .exec();
+
+      const subscribedUserLimit = latestOrder?.subscribedUserCount || 99999;
+
+      // Get the current user count for the organization
+      const currentUserCount = await User.countDocuments({ organization: organizationId });
+
+      // Check if the current user count exceeds the subscribed limit
+      if (currentUserCount >= subscribedUserLimit) {
+        return NextResponse.json({ error: "User limit reached for the current plan." }, { status: 403 });
+      }
     }
 
     // Hash the password using bcryptjs
@@ -124,7 +145,6 @@ export async function POST(request: NextRequest) {
       const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: '2-digit' };
       return date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
     };
-
 
     // Determine the role of the new user
     let newUserRole = "member";
@@ -151,6 +171,8 @@ export async function POST(request: NextRequest) {
       organization: newOrganizationId,
       country,
       reportingManager: reportingManagerId || null, // Assign reporting manager
+      isLeaveAccess,
+      isTaskAccess
     });
 
     let savedOrganization = null;

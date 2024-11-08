@@ -486,7 +486,7 @@ export default function Billing() {
                         {isDialogOpen && isValidPlan(selectedPlan) && (
                             <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
                                 <DialogOverlay />
-                                <DialogContent>
+                                <DialogContent className='z-[100]'>
                                     {modalStep === 1 && (
                                         <>
                                             <div className='flex justify-between w-full'>
@@ -571,7 +571,7 @@ export default function Billing() {
                             <Dialog open={isAddUserOpen} onOpenChange={handleCloseAddDialog}>
                                 <DialogOverlay />
                                 <DialogTitle>Add Users</DialogTitle>
-                                <DialogContent>
+                                <DialogContent className='z-[100]'>
                                     {modalStep === 1 && (
                                         <>
                                             <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
@@ -647,7 +647,7 @@ export default function Billing() {
                         {isRechargeDialogOpen && (
                             <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
                                 <DialogOverlay />
-                                <DialogContent>
+                                <DialogContent className='z-[100]'>
                                     {rechargeModalStep === 1 && (
                                         <>
                                             <div className='flex justify-between'>

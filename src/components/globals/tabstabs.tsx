@@ -27,6 +27,8 @@ import { getData } from "country-list";
 import CountryDrop from "./countrydropdown";
 import { getCountryCallingCode } from 'libphonenumber-js';
 import UserCountry from "./userCountry";
+import { Switch } from "../ui/switch";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 interface User {
   _id: string;
@@ -39,6 +41,8 @@ interface User {
   reportingManager: string;
   profilePic: string;
   country: string;
+  isLeaveAccess: boolean;
+  isTaskAccess: boolean;
 }
 
 interface APIResponse<T> {
@@ -62,6 +66,8 @@ export default function TeamTabs() {
     whatsappNo: "",
     reportingManager: "",
     country: 'IN', // Add country to the newMember state
+    isLeaveAccess: false, // new field
+    isTaskAccess: false,  // new field
   });
 
 
@@ -80,6 +86,8 @@ export default function TeamTabs() {
     reportingManager: "",
     profilePic: "",
     country: "IN",
+    isLeaveAccess: false, // new field
+    isTaskAccess: false,  // new field
   });
   const [selectedManager, setSelectedManager] = useState("");
   const [reportingManagerName, setReportingManagerName] = useState("");
@@ -200,8 +208,11 @@ export default function TeamTabs() {
     setLoading(true); // Start loader
     try {
       setErrorMessage(""); // Clear any existing error message
-      const response = await axios.post("/api/users/signup", newMember);
-
+      const response = await axios.post("/api/users/signup", {
+        ...newMember,
+        isLeaveAccess: newMember.isLeaveAccess,
+        isTaskAccess: newMember.isTaskAccess,
+      });
       const data: APIResponse<User> = response.data;
 
       if (data.success) {
@@ -220,16 +231,19 @@ export default function TeamTabs() {
           whatsappNo: "",
           reportingManager: '',
           country: '',
+          isTaskAccess: false,
+          isLeaveAccess: false,
         });
         setSelectedManager("");
         toast.success("New member added successfully!");
       } else {
-        // Display error toast for existing email
-        if (data.error === "A user with this email already exists.") {
-          // toast.error("This email is already associated with an account. Please use a different email.");
-          setErrorMessage("This email is already registered");
+        // Specific handling for subscription limit
+        if (data.error === "User limit reached for the current plan.") {
+          setErrorMessage("You have reached the maximum number of members for your current plan.");
+        } else if (data.error === "A user with this email already exists.") {
+          setErrorMessage("This email is already registered.");
         } else {
-          toast.error(data.error);
+          setErrorMessage("An unexpected error occurred. Please try again.");
         }
       }
     } catch (error: any) {
@@ -257,6 +271,8 @@ export default function TeamTabs() {
       whatsappNo: "",
       reportingManager: '',
       country: '',
+      isLeaveAccess: false,
+      isTaskAccess: false,
     });
     setSelectedManager("");
   };
@@ -267,7 +283,9 @@ export default function TeamTabs() {
       const updatedUser = {
         ...editedUser,
         reportingManager:
-          updateModalReportingManager || editedUser.reportingManager, // Ensure reporting manager is included
+          updateModalReportingManager || editedUser.reportingManager,
+        isLeaveAccess: editedUser.isLeaveAccess,
+        isTaskAccess: editedUser.isTaskAccess,
       };
 
       const response = await fetch(`/api/users/update`, {
@@ -395,15 +413,22 @@ export default function TeamTabs() {
                     Add Member <Plus /></Button>
                 </DialogTrigger>
               )}
-              <DialogContent className="w-[40%]">
-                <DialogTitle>
-                  <div className="flex gap-2">
-                    <UserCircle className='h-7' />
-                    <h1 className="text-md mt-1">
-                      Add New Member
-                    </h1>
-                  </div>
-                </DialogTitle>
+              <DialogContent className="w-[40%] h-full m-auto overflow-y-scroll scrollbar-hide z-[100]">
+                <div className="flex justify-between w-full items-center">
+                  <DialogTitle>
+                    <div className="flex gap-2">
+                      <UserCircle className='h-7' />
+                      <h1 className="text-md mt-1">
+                        Add New Member
+                      </h1>
+                    </div>
+                  </DialogTitle>
+                  <DialogClose className="cursor-pointer">
+                    <CrossCircledIcon
+                      className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                    />
+                  </DialogClose>
+                </div>
                 <DialogDescription>
                   Please fill in the details of the new team member.
                 </DialogDescription>
@@ -506,7 +531,34 @@ export default function TeamTabs() {
                     )}
                   </div>
                   {/* Country Dropdown */}
+                  <div className=" justify-between p-2 w-full">
 
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2 items-center">
+                        <img src="/branding/teamsicon.png" className="h-5" />
+                        <img src="/branding/teamstext.png" className="h-4 mt-1" />
+                      </div>
+                      <Switch
+                        checked={newMember.isTaskAccess}
+                        onCheckedChange={(checked) =>
+                          setNewMember((prev) => ({ ...prev, isTaskAccess: checked }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-6">
+                      <div className="flex gap-2 items-center">
+                        <img src="/branding/payrollicon.png" className="h-5" />
+                        <img src="/branding/payrolltext.png" className="h-4 mt-1" />
+                      </div>
+
+                      <Switch
+                        checked={newMember.isLeaveAccess}
+                        onCheckedChange={(checked) =>
+                          setNewMember((prev) => ({ ...prev, isLeaveAccess: checked }))
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="mt-4 flex justify-end gap-4">
                   <Button
@@ -633,6 +685,8 @@ export default function TeamTabs() {
                           country: user?.country,
                           reportingManager: user.reportingManager,
                           profilePic: user.profilePic,
+                          isLeaveAccess: user.isLeaveAccess,
+                          isTaskAccess: user.isTaskAccess,
                         });
                         setIsEditModalOpen(true);
                       }}>
@@ -650,8 +704,20 @@ export default function TeamTabs() {
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="w-[40%] z-[100]">
-          <DialogTitle>Edit User</DialogTitle>
+        <DialogContent className="w-[40%] h-full m-auto overflow-y-scroll scrollbar-hide z-[100]">
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              <UserCircle className='h-7' />
+              <h1 className="text-md mt-1">
+                Edit User
+              </h1>
+            </div>
+            <DialogClose className="cursor-pointer">
+              <CrossCircledIcon
+                className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+              />
+            </DialogClose>
+          </div>
           <DialogDescription>
             Modify the details of the selected user.
           </DialogDescription>
@@ -721,6 +787,35 @@ export default function TeamTabs() {
                 value={editedUser.whatsappNo}
                 className="py-2 px-2 text-xs bg-transparent border rounded-r w-full outline-none"
                 onChange={(e) => setEditedUser({ ...editedUser, whatsappNo: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className=" justify-between p-2 w-full">
+
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2 items-center">
+                <img src="/branding/teamsicon.png" className="h-5" />
+                <img src="/branding/teamstext.png" className="h-4 mt-1" />
+              </div>
+              {/* <label className="text-sm">Zapllo Tasks Access</label> */}
+              <Switch
+                checked={editedUser.isTaskAccess}
+                onCheckedChange={(checked) =>
+                  setEditedUser((prev) => ({ ...prev, isTaskAccess: checked }))
+                }
+              />
+            </div>
+            <div className="flex justify-between mt-6">
+              <div className="flex gap-2 items-center">
+                <img src="/branding/payrollicon.png" className="h-5" />
+                <img src="/branding/payrolltext.png" className="h-4 mt-1" />
+              </div>
+              {/* <label className="text-sm">Zapllo Payroll Access</label> */}
+              <Switch
+                checked={editedUser.isLeaveAccess}
+                onCheckedChange={(checked) =>
+                  setEditedUser((prev) => ({ ...prev, isLeaveAccess: checked }))
+                }
               />
             </div>
           </div>

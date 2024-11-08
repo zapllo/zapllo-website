@@ -769,7 +769,7 @@ export default function Approvals() {
               }
               )
             </button> */}
-            {currentUserRole === "orgAdmin" && (
+          
               <div className="flex">
                 <button
                   onClick={() => setStatusFilter("Approved")}
@@ -786,7 +786,7 @@ export default function Approvals() {
                 </button>
                 <button
                   onClick={() => setStatusFilter("Rejected")}
-                  className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Rejected"
+                  className={`px-4 py-2 flex gap-2 ml-4 rounded text-xs border ${statusFilter === "Rejected"
                     ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
                     : "bg-[#] text-white border hover:border-red-500"
                     }`}
@@ -798,7 +798,7 @@ export default function Approvals() {
                   Rejected
                 </button>
               </div>
-            )}
+     
           </>
         ) : (
           <>
@@ -848,8 +848,8 @@ export default function Approvals() {
             <button
               onClick={() => setStatusFilter("Approved")}
               className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
-                ? "bg-[#815BF5] text-white border-transparent"
-                : "bg-[#] border text-white border-transparent"
+                ? "bg-[#815BF5] text-white border"
+                : "bg-[#] border text-white "
                 } hover:border-green-500`}
             >
               <CheckCircle
@@ -1177,7 +1177,7 @@ export default function Approvals() {
 
       {/* Custom Date Range Modal */}
       <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 bg-[#0B0D29]">
+        <DialogContent className="w-96 z-[100] bg-[#0B0D29]">
           <div className="flex justify-between">
             <DialogTitle className="text-md  font-medium text-white">
               Select Custom Date Range
@@ -1271,7 +1271,7 @@ export default function Approvals() {
 
       {/* Start Date Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-        <DialogContent className="w-full scale-75">
+        <DialogContent className="w-full scale-75 z-[100]">
           <div className="flex justify-center px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.start}
@@ -1287,7 +1287,7 @@ export default function Approvals() {
 
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-        <DialogContent className="w-full scale-75">
+        <DialogContent className="w-full scale-75 z-[100]">
           <div className="flex justify-center px-3 py-5">
             <CustomDatePicker
               selectedDate={customDateRange.end}

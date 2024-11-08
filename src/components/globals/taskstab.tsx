@@ -84,7 +84,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Separator } from "../ui/separator";
-import axios from "axios";
+import axios from 'axios';
 import EditTaskDialog from "./editTask";
 import { useRouter } from "next/navigation";
 import FilterModal from "./filterModal";
@@ -547,112 +547,73 @@ export default function TasksTab({
   ); // Cast to DateFilter
 
   const filteredTasks = tasks?.filter((task) => {
-    let isFiltered = true;
+    // let isFiltered = true;
     const dueDate = new Date(task.dueDate);
     const completionDate = task.completionDate
       ? new Date(task.completionDate)
       : null;
     const now = new Date();
 
-    // 1. Filter by selected user if a user card was clicked (critical filter applied first)
+    // Filter by selected user if applied
     if (selectedUserId && selectedUserId._id) {
-      isFiltered = task.assignedUser?._id === selectedUserId._id;
+      if (task.assignedUser?._id !== selectedUserId._id) return false;
     }
-    // Apply "Assigned To" filter
-    if (assignedToFilter && task.assignedUser?._id !== assignedToFilter) {
-      isFiltered = false;
-    }
-    // Skip task if it doesn't match the selected user filter
-    if (!isFiltered) return false;
 
-    // 2. Apply date range filter
+    // Apply "Assigned To" filter
+    if (assignedToFilter && task.assignedUser?._id !== assignedToFilter) return false;
+    // Apply category filter
+    if (categoryFilter.length > 0 && !categoryFilter.includes(task.category?._id)) return false;
+
+    // Apply "Assigned By" filter
+    if (assignedByFilter.length > 0 && !assignedByFilter.includes(task.user._id)) return false;
+
+    // Apply frequency filter
+    if (frequencyFilter.length > 0 && !frequencyFilter.includes(task.repeatType)) return false;
+
+    // Apply priority filter
+    if (priorityFilterModal.length > 0 && !priorityFilterModal.includes(task.priority)) return false;
+
+    // Apply date range filter
     if (dateRange && dateRange.startDate && dateRange.endDate) {
       const taskDueDate = new Date(task.dueDate);
+      if (taskDueDate < dateRange.startDate || taskDueDate > dateRange.endDate) return false;
+    }
+
+    // Apply status filter
+    if (taskStatusFilter) {
+      if (taskStatusFilter === "overdue" && (dueDate >= now || task.status === "Completed")) return false;
+      if (taskStatusFilter === "pending" && task.status !== "Pending") return false;
+      if (taskStatusFilter === "inProgress" && task.status !== "In Progress") return false;
+      if (taskStatusFilter === "completed" && task.status !== "Completed") return false;
+      if (taskStatusFilter === "inTime" && (task.status !== "Completed" || (completionDate && completionDate > dueDate))) return false;
+      if (taskStatusFilter === "delayed" && (task.status !== "Completed" || (completionDate && completionDate <= dueDate))) return false;
+    }
+
+    // Apply active tab filter
+    if (activeTab === "myTasks" && task.assignedUser?._id !== currentUser?._id) return false;
+    if (activeTab === "delegatedTasks" && !((task.user._id === currentUser?._id && task.assignedUser?._id !== currentUser?._id) || task.assignedUser?._id === currentUser?._id)) return false;
+    if (activeTab === "allTasks") return true;
+
+    // Apply search query filter
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
       if (
-        taskDueDate < dateRange.startDate ||
-        taskDueDate > dateRange.endDate
+        !(
+          task.title.toLowerCase().includes(lowerCaseQuery) ||
+          task.description.toLowerCase().includes(lowerCaseQuery) ||
+          task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
+          task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
+          task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
+          task.assignedUser.lastName.toLowerCase().includes(lowerCaseQuery) ||
+          task.status.toLowerCase().includes(lowerCaseQuery)
+        )
       ) {
-        return false; // Skip task if it doesn't fall within the date range
+        return false;
       }
     }
 
-    // 3. Apply status filter
-    if (taskStatusFilter === "overdue") {
-      isFiltered = dueDate < now && task.status !== "Completed";
-    } else if (taskStatusFilter === "pending") {
-      isFiltered = task.status === "Pending";
-    } else if (taskStatusFilter === "inProgress") {
-      isFiltered = task.status === "In Progress";
-    } else if (taskStatusFilter === "completed") {
-      isFiltered = task.status === "Completed";
-    } else if (taskStatusFilter === "inTime") {
-      isFiltered =
-        task.status === "Completed" &&
-        completionDate !== null &&
-        completionDate <= dueDate;
-    } else if (taskStatusFilter === "delayed") {
-      isFiltered =
-        task.status === "Completed" &&
-        completionDate !== null &&
-        completionDate > dueDate;
-    }
-
-    // Skip task if it doesn't match the status filter
-    if (!isFiltered) return false;
-
-    // 4. Filter based on active tab
-    if (activeTab === "myTasks") {
-      isFiltered = task.assignedUser?._id === currentUser?._id;
-    } else if (activeTab === "delegatedTasks") {
-      isFiltered =
-        (task.user._id === currentUser?._id &&
-          task.assignedUser?._id !== currentUser?._id) ||
-        task.assignedUser?._id === currentUser?._id;
-    } else if (activeTab === "allTasks") {
-      return tasks;
-    }
-
-    // 1. Filter by selected user if a user card was clicked (critical filter applied first)
-    if (selectedUserId && selectedUserId._id) {
-      isFiltered = task.assignedUser?._id === selectedUserId._id;
-    }
-    // Skip task if it doesn't match the active tab filter
-    if (!isFiltered) return false;
-
-    // 5. Apply category filter
-    if (categoryFilter.length > 0) {
-      isFiltered = categoryFilter.includes(task.category?._id);
-    }
-
-    // 6. Apply "Assigned By" filter
-    if (assignedByFilter.length > 0) {
-      isFiltered = assignedByFilter.includes(task.user._id);
-    }
-
-    // 7. Apply frequency filter
-    if (frequencyFilter.length > 0) {
-      isFiltered = frequencyFilter.includes(task.repeatType);
-    }
-
-    // 8. Apply priority filter
-    if (priorityFilterModal.length > 0) {
-      isFiltered = priorityFilterModal.includes(task.priority);
-    }
-
-    // 9. Apply search query filter
-    if (searchQuery) {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-      isFiltered =
-        task.title.toLowerCase().includes(lowerCaseQuery) ||
-        task.description.toLowerCase().includes(lowerCaseQuery) ||
-        task.user.firstName.toLowerCase().includes(lowerCaseQuery) ||
-        task.user.lastName.toLowerCase().includes(lowerCaseQuery) ||
-        task.assignedUser.firstName.toLowerCase().includes(lowerCaseQuery) ||
-        task.assignedUser.lastName.toLowerCase().includes(lowerCaseQuery) ||
-        task.status.toLowerCase().includes(lowerCaseQuery);
-    }
-
-    return isFiltered;
+    // If all filters pass, include the task
+    return true;
   });
 
   console.log(tasks, "tasks to check if category.name is present");

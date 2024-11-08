@@ -423,7 +423,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
       <Toaster />
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
-        <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+        <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
           <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
             <div className="flex border-b py-2  w-full justify-between ">
               <Dialog.Title className="text-md   px-6 py-2 font-medium">

@@ -1500,7 +1500,7 @@ export default function MyAttendance() {
 
       {/* Custom Date Range Modal */}
       <DialogRoot open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 bg-[#0B0D29]">
+        <DialogContent className="w-96 z-[100] bg-[#0B0D29]">
           <div className="flex justify-between">
             <DialogTitle className="text-md  font-medium text-white">
               Select Custom Date Range
@@ -1637,8 +1637,8 @@ export default function MyAttendance() {
         onOpenChange={setIsRegularizationModalOpen}
       >
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
-          <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
+          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[100]" />
+          <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
             <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
               <div className="flex border-b py-2  w-full justify-between">
                 <Dialog.Title className="text-md   px-6 py-2 font-medium">

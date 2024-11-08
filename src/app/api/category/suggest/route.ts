@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Construct the AI prompt to get task-related categories for a company based on industry
-        const prompt = `Suggest 20 task-related business categories for a company in the ${industry} industry. Ensure an even mix of single-word and multi-word categories. Examples could include HR, Operations, Project Management, Client Support, and Automation.`;
+        const prompt = `Suggest 15 task-related business categories for a company in the ${industry} industry. Ensure an even mix of single-word and multi-word categories. Examples could include HR, Operations, Project Management, Client Support, and Automation.`;
 
         const response = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo', // Chat model

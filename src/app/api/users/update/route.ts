@@ -30,6 +30,8 @@ export async function PATCH(request: NextRequest) {
       role,
       reportingManager,  // Add reportingManager in the request body
       country,
+      isLeaveAccess = true, // Set default to false if not provided
+      isTaskAccess = true,  // Set default to false if not provided
     } = reqBody;
 
     const userToEdit = await User.findById(_id);
@@ -58,6 +60,9 @@ export async function PATCH(request: NextRequest) {
     if (role) userToEdit.role = role;
     if (reportingManager) userToEdit.reportingManager = reportingManager;  // Update the reportingManager
     if (country) userToEdit.country = country;  // Update country
+    // Set or update access fields
+    if (isLeaveAccess) userToEdit.isLeaveAccess = isLeaveAccess;
+    if (isTaskAccess) userToEdit.isTaskAccess = isTaskAccess;
 
     await userToEdit.save();
 

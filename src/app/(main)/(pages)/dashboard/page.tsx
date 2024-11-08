@@ -7,7 +7,7 @@ import Loader from "@/components/ui/loader";
 import { Progress } from "@/components/ui/progress";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
-import { CalendarMinus, Globe, Home, Megaphone } from "lucide-react";
+import { CalendarMinus, Globe, Home, Lock, Megaphone } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -18,6 +18,8 @@ const DashboardPage = () => {
   const [leavesTrialExpires, setLeavesTrialExpires] = useState(Date());
   const [attendanceTrialExpires, setAttendanceTrialExpires] = useState(Date());
   const [role, setRole] = useState<string | null>(null); // Track the user's role
+  const [isLeaveAcess, setIsLeaveAccess] = useState<boolean | null>(null); // Track the user's role
+  const [isTaskAccess, setIsTaskAccess] = useState<boolean | null>(null); // Track the user's role
   const router = useRouter();
   const [leavesRemainingTime, setLeavesRemainingTime] = useState("");
   const [attendanceRemainingTime, setAttendanceRemainingTime] = useState("");
@@ -66,7 +68,8 @@ const DashboardPage = () => {
         const userRes = await axios.get("/api/users/me");
         setUserId(userRes.data.data._id);
         setRole(userRes.data.data.role); // Set role from the response
-
+        setIsLeaveAccess(userRes.data.data.isLeaveAccess);
+        setIsTaskAccess(userRes.data.data.isTaskAccess);
         // Redirect if the role is Admin
         if (userRes.data.data.role === "Admin") {
           router.replace("/admin/dashboard"); // Redirect to admin dashboard
@@ -130,7 +133,7 @@ const DashboardPage = () => {
         product,
         trialExpires: trialDate,
       });
-     await  fetchTrialStatus(); // Refresh the trial status after starting the trial
+      await fetchTrialStatus(); // Refresh the trial status after starting the trial
     } catch (error) {
       console.error("Error starting trial:", error);
     } finally {
@@ -202,10 +205,19 @@ const DashboardPage = () => {
               </div>
               <h1 className='text-lg font-medium'>Zapllo Tasks</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
-              <div className='pt-2'>
-                <Link href='/dashboard/tasks'>
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs' >Go To Task Management</Button>
-                </Link>
+              <div className="pt-2">
+                {role === "orgAdmin" || isTaskAccess ? (
+                  <Link href="/dashboard/tasks">
+                    <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                      Go To Task Management
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button className="bg-[#815BF5] flex text-white gap-1 py-1 text-xs opacity-80">
+                    <Lock className="h-4" />
+                    <h1>Locked</h1>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -237,30 +249,45 @@ const DashboardPage = () => {
                 Manage your Employee Leaves & Holidays
               </p>
               <div className="">
-                {leavesTrialExpires ? (
-                  <>
-                    <p className="text-xs text-red-600 py-2">
-                      Free Trial Expires {leavesRemainingTime}
-                    </p>
-                    <Link href="/attendance/my-leaves">
-                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
-                        Go To Leaves
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <Button
-                    onClick={() => startTrial("leaves")}
-                    className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
-                  >
-                    {isFreeTrialLoading ? (
-                      <span>Start trial</span>
-                    ) : (
-                      <>
-                        <Loader /> <span>Starting trial...</span>
-                      </>
-                    )}
+                {role === "orgAdmin" || isLeaveAcess ? (
+                  leavesTrialExpires ? (
+                    <>
+                      <p className="text-xs text-red-600 py-2">
+                        Free Trial Expires {leavesRemainingTime}
+                      </p>
+                      <Link href="/attendance/my-leaves">
+                        <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                          Go To Leaves
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => startTrial("leaves")}
+                      className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
+                    >
+                      {isFreeTrialLoading ? (
+                        <span>Start trial</span>
+                      ) : (
+                        <>
+                          <Loader /> <span>Starting trial </span>
+                        </>
+                      )}
+                    </Button>
+                  )
+                ) : role !== "orgAdmin" && !leavesTrialExpires || !isLeaveAcess ? (
+                  <Button className="bg-[#815BF5] flex text-white gap-1 py-1 text-xs opacity-80" >
+                    <Lock className='h-4' />
+                    <h1>
+                      Locked
+                    </h1>
                   </Button>
+                ) : (
+                  <Link href="/attendance/my-leaves">
+                    <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                      Go To Leaves
+                    </Button>
+                  </Link>
                 )}
               </div>
             </div>
@@ -282,34 +309,46 @@ const DashboardPage = () => {
               <p className="text-xs font-medium">
                 Track your Team Attendance & Breaks
               </p>
-              <div className="pt-">
-                {attendanceTrialExpires ? (
-                  <>
-                    <p className="text-xs py-2 text-red-600 ">
-                      Free Trial Expires {attendanceRemainingTime}
-                    </p>
-                    <Link href="/attendance/my-attendance">
-                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
-                        Go To Attendance
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <Button
-                    onClick={() => startTrial("attendance")}
-                    className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
-                  >
-                    {isFreeTrialLoading ? (
-                      <>
+              <div className="">
+                {role === "orgAdmin" || isLeaveAcess ? (
+                  leavesTrialExpires ? (
+                    <>
+                      <p className="text-xs text-red-600 py-2">
+                        Free Trial Expires {leavesRemainingTime}
+                      </p>
+                      <Link href="/attendance/my-leaves">
+                        <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                          Go To Leaves
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => startTrial("attendance")}
+                      className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
+                    >
+                      {isFreeTrialLoading ? (
                         <span>Start trial</span>
-                      </>
-                    ) : (
-                      <>
-                        {" "}
-                        <Loader /> <span>Starting trial...</span>
-                      </>
-                    )}
+                      ) : (
+                        <>
+                          <Loader /> <span>Starting trial </span>
+                        </>
+                      )}
+                    </Button>
+                  )
+                ) : role !== "orgAdmin" && !leavesTrialExpires || !isLeaveAcess ? (
+                  <Button className="bg-[#815BF5] flex text-white gap-1 py-1 text-xs opacity-80" >
+                    <Lock className='h-4' />
+                    <h1>
+                      Locked
+                    </h1>
                   </Button>
+                ) : (
+                  <Link href="/attendance/my-leaves">
+                    <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                      Go To Leaves
+                    </Button>
+                  </Link>
                 )}
               </div>
             </div>

@@ -263,9 +263,9 @@ const LeaveTypes: React.FC = () => {
             </button>
           </div>
           <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
-            <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
-              <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[700px]  shadow-lg w-full   max-w-md  rounded-lg">
+            <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[100]" />
+            <Dialog.Content className="fixed z-[100] m-auto  inset-0 flex items-center justify-center">
+              <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-full m-auto   shadow-lg w-full   max-w-md  rounded-lg">
                 <div className="flex border-b py-2  w-full justify-between ">
                   <Dialog.Title className="text-md   px-6 py-2 font-medium">
                     {" "}
@@ -362,30 +362,34 @@ const LeaveTypes: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex  gap-8">
-                      <div className="flex w-full gap-2  bg-[#282D32] p-2  rounded">
-                        <label className="block text-sm text-[#787CA5] ">
+                    <div className="flex items-center gap-8">
+                      <div className="flex items-center w-full gap-2  bg-[#121212] p-2  rounded">
+                        <label className="block text-xs text-[#787CA5] ">
                           Backdated Leave Days
                         </label>
-                        <input
-                          type="number"
-                          name="backdatedLeaveDays"
-                          value={formData.backdatedLeaveDays}
-                          onChange={handleInputChange}
-                          className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
-                        />
+                        <div>
+                          <input
+                            type="number"
+                            name="backdatedLeaveDays"
+                            value={formData.backdatedLeaveDays}
+                            onChange={handleInputChange}
+                            className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
+                          />
+                        </div>
                       </div>
-                      <div className="flex gap-2 w-full bg-[#282D32] p-2 rounded">
-                        <label className="block text-sm w-1/2 text-[#787CA5]">
+                      <div className="flex items-center gap-2 w-full bg-[#121212] p-2 rounded">
+                        <label className="block text-xs  text-[#787CA5]">
                           Advance Leave Days
                         </label>
+                        <div>
                         <input
                           type="number"
                           name="advanceLeaveDays"
                           value={formData.advanceLeaveDays}
                           onChange={handleInputChange}
-                          className=" border border-[#505356] px-4 w-24 outline-none bg-transparent rounded-md"
+                          className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
                         />
+                        </div>
                       </div>
                     </div>
 
@@ -416,8 +420,8 @@ const LeaveTypes: React.FC = () => {
                         />
                       </div>
                     </div>
-                    <div className="bg-[#282D32] p-2 rounded">
-                      <div className="flex gap-2 bg-[#282D32]  rounded">
+                    <div className="bg-[#121212] p-2 rounded">
+                      <div className="flex gap-2 bg-[#121212]  rounded">
                         <div className="flex gap-2">
                           <label className="block text-sm mt-1 text-[#787CA5]">
                             Unit
@@ -452,7 +456,7 @@ const LeaveTypes: React.FC = () => {
                     <div className="flex justify-end">
                       <button
                         type="submit"
-                        className="bg-[#017A5B] w-full text-sm text-white px-4  mt-6  py-2 rounded"
+                        className="bg-[#017A5B] w-full text-sm text-white px-4  mt-2  py-2 rounded"
                       >
                         {isEdit ? "Update Leave Type" : "Add Leave Type"}
                       </button>

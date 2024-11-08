@@ -26,19 +26,18 @@ export default function RootLayout({
           async
         />
       </head>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-        {/* <FloatingNavbar /> */}
-        <body className={inter.className}>
-          <NextTopLoader />
-          {children}
-        </body>
-      </ThemeProvider>
-
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {/* <FloatingNavbar /> */}
+          <body className={inter.className}>
+            <NextTopLoader />
+            {children}
+          </body>
+        </ThemeProvider>
     </html>
   );
 }

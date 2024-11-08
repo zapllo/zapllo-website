@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Meteors from "@/components/magicui/meteors";
+import Loader from "@/components/ui/loader";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -279,10 +280,10 @@ export default function SignupPage() {
                 disabled={loading}
               >
                 {loading
-                  ? "Signing up..."
+                  ? <Loader />
                   : showOrganizationForm
-                  ? "Sign up →"
-                  : "Sign up →"}
+                    ? "Sign up →"
+                    : "Sign up →"}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">
@@ -375,7 +376,7 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setUser({ ...user, password: e.target.value })
                   }
-                  // placeholder="••••••••"
+                // placeholder="••••••••"
                 />
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
@@ -395,7 +396,7 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setUser({ ...user, confirmPassword: e.target.value })
                   }
-                  // placeholder="••••••••"
+                // placeholder="••••••••"
                 />
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
@@ -433,10 +434,10 @@ export default function SignupPage() {
                 disabled={loading}
               >
                 {loading
-                  ? "Signing up..."
+                  ? <Loader />
                   : showOrganizationForm
-                  ? "Sign up →"
-                  : "Next →"}
+                    ? "Sign up →"
+                    : "Next →"}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">

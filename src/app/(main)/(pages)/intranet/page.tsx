@@ -2,8 +2,8 @@
 "use client";
 
 import IntranetTable from "@/components/tables/intranetTable";
-import * as Dialog from "@radix-ui/react-dialog";
 import {
+  Dialog,
   DialogClose,
   DialogContent,
   DialogTitle,
@@ -13,6 +13,7 @@ import axios from "axios";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { motion, useAnimation } from 'framer-motion'
 
 interface Category {
   _id: string;
@@ -91,9 +92,34 @@ const IntranetPage: React.FC = () => {
     }
   };
 
+  const controls = useAnimation();
+
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      y: '100%',
+    },
+    visible: {
+      opacity: 1,
+      y: '0%',
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 40,
+      },
+    },
+  };
+
+  // Trigger the animation when the component mounts
+  useEffect(() => {
+    controls.start('visible');
+  }, [controls]);
+
+
+
   return (
     <div className="p-6 mt-12">
-      <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <div className="w-full space-x-4 flex justify-center">
           <DialogTrigger asChild>
             <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
@@ -122,83 +148,83 @@ const IntranetPage: React.FC = () => {
         </div>
 
         {/* Add New Link Modal */}
-        <Dialog.Content className="fixed z-[50] bg-black/50 inset-0 flex items-center justify-center">
-          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full z-[100]   max-w-md  rounded-lg ">
-            <div className="flex border-b py-2  w-full justify-between">
-              <DialogTitle className="text-md   px-6 py-2 font-medium">
-                Add New Link
-              </DialogTitle>
-              <DialogClose className="px-6 py-2">
-                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-              </DialogClose>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-4 p-6">
-              <div>
-                {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
-                <input
-                  type="url"
-                  placeholder="Link Url"
-                  id="linkUrl"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  required
-                  className="mt-1 block text-xs w-full  bg-transparent outline-none p-2 border rounded"
-                />
-              </div>
+        <DialogContent className="fixed z-[100] bg-black/50 inset-0 flex items-center justify-center">
 
-              <div>
-                {/* <label htmlFor="description" className="block text-xs font-medium text-white -700">Description</label> */}
-                <textarea
-                  id="description"
-                  value={description}
-                  placeholder="Description"
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  className="mt-1 block text-xs bg-transparent outline-none w-full p-2 border rounded"
-                />
-              </div>
-
-              <div>
-                {/* <label htmlFor="linkName" className="block text-xs font-medium text-white -700">Link Name</label> */}
-                <input
-                  type="text"
-                  id="linkName"
-                  value={linkName}
-                  onChange={(e) => setLinkName(e.target.value)}
-                  required
-                  placeholder="Link Name"
-                  className="mt-1 bg-transparent text-xs outline-none block w-full p-2 border rounded"
-                />
-              </div>
-
-              <div>
-                {/* <label htmlFor="category" className="block text-xs font-medium text-white -700">Category</label> */}
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  required
-                  className="mt-1  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded"
-                >
-                  <option value="">Select a category</option>
-                  {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
-              >
-                Submit
-              </button>
-            </form>
+          <div className="flex border-b py-2  w-full justify-between">
+            <DialogTitle className="text-md   px-6 py-2 font-medium">
+              Add New Link
+            </DialogTitle>
+            <DialogClose className="px-6 py-2">
+              <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+            </DialogClose>
           </div>
-        </Dialog.Content>
-      </Dialog.Root>
+          <form onSubmit={handleSubmit} className="space-y-4 p-6">
+            <div>
+              {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
+              <input
+                type="url"
+                placeholder="Link Url"
+                id="linkUrl"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                required
+                className="mt-1 block text-xs w-full  bg-transparent outline-none p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              {/* <label htmlFor="description" className="block text-xs font-medium text-white -700">Description</label> */}
+              <textarea
+                id="description"
+                value={description}
+                placeholder="Description"
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className="mt-1 block text-xs bg-transparent outline-none w-full p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              {/* <label htmlFor="linkName" className="block text-xs font-medium text-white -700">Link Name</label> */}
+              <input
+                type="text"
+                id="linkName"
+                value={linkName}
+                onChange={(e) => setLinkName(e.target.value)}
+                required
+                placeholder="Link Name"
+                className="mt-1 bg-transparent text-xs outline-none block w-full p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              {/* <label htmlFor="category" className="block text-xs font-medium text-white -700">Category</label> */}
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+                className="mt-1  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded"
+              >
+                <option value="">Select a category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+            >
+              Submit
+            </button>
+          </form>
+
+        </DialogContent>
+      </Dialog>
       <div className="w-full flex justify-center">
         <IntranetTable
           entries={entries}

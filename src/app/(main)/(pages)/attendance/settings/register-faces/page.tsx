@@ -29,7 +29,8 @@ interface IFaceRegistrationRequest {
   };
   imageUrls: string[];
   status: "pending" | "approved" | "rejected";
-  isUpdating: boolean;
+  isApproving: boolean;
+  isRejecting: boolean;
   createdAt: string; // Add a createdAt field if it doesn't exist already
 }
 
@@ -193,7 +194,11 @@ export default function RegisterFace() {
   ) => {
     setRequests((prevRequests) =>
       prevRequests.map((request) =>
-        request._id === requestId ? { ...request, isUpdating: true } : request
+        request._id === requestId
+          ? status === "approved"
+            ? { ...request, isApproving: true }
+            : { ...request, isRejecting: true }
+          : request
       )
     );
 
@@ -226,7 +231,9 @@ export default function RegisterFace() {
       setRequests((prevRequests) =>
         prevRequests.map((request) =>
           request._id === requestId
-            ? { ...request, isUpdating: false }
+            ? status === "approved"
+              ? { ...request, isApproving: false }
+              : { ...request, isRejecting: false }
             : request
         )
       );
@@ -327,59 +334,53 @@ export default function RegisterFace() {
       <div className="flex justify-center gap-4 mb-2">
         <button
           onClick={() => setDateFilter("Today")}
-          className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "Today" ? "bg-[#815BF5] text-white" : "bg-[#] border"
-          }`}
+          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === "Today" ? "bg-[#815BF5] text-white" : "bg-[#] border"
+            }`}
         >
           Today
         </button>
         <button
           onClick={() => setDateFilter("Yesterday")}
-          className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "Yesterday"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border"
-          }`}
+          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === "Yesterday"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border"
+            }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setDateFilter("ThisWeek")}
-          className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "ThisWeek"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border"
-          }`}
+          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === "ThisWeek"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border"
+            }`}
         >
           This Week
         </button>
         <button
           onClick={() => setDateFilter("ThisMonth")}
-          className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "ThisMonth"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border"
-          }`}
+          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === "ThisMonth"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border"
+            }`}
         >
           This Month
         </button>
         <button
           onClick={() => setDateFilter("LastMonth")}
-          className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "LastMonth"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border"
-          }`}
+          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === "LastMonth"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border"
+            }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setDateFilter("AllTime")}
-          className={`px-4 py-1 h-8 text-xs rounded ${
-            dateFilter === "AllTime"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border"
-          }`}
+          className={`px-4 py-1 h-8 text-xs rounded ${dateFilter === "AllTime"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border"
+            }`}
         >
           All Time
         </button>
@@ -485,18 +486,16 @@ export default function RegisterFace() {
       {/* Status Tabs */}
       <div className="tabs mb-6 flex justify-center mt-4 space-x-4">
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${
-            activeTab === "all" ? "bg-[#815BF5] text-white" : "bg-[#28152e]"
-          }`}
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === "all" ? "bg-[#815BF5] text-white" : "bg-[#28152e]"
+            }`}
           onClick={() => setActiveTab("all")}
         >
           <HamburgerMenuIcon />
           All ({requests.length})
         </button>
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${
-            activeTab === "pending" ? "bg-[#815BF5] text-white" : "bg-[#] border"
-          }`}
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === "pending" ? "bg-[#815BF5] text-white" : "bg-[#] border"
+            }`}
           onClick={() => setActiveTab("pending")}
         >
           <Circle className="text-red-500 h-4" />
@@ -514,11 +513,10 @@ export default function RegisterFace() {
           Approved ({countRequests("approved")})
         </button> */}
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 border ${
-            activeTab === "approved"
-              ? "bg-[#815BF5] text-white border-transparent"
-              : "bg-[#] border-"
-          } hover:border-green-500`}
+          className={`px-4 py-2 flex text-xs rounded gap-2 border ${activeTab === "approved"
+            ? "bg-[#815BF5] text-white border-transparent"
+            : "bg-[#] border-"
+            } hover:border-green-500`}
           onClick={() => setActiveTab("approved")}
         >
           <CheckCheck className="text-green-500 h-4" />
@@ -537,11 +535,10 @@ export default function RegisterFace() {
           Rejected ({countRequests("rejected")})
         </button> */}
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 border ${
-            activeTab === "rejected"
-              ? "bg-[#815BF5] text-white border-transparent"
-              : "bg-[#] border-"
-          } hover:border-red-500`}
+          className={`px-4 py-2 flex text-xs rounded gap-2 border ${activeTab === "rejected"
+            ? "bg-[#815BF5] text-white border-transparent"
+            : "bg-[#] border-"
+            } hover:border-red-500`}
           onClick={() => setActiveTab("rejected")}
         >
           <Cross1Icon className="text-red-500 h-4" />
@@ -593,13 +590,12 @@ export default function RegisterFace() {
                   </td>
                   {/* Conditional text color based on status */}
                   <td
-                    className={`px-4 py-2 uppercase ${
-                      request.status === "approved"
-                        ? "text-green-500"
-                        : request.status === "rejected"
+                    className={`px-4 py-2 uppercase ${request.status === "approved"
+                      ? "text-green-500"
+                      : request.status === "rejected"
                         ? "text-red-500"
                         : "text-yellow-500"
-                    }`}
+                      }`}
                   >
                     {request.status}
                   </td>
@@ -635,7 +631,7 @@ export default function RegisterFace() {
                             className="bg-transparent flex gap-2 hover:border-green-600 border text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
-                            {request.isUpdating ? (
+                            {request.isApproving ? (
                               <Loader />
                             ) : (
                               <CheckCheck className="text-green-700 h-4" />
@@ -651,7 +647,7 @@ export default function RegisterFace() {
                             className="border flex gap-2 bg-transparent hover:border-red-600 text-white py-2 px-4 rounded"
                             disabled={updating}
                           >
-                            {request.isUpdating ? (
+                            {request.isRejecting ? (
                               <Loader />
                             ) : (
                               <Cross1Icon className="text-red-500 h-4" />

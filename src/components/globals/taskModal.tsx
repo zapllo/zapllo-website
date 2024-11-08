@@ -68,7 +68,7 @@ import { format, parse } from "date-fns";
 import CustomDatePicker from "./date-picker";
 import CustomTimePicker from "./time-picker";
 import { Separator } from "../ui/separator";
-import axios from "axios";
+import axiosInstance from "@axiosInstance";
 import { toast, Toaster } from "sonner";
 import Loader from "../ui/loader";
 import { Toggle } from "../ui/toggle";
@@ -79,6 +79,7 @@ import CustomAudioPlayer from "./customAudioPlayer";
 import DaysSelectModal from "../modals/DaysSelect";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
+import { fetchInstance } from "@/providers/fetchInstance";
 
 interface TaskModalProps {
   closeModal: () => void;
@@ -398,7 +399,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
   useEffect(() => {
     const getUserDetails = async () => {
-      const res = await axios.get("/api/users/me");
+      const res = await axiosInstance.get("/api/users/me");
       const user = res.data.data;
       setRole(user.role);
     };
@@ -408,7 +409,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/users/organization");
+        const response = await fetchInstance("/api/users/organization");
         const result = await response.json();
 
         if (response.ok) {
@@ -505,7 +506,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     // Fetch categories from the server
     const fetchCategories = async () => {
       try {
-        const response = await fetch("/api/category/get");
+        const response = await fetchInstance("/api/category/get");
         const result = await response.json();
         if (response.ok) {
           setCategories(result.data);
@@ -523,7 +524,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   const handleCreateCategory = async () => {
     if (!newCategory) return;
     try {
-      const response = await fetch("/api/category/create", {
+      const response = await fetchInstance("/api/category/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -574,7 +575,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       }
 
       try {
-        const s3Response = await fetch("/api/upload", {
+        const s3Response = await fetchInstance("/api/upload", {
           method: "POST",
           body: formData,
         });
@@ -642,7 +643,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     console.log("Task data being sent:", taskData);
 
     try {
-      const response = await fetch("/api/tasks/create", {
+      const response = await fetchInstance("/api/tasks/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -768,7 +769,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       files.forEach((file) => formData.append("files", file));
 
       try {
-        const s3Response = await fetch("/api/upload", {
+        const s3Response = await fetchInstance("/api/upload", {
           method: "POST",
           body: formData,
         });
@@ -1064,7 +1065,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 open={isDatePickerOpen}
                 onOpenChange={setIsDatePickerOpen}
               >
-                <DialogContent className="scale-75 ">
+                <DialogContent className="scale-75 z-[100] ">
                   <CustomDatePicker
                     selectedDate={dueDate ?? new Date()}
                     onDateChange={handleDateChange}
@@ -1080,7 +1081,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 open={isTimePickerOpen}
                 onOpenChange={setIsTimePickerOpen}
               >
-                <DialogContent className="scale-75">
+                <DialogContent className="scale-75 z-[100]">
                   <CustomTimePicker
                     selectedTime={dueTime} // Pass the selected time
                     onTimeChange={handleTimeChange} // Update the time state when changed
@@ -1209,10 +1210,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             <Label htmlFor="assign-more-tasks ">Assign More Tasks</Label>
           </div>
           <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
-            <DialogContent>
+            <DialogContent className="z-[100]">
               <div className="flex justify-between">
                 <DialogTitle>Add Links</DialogTitle>
-                <DialogClose>X</DialogClose>
+                <DialogClose>
+                  <CrossCircledIcon
+                    className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                  />
+                </DialogClose>
               </div>
               <DialogDescription>Attach Links to the Task.</DialogDescription>
               <div className="mb-4">
@@ -1261,10 +1266,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             open={isAttachmentModalOpen}
             onOpenChange={setIsAttachmentModalOpen}
           >
-            <DialogContent>
+            <DialogContent className="z-[100]">
               <div className="flex w-full justify-between">
                 <DialogTitle>Add an Attachment</DialogTitle>
-                <DialogClose>X</DialogClose>
+                <DialogClose>
+                  <CrossCircledIcon
+                    className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                  />
+                </DialogClose>
               </div>
               <DialogDescription>
                 Add Attachments to the Task.
@@ -1329,7 +1338,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               open={isReminderModalOpen}
               onOpenChange={openReminderModal}
             >
-              <DialogContent className="max-w-lg mx-auto">
+              <DialogContent className="max-w-lg mx-auto z-[100]">
                 <div className="flex justify-between items-center ">
                   <div className="flex items-center gap-2">
                     <AlarmClock className="h-6 w-6" />
@@ -1525,10 +1534,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             open={isRecordingModalOpen}
             onOpenChange={setIsRecordingModalOpen}
           >
-            <DialogContent>
+            <DialogContent className="z-[100]">
               <div className="flex justify-between w-full">
                 <DialogTitle>Attach a Recording</DialogTitle>
-                <DialogClose>X</DialogClose>
+                <DialogClose>
+
+                </DialogClose>
               </div>
               <DialogDescription>Add Recordings to the Task.</DialogDescription>
 
@@ -1847,7 +1858,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({
   const handleCreateCategory = async () => {
     if (!newCategory) return;
     try {
-      const response = await axios.post("/api/category/create", {
+      const response = await axiosInstance.post("/api/category/create", {
         name: newCategory,
       });
       if (response.status === 200) {
