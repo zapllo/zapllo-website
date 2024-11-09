@@ -209,7 +209,7 @@ export default function Profile({ }: Props) {
               </DialogTrigger>
 
               {/* Fullscreen Modal */}
-              <DialogContent className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <DialogContent className="  flex justify-center items-center z-[100]">
                 <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
                   <div className="flex border-b py-2  w-full justify-between ">
                     <DialogTitle className="text-lg   px-6 py-2 font-medium">Update Profile Pic</DialogTitle>

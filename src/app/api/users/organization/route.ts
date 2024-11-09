@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
         // Fetch users that belong to the same organization as the authenticated user
         const users = await User.find({ organization: authenticatedUser.organization })
-
+        console.log('users', users)
         return NextResponse.json({
             message: "Users fetched successfully",
             data: users,

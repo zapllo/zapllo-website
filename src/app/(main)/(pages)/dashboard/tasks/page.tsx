@@ -47,6 +47,10 @@ export default function TaskManagement() {
     const [isTrialExpired, setIsTrialExpired] = useState(false);
     const [userId, setUserId] = useState("");
     const [progress, setProgress] = useState<boolean[]>([]);
+    const [isLeaveAcess, setIsLeaveAccess] = useState<boolean | null>(null); // Track the user's role
+    const [isTaskAccess, setIsTaskAccess] = useState<boolean | null>(null); // Track the user's role
+
+    const router = useRouter();
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -58,7 +62,11 @@ export default function TaskManagement() {
         getUserDetails();
     }, [])
 
-
+    useEffect(() => {
+        if (currentUser?.isTaskAccess === false) {
+            router.push('/dashboard')
+        }
+    }, []);
 
 
     const openModal = () => {
@@ -156,14 +164,9 @@ export default function TaskManagement() {
             </div>
             <AnimatePresence>
                 {isModalOpen && (
-                    <motion.div
-                        className="fixed inset-0 z-[50]  bg-gray-900 bg-opacity-50 flex justify-center items-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                    >
-                        <TaskModal closeModal={closeModal} />
-                    </motion.div>
+
+                    <TaskModal closeModal={closeModal} />
+
                 )}
             </AnimatePresence>
             <div className='p-2 w-screen overflow-x-hidden  flex h-screen'>

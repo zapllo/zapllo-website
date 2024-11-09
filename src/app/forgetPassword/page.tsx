@@ -65,7 +65,7 @@ const ForgotPassword = () => {
             <div className="flex mt-12 justify-center gap-2">
                 <Home />
                 <Link href='/login'>
-                    <h1 className="hover:underline cursor-pointer">Back to Home</h1>
+                    <h1 className="hover:underline cursor-pointer">Back to Login</h1>
                 </Link>
             </div>
         </div>

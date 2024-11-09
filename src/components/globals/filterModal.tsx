@@ -101,7 +101,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-1 h-[200px] overflow-y-scroll scrollbar-hide gap-2">
                             {users.filter(user => (`${user.firstName} ${user.lastName}`).toLowerCase().includes(lowercasedSearchTerm)).map(user => (
                                 <label key={user._id} className='flex justify-between cursor-pointer'>
                                     <div className='flex items-center'>
@@ -213,7 +213,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
     ];
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-[100] overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div className="fixed inset-0 transition-opacity">
                     <div className="absolute inset-0 bg-black opacity-75"></div>

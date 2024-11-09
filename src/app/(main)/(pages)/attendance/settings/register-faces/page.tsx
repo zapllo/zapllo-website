@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Loader from "@/components/ui/loader"; // Assuming you have a Loader component
-import * as Dialog from "@radix-ui/react-dialog";
 import { CheckCheck, Circle, Cross, Trash2, X } from "lucide-react";
 import {
   endOfMonth,
@@ -13,6 +12,7 @@ import {
 import { Cross1Icon, CrossCircledIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDialog";
 import { toast, Toaster } from "sonner";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 interface IUser {
   _id: string;
@@ -55,6 +55,7 @@ export default function RegisterFace() {
   const [dateFilter, setDateFilter] = useState<
     "Today" | "Yesterday" | "ThisWeek" | "ThisMonth" | "LastMonth" | "AllTime"
   >("AllTime"); // Date filter
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Controls dialog open state
 
   // Fetch the users from the organization
   useEffect(() => {
@@ -147,6 +148,7 @@ export default function RegisterFace() {
         if (registerResponse.ok) {
           console.log("Face details registered successfully:", registerData);
           toast.success("Face details registered successfully");
+          setIsDialogOpen(false); // Close the dialog on successful registration
         } else {
           console.error("Error registering face details:", registerData.error);
         }
@@ -385,93 +387,88 @@ export default function RegisterFace() {
           All Time
         </button>
       </div>
-      <Dialog.Root>
-        <Dialog.Trigger asChild>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
           <div className="flex justify-center mb-2 w-full">
             <button className="bg-[#017A5B] text-white text-xs py-2 px-4 rounded w-fit mt-2 ml-2">
               Register Faces
             </button>
           </div>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0  flex justify-center items-center">
-            <div className="flex justify-center items-center bg-transparent w-screen">
-              <div className="bg-[#0B0D29]  shadow-xl rounded-lg p-6 m w-[33.33%]">
-                <div className="flex w-full justify-between">
-                  <h3 className="text-md text-white ">
-                    Register Faces - Upload 3 Images of Employee
-                  </h3>
-                  <Dialog.DialogClose>
-                    {" "}
-                    <CrossCircledIcon className='scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
+        </DialogTrigger>
+        <DialogContent className="flex justify-center items-center">
+          <div className="w-full max-w-lg p-6">
+            <div className="flex w-full justify-between max-w-">
+              <h3 className="text-md text-white ">
+                Register Faces - Upload 3 Images of Employee
+              </h3>
+              <DialogClose>
+                {" "}
+                <CrossCircledIcon className='scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]' />
 
-                    {/* <X className="cursor-pointer border  rounded-full border-white h-5 hover:bg-white hover:text-black w-5" /> */}
-                  </Dialog.DialogClose>
-                </div>
-                {loading ? (
-                  <p>Loading users...</p>
-                ) : error ? (
-                  <p className="text-red-500">{error}</p>
-                ) : (
-                  <div className="mb-4 mt-4">
-                    <select
-                      className="w-full border text-white py-2 px-4 text-sm rounded outline-none"
-                      onChange={(e) => setSelectedUser(e.target.value)}
-                    >
-                      <option value="text-sm">Select User</option>
-                      {users.map((user) => (
-                        <option
-                          key={user._id}
-                          className="text-sm"
-                          value={user._id}
-                        >
-                          {user.firstName} {user.lastName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="w-full text-white py-2  text-sm outline-none rounded focus:outline-none focus:ring focus:border-blue-300"
-                  />
-                  {error && <p className="text-red-500 mt-2">{error}</p>}
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  {imageFiles.length > 0 &&
-                    imageFiles.map((file, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt="Preview"
-                          className="w-full h-auto rounded"
-                        />
-                      </div>
-                    ))}
-                </div>
-
-                {uploading ? (
-                  <Loader /> // Show loader when uploading
-                ) : (
-                  <button
-                    onClick={registerFaces}
-                    className="bg-[#815BF5] text-white font-medium text-sm py-2 px-4 rounded w-full"
-                  >
-                    Register Face
-                  </button>
-                )}
-              </div>
+                {/* <X className="cursor-pointer border  rounded-full border-white h-5 hover:bg-white hover:text-black w-5" /> */}
+              </DialogClose>
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+            {loading ? (
+              <p>Loading users...</p>
+            ) : error ? (
+              <p className="text-red-500">{error}</p>
+            ) : (
+              <div className="mb-4 mt-4">
+                <select
+                  className="w-full border text-white py-2 px-4 text-sm rounded outline-none"
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                >
+                  <option value="text-sm">Select User</option>
+                  {users.map((user) => (
+                    <option
+                      key={user._id}
+                      className="text-sm"
+                      value={user._id}
+                    >
+                      {user.firstName} {user.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div className="mb-4">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full text-white py-2  text-sm outline-none rounded focus:outline-none focus:ring focus:border-blue-300"
+              />
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {imageFiles.length > 0 &&
+                imageFiles.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="Preview"
+                      className="w-full h-auto rounded"
+                    />
+                  </div>
+                ))}
+            </div>
+
+            {uploading ? (
+              <Loader /> // Show loader when uploading
+            ) : (
+              <button
+                onClick={registerFaces}
+                className="bg-[#815BF5] text-white font-medium text-sm py-2 px-4 rounded w-full"
+              >
+                Register Face
+              </button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Search Input */}
       <div className="flex justify-center mb-6">
         <input
@@ -681,14 +678,14 @@ export default function RegisterFace() {
       </div>
 
       {/* Image Preview Modal */}
-      {imageModalUrl && (
-        <Dialog.Root
-          open={!!imageModalUrl}
-          onOpenChange={() => setImageModalUrl(null)}
-        >
-          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
-            <Dialog.Content className="fixed  z-[100] inset-0  flex justify-center items-center">
+      {
+        imageModalUrl && (
+          <Dialog
+            open={!!imageModalUrl}
+            onOpenChange={() => setImageModalUrl(null)}
+          >
+
+            <DialogContent className="  z-[100]   flex justify-center items-center">
               <div className="bg-[#211025] z-[100] relative p-6 max-w-2xl rounded-lg">
                 <img
                   src={imageModalUrl}
@@ -702,10 +699,10 @@ export default function RegisterFace() {
                   Close
                 </button>
               </div>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
-      )}
-    </div>
+            </DialogContent>
+          </Dialog>
+        )
+      }
+    </div >
   );
 }

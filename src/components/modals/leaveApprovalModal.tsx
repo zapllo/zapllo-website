@@ -112,8 +112,8 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
   // console.log(manager, 'whats the issue?');
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[#0b0d29] overflow-y-scroll pb-6 scrollbar-hide h-fit max-h-[700px]  shadow-lg w-full   max-w-md  rounded-lg">
+    <div className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-[100]">
+      <div className="bg-[#0b0d29] overflow-y-scroll pb-6 scrollbar-hide h-fit max-h-[700px]  shadow-lg w-full z-[100]  max-w-md  rounded-lg">
         <div className="flex border-b py-2  w-full justify-between">
           <h2 className="text-md   px-6 py-2 font-medium">
             {leaveType} By {user.firstName} {user.lastName}

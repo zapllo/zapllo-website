@@ -247,7 +247,7 @@ const Categories: React.FC = () => {
             <div className="mt-4">
               <button
                 onClick={handleCreateCategory}
-                className="ml-2 px-3 py-2  bg-[#017a5b] text-sm text-white rounded"
+                className="ml-2 px-3 py-2  bg-[#017a5b] hover:bg-[#15624f] text-sm text-white rounded"
               >
                 {loading ? "Creating..." : "Create"}
               </button>
@@ -271,7 +271,7 @@ const Categories: React.FC = () => {
                   Use our intelligent AI engine to analyze your industry and
                   carefully curate a selection of categories for your workflow.
                 </p>
-                <Button className="flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#815BF5]">
+                <Button className="flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#5e38d0]">
                   <Plus className="h-4" />
                   <h1 className="text-xs font-medium">
                     Add Suggested Categories
@@ -462,26 +462,43 @@ const Categories: React.FC = () => {
         {filteredCategories.map((cat) => (
           <div key={cat._id} className="border w-full h-10 flex gap-2 items-center text-sm">
             {editingCategoryId === cat._id ? (
-              <div>
-                <input
-                  type="text"
-                  value={editCategoryName}
-                  onChange={(e) => setEditCategoryName(e.target.value)}
-                  className="w-full text-white outline-none bg-transparent border rounded px-3 py-2"
-                />
-                <button
-                  onClick={() => handleEditCategory(cat._id)}
-                  className="ml-2 bg-[#007A5A] hover:bg-[#007A5A] mt-2 px-3 py-2  text-white rounded"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setEditingCategoryId(null)}
-                  className="ml-2 px-3 py-2 bg-secondary text-white rounded"
-                >
-                  Cancel
-                </button>
-              </div>
+              <Dialog open={Boolean(editingCategoryId)} onOpenChange={() => setEditingCategoryId(null)}>
+                <DialogTrigger asChild>
+                  <button onClick={() => setEditingCategoryId(cat._id)} className="py-2 bg-warning text-white rounded">
+                    <Edit3 className="h-4 text-blue-400" />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="z-[100]">
+                  <div
+                    className=""
+                  >
+                    <DialogTitle className="mb-2">Update Category</DialogTitle>
+                    <input
+                      type="text"
+                      value={editCategoryName}
+                      onChange={(e) => setEditCategoryName(e.target.value)}
+                      className="w-full text-white outline-none bg-transparent border rounded px-3 py-2"
+                    />
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={() => handleEditCategory(cat._id)}
+                        className="bg-[#007A5A] hover:bg-[#007A5A] px-3 py-2 text-white rounded"
+                      >
+                        Save
+                      </button>
+                      <DialogClose asChild>
+                        <button
+                          onClick={() => setEditingCategoryId(null)}
+                          className="px-3 py-2 bg-secondary text-white rounded"
+                        >
+                          Cancel
+                        </button>
+                      </DialogClose>
+                    </div>
+                  </div>
+                </DialogContent>
+
+              </Dialog>
             ) : (
               <div className=" flex justify-between w-full  ">
                 <div className="flex justify-between w-full ">
@@ -530,7 +547,7 @@ const Categories: React.FC = () => {
         title="Delete Task"
         description="Are you sure you want to delete this category? This action cannot be undone."
       />
-    </div>
+    </div >
   );
 };
 

@@ -428,9 +428,9 @@ const MyLeaves: React.FC = () => {
             </button>
           </DialogTrigger>
 
-          <DialogContent className="hidden ">
+          <DialogContent className=" z-[100] hidden">
             <DialogDescription>
-              Select leave type and details to apply for leave.
+
             </DialogDescription>
             <MyLeaveForm leaveTypes={leaveTypes} onClose={handleModalClose} />
           </DialogContent>
@@ -477,65 +477,65 @@ const MyLeaves: React.FC = () => {
 
       {/* Leave Balance and Type Filter */}
       {leaveTypes.length > 0 && (
-      <div className="relative items-center space-x-4 mb-4">
-   
-      
-      {/* Left Arrow */}
-      <button
-        onClick={scrollLeft}
-        className="absolute left-0 z-20 p-2 mt-8 bg-[#fc8929] hover:opacity-100 opacity-70 rounded-full"
-      >
-        <ChevronLeft className="h-5 w-5 text-white" />
-      </button>
+        <div className="relative items-center space-x-4 mb-4">
 
-      {/* Scrollable Container */}
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-scroll max-w-6xl w-full scrollbar-hide gap-4 px-2"
-      >
-        {leaveTypes.map((leaveType) => (
-          <div
-            key={leaveType._id}
-            className="w-64 flex-shrink-0 border px-4 py-3"
+
+          {/* Left Arrow */}
+          <button
+            onClick={scrollLeft}
+            className="absolute left-0 z-20 p-2 mt-8 bg-[#fc8929] hover:opacity-100 opacity-70 rounded-full"
           >
-            <div className="flex justify-between">
-              <h1 className="text-sm">{leaveType.leaveType}</h1>
-              <Info
-                className="h-4 mt-1 text-blue-200 cursor-pointer"
-                onClick={() => handleInfoClick(leaveType.leaveType)}
-              />
-            </div>
-            <div className="mt-2">
-              <p className="text-xs">Allotted: {leaveType.allotedLeaves}</p>
-              {leaveDetails[leaveType._id] ? (
-                <p className="text-xs">
-                  Balance:{" "}
-                  {leaveDetails[leaveType._id]?.userLeaveBalance ?? "N/A"}
-                </p>
-              ) : (
-                <p className="text-xs">Loading...</p>
-              )}
-            </div>
-          </div>
-        ))}
+            <ChevronLeft className="h-5 w-5 text-white" />
+          </button>
+
+          {/* Scrollable Container */}
+          <div
+            ref={scrollContainerRef}
+            className="flex overflow-x-scroll max-w-6xl w-full scrollbar-hide gap-4 px-2"
+          >
+            {leaveTypes.map((leaveType) => (
+              <div
+                key={leaveType._id}
+                className="w-64 flex-shrink-0 border px-4 py-3"
+              >
+                <div className="flex justify-between">
+                  <h1 className="text-sm">{leaveType.leaveType}</h1>
+                  <Info
+                    className="h-4 mt-1 text-blue-200 cursor-pointer"
+                    onClick={() => handleInfoClick(leaveType.leaveType)}
+                  />
+                </div>
+                <div className="mt-2">
+                  <p className="text-xs">Allotted: {leaveType.allotedLeaves}</p>
+                  {leaveDetails[leaveType._id] ? (
+                    <p className="text-xs">
+                      Balance:{" "}
+                      {leaveDetails[leaveType._id]?.userLeaveBalance ?? "N/A"}
+                    </p>
+                  ) : (
+                    <p className="text-xs">Loading...</p>
+                  )}
+                </div>
+              </div>
+            ))}
             {/* Right Arrow */}
-      <button
-        onClick={scrollRight}
-        className="absolute right-0 z-20 p-2   mt-8 bg-[#fc8929] hover:opacity-100 opacity-70 rounded-full"
-      >
-        <ChevronRight className="h-5 w-5 text-white" />
-      </button>
-      </div>
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 z-20 p-2   mt-8 bg-[#fc8929] hover:opacity-100 opacity-70 rounded-full"
+            >
+              <ChevronRight className="h-5 w-5 text-white" />
+            </button>
+          </div>
 
-  
 
-   
-    </div>
+
+
+        </div>
       )}
 
       {infoModalContent && (
         <Dialog open={isInfoModalOpen} onOpenChange={setIsInfoModalOpen}>
-          <DialogContent className="w-96 z-[100] bg-[#0b0d29]">
+          <DialogContent className="w-96 p-6 z-[100] bg-[#0b0d29]">
             <div className="flex w-full justify-between">
               <div className="flex gap-2">
                 <Info className="h-5 mt-1 " />
@@ -623,12 +623,12 @@ const MyLeaves: React.FC = () => {
               <div className="flex items-center">
                 <span
                   className={`px-3  py-1 rounded-full text-[10px] ${leave.status === "Approved"
-                      ? "bg-green-700  text-white"
-                      : leave.status === "Partially Approved"
-                        ? "bg-orange-900 text-white -800"
-                        : leave.status === "Rejected"
-                          ? "bg-orange-200 text-red-800"
-                          : "bg-orange-700 text-white -800"
+                    ? "bg-green-700  text-white"
+                    : leave.status === "Partially Approved"
+                      ? "bg-orange-900 text-white -800"
+                      : leave.status === "Rejected"
+                        ? "bg-orange-200 text-red-800"
+                        : "bg-orange-700 text-white -800"
                     }`}
                 >
                   {leave.status}
@@ -659,7 +659,7 @@ const MyLeaves: React.FC = () => {
 
       {/* Custom Date Range Modal */}
       <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 z-[100] bg-[#0B0D29]">
+        <DialogContent className="w-96 p-6 ml-12 z-[100] bg-[#0B0D29]">
           <div className="flex justify-between">
             <DialogTitle className="text-md  font-medium text-white">
               Select Custom Date Range
@@ -752,32 +752,38 @@ const MyLeaves: React.FC = () => {
       </Dialog>
       {/* Start Date Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-        <DialogContent className="w-full z-[100] scale-75">
-          <div className="flex justify-between px-3 py-5">
-            <CustomDatePicker
-              selectedDate={customDateRange.start}
-              onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, start: newDate }));
-                setIsStartPickerOpen(false); // Close picker after selecting the date
-              }}
-              onCloseDialog={() => setIsStartPickerOpen(false)}
-            />
+
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
+              <CustomDatePicker
+                selectedDate={customDateRange.start}
+                onDateChange={(newDate) => {
+                  setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                  setIsStartPickerOpen(false); // Close picker after selecting the date
+                }}
+                onCloseDialog={() => setIsStartPickerOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-        <DialogContent className="w-full z-[100] scale-75">
-          <div className="flex justify-between px-3 py-5">
-            <CustomDatePicker
-              selectedDate={customDateRange.end}
-              onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
-                setIsEndPickerOpen(false); // Close picker after selecting the date
-              }}
-              onCloseDialog={() => setIsEndPickerOpen(false)}
-            />
+
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
+              <CustomDatePicker
+                selectedDate={customDateRange.end}
+                onDateChange={(newDate) => {
+                  setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                  setIsEndPickerOpen(false); // Close picker after selecting the date
+                }}
+                onCloseDialog={() => setIsEndPickerOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>

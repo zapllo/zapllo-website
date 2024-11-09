@@ -467,13 +467,16 @@ const AttendanceDashboard: React.FC = () => {
                         {/* <h1 className="text-xs">Select Date & Time</h1> */}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className='scale-75 w-[45%] z-[100] h-[500px] max-w-screen'>
-                      {/* <DialogClose className='ml-auto'>X</DialogClose> */}
-                      <CustomDatePicker
-                        selectedDate={new Date(selectedDate)} // Convert the string to a Date object
-                        onDateChange={handleDateChange}
-                        onCloseDialog={handleCloseDialog} // Close the dialog on date selection
-                      />
+                    <DialogContent className="z-[100] scale-90  flex justify-center ">
+                      <div className="z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                        <div className="w-full flex mb-4 justify-between">
+                          <CustomDatePicker
+                            selectedDate={new Date(selectedDate)} // Convert the string to a Date object
+                            onDateChange={handleDateChange}
+                            onCloseDialog={handleCloseDialog} // Close the dialog on date selection
+                          />
+                        </div>
+                      </div>
                     </DialogContent>
                   </Dialog>
                 </div>

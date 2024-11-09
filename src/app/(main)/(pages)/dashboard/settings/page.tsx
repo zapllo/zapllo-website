@@ -4,14 +4,12 @@ import CustomTimePicker from "@/components/globals/time-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { CrossCircledIcon, StopwatchIcon } from "@radix-ui/react-icons";
-import * as Dialog from "@radix-ui/react-dialog";
 import axios from "axios";
 import {
   Mail,
@@ -314,178 +312,170 @@ export default function Page() {
       <div className=" mt-4 bg-[#0A0D28] p-2 border rounded ">
         <h1 className="text-sm">Task App Settings</h1>
       </div>
-      <Dialog.Root>
+      <Dialog>
         <DialogTrigger>
           <div className="mb-2 bg-[#007A5A]  mt-2 px-4 w-full m border rounded py-2">
             <h1 className=" text-xs w-full">Notifications & Reminders</h1>
           </div>
         </DialogTrigger>
-        <Dialog.Portal>
-          <Dialog.Content className="fixed z-[100] bg-black/50 inset-0 flex items-center justify-center">
-            <div className="bg-[#0b0d29] z-[100] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
-              <div className="flex border-b py-2  w-full justify-between">
-                <Dialog.Title className="text-md   px-6 py-2 font-medium">
-                  Notifications
-                </Dialog.Title>
-                <Dialog.DialogClose className="px-6 py-2">
-                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                </Dialog.DialogClose>
+
+        <DialogContent className=" z-[100] flex items-center justify-center">
+          <div className="bg-[#0b0d29] z-[100] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-lg  rounded-lg">
+            <div className="flex border-b py-2  w-full justify-between">
+              <DialogTitle className="text-md   px-6 py-2 font-medium">
+                Notifications
+              </DialogTitle>
+              <DialogClose className="px-6 py-2">
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
+            </div>
+            <div className="space-y-4 p-6">
+              {/* Email Notification */}
+
+              <div className="mb-4 flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-300">
+                  Email Notifications
+                </span>
+                <Switch
+                  checked={emailNotifications}
+                  onCheckedChange={(checked) =>
+                    setEmailNotifications(checked)
+                  }
+                  className="form-checkbox text-white"
+                />
               </div>
-              <div className="space-y-4 p-6">
-                {/* Email Notification */}
 
-                <div className="mb-4 flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300">
-                    Email Notifications
-                  </span>
-                  <Switch
-                    checked={emailNotifications}
-                    onCheckedChange={(checked) =>
-                      setEmailNotifications(checked)
-                    }
-                    className="form-checkbox text-white"
-                  />
-                </div>
+              {/* WhatsApp Notification */}
 
-                {/* WhatsApp Notification */}
+              <div className="mb-4 flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-300">
+                  WhatsApp Notifications
+                </span>
+                <Switch
+                  checked={whatsappNotifications}
+                  onCheckedChange={(checked) =>
+                    setWhatsappNotifications(checked)
+                  }
+                  className="form-checkbox text-white"
+                />
+              </div>
 
-                <div className="mb-4 flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300">
-                    WhatsApp Notifications
-                  </span>
-                  <Switch
-                    checked={whatsappNotifications}
-                    onCheckedChange={(checked) =>
-                      setWhatsappNotifications(checked)
-                    }
-                    className="form-checkbox text-white"
-                  />
-                </div>
+              <Separator className="my-4" />
 
-                <Separator className="my-4" />
+              <h1 className="text-xl font-bold mb-4 mt-2 text-gray-800 dark:text-white">
+                Reminders
+              </h1>
 
-                <h1 className="text-xl font-bold mb-4 mt-2 text-gray-800 dark:text-white">
-                  Reminders
-                </h1>
+              {/* Daily Remainder Time */}
 
-                {/* Daily Remainder Time */}
-
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <h1 className="text-gray-700 dark:text-gray-300">
-                      Daily Reminder Time
-                    </h1>
-                    {dueTime ? (
-                      <h1 className="text-md mt-1 text-gray-800 dark:text-white">
-                        {formatTimeToAMPM(dueTime)}
-                      </h1>
-                    ) : (
-                      <h1 className="text-md  mt-1 text-gray-800 dark:text-white">
-                        Please Select Time
-                      </h1>
-                    )}
-                  </div>
-
-                  <Dialog.Root
-                    open={isDialogOpen}
-                    onOpenChange={setIsDialogOpen}
-                  >
-                    <DialogTrigger>
-                      <Avatar
-                        className="bg-[#815BF5] h-10 w-10 -mt-1 flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
-                        onClick={() => setIsDialogOpen(true)}
-                      >
-                        <StopwatchIcon className="h-6 w-6 text-white" />
-                      </Avatar>
-                    </DialogTrigger>
-
-                    {/* Time Picker Module */}
-                    <DialogContent className="scale-75">
-                      <div className="flex justify-between items-center bg-transparent mb-4">
-                        <h1 className="text-lg font-medium text-gray-800 dark:text-white">
-                          Set Reminder Time
-                        </h1>
-                        <DialogClose className="">
-                          <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full  hover:text-[#815BF5]" />
-                        </DialogClose>
-                      </div>
-
-                      <CustomTimePicker
-                        onCancel={() => setIsDialogOpen(false)}
-                        onAccept={() => setIsDialogOpen(false)}
-                        onBackToDatePicker={() => setIsDialogOpen(false)}
-                        onTimeChange={setDueTime}
-                        selectedTime={dueTime}
-                      />
-                    </DialogContent>
-                  </Dialog.Root>
-                </div>
-
-                <div className="mb-4 mt-2 flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300">
-                    Email Reminders
-                  </span>
-                  <Switch
-                    checked={emailReminders}
-                    onCheckedChange={(checked) => setEmailReminders(checked)}
-                    className="form-checkbox text-white"
-                  />
-                </div>
-
-                <div className="mb-4 mt-2 flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300">
-                    WhatsApp Reminders
-                  </span>
-                  <Switch
-                    checked={whatsappReminders}
-                    onCheckedChange={(checked) => setWhatsappReminders(checked)}
-                    className="form-checkbox text-white"
-                  />
-                </div>
-
-                <Separator className="my-4" />
-
-                <div className="mt-2">
-                  <h1 className="text-lg font-bold text-gray-800 dark:text-white">
-                    Weekly Offs
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h1 className="text-gray-700 dark:text-gray-300">
+                    Daily Reminder Time
                   </h1>
-                  <div className="grid grid-cols-7 py-4 gap-4">
-                    {daysOfWeek.map((day) => (
-                      <label
-                        key={day}
-                        className="flex items-center text-gray-700 dark:text-gray-300"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedDays.includes(day)}
-                          onChange={() => handleCheckboxChange(day)}
-                          className="mr-2 mt-1"
-                        />
-                        {day}
-                      </label>
-                    ))}
-                  </div>
+                  {dueTime ? (
+                    <h1 className="text-md mt-1 text-gray-800 dark:text-white">
+                      {formatTimeToAMPM(dueTime)}
+                    </h1>
+                  ) : (
+                    <h1 className="text-md  mt-1 text-gray-800 dark:text-white">
+                      Please Select Time
+                    </h1>
+                  )}
                 </div>
 
-                {/* Save Setting button */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={updateSettings}
-                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
-                  >
-                    Save Settings
-                  </button>
+                <Dialog
+                  open={isDialogOpen}
+                  onOpenChange={setIsDialogOpen}
+                >
+                  <DialogTrigger>
+                    <Avatar
+                      className="bg-[#815BF5] h-10 w-10 -mt-1 flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
+                      onClick={() => setIsDialogOpen(true)}
+                    >
+                      <StopwatchIcon className="h-6 w-6 text-white" />
+                    </Avatar>
+                  </DialogTrigger>
+
+                  {/* Time Picker Module */}
+                  <DialogContent className="scale-75 p-6 ">
+
+
+                    <CustomTimePicker
+                      onCancel={() => setIsDialogOpen(false)}
+                      onAccept={() => setIsDialogOpen(false)}
+                      onBackToDatePicker={() => setIsDialogOpen(false)}
+                      onTimeChange={setDueTime}
+                      selectedTime={dueTime}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="mb-4 mt-2 flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-300">
+                  Email Reminders
+                </span>
+                <Switch
+                  checked={emailReminders}
+                  onCheckedChange={(checked) => setEmailReminders(checked)}
+                  className="form-checkbox text-white"
+                />
+              </div>
+
+              <div className="mb-4 mt-2 flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-300">
+                  WhatsApp Reminders
+                </span>
+                <Switch
+                  checked={whatsappReminders}
+                  onCheckedChange={(checked) => setWhatsappReminders(checked)}
+                  className="form-checkbox text-white"
+                />
+              </div>
+
+              <Separator className="my-4" />
+
+              <div className="mt-2">
+                <h1 className="text-lg font-bold text-gray-800 dark:text-white">
+                  Weekly Offs
+                </h1>
+                <div className="grid grid-cols-7 py-4 gap-4">
+                  {daysOfWeek.map((day) => (
+                    <label
+                      key={day}
+                      className="flex items-center text-gray-700 dark:text-gray-300"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedDays.includes(day)}
+                        onChange={() => handleCheckboxChange(day)}
+                        className="mr-2 mt-1"
+                      />
+                      {day}
+                    </label>
+                  ))}
                 </div>
+              </div>
+
+              {/* Save Setting button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={updateSettings}
+                  className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                >
+                  Save Settings
+                </button>
               </div>
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* 
             <div className='px-4 py-2 cursor-pointer border mt-4 rounded'>
                 <h1>Logout</h1>
             </div> */}
-    </div>
+    </div >
   );
 }

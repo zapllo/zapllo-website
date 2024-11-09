@@ -185,8 +185,29 @@ export default function Approvals() {
       }
     };
 
+
+    const fetchOrganizationLeaves = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/leaves/all");
+        if (response.data.success) {
+          setLeaves(response.data.leaves);
+        } else {
+          console.error("Error fetching organization leaves");
+          toast.error(response.data.error || "Failed to fetch organization leaves.");
+        }
+      } catch (error: any) {
+        console.error("Error fetching organization leaves:", error);
+        toast.error(error.response?.data?.error || "Failed to fetch organization leaves.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (currentUserRole === "member") {
       fetchUserLeaves();
+    } else if (currentUserRole === "orgAdmin") {
+      fetchOrganizationLeaves();
     }
   }, [currentUserRole]);
 
@@ -258,6 +279,23 @@ export default function Approvals() {
       console.error("Error deleting entry:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchLoginEntriesAndStatus = async () => {
+      try {
+        // Fetch login entries
+        const resEntries = await fetch("/api/loginEntries");
+        const dataEntries = await resEntries.json();
+        setRegularizations(dataEntries.entries);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (currentUserRole === "member") {
+      fetchLoginEntriesAndStatus();
+    }
+  }, []);
 
   useEffect(() => {
     const fetchApprovals = async () => {
@@ -769,36 +807,36 @@ export default function Approvals() {
               }
               )
             </button> */}
-          
-              <div className="flex">
-                <button
-                  onClick={() => setStatusFilter("Approved")}
-                  className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
-                    ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
-                    : "bg-[#] border text-white  hover:border-green-500"
-                    }`}
-                >
-                  <CheckCircle
-                    className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""
-                      } `}
-                  />
-                  Approved
-                </button>
-                <button
-                  onClick={() => setStatusFilter("Rejected")}
-                  className={`px-4 py-2 flex gap-2 ml-4 rounded text-xs border ${statusFilter === "Rejected"
-                    ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
-                    : "bg-[#] text-white border hover:border-red-500"
-                    }`}
-                >
-                  <Cross1Icon
-                    className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""
-                      } `}
-                  />
-                  Rejected
-                </button>
-              </div>
-     
+
+            <div className="flex">
+              <button
+                onClick={() => setStatusFilter("Approved")}
+                className={`px-4 py-2 flex gap-2 rounded text-xs border ${statusFilter === "Approved"
+                  ? "bg-[#815BF5] text-white border-transparent hover:border-green-500"
+                  : "bg-[#] border text-white  hover:border-green-500"
+                  }`}
+              >
+                <CheckCircle
+                  className={`h-4 text-green-500 ${statusFilter === "Approved" ? "text-white" : ""
+                    } `}
+                />
+                Approved
+              </button>
+              <button
+                onClick={() => setStatusFilter("Rejected")}
+                className={`px-4 py-2 flex gap-2 ml-4 rounded text-xs border ${statusFilter === "Rejected"
+                  ? "bg-[#815BF5] text-white border-transparent hover:border-red-500"
+                  : "bg-[#] text-white border hover:border-red-500"
+                  }`}
+              >
+                <Cross1Icon
+                  className={`h-4 text-red-500 ${statusFilter === "Rejected" ? "text-white" : ""
+                    } `}
+                />
+                Rejected
+              </button>
+            </div>
+
           </>
         ) : (
           <>
@@ -1177,7 +1215,7 @@ export default function Approvals() {
 
       {/* Custom Date Range Modal */}
       <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 z-[100] bg-[#0B0D29]">
+        <DialogContent className="w-96 z-[100] p-6 ml-12 bg-[#0B0D29]">
           <div className="flex justify-between">
             <DialogTitle className="text-md  font-medium text-white">
               Select Custom Date Range
@@ -1271,32 +1309,38 @@ export default function Approvals() {
 
       {/* Start Date Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-        <DialogContent className="w-full scale-75 z-[100]">
-          <div className="flex justify-center px-3 py-5">
-            <CustomDatePicker
-              selectedDate={customDateRange.start}
-              onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, start: newDate }));
-                setIsStartPickerOpen(false); // Close picker after selecting the date
-              }}
-              onCloseDialog={() => setIsStartPickerOpen(false)}
-            />
+
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
+              <CustomDatePicker
+                selectedDate={customDateRange.start}
+                onDateChange={(newDate) => {
+                  setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                  setIsStartPickerOpen(false); // Close picker after selecting the date
+                }}
+                onCloseDialog={() => setIsStartPickerOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-        <DialogContent className="w-full scale-75 z-[100]">
-          <div className="flex justify-center px-3 py-5">
-            <CustomDatePicker
-              selectedDate={customDateRange.end}
-              onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
-                setIsEndPickerOpen(false); // Close picker after selecting the date
-              }}
-              onCloseDialog={() => setIsEndPickerOpen(false)}
-            />
+
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
+              <CustomDatePicker
+                selectedDate={customDateRange.end}
+                onDateChange={(newDate) => {
+                  setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                  setIsEndPickerOpen(false); // Close picker after selecting the date
+                }}
+                onCloseDialog={() => setIsEndPickerOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>

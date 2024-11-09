@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Loader from "@/components/ui/loader";
-import * as Dialog from "@radix-ui/react-dialog";
 import Webcam from "react-webcam";
 // import CustomTimePicker from "./CustomTimePicker";
 // Adjust the path to where CustomTimePicker is located
@@ -23,7 +22,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import {
-  Dialog as DialogRoot,
+  Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
@@ -42,7 +41,7 @@ import CustomDatePicker from "@/components/globals/date-picker";
 import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 const mapContainerStyle = {
   height: "400px",
@@ -1351,74 +1350,72 @@ export default function MyAttendance() {
       </div>
 
       {/* Radix UI Dialog for Face Login */}
-      <Dialog.Root open={isModalOpen} onOpenChange={handleModalChange}>
-        <Dialog.Trigger asChild></Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-md w-full relative">
+      <Dialog open={isModalOpen} onOpenChange={handleModalChange}>
+        <DialogContent className="z-[100] flex items-center justify-center ">
+          <div className="bg-[#0B0D29] z-[100] p-6 rounded-lg max-w-lg w-full relative">
+            <div className="flex justify-between">
               <div className="flex gap-2  items-center ">
                 <img src="/branding/AII.png" className="h-10" />
                 <img src="/branding/zapllo ai.png" className="h-5 mt-2" />
-                <Dialog.DialogClose className=" px-60">
-                  <CrossCircledIcon className="scale-150 -mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                </Dialog.DialogClose>
               </div>
-
-              <Separator className="my-4" />
-              <div className="w-full flex mb-4 justify-between">
-                <h3 className="text-sm text-white text-center ">
-                  {isLoggedIn
-                    ? `Logout at ${new Date().toLocaleTimeString()}`
-                    : `Login at ${new Date().toLocaleTimeString()}`}
-                </h3>
-                {/* <Dialog.DialogClose className="">
+              <DialogClose className=" ">
+                <CrossCircledIcon className="scale-150 -mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
+            </div>
+            <Separator className="my-4" />
+            <div className="w-full flex mb-4 justify-between">
+              <h3 className="text-sm text-white text-center ">
+                {isLoggedIn
+                  ? `Logout at ${new Date().toLocaleTimeString()}`
+                  : `Login at ${new Date().toLocaleTimeString()}`}
+              </h3>
+              {/* <Dialog.DialogClose className="">
                   <CrossCircledIcon className="scale-150 -mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                 </Dialog.DialogClose> */}
-              </div>
-              {/* Webcam or Captured Image Display */}
-              <div className="relative w-full h-auto mb-4">
-                {capturedImage ? (
-                  <img
-                    src={capturedImage}
-                    alt="Captured"
-                    className="w-full h-auto rounded-lg"
-                  />
-                ) : (
-                  <Webcam
-                    audio={false}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    className="w-full h-auto rounded-lg"
-                  />
-                )}
+            </div>
+            {/* Webcam or Captured Image Display */}
+            <div className="relative w-full h-auto mb-4">
+              {capturedImage ? (
+                <img
+                  src={capturedImage}
+                  alt="Captured"
+                  className="w-full h-auto rounded-lg"
+                />
+              ) : (
+                <Webcam
+                  audio={false}
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  className="w-full h-auto rounded-lg"
+                />
+              )}
 
-                {/* Face Logging Animation (if capturedImage exists) */}
-                {capturedImage && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {/* Example face detection animtion */}
-                    <div className="face-animation">
-                      <img
-                        src="/animations/facelogin.png"
-                        className="h-28 animate-ping"
-                      />
-                    </div>
+              {/* Face Logging Animation (if capturedImage exists) */}
+              {capturedImage && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Example face detection animtion */}
+                  <div className="face-animation">
+                    <img
+                      src="/animations/facelogin.png"
+                      className="h-28 animate-ping"
+                    />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
-              {/* Single Camera Button to Capture and Submit */}
-              <button
-                onClick={captureImageAndSubmitLogin}
-                className="bg-[#017A5B] text-white py-2 px-4 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
-                <Camera className="w-6 h-6" />{" "}
-                {/* Replace with an actual camera icon */}
-              </button>
+            {/* Single Camera Button to Capture and Submit */}
+            <button
+              onClick={captureImageAndSubmitLogin}
+              className="bg-[#017A5B] text-white py-2 px-4 rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <Camera className="w-6 h-6" />{" "}
+              {/* Replace with an actual camera icon */}
+            </button>
 
-              {/* Display Lat and Long */}
+            {/* Display Lat and Long */}
 
-              {/* <div className="text-center flex w-full justify-center text-xs text-white -400">
+            {/* <div className="text-center flex w-full justify-center text-xs text-white -400">
                 <p className="flex gap-2 text-sm">
                   <MapPinIcon className="h-4" />
                   {location
@@ -1427,59 +1424,56 @@ export default function MyAttendance() {
                 </p>
               </div> */}
 
-              <div className="text-center flex w-full justify-center text-xs text-white -400 mt-4">
-                <div className="bg-[#1E2A38] rounded-lg py-2 px-4 flex items-center gap-2 shadow-lg">
-                  <MapPinIcon className="h-4 text-[#FC8929]" />
-                  <p className="text-sm text-white font-semibold">
-                    {location
-                      ? `Lat: ${location.lat}, Long: ${location.lng}`
-                      : "Fetching location..."}
-                  </p>
-                </div>
+            <div className="text-center flex w-full justify-center text-xs text-white -400 mt-4">
+              <div className="bg-[#1E2A38] rounded-lg py-2 px-4 flex items-center gap-2 shadow-lg">
+                <MapPinIcon className="h-4 text-[#FC8929]" />
+                <p className="text-sm text-white font-semibold">
+                  {location
+                    ? `Lat: ${location.lat}, Long: ${location.lng}`
+                    : "Fetching location..."}
+                </p>
               </div>
-
-              {/* Show Loader if submitting */}
-              {isLoading && <Loader />}
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+
+            {/* Show Loader if submitting */}
+            {isLoading && <Loader />}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Map Modal */}
-      <Dialog.Root open={mapModalOpen} onOpenChange={setMapModalOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-          <Dialog.Content className="fixed  inset-0 flex justify-center items-center">
-            <div className="bg-[#121212] p-4 overflow-y-scroll scrollbar-hide h-[500px]   shadow-lg w-full   max-w-md  rounded-lg">
-              <div className="w-full flex justify-between">
-                <h1 className="py-4 flex gap-2  ">
-                  <Globe className="h-6 text-[#815BF5]" />
-                  Geo Location
-                </h1>
-                <Dialog.DialogClose className="text-white py-4 px-1  ">
-                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                </Dialog.DialogClose>
-              </div>
-              <div className="">
-                {mapCoords && (
-                  <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k">
-                    {" "}
-                    {/* Replace with your API key */}
-                    <GoogleMap
-                      mapContainerStyle={mapContainerStyle}
-                      center={mapCoords}
-                      zoom={13}
-                      options={{
-                        disableDefaultUI: true, // Disable default UI if you want
-                        zoomControl: true, // Show zoom control
-                      }}
-                    >
-                      <Marker position={mapCoords} />
-                    </GoogleMap>
-                  </LoadScript>
-                )}
-              </div>
-              {/* {mapCoords && (
+      <Dialog open={mapModalOpen} onOpenChange={setMapModalOpen}>
+        <DialogContent className="fixed  inset-0 flex justify-center items-center">
+          <div className="bg-[#121212] p-4 overflow-y-scroll scrollbar-hide h-[500px]   shadow-lg w-full   max-w-md  rounded-lg">
+            <div className="w-full flex justify-between">
+              <h1 className="py-4 flex gap-2  ">
+                <Globe className="h-6 text-[#815BF5]" />
+                Geo Location
+              </h1>
+              <DialogClose className="text-white py-4 px-1  ">
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
+            </div>
+            <div className="">
+              {mapCoords && (
+                <LoadScript googleMapsApiKey="AIzaSyASY9lRvSpjIR2skVaTLd6x7M1Kx2zY-4k">
+                  {" "}
+                  {/* Replace with your API key */}
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={mapCoords}
+                    zoom={13}
+                    options={{
+                      disableDefaultUI: true, // Disable default UI if you want
+                      zoomControl: true, // Show zoom control
+                    }}
+                  >
+                    <Marker position={mapCoords} />
+                  </GoogleMap>
+                </LoadScript>
+              )}
+            </div>
+            {/* {mapCoords && (
                 <MapContainer
                   center={[mapCoords.lat, mapCoords.lng]}
                   zoom={13}
@@ -1493,14 +1487,13 @@ export default function MyAttendance() {
                   <Marker position={[mapCoords.lat, mapCoords.lng]}></Marker>
                 </MapContainer>
               )} */}
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Custom Date Range Modal */}
-      <DialogRoot open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 z-[100] bg-[#0B0D29]">
+      <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
+        <DialogContent className="w-96 z-[100] ml-12 p-6 bg-[#0B0D29]">
           <div className="flex justify-between">
             <DialogTitle className="text-md  font-medium text-white">
               Select Custom Date Range
@@ -1591,14 +1584,13 @@ export default function MyAttendance() {
             </div>
           </form>
         </DialogContent>
-      </DialogRoot>
+      </Dialog>
 
       {/* Start Date Picker Modal */}
-      <Dialog.Root open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] z-[100] rounded-lg max-w-xl scale-75 w-full p-10">
+      <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
               <CustomDatePicker
                 selectedDate={customDateRange.start}
                 onDateChange={(newDate) => {
@@ -1608,16 +1600,15 @@ export default function MyAttendance() {
                 onCloseDialog={() => setIsStartPickerOpen(false)}
               />
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* End Date Picker Modal */}
-      <Dialog.Root open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black opacity-50" />
-          <Dialog.Content className="fixed inset-0 z-[100] flex justify-center items-center">
-            <div className="bg-[#0B0D29] z-[100] rounded-lg scale-75 max-w-xl w-full p-10">
+      <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
               <CustomDatePicker
                 selectedDate={customDateRange.end}
                 onDateChange={(newDate) => {
@@ -1627,267 +1618,251 @@ export default function MyAttendance() {
                 onCloseDialog={() => setIsEndPickerOpen(false)}
               />
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/**Regularization Modal */}
-      <Dialog.Root
+      <Dialog
         open={isRegularizationModalOpen}
         onOpenChange={setIsRegularizationModalOpen}
       >
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[100]" />
-          <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
-            <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
-              <div className="flex border-b py-2  w-full justify-between">
-                <Dialog.Title className="text-md   px-6 py-2 font-medium">
-                  Apply Regularization
-                </Dialog.Title>
-                <Dialog.DialogClose className="px-6 py-2">
-                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                </Dialog.DialogClose>
+
+        <DialogContent className=" z-[100]  flex  w-full  ">
+          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-lg  rounded-lg">
+            <div className="flex border-b py-2  w-full justify-between">
+              <DialogTitle className="text-md   px-6 py-2 font-medium">
+                Apply Regularization
+              </DialogTitle>
+              <DialogClose className="px-6 py-2">
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
+            </div>
+
+            <form
+              onSubmit={handleSubmitRegularization}
+              className="space-y-4 p-6"
+            >
+              {/* Date Input */}
+              <div className="relative">
+                <Dialog
+                  open={isDatePickerOpen}
+                  onOpenChange={setIsDatePickerOpen}
+                >
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setIsDatePickerOpen(true)}
+                      className="rounded border w-full  flex gap-1 py-2"
+                    >
+                      <Calendar className="h-4 mt-0.5 text-sm" />
+                      {regularizationDate ? (
+                        // Show the selected date if a date has been picked
+                        <h1 className="text-xs mt-1">
+                          {format(parseISO(String(regularizationDate)), "dd-MM-yyyy")}
+                        </h1>
+                      ) : (
+                        <h1 className="text-xs mt-1  bg-[#0b0d29] text-[#787CA5]">
+                          Select Date
+                        </h1>
+                      )}
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className=" z-[100]  scale-90  flex justify-center ">
+                    <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                      <div className="w-full flex mb-4 justify-between">
+                        <CustomDatePicker
+                          selectedDate={
+                            regularizationDate
+                              ? new Date(regularizationDate)
+                              : null
+                          }
+                          onDateChange={(newDate) => {
+                            // Manually extract the local date (year, month, day)
+                            const localDate = new Date(
+                              newDate.getTime() -
+                              newDate.getTimezoneOffset() * 60000
+                            )
+                              .toISOString()
+                              .split("T")[0];
+                            setRegularizationDate(localDate);
+                            setIsDatePickerOpen(false); // Close the picker after selecting the date
+                          }}
+                          onCloseDialog={() => setIsDatePickerOpen(false)}
+                        />
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              {/* Login Time Input */}
+              <div className="relative">
+                <Dialog
+                  open={isTimePickerOpen}
+                  onOpenChange={setIsTimePickerOpen}
+                >
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="rounded border w-full  flex gap-1 py-2"
+                      onClick={openTimePicker}
+                    >
+                      <Clock className="h-4 mt-1 text-sm" />
+                      {regularizationLoginTime ? (
+                        <h1 className="text-xs mt-1">
+                          {formatTimeForDisplay(regularizationLoginTime)}
+                        </h1>
+                      ) : (
+                        <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
+                          Login Time
+                        </h1>
+                      )}
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="scale-75 p-6 ">
+
+                    <CustomTimePicker
+                      selectedTime={regularizationLoginTime}
+                      onTimeChange={handleTimeChange}
+                      onCancel={handleCancel}
+                      onAccept={handleAccept}
+                      onBackToDatePicker={() =>
+                        setIsTimePickerOpen(false)
+                      }
+                    />
+
+                  </DialogContent>
+                </Dialog>
               </div>
 
-              <form
-                onSubmit={handleSubmitRegularization}
-                className="space-y-4 p-6"
-              >
-                {/* Date Input */}
-                <div className="relative">
-                  <Dialog.Root
-                    open={isDatePickerOpen}
-                    onOpenChange={setIsDatePickerOpen}
-                  >
-                    <Dialog.DialogTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={() => setIsDatePickerOpen(true)}
-                        className="rounded border w-full  flex gap-1 py-2"
-                      >
-                        <Calendar className="h-4 mt-0.5 text-sm" />
-                        {regularizationDate ? (
-                          // Show the selected date if a date has been picked
-                          <h1 className="text-xs mt-1">{regularizationDate}</h1>
-                        ) : (
-                          <h1 className="text-xs mt-1  bg-[#0b0d29] text-[#787CA5]">
-                            Select Date
-                          </h1>
-                        )}
-                      </button>
-                    </Dialog.DialogTrigger>
-                    <Dialog.Portal>
-                      <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
-                      <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
-                        <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
-                          <div className="w-full flex mb-4 justify-between">
-                            <CustomDatePicker
-                              selectedDate={
-                                regularizationDate
-                                  ? new Date(regularizationDate)
-                                  : null
-                              }
-                              onDateChange={(newDate) => {
-                                // Manually extract the local date (year, month, day)
-                                const localDate = new Date(
-                                  newDate.getTime() -
-                                  newDate.getTimezoneOffset() * 60000
-                                )
-                                  .toISOString()
-                                  .split("T")[0];
-                                setRegularizationDate(localDate);
-                                setIsDatePickerOpen(false); // Close the picker after selecting the date
-                              }}
-                              onCloseDialog={() => setIsDatePickerOpen(false)}
-                            />
-                          </div>
-                        </div>
-                      </Dialog.Content>
-                    </Dialog.Portal>
-                  </Dialog.Root>
-                </div>
 
-                {/* Login Time Input */}
+              {/* Logout Time Iput*/}
 
-                <div className="relative">
-                  <Dialog.Root
-                    open={isTimePickerOpen}
-                    onOpenChange={setIsTimePickerOpen}
-                  >
-                    <Dialog.DialogTrigger asChild>
-                      <button
-                        type="button"
-                        className="rounded border w-full  flex gap-1 py-2"
-                        onClick={openTimePicker}
-                      >
-                        <Clock className="h-4 mt-1 text-sm" />
-                        {regularizationLoginTime ? (
-                          <h1 className="text-xs mt-1">
-                            {formatTimeForDisplay(regularizationLoginTime)}
-                          </h1>
-                        ) : (
-                          <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
-                            Login Time
-                          </h1>
-                        )}
-                      </button>
-                    </Dialog.DialogTrigger>
-                    <Dialog.Portal>
-                      <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
-                      <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
-                        <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
-                          <div className="w-full flex mb-4 justify-between">
-                            <CustomTimePicker
-                              selectedTime={regularizationLoginTime}
-                              onTimeChange={handleTimeChange}
-                              onCancel={handleCancel}
-                              onAccept={handleAccept}
-                              onBackToDatePicker={() =>
-                                setIsTimePickerOpen(false)
-                              }
-                            />
-                          </div>
-                        </div>
-                      </Dialog.Content>
-                    </Dialog.Portal>
-                  </Dialog.Root>
-                </div>
-
-                {/* Logout Time Iput*/}
-
-                <div className="relative">
-                  <Dialog.Root
-                    open={isLogoutTimePickerOpen}
-                    onOpenChange={setIsLogoutTimePickerOpen}
-                  >
-                    <Dialog.DialogTrigger asChild>
-                      <button
-                        type="button"
-                        className="rounded border w-full  flex gap-1 py-2"
-                        onClick={openLogoutTimePicker}
-                      >
-                        <Clock className="h-4 mt-1 text-sm" />
-                        {regularizationLogoutTime ? (
-                          <h1 className="text-xs mt-1">
-                            {formatTimeForDisplay(regularizationLogoutTime)}
-                          </h1>
-                        ) : (
-                          <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
-                            Logout Time
-                          </h1>
-                        )}
-                      </button>
-                    </Dialog.DialogTrigger>
-                    <Dialog.Portal>
-                      <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50" />
-                      <Dialog.Content className="fixed inset-0 z-[100] bg-black/50  flex justify-center items-center">
-                        <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
-                          <div className="w-full flex mb-4 justify-between">
-                            <CustomTimePicker
-                              selectedTime={regularizationLogoutTime}
-                              onTimeChange={handleLogoutTimeChange}
-                              onCancel={handleLogoutCancel}
-                              onAccept={handleLogoutAccept}
-                              onBackToDatePicker={() =>
-                                setIsLogoutTimePickerOpen(false)
-                              }
-                            />
-                          </div>
-                        </div>
-                      </Dialog.Content>
-                    </Dialog.Portal>
-                  </Dialog.Root>
-                </div>
-
-                {/* Remarks Textarea */}
-                <div className="relative">
-                  <label
-                    htmlFor="remarks"
-                    className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
-                  >
-                    Remarks
-                  </label>
-                  <textarea
-                    id="remarks"
-                    value={regularizationRemarks}
-                    onChange={(e) => setRegularizationRemarks(e.target.value)}
-                    required
-                    className="w-full text-sm p-2 border bg-transparent outline-none rounded"
-                    rows={3}
-                  ></textarea>
-                </div>
-
-                {/* Submit Button */}
-                <div>
-                  {isSubmittingRegularization ? (
-                    <Loader />
-                  ) : (
+              <div className="relative">
+                <Dialog
+                  open={isLogoutTimePickerOpen}
+                  onOpenChange={setIsLogoutTimePickerOpen}
+                >
+                  <DialogTrigger asChild>
                     <button
-                      type="submit"
-                      className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                      type="button"
+                      className="rounded border w-full  flex gap-1 py-2"
+                      onClick={openLogoutTimePicker}
                     >
-                      Submit
+                      <Clock className="h-4 mt-1 text-sm" />
+                      {regularizationLogoutTime ? (
+                        <h1 className="text-xs mt-1">
+                          {formatTimeForDisplay(regularizationLogoutTime)}
+                        </h1>
+                      ) : (
+                        <h1 className="text-xs mt-1 bg-[#0b0d29] text-[#787CA5]">
+                          Logout Time
+                        </h1>
+                      )}
                     </button>
-                  )}
-                </div>
-              </form>
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+                  </DialogTrigger>
+
+                  <DialogContent className="scale-75 p-6">
+
+                    <CustomTimePicker
+                      selectedTime={regularizationLogoutTime}
+                      onTimeChange={handleLogoutTimeChange}
+                      onCancel={handleLogoutCancel}
+                      onAccept={handleLogoutAccept}
+                      onBackToDatePicker={() =>
+                        setIsLogoutTimePickerOpen(false)
+                      }
+                    />
+
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Remarks Textarea */}
+              <div className="relative">
+                <label
+                  htmlFor="remarks"
+                  className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
+                >
+                  Remarks
+                </label>
+                <textarea
+                  id="remarks"
+                  value={regularizationRemarks}
+                  onChange={(e) => setRegularizationRemarks(e.target.value)}
+                  required
+                  className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                  rows={3}
+                ></textarea>
+              </div>
+
+              {/* Submit Button */}
+              <div>
+                {isSubmittingRegularization ? (
+                  <Loader />
+                ) : (
+                  <button
+                    type="submit"
+                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                  >
+                    Submit
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+        </DialogContent >
+      </Dialog >
 
       {/* Register Faces Modal */}
       {/* Register Face Modal */}
-      <Dialog.Root
+      <Dialog
         open={isRegisterFaceModalOpen}
         onOpenChange={setIsRegisterFaceModalOpen}
       >
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
-          <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
-            <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
-              <div className="flex border-b py-2  w-full justify-between ">
-                <Dialog.Title className="text-md   px-6 py-2 font-medium">
-                  Register Faces (Upload 3 Images)
-                </Dialog.Title>
-                <Dialog.DialogClose className=" px-6 py-2">
-                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                </Dialog.DialogClose>
-              </div>
-
-              <div className="space-y-4 p-6">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="w-full text-sm   outline-none   bg-[#] flex gap-1 mt-auto text-gray-300"
-                />
-
-                <div className="grid grid-cols-3 mt-4 gap-4 mb-4">
-                  {selectedImages?.length > 0 &&
-                    selectedImages.map((file, index) => (
-                      <div key={index}>
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`preview-${index}`}
-                          className="w-full h-auto"
-                        />
-                      </div>
-                    ))}
-                </div>
-
-                <button
-                  onClick={handleFaceRegistrationSubmit}
-                  className="bg-[#815BF5] w-full text-sm cursor-pointer text-white px-4 mt-2 py-2 rounded"
-                >
-                  {isLoading ? <Loader /> : "Submit Face Registration"}
-                </button>
-              </div>
+        <DialogContent className="z-[100] flex justify-center">
+          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+            <div className="flex border-b py-2  w-full justify-between ">
+              <DialogTitle className="text-md   px-6 py-2 font-medium">
+                Register Faces (Upload 3 Images)
+              </DialogTitle>
+              <DialogClose className=" px-6 py-2">
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
             </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
+
+            <div className="space-y-4 p-6">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                className="w-full text-sm   outline-none   bg-[#] flex gap-1 mt-auto text-gray-300"
+              />
+
+              <div className="grid grid-cols-3 mt-4 gap-4 mb-4">
+                {selectedImages?.length > 0 &&
+                  selectedImages.map((file, index) => (
+                    <div key={index}>
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`preview-${index}`}
+                        className="w-full h-auto"
+                      />
+                    </div>
+                  ))}
+              </div>
+
+              <button
+                onClick={handleFaceRegistrationSubmit}
+                className="bg-[#815BF5] w-full text-sm cursor-pointer text-white px-4 mt-2 py-2 rounded"
+              >
+                {isLoading ? <Loader /> : "Submit Face Registration"}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div >
   );
 }

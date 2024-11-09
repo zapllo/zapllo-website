@@ -107,27 +107,23 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                 <Label htmlFor="user" className="text-right text-xs mt-1">
                   Manager
                 </Label>
-
-                {selectedRegularization.userId.reportingManager && (
+                {selectedRegularization.userId.reportingManager ? (
                   <div className="flex gap-2 justify-start">
                     <div className="h-6 w-6 rounded-full bg-primary">
                       <h1 className="text-center uppercase text-xs mt-1">
-                        {
-                          selectedRegularization.userId?.reportingManager
-                            ?.firstName[0]
-                        }
-                        {
-                          selectedRegularization.userId.reportingManager
-                            ?.lastName[0]
-                        }
+                        {selectedRegularization.userId.reportingManager.firstName[0]}
+                        {selectedRegularization.userId.reportingManager.lastName[0]}
                       </h1>
                     </div>
                     <h1
                       id="userName"
-                      className="col-span-3  text-sm"
-                    >{`${selectedRegularization.userId.reportingManager?.firstName} ${selectedRegularization.userId.reportingManager?.lastName}`}</h1>
+                      className="col-span-3 text-sm"
+                    >{`${selectedRegularization.userId.reportingManager.firstName} ${selectedRegularization.userId.reportingManager.lastName}`}</h1>
                   </div>
+                ) : (
+                  <h1 className="text-sm  text-gray-500">N/A</h1>
                 )}
+
               </div>
             </div>
           </div>
@@ -252,8 +248,8 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                         {" "}
                         {selectedRegularization.updatedAt
                           ? new Date(
-                              selectedRegularization.updatedAt
-                            ).toLocaleDateString()
+                            selectedRegularization.updatedAt
+                          ).toLocaleDateString()
                           : "N/A"}
                       </p>
                       <p className="text-xs max-w-[600px]">

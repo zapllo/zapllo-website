@@ -3,6 +3,7 @@
 import InfoBar from "@/components/infobar";
 import MenuOptions from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { formatDistanceToNow, intervalToDuration } from "date-fns";
 import { XIcon } from "lucide-react";
@@ -50,7 +51,7 @@ const Layout = (props: Props) => {
       const updateTimeMessage = () => {
         const now = new Date();
         const trialEnd = new Date(trialExpires);
-  
+
         if (isTrialExpired) {
           // Calculate elapsed time since expiration
           const duration = intervalToDuration({ start: trialEnd, end: now });
@@ -65,14 +66,14 @@ const Layout = (props: Props) => {
           setTimeMessage(remaining);
         }
       };
-  
+
       updateTimeMessage(); // Initial call
       const intervalId = setInterval(updateTimeMessage, 1000 * 60); // Update every minute
-  
+
       return () => clearInterval(intervalId); // Cleanup on unmount
     }
   }, [isTrialExpired, trialExpires]);
-  
+
 
   const isDynamicRoute = pathname.match(/^\/dashboard\/tickets\/[^/]+$/);
 
@@ -130,14 +131,13 @@ const Layout = (props: Props) => {
             </Link>
           </div>
           <button onClick={handleClose} className="ml-auto text-white">
-            <XIcon className="h-4 w-4" />
+            <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
           </button>
         </div>
       )}
       <div
-        className={`flex overflow-hidden ${
-          isVisible ? "mt-10" : ""
-        } dark:bg-[#04061E] scrollbar-hide h-full w-full`}
+        className={`flex overflow-hidden ${isVisible ? "mt-10" : ""
+          } dark:bg-[#04061E] scrollbar-hide h-full w-full`}
       >
         <MenuOptions />
         <div className="w-full overflow-hidden h-screen">

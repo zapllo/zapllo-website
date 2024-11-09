@@ -10,31 +10,40 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 type Props = { children: React.ReactNode }
 
 const Layout = (props: Props) => {
     const [isTrialExpired, setIsTrialExpired] = useState(false);
+    const [isTaskAccess, setIsTaskAccess] = useState();
+    const router = useRouter();
 
     useEffect(() => {
         const getUserDetails = async () => {
             try {
-                // Fetch trial status
-                const response = await axios.get('/api/organization/getById');
-                console.log(response.data.data); // Log the organization data
-                const organization = response.data.data;
-                // Check if the trial has expired
-                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
-                console.log('isExpired:', isExpired);
-                console.log('trialExpires:', organization.trialExpires);
+                const [userResponse, organizationResponse] = await Promise.all([
+                    axios.get('/api/users/me'),
+                    axios.get('/api/organization/getById')
+                ]);
 
-                setIsTrialExpired(isExpired); // Set to true if expired, false otherwise
+                const user = userResponse.data.data;
+                const organization = organizationResponse.data.data;
+
+                setIsTaskAccess(user.isTaskAccess);
+
+                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
+                setIsTrialExpired(isExpired);
+
+                if (!user.isTaskAccess || isExpired) {
+                    router.push('/dashboard');
+                }
             } catch (error) {
                 console.error('Error fetching user details or trial status:', error);
             }
-        }
+        };
         getUserDetails();
-    }, []);
+    }, [router]);
 
 
     if (isTrialExpired) {
@@ -48,6 +57,23 @@ const Layout = (props: Props) => {
             </div>
         );
     }
+
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            const res = await axios.get('/api/users/me')
+            setIsTaskAccess(res.data.data.isTaskAccess);
+            const trialStatusRes = await axios.get('/api/organization/trial-status');
+            setIsTrialExpired(trialStatusRes.data.isExpired);
+        }
+        getUserDetails();
+    }, [])
+
+    useEffect(() => {
+        if (isTaskAccess === false) {
+            router.push('/dashboard')
+        }
+    }, []);
 
 
     return (

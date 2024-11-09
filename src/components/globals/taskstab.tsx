@@ -748,6 +748,10 @@ export default function TasksTab({
         setProfilePic(userRes.data.data.profilePic);
         const userData = userRes.data.data;
         setUserDetails(userData);
+        // Set the default active tab based on the user's role
+        if (userData.role === "member") {
+          setActiveDashboardTab("my-report");
+        }
         setUserLoading(false);
       } catch (error) {
         console.error("Error fetching user details ", error);
@@ -1348,7 +1352,7 @@ export default function TasksTab({
                               </Button>
 
                               {activeDateFilter === "custom" && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[100]">
                                   <div className="bg-[#0B0D29] p-7 rounded-lg shadow-lg w-96 relative border">
                                     {/* Close Button */}
                                     <div className="w-full flex items-center justify-between mb-4">
@@ -1459,7 +1463,7 @@ export default function TasksTab({
                             <div className="flex gap-4 ml-24   w-full justify-center">
                               <div className="w-fit px-6 border-b-2 ">
                                 <Tabs2
-                                  defaultValue={activeDashboardTab}
+                                  value={activeDashboardTab}
                                   onValueChange={setActiveDashboardTab}
                                   className="gap-4"
                                 >

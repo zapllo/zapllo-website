@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
@@ -40,13 +40,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            `flex h-10 w-full border-none dark bg-[#04071F] text-black dark:text-white shadow-input rounded-md px-3 py-2 text-sm  file:border-0 file:bg-transparent 
-          file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
-          focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
-           disabled:cursor-not-allowed disabled:opacity-50
-           dark:shadow-[0px_0px_1px_1px_var(--neutral-700)] 
-           group-hover/input:shadow-none transition duration-400
-           `,
+            `flex h-10 w-full border-none dark:bg-[#04071F] text-black dark:text-[#787CA5]  shadow-[0px_2px_3px_-1px_rgba(129,91,245,0.1),0px_1px_0px_0px_rgba(252,137,41,0.02),0px_0px_0px_1px_rgba(252,137,41,0.08)] rounded-md px-3 py-2 text-sm file:border-0 file:bg-transparent 
+    file:text-sm file:font-medium placeholder:text-[#787CA5] dark:placeholder-text-neutral-600 
+    focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600 
+    disabled:cursor-not-allowed disabled:opacity-50 
+    group-hover/input:shadow-none transition duration-400`,
             className
           )}
           ref={ref}

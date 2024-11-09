@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import * as Dialog from "@radix-ui/react-dialog";
 import { Paperclip, Mic, Calendar } from "lucide-react";
 import { FaTimes, FaUpload } from "react-icons/fa";
 import CustomAudioPlayer from "../globals/customAudioPlayer";
@@ -13,6 +12,8 @@ import { useAnimation, motion } from "framer-motion";
 import { Separator } from "../ui/separator";
 import { CrossCircledIcon, StopIcon } from "@radix-ui/react-icons";
 import { Button } from "../ui/button";
+import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle } from "../ui/dialog";
+import { format, parseISO } from "date-fns";
 
 interface LeaveFormProps {
   leaveTypes: any[]; // Leave types passed as prop
@@ -23,13 +24,13 @@ interface LeaveFormProps {
 interface LeaveDay {
   date: string;
   unit:
-    | "Full Day"
-    | "1st Half"
-    | "2nd Half"
-    | "1st Quarter"
-    | "2nd Quarter"
-    | "3rd Quarter"
-    | "4th Quarter";
+  | "Full Day"
+  | "1st Half"
+  | "2nd Half"
+  | "1st Quarter"
+  | "2nd Quarter"
+  | "3rd Quarter"
+  | "4th Quarter";
 }
 
 interface LeaveFormData {
@@ -419,71 +420,71 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
   }, [formData.leaveDays]);
 
   return (
-    <Dialog.Root open onOpenChange={onClose}>
+    <Dialog open onOpenChange={onClose}>
       <Toaster />
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[10]" />
-        <Dialog.Content className="fixed z-[100] inset-0 flex items-center justify-center">
-          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
-            <div className="flex border-b py-2  w-full justify-between ">
-              <Dialog.Title className="text-md   px-6 py-2 font-medium">
-                Submit Leave Request
-              </Dialog.Title>
-              <Dialog.DialogClose className=" px-6 py-2">
-                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-              </Dialog.DialogClose>
+
+
+      <DialogContent className="z-[100] w-full max-w-lg ">
+        <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide  h-fit max-h-[600px]  shadow-lg w-full   max-w-lg  rounded-lg">
+          <div className="flex border-b py-2  w-full justify-between ">
+            <DialogTitle className="text-md   px-6 py-2 font-medium">
+              Submit Leave Request
+            </DialogTitle>
+            <DialogClose className=" px-6 py-2">
+              <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+            </DialogClose>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 p-6">
+            <div className="relative">
+              <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                Leave Type
+              </label>
+              <select
+                name="leaveType"
+                value={formData.leaveType}
+                onChange={handleInputChange}
+                className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
+              >
+                <option className="bg-[#1A1C20]" value="">
+                  Select Leave Type
+                </option>
+                {leaveTypes.map((type) => (
+                  <option
+                    key={type._id}
+                    className="bg-[#1A1C20]"
+                    value={type._id}
+                  >
+                    {type.leaveType}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 p-6">
-              <div className="relative">
-                <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
-                  Leave Type
-                </label>
-                <select
-                  name="leaveType"
-                  value={formData.leaveType}
-                  onChange={handleInputChange}
-                  className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
-                >
-                  <option className="bg-[#1A1C20]" value="">
-                    Select Leave Type
-                  </option>
-                  {leaveTypes.map((type) => (
-                    <option
-                      key={type._id}
-                      className="bg-[#1A1C20]"
-                      value={type._id}
-                    >
-                      {type.leaveType}
-                    </option>
-                  ))}
-                </select>
+            {/* Display Allotted Leaves and Balance */}
+            {allotedLeaves !== null && userLeaveBalance !== null && (
+              <div className="mt-2 flex justify-between text-xs text-white bg-[#252738] p-3 rounded">
+                <p>Total Allotted Leaves: {allotedLeaves}</p>
+                <p>Remaining Balance: {userLeaveBalance}</p>
               </div>
+            )}
 
-              {/* Display Allotted Leaves and Balance */}
-              {allotedLeaves !== null && userLeaveBalance !== null && (
-                <div className="mt-2 flex justify-between text-xs text-white bg-[#252738] p-3 rounded">
-                  <p>Total Allotted Leaves: {allotedLeaves}</p>
-                  <p>Remaining Balance: {userLeaveBalance}</p>
-                </div>
-              )}
-
-              <div className="flex justify-between space-x-4">
-                <div className="relative w-full">
-                  <button
-                    type="button"
-                    onClick={() => setIsFromDatePickerOpen(true)}
-                    className="w-full text-sm p-2 outline-none border rounded bg-[#] flex gap-1 mt-auto text-gray-300"
-                    disabled={!formData.leaveType}
-                  >
-                    <Calendar className="h-5" />{" "}
-                    {formData.fromDate ? (
-                      new Date(formData.fromDate).toLocaleDateString()
-                    ) : (
-                      <h1 className="text-[#787CA5]">Start Date</h1>
-                    )}
-                  </button>
-                  {/* {isFromDatePickerOpen && (
+            <div className="flex justify-between space-x-4">
+              <div className="relative w-full">
+                <button
+                  type="button"
+                  onClick={() => setIsFromDatePickerOpen(true)}
+                  className="w-full text-sm p-2 outline-none border rounded bg-[#] flex gap-1 mt-auto text-gray-300"
+                  disabled={!formData.leaveType}
+                >
+                  <Calendar className="h-5" />{" "}
+                  {formData.fromDate ? (
+                    new Date(formData.fromDate).toLocaleDateString("en-GB")
+                  ) : (
+                    <h1 className="text-[#787CA5]">Start Date</h1>
+                  )}
+                </button>
+                {/* {isFromDatePickerOpen && (
                     <div className="fixed inset-0  bg-black/50 opacity- z-[10]">
                       <div className="bg-[#1A1C20] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
                         <CustomDatePicker
@@ -504,55 +505,53 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                       </div>
                     </div>
                   )} */}
-                  {isFromDatePickerOpen && (
-                    <Dialog.Root
-                      open={isFromDatePickerOpen}
-                      onOpenChange={setIsFromDatePickerOpen}
-                    >
-                      <Dialog.Portal>
-                        <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[100]" />
-                        <Dialog.Content className="fixed inset-0 flex justify-center items-center z-[100]">
-                          <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
-                            <div className="w-full flex mb-4 justify-between">
-                              <CustomDatePicker
-                                selectedDate={
-                                  formData.fromDate
-                                    ? new Date(formData.fromDate)
-                                    : null
-                                }
-                                onDateChange={(date) => {
-                                  setFormData({
-                                    ...formData,
-                                    fromDate: date.toISOString().split("T")[0],
-                                  });
-                                  setIsFromDatePickerOpen(false);
-                                }}
-                                onCloseDialog={() =>
-                                  setIsFromDatePickerOpen(false)
-                                }
-                              />
-                            </div>
-                          </div>
-                        </Dialog.Content>
-                      </Dialog.Portal>
-                    </Dialog.Root>
-                  )}
-                </div>
-                <div className="relative w-full">
-                  <button
-                    type="button"
-                    onClick={() => setIsToDatePickerOpen(true)}
-                    className="w-full text-sm flex gap-1 p-2 outline-none border rounded bg-[#] text-gray-300"
-                    disabled={!formData.leaveType}
+                {isFromDatePickerOpen && (
+                  <Dialog
+                    open={isFromDatePickerOpen}
+                    onOpenChange={setIsFromDatePickerOpen}
                   >
-                    <Calendar className="h-5" />{" "}
-                    {formData.toDate ? (
-                      new Date(formData.toDate).toLocaleDateString()
-                    ) : (
-                      <h1 className="text-[#787CA5]">End Date</h1>
-                    )}
-                  </button>
-                  {/* {isToDatePickerOpen && (
+                    <DialogContent className=" z-[100] scale-90  flex justify-center ">
+                      <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                        <div className="w-full flex mb-4 justify-between">
+                          <CustomDatePicker
+                            selectedDate={
+                              formData.fromDate
+                                ? new Date(formData.fromDate)
+                                : null
+                            }
+                            onDateChange={(date) => {
+                              setFormData({
+                                ...formData,
+                                fromDate: date.toISOString().split("T")[0],
+                              });
+                              setIsFromDatePickerOpen(false);
+                            }}
+                            onCloseDialog={() =>
+                              setIsFromDatePickerOpen(false)
+                            }
+                          />
+                        </div>
+                      </div>
+                    </DialogContent>
+
+                  </Dialog>
+                )}
+              </div>
+              <div className="relative w-full">
+                <button
+                  type="button"
+                  onClick={() => setIsToDatePickerOpen(true)}
+                  className="w-full text-sm flex gap-1 p-2 outline-none border rounded bg-[#] text-gray-300"
+                  disabled={!formData.leaveType}
+                >
+                  <Calendar className="h-5" />{" "}
+                  {formData.toDate ? (
+                    new Date(formData.toDate).toLocaleDateString("en-GB")
+                  ) : (
+                    <h1 className="text-[#787CA5]">End Date</h1>
+                  )}
+                </button>
+                {/* {isToDatePickerOpen && (
                     <div className="fixed inset-0  bg-black/50 opacity- z-[10]">
                       <div className="bg-[#1A1C20] ml-80 mt-32 scale-75   absolute z-[50] h-[510px] max-h-screen text-[#D0D3D3] w-1/2 rounded-lg p-8">
                         <CustomDatePicker
@@ -572,206 +571,206 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                     </div>
                   )} */}
 
-                  {isToDatePickerOpen && (
-                    <Dialog.Root
-                      open={isToDatePickerOpen}
-                      onOpenChange={setIsToDatePickerOpen}
-                    >
-                      <Dialog.Portal>
-                        <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[100]" />
-                        <Dialog.Content className="fixed inset-0 flex justify-center items-center z-[100]">
-                          <div className="bg-[#0B0D29] z-[20] p-6 rounded-lg max-w-xl scale-75 w-full relative">
-                            <div className="w-full flex mb-4 justify-between">
-                              <CustomDatePicker
-                                selectedDate={
-                                  formData.toDate
-                                    ? new Date(formData.toDate)
-                                    : null
-                                }
-                                onDateChange={(date) => {
-                                  setFormData({
-                                    ...formData,
-                                    toDate: date.toISOString().split("T")[0],
-                                  });
-                                  setIsToDatePickerOpen(false);
-                                }}
-                                onCloseDialog={() =>
-                                  setIsToDatePickerOpen(false)
-                                }
-                              />
-                            </div>
+                {isToDatePickerOpen && (
+                  <Dialog
+                    open={isToDatePickerOpen}
+                    onOpenChange={setIsToDatePickerOpen}
+                  >
+                    <DialogPortal>
+
+                      <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+                        <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                          <div className="w-full flex mb-4 justify-between">
+                            <CustomDatePicker
+                              selectedDate={
+                                formData.toDate
+                                  ? new Date(formData.toDate)
+                                  : null
+                              }
+                              onDateChange={(date) => {
+                                setFormData({
+                                  ...formData,
+                                  toDate: date.toISOString().split("T")[0],
+                                });
+                                setIsToDatePickerOpen(false);
+                              }}
+                              onCloseDialog={() =>
+                                setIsToDatePickerOpen(false)
+                              }
+                            />
                           </div>
-                        </Dialog.Content>
-                      </Dialog.Portal>
-                    </Dialog.Root>
-                  )}
-                </div>
-              </div>
-
-              {/* Dynamically generated leave days with unit selection */}
-              <div>
-                {formData.toDate &&
-                  formData.fromDate &&
-                  formData.leaveDays.map((day, index) => (
-                    <div
-                      key={index}
-                      className="mb-2 flex border p-2 justify-between"
-                    >
-                      <span className="text-sm mt-2">{day.date}</span>
-                      <select
-                        value={day.unit}
-                        onChange={(e) =>
-                          handleUnitChange(
-                            day.date,
-                            e.target.value as LeaveDay["unit"]
-                          )
-                        }
-                        className="ml-2 p-2 border bg-transparent outline-none rounded text-sm"
-                      >
-                        {availableUnits.map((unit) => (
-                          <option
-                            key={unit}
-                            className="bg-[#1A1C20]"
-                            value={unit}
-                          >
-                            {unit}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
-              </div>
-              <div className="mt-2 flex justify-start text-xs text-white bg-[#252738] p-3 rounded">
-                <p>Leave Application for : {totalAppliedDays} day(s)</p>
-              </div>
-              <div>
-                <div className="relative">
-                  <label className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1">
-                    Leave Reason
-                  </label>
-                </div>
-                <textarea
-                  name="leaveReason"
-                  value={formData.leaveReason}
-                  onChange={handleInputChange}
-                  className="w-full text-sm p-2 border bg-transparent outline-none rounded"
-                />
-              </div>
-
-              {/* Display Error if leave request exceeds balance */}
-              {error && <p className="text-red-500 text-xs">{error}</p>}
-
-              {/* Audio Recording and File Attachment */}
-              <div className="flex gap-4">
-                {/* <div  className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]`}> */}
-                {recording ? (
-                  <div
-                    onClick={stopRecording}
-                    className="h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500"
-                  >
-                    <Mic className="h-5 text-center m-auto mt-1" />
-                  </div>
-                ) : (
-                  <div
-                    onClick={startRecording}
-                    className="h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#815BF5]"
-                  >
-                    <Mic className="h-5 text-center m-auto mt-1" />
-                  </div>
+                        </div>
+                      </DialogContent>
+                    </DialogPortal>
+                  </Dialog>
                 )}
-                {/* </div> */}
-                <input
-                  ref={fileInputRef}
-                  id="file-upload"
-                  type="file"
-                  className=""
-                  multiple
-                  onChange={handleFileUpload}
-                  style={{ display: "none" }} // Hide the file input
-                />
-                <label htmlFor="file-upload" className=" ">
-                  <img
-                    className="h-8 text-center cursor-pointer "
-                    src="/icons/imagee.png"
-                  />
-                  {/* <span>Attach Files</span> */}
+              </div>
+            </div>
+
+            {/* Dynamically generated leave days with unit selection */}
+            <div>
+              {formData.toDate &&
+                formData.fromDate &&
+                formData.leaveDays.map((day, index) => (
+                  <div
+                    key={index}
+                    className="mb-2 flex border p-2 justify-between"
+                  >
+                    <span className="text-sm mt-2">
+                      {format(parseISO(day.date), "dd-MM-yyyy")}
+                    </span>
+                    <select
+                      value={day.unit}
+                      onChange={(e) =>
+                        handleUnitChange(
+                          day.date,
+                          e.target.value as LeaveDay["unit"]
+                        )
+                      }
+                      className="ml-2 p-2 border bg-transparent outline-none rounded text-sm"
+                    >
+                      {availableUnits.map((unit) => (
+                        <option
+                          key={unit}
+                          className="bg-[#1A1C20]"
+                          value={unit}
+                        >
+                          {unit}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+            </div>
+            <div className="mt-2 flex justify-start text-xs text-white bg-[#252738] p-3 rounded">
+              <p>Leave Application for : {totalAppliedDays} day(s)</p>
+            </div>
+            <div>
+              <div className="relative">
+                <label className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1">
+                  Leave Reason
                 </label>
-                {/* <canvas
+              </div>
+              <textarea
+                name="leaveReason"
+                value={formData.leaveReason}
+                onChange={handleInputChange}
+                className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+              />
+            </div>
+
+            {/* Display Error if leave request exceeds balance */}
+            {error && <p className="text-red-500 text-xs">{error}</p>}
+
+            {/* Audio Recording and File Attachment */}
+            <div className="flex gap-4">
+              {/* <div  className={`h-8 w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#282D32]`}> */}
+              {recording ? (
+                <div
+                  onClick={stopRecording}
+                  className="h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm   bg-red-500"
+                >
+                  <Mic className="h-5 text-center m-auto mt-1" />
+                </div>
+              ) : (
+                <div
+                  onClick={startRecording}
+                  className="h-8  w-8 rounded-full items-center text-center  border cursor-pointer hover:shadow-white shadow-sm  bg-[#815BF5]"
+                >
+                  <Mic className="h-5 text-center m-auto mt-1" />
+                </div>
+              )}
+              {/* </div> */}
+              <input
+                ref={fileInputRef}
+                id="file-upload"
+                type="file"
+                className=""
+                multiple
+                onChange={handleFileUpload}
+                style={{ display: "none" }} // Hide the file input
+              />
+              <label htmlFor="file-upload" className=" ">
+                <img
+                  className="h-8 text-center cursor-pointer "
+                  src="/icons/imagee.png"
+                />
+                {/* <span>Attach Files</span> */}
+              </label>
+              {/* <canvas
                   ref={canvasRef}
                   className={` ${recording ? `w-1/2 ml-auto h-12` : "hidden"} `}
                 ></canvas> */}
-              </div>
+            </div>
 
-              {/* Audio Wave  */}
+            {/* Audio Wave  */}
 
-              <div
-                className={` ${
-                  recording ? `w-full ` : "hidden"
+            <div
+              className={` ${recording ? `w-full ` : "hidden"
                 } border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}
+            >
+              <canvas
+                ref={canvasRef}
+                className={` ${recording ? `w-full h-12` : "hidden"} `}
+              ></canvas>
+              {recording && (
+                <div className="flex justify-center items-center">
+                  <Button
+                    type="button"
+                    onClick={stopRecording} // Call the stopRecording function when clicked
+                    className="bg- flex gap-2 border hover:bg-gray-400 bg-gray-300 text-black px-4 py-2 rounded ml-4"
+                  >
+                    <StopIcon className=" bg-red-500 text-red-500 h-3 w-3" />{" "}
+                    Stop
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Display selected files */}
+            {files.length > 0 && (
+              <ul className="list-disc list-inside">
+                {files.map((file, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between items-center"
+                  >
+                    {file.name.slice(0, 7)}....
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="text-red-500 ml-2"
+                    >
+                      <FaTimes className="h-4 w-4" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {audioBlob && (
+              <CustomAudioPlayer
+                audioBlob={audioBlob}
+                setAudioBlob={setAudioBlob}
+              />
+            )}
+
+            <div className="flex justify-end ">
+              <button
+                type="submit"
+                className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                disabled={
+                  !formData.leaveType ||
+                  formData.leaveDays.length === 0 ||
+                  error !== null
+                }
               >
-                <canvas
-                  ref={canvasRef}
-                  className={` ${recording ? `w-full h-12` : "hidden"} `}
-                ></canvas>
-                {recording && (
-                  <div className="flex justify-center items-center">
-                    <Button
-                      type="button"
-                      onClick={stopRecording} // Call the stopRecording function when clicked
-                      className="bg- flex gap-2 border hover:bg-gray-400 bg-gray-300 text-black px-4 py-2 rounded ml-4"
-                    >
-                      <StopIcon className=" bg-red-500 text-red-500 h-3 w-3" />{" "}
-                      Stop
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {/* Display selected files */}
-              {files.length > 0 && (
-                <ul className="list-disc list-inside">
-                  {files.map((file, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center"
-                    >
-                      {file.name.slice(0, 7)}....
-                      <button
-                        onClick={() => removeFile(index)}
-                        className="text-red-500 ml-2"
-                      >
-                        <FaTimes className="h-4 w-4" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {audioBlob && (
-                <CustomAudioPlayer
-                  audioBlob={audioBlob}
-                  setAudioBlob={setAudioBlob}
-                />
-              )}
-
-              <div className="flex justify-end ">
-                <button
-                  type="submit"
-                  className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
-                  disabled={
-                    !formData.leaveType ||
-                    formData.leaveDays.length === 0 ||
-                    error !== null
-                  }
-                >
-                  {loading ? <Loader /> : "Submit Now"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+                {loading ? <Loader /> : "Submit Now"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

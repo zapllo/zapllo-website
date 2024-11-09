@@ -483,7 +483,7 @@ export default function AllLeaves() {
       </div>
       {/* Tab Navigation with Counts */}
       <div className="flex justify-center gap-4 mb-6">
-      
+
         <button
           onClick={() => setTab("balances")}
           className={`px-4 text-xs py-2 flex  rounded ${tab === "balances"
@@ -492,7 +492,7 @@ export default function AllLeaves() {
             }`}
         >
           <WalletCards className="h-4" />
-          Leave Balances 
+          Leave Balances
         </button>
         <button
           onClick={() => setTab("applications")}
@@ -765,7 +765,7 @@ export default function AllLeaves() {
           )}
 
           <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-            <DialogContent className="w-96 bg-[#0B0D29] z-[100]">
+            <DialogContent className="w-96 p-6 ml-12 bg-[#0B0D29] z-[100]">
               <div className="flex justify-between">
                 <DialogTitle className="text-md  font-medium text-white">
                   Select Custom Date Range
@@ -859,32 +859,38 @@ export default function AllLeaves() {
 
           {/* Start Date Picker Modal */}
           <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-            <DialogContent className="w-full scale-75 z-[100]">
-              <div className="flex justify-between px-3 py-5">
-                <CustomDatePicker
-                  selectedDate={customDateRange.start}
-                  onDateChange={(newDate) => {
-                    setCustomDateRange((prev) => ({ ...prev, start: newDate }));
-                    setIsStartPickerOpen(false);
-                  }}
-                  onCloseDialog={() => setIsStartPickerOpen(false)}
-                />
+
+            <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+              <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                <div className="w-full flex mb-4 justify-between">
+                  <CustomDatePicker
+                    selectedDate={customDateRange.start}
+                    onDateChange={(newDate) => {
+                      setCustomDateRange((prev) => ({ ...prev, start: newDate }));
+                      setIsStartPickerOpen(false);
+                    }}
+                    onCloseDialog={() => setIsStartPickerOpen(false)}
+                  />
+                </div>
               </div>
             </DialogContent>
           </Dialog>
 
           {/* End Date Picker Modal */}
           <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-            <DialogContent className="w-full scale-75 z-[100]">
-              <div className="flex justify-between px-3 py-5">
-                <CustomDatePicker
-                  selectedDate={customDateRange.end}
-                  onDateChange={(newDate) => {
-                    setCustomDateRange((prev) => ({ ...prev, end: newDate }));
-                    setIsEndPickerOpen(false);
-                  }}
-                  onCloseDialog={() => setIsEndPickerOpen(false)}
-                />
+
+            <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+              <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                <div className="w-full flex mb-4 justify-between">
+                  <CustomDatePicker
+                    selectedDate={customDateRange.end}
+                    onDateChange={(newDate) => {
+                      setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                      setIsEndPickerOpen(false);
+                    }}
+                    onCloseDialog={() => setIsEndPickerOpen(false)}
+                  />
+                </div>
               </div>
             </DialogContent>
           </Dialog>

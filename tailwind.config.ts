@@ -26,7 +26,7 @@ const config = {
     },
     extend: {
       boxShadow: {
-        input: `0px 2px 3px -1px rgba(128, 0, 128, 0.1), 0px 1px 0px 0px rgba(75, 0, 130, 0.02), 0px 0px 0px 1px rgba(75, 0, 130, 0.08)`,
+        input: `0px 2px 3px -1px rgba(129, 91, 245, 0.1), 0px 1px 0px 0px rgba(252, 137, 41, 0.02), 0px 0px 0px 1px rgba(252, 137, 41, 0.08)`,
       },
       colors: {
         border: "hsl(var(--border))",

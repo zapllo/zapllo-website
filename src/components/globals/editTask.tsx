@@ -396,41 +396,41 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
     }
   };
 
-// Helper function to format the date
-function formatDate(date: any) {
-  if (!(date instanceof Date)) return "";
+  // Helper function to format the date
+  function formatDate(date: any) {
+    if (!(date instanceof Date)) return "";
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
 
-  const month = monthNames[date.getMonth()];
-  const day = date.getDate();
-  const year = date.getFullYear();
-  
-  // Convert hours to 12-hour format
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12; // Adjust for 12-hour format, 0 becomes 12
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
 
-  // Function to get the ordinal suffix for the day
-  function getOrdinalSuffix(n: number) {
-    const s = ["th", "st", "nd", "rd"],
-      v = n % 100;
-    return s[(v - 20) % 10] || s[v] || s[0];
+    // Convert hours to 12-hour format
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12; // Adjust for 12-hour format, 0 becomes 12
+
+    // Function to get the ordinal suffix for the day
+    function getOrdinalSuffix(n: number) {
+      const s = ["th", "st", "nd", "rd"],
+        v = n % 100;
+      return s[(v - 20) % 10] || s[v] || s[0];
+    }
+
+    const dayWithSuffix = day + getOrdinalSuffix(day);
+
+    // Format time with leading zeros and AM/PM
+    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")} ${ampm}`;
+
+    return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
   }
-
-  const dayWithSuffix = day + getOrdinalSuffix(day);
-
-  // Format time with leading zeros and AM/PM
-  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")} ${ampm}`;
-
-  return `${month} ${dayWithSuffix}, ${year} ${formattedTime}`;
-}
 
 
   const handleDaysChange = (day: string, pressed: boolean) => {
@@ -1007,7 +1007,7 @@ function formatDate(date: any) {
                     )} */}
         </div>
         <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
-          <DialogContent className="z-[100]">
+          <DialogContent className="z-[100] p-6">
             <div className="flex justify-between">
               <DialogTitle>Add Links</DialogTitle>
               <DialogClose>
@@ -1072,7 +1072,7 @@ function formatDate(date: any) {
           onOpenChange={setIsAttachmentModalOpen}
         >
 
-          <DialogContent className="z-[100]">
+          <DialogContent className="z-[100] p-6">
 
             <div className="flex w-full justify-between">
               <DialogTitle>Add an Attachment</DialogTitle>
@@ -1154,7 +1154,7 @@ function formatDate(date: any) {
           animate={controls}
         >
           <Dialog open={isReminderModalOpen} onOpenChange={openReminderModal}>
-            <DialogContent className="max-w-lg mx-auto z-[100]">
+            <DialogContent className="max-w-lg mx-auto z-[100] p-6">
               <div className="flex justify-between items-center ">
                 <div className="flex items-center gap-2">
                   <AlarmClock className="h-6 w-6" />

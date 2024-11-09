@@ -155,8 +155,7 @@ export default function AllAttendance() {
           error.response?.data || error.message
         );
         alert(
-          `Failed to fetch ${filter} entries: ${
-            error.response?.data?.message || error.message
+          `Failed to fetch ${filter} entries: ${error.response?.data?.message || error.message
           }`
         );
       }
@@ -391,71 +390,64 @@ export default function AllAttendance() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setDateFilter("Today")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Today"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Today"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Today
         </button>
         <button
           onClick={() => setDateFilter("Yesterday")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Yesterday"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Yesterday"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Yesterday
         </button>
         <button
           onClick={() => setDateFilter("ThisWeek")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "ThisWeek"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisWeek"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           This Week
         </button>
         <button
           onClick={() => setDateFilter("ThisMonth")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "ThisMonth"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "ThisMonth"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           This Month
         </button>
         <button
           onClick={() => setDateFilter("LastMonth")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "LastMonth"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "LastMonth"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Last Month
         </button>
         <button
           onClick={() => setDateFilter("AllTime")}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "AllTime"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "AllTime"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           All Time
         </button>
         <button
           onClick={() => setIsCustomModalOpen(true)}
-          className={`px-4 text-xs h-8 rounded ${
-            dateFilter === "Custom"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs h-8 rounded ${dateFilter === "Custom"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           Custom
         </button>
@@ -465,22 +457,20 @@ export default function AllAttendance() {
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setFilter("Attendance")}
-          className={`px-4 text-xs flex py-2 rounded ${
-            filter === "Attendance"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs flex py-2 rounded ${filter === "Attendance"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           <CalendarDays className="h-4" />
           <h1>All Attendance</h1>
         </button>
         <button
           onClick={() => setFilter("Regularization")}
-          className={`px-4 text-xs flex py-2 rounded ${
-            filter === "Regularization"
-              ? "bg-[#815BF5] text-white"
-              : "bg-[#] border text-white"
-          }`}
+          className={`px-4 text-xs flex py-2 rounded ${filter === "Regularization"
+            ? "bg-[#815BF5] text-white"
+            : "bg-[#] border text-white"
+            }`}
         >
           <Users2 className="h-4" />
           All Regularizations
@@ -590,13 +580,12 @@ export default function AllAttendance() {
                     </p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs ${
-                      entry.approvalStatus === "Pending"
-                        ? "bg-yellow-800 text-white"
-                        : entry.approvalStatus === "Approved"
+                    className={`px-3 py-1 rounded-full text-xs ${entry.approvalStatus === "Pending"
+                      ? "bg-yellow-800 text-white"
+                      : entry.approvalStatus === "Approved"
                         ? "bg-green-800 text-white"
                         : "bg-red-500 text-white"
-                    }`}
+                      }`}
                   >
                     {entry.approvalStatus}
                   </span>
@@ -642,7 +631,7 @@ export default function AllAttendance() {
       )}
 
       <Dialog open={isCustomModalOpen} onOpenChange={setIsCustomModalOpen}>
-        <DialogContent className="w-96 bg-[#0B0D29] z-[100]">
+        <DialogContent className="w-96 p-6 ml-12 bg-[#0B0D29] z-[100]">
           <div className="flex justify-between">
             <DialogTitle className="text-md font-medium text-white">
               Select Custom Date Range
@@ -736,32 +725,38 @@ export default function AllAttendance() {
 
       {/* Start Picker Modal */}
       <Dialog open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-        <DialogContent className="w-full scale-75 z-[100]">
-          <div className="flex justify-between px-3 py-5">
-            <CustomDatePicker
-              selectedDate={customDateRange.start}
-              onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
-                setIsStartPickerOpen(false); // Close picker after selecting the date
-              }}
-              onCloseDialog={() => setIsStartPickerOpen(false)}
-            />
+
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
+              <CustomDatePicker
+                selectedDate={customDateRange.start}
+                onDateChange={(newDate) => {
+                  setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                  setIsStartPickerOpen(false); // Close picker after selecting the date
+                }}
+                onCloseDialog={() => setIsStartPickerOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* End Date Picker Modal */}
       <Dialog open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-        <DialogContent className="w-full scale-75 z-[100]">
-          <div className="flex justify-between px-3 py-5">
-            <CustomDatePicker
-              selectedDate={customDateRange.end}
-              onDateChange={(newDate) => {
-                setCustomDateRange((prev) => ({ ...prev, end: newDate }));
-                setIsEndPickerOpen(false); // Close picker after selecting the date
-              }}
-              onCloseDialog={() => setIsEndPickerOpen(false)}
-            />
+
+        <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+          <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+            <div className="w-full flex mb-4 justify-between">
+              <CustomDatePicker
+                selectedDate={customDateRange.end}
+                onDateChange={(newDate) => {
+                  setCustomDateRange((prev) => ({ ...prev, end: newDate }));
+                  setIsEndPickerOpen(false); // Close picker after selecting the date
+                }}
+                onCloseDialog={() => setIsEndPickerOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>

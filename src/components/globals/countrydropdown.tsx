@@ -116,35 +116,26 @@ const CountryDrop: React.FC<CountryDropProps> = ({ selectedCountry, onCountrySel
             label: country.name,
             name: country.name,
             value: country.code, // Country code
-            code: country.code // Country code
+            code: country.code,
         }));
         setCountries(formattedCountries);
 
-        // Set default country based on selectedCountry prop or default to 'IN' (India)
-        const defaultCountry = formattedCountries.find(country => country.value === selectedCountry) ||
-            formattedCountries.find(country => country.value === 'IN'); // Use country code for India
-
-        // Only set default if selectedCountry is not already set
-        if (defaultCountry && selectedCountry !== defaultCountry.value) {
+        // Only set the default country on initial load
+        const defaultCountry = formattedCountries.find(country => country.value === selectedCountry);
+        if (defaultCountry) {
             setSelectedOption(defaultCountry);
-            onCountrySelect(defaultCountry.value); // Pass country code
-        } else if (selectedCountry) {
-            const currentCountry = formattedCountries.find(country => country.value === selectedCountry);
-            if (currentCountry) {
-                setSelectedOption(currentCountry);
-            }
         }
-    }, [selectedCountry, onCountrySelect]);
+    }, [selectedCountry]);
 
     const handleCountrySelect = (option: Option) => {
         setSelectedOption(option);
-        onCountrySelect(option.value); // Pass country code
+        onCountrySelect(option.value); // Pass country code to parent
     };
 
     return (
         <div>
             <label className="block my-4 relative">
-                <span className='absolute text-xs -mt-2 bg-[#000100] ml-2 z-[100]'>Country</span>
+                <span className="absolute text-xs -mt-2 bg-[#000100] ml-2 z-[100]">Country</span>
                 <CustomDropdown
                     options={countries}
                     selectedValue={selectedOption}

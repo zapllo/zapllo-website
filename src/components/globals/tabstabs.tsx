@@ -374,10 +374,10 @@ export default function TeamTabs() {
   //   }
   // }, [selectedUser]);
   return (
-    <div className="w-full max-w-4xl mt-16 mx-auto">
+    <div className="w-full max-w-5xl overflow-y-scroll h-[550px] mb-12  scrollbar-hide mt-16 mx-auto">
       <Toaster />
-      <div className="gap-2 ml-24 mb-6 w-full">
-        <div className="flex mt-4 gap-2 mb-4">
+      <div className="gap-2 ml-44  mb-6 w-full">
+        <div className="flex mt-4  gap-2 mb-4">
           <div>
             <Tabs3
               defaultValue={activeTab}
@@ -413,7 +413,7 @@ export default function TeamTabs() {
                     Add Member <Plus /></Button>
                 </DialogTrigger>
               )}
-              <DialogContent className="w-[40%] h-full m-auto overflow-y-scroll scrollbar-hide z-[100]">
+              <DialogContent className="p-6 m-auto  overflow-y-scroll scrollbar-hide z-[100]">
                 <div className="flex justify-between w-full items-center">
                   <DialogTitle>
                     <div className="flex gap-2">
@@ -595,13 +595,13 @@ export default function TeamTabs() {
             className="py-1 text-sm px-4 outline-none border rounded bg-transparent"
           />
         </div>
-        <div className="flex justify-center -ml-64">
+        <div className="flex justify-center -ml-96">
           <div className="flex gap-2">
             <Users2Icon className="h-4" />
             <h1 className="text-sm"> {filteredUsers.length} Members</h1>
           </div>
         </div>
-        <div className="grid text-sm w-full py-4 -ml-24 gap-4">
+        <div className="grid  text-sm w-full py-4 -ml-44 gap-4">
           {filteredUsers
             .filter((user) => {
               if (activeTab === "all") return true;
@@ -704,7 +704,7 @@ export default function TeamTabs() {
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="w-[40%] h-full m-auto overflow-y-scroll scrollbar-hide z-[100]">
+        <DialogContent className="p-6 h-fit m-auto overflow-y-scroll scrollbar-hide z-[100]">
           <div className="flex justify-between">
             <div className="flex gap-2">
               <UserCircle className='h-7' />
@@ -756,9 +756,12 @@ export default function TeamTabs() {
               <option value="member" className="text-xs">
                 Team Member
               </option>
-              <option value="orgAdmin" className="text-xs">
-                Admin
-              </option>
+              {loggedInUserRole === "orgAdmin" && (
+                <option value="orgAdmin" className="text-xs">
+                  Admin
+                </option>
+              )}
+
               <option value="manager" className="text-xs">
                 Manager
               </option>
@@ -768,7 +771,7 @@ export default function TeamTabs() {
               className="block w-full px-2  py-2 bg-[#0b0d29] text-xs border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
               onChange={(e) => setUpdateModalReportingManager(e.target.value)} // Update selected reporting manager
             >
-              {/* <option value="">Select Reporting Manager</option> */}
+              <option value="">Select Reporting Manager</option>
               {users.map((user) => (
                 <option key={user._id} className="text-xs" value={user._id}>
                   {user.firstName} {user.lastName}

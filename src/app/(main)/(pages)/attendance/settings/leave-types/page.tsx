@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import * as Dialog from "@radix-ui/react-dialog";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { Edit2, Info, Trash2, X } from "lucide-react";
@@ -11,6 +10,7 @@ import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDial
 import Loader from "@/components/ui/loader";
 import { toast, Toaster } from "sonner";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface LeaveFormData {
   leaveType: string;
@@ -205,8 +205,8 @@ const LeaveTypes: React.FC = () => {
       {/* Add Leave Type Button */}
       <div className="flex gap-4 justify-center items-center mb-6">
         {/* <h1 className="text-lg font-bold">Leave Types</h1> */}
-        <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <Dialog.Trigger asChild>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
             <button
               className="bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md"
               onClick={() => {
@@ -226,7 +226,7 @@ const LeaveTypes: React.FC = () => {
             >
               + New Type
             </button>
-          </Dialog.Trigger>
+          </DialogTrigger>
           <div className="flex justify-end space-x-3 ">
             <button
               className={clsx(
@@ -262,296 +262,297 @@ const LeaveTypes: React.FC = () => {
               Unpaid
             </button>
           </div>
-          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0  bg-black/50 opacity- z-[100]" />
-            <Dialog.Content className="fixed z-[100] m-auto  inset-0 flex items-center justify-center">
-              <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-full m-auto   shadow-lg w-full   max-w-md  rounded-lg">
-                <div className="flex border-b py-2  w-full justify-between ">
-                  <Dialog.Title className="text-md   px-6 py-2 font-medium">
-                    {" "}
-                    {isEdit ? "Edit Leave Type" : "New Leave Type"}
-                  </Dialog.Title>
-                  <Dialog.DialogClose className=" px-6 py-2">
-                    <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                  </Dialog.DialogClose>
-                </div>
-                {loading ? (
-                  <Loader />
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4 p-6">
-                    <div className="relative">
-                      <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
-                        Leave Type
-                      </label>
-                      <input
-                        type="text"
-                        name="leaveType"
-                        value={formData.leaveType}
-                        onChange={handleInputChange}
-                        // placeholder='Leave Type'
-                        className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
-                        required
-                      />
-                    </div>
+          <DialogContent className=" z-[100] m-auto h-full mt-4  flex items-center justify-center">
+            <div className="bg-[#0b0d29]  overflow-y-scroll scrollbar-hide h-full m-auto max-w-lg  shadow-lg w-full    rounded-lg">
+              <div className="flex border-b py-2  w-full justify-between ">
+                <DialogTitle className="text-md   px-6 py-2 font-medium">
+                  {" "}
+                  {isEdit ? "Edit Leave Type" : "New Leave Type"}
+                </DialogTitle>
+                <DialogClose className=" px-6 py-2">
+                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                </DialogClose>
+              </div>
+              {loading ? (
+                <Loader />
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4 p-6">
+                  <div className="relative">
+                    <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                      Leave Type
+                    </label>
+                    <input
+                      type="text"
+                      name="leaveType"
+                      value={formData.leaveType}
+                      onChange={handleInputChange}
+                      // placeholder='Leave Type'
+                      className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
+                      required
+                    />
+                  </div>
 
-                    <div className="relative">
-                      {/* <label className="block text-sm">Description</label> */}
-                      <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
-                        Description
-                      </label>
+                  <div className="relative">
+                    {/* <label className="block text-sm">Description</label> */}
+                    <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                      Description
+                    </label>
 
-                      <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        // placeholder='Description'
-                        className="w-full text-xs h-24 pt-3 font-medium p-2 border bg-transparent outline-none rounded"
-                        required
-                      />
-                    </div>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      // placeholder='Description'
+                      className="w-full text-xs h-24 pt-3 font-medium p-2 border bg-transparent outline-none rounded"
+                      required
+                    />
+                  </div>
 
-                    <div className="relative">
-                      {/* <label className="block text-sm">Allotted Leaves</label> */}
-                      <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
-                        Alloted Leaves
-                      </label>
-                      <input
-                        type="number"
-                        name="allotedLeaves"
-                        value={formData.allotedLeaves}
-                        onChange={handleInputChange}
-                        placeholder="Alloted Leaves"
-                        className="w-full text-sm p-2 border outline-none bg-transparent rounded"
-                        required
-                      />
-                    </div>
+                  <div className="relative">
+                    {/* <label className="block text-sm">Allotted Leaves</label> */}
+                    <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                      Alloted Leaves
+                    </label>
+                    <input
+                      type="text"
+                      name="allotedLeaves"
+                      value={formData.allotedLeaves}
+                      onChange={handleInputChange}
+                      placeholder="Alloted Leaves"
+                      className="w-full text-sm p-2 border outline-none bg-transparent rounded"
+                      required
+                    />
+                  </div>
 
-                    <div className="flex space-x-4">
-                      <div className="flex gap-4">
-                        <label className="block text-sm mt-2 ">Type</label>
-                        <div className="flex space-x-4">
-                          <button
-                            type="button"
-                            className={clsx(
-                              "px-4 py-1 text-xs h-8 mt-1 rounded  bg-[#815BF5] border border-[#505356]    cursor-pointer",
-                              formData.type === "Paid"
-                                ? "bg-[#017A5B] text-white"
-                                : "bg-transparent  border border-[#505356] "
-                            )}
-                            onClick={() =>
-                              setFormData({ ...formData, type: "Paid" })
-                            }
-                          >
-                            Paid
-                          </button>
-                          <button
-                            type="button"
-                            className={clsx(
-                              "px-4 py-1 text-xs h-8 mt-1 rounded  border bg-[#815BF5] border-[#505356]    cursor-pointer",
-                              formData.type === "Unpaid"
-                                ? "bg-[#017A5B] text-white"
-                                : "bg-transparent  border border-[#505356] "
-                            )}
-                            onClick={() =>
-                              setFormData({ ...formData, type: "Unpaid" })
-                            }
-                          >
-                            Unpaid
-                          </button>
-                        </div>
+                  <div className="flex space-x-4">
+                    <div className="flex gap-4">
+                      <label className="block text-sm mt-2 ">Type</label>
+                      <div className="flex space-x-4">
+                        <button
+                          type="button"
+                          className={clsx(
+                            "px-4 py-1 text-xs h-8 mt-1 rounded  bg-[#815BF5] border border-[#505356]    cursor-pointer",
+                            formData.type === "Paid"
+                              ? "bg-[#017A5B] text-white"
+                              : "bg-transparent  border border-[#505356] "
+                          )}
+                          onClick={() =>
+                            setFormData({ ...formData, type: "Paid" })
+                          }
+                        >
+                          Paid
+                        </button>
+                        <button
+                          type="button"
+                          className={clsx(
+                            "px-4 py-1 text-xs h-8 mt-1 rounded  border bg-[#815BF5] border-[#505356]    cursor-pointer",
+                            formData.type === "Unpaid"
+                              ? "bg-[#017A5B] text-white"
+                              : "bg-transparent  border border-[#505356] "
+                          )}
+                          onClick={() =>
+                            setFormData({ ...formData, type: "Unpaid" })
+                          }
+                        >
+                          Unpaid
+                        </button>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-8">
-                      <div className="flex items-center w-full gap-2  bg-[#121212] p-2  rounded">
-                        <label className="block text-xs text-[#787CA5] ">
-                          Backdated Leave Days
-                        </label>
-                        <div>
-                          <input
-                            type="number"
-                            name="backdatedLeaveDays"
-                            value={formData.backdatedLeaveDays}
-                            onChange={handleInputChange}
-                            className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 w-full bg-[#121212] p-2 rounded">
-                        <label className="block text-xs  text-[#787CA5]">
-                          Advance Leave Days
-                        </label>
-                        <div>
+                  <div className="flex items-center gap-8">
+                    <div className="flex items-center w-full gap-2  bg-[#121212] p-2  rounded">
+                      <label className="block text-xs text-[#787CA5] ">
+                        Backdated Leave Days
+                      </label>
+                      <div>
                         <input
-                          type="number"
+                          type="text"
+                          name="backdatedLeaveDays"
+                          value={formData.backdatedLeaveDays}
+                          onChange={handleInputChange}
+                          className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full bg-[#121212] p-2 rounded">
+                      <label className="block text-xs  text-[#787CA5]">
+                        Advance Leave Days
+                      </label>
+                      <div>
+                        <input
+                          type="text"
                           name="advanceLeaveDays"
                           value={formData.advanceLeaveDays}
                           onChange={handleInputChange}
                           className=" border border-[#505356] px-4 py-2 w-24 outline-none bg-transparent rounded-md"
                         />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between w-full ">
+                    <div className="flex gap-2 px-2">
+                      <label className="block text-sm mb-2">
+                        Include Holidays
+                      </label>
+                      <Switch
+                        checked={formData.includeHolidays}
+                        onCheckedChange={(checked) =>
+                          handleSwitchChange("includeHolidays", checked)
+                        }
+                        id="includeHolidays"
+                      />
+                    </div>
+
+                    <div className="flex gap-2 px-2">
+                      <label className="block text-sm mb-2">
+                        Include Week Offs
+                      </label>
+                      <Switch
+                        checked={formData.includeWeekOffs}
+                        onCheckedChange={(checked) =>
+                          handleSwitchChange("includeWeekOffs", checked)
+                        }
+                        id="includeWeekOffs"
+                      />
+                    </div>
+                  </div>
+                  <div className="bg-[#121212] p-2 rounded">
+                    <div className="flex gap-2 bg-[#121212]  rounded">
+                      <div className="flex gap-2">
+                        <label className="block text-sm mt-1 text-[#787CA5]">
+                          Unit
+                        </label>
+                        <div className="flex space-x-4">
+                          {unitOptions.map((unit) => (
+                            <button
+                              key={unit}
+                              type="button"
+                              className={clsx(
+                                "px-4 py-2 text-xs rounded  text-[#787CA5] bg-[#815BF5]",
+                                formData.unit.includes(unit)
+                                  ? "bg-[#017A5B] text-white"
+                                  : "bg-transparent border border-[#505356]  "
+                              )}
+                              onClick={() => handleUnitToggle(unit)}
+                            >
+                              {unit}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
-
-                    <div className="flex justify-between w-full ">
-                      <div className="flex gap-2 px-2">
-                        <label className="block text-sm mb-2">
-                          Include Holidays
-                        </label>
-                        <Switch
-                          checked={formData.includeHolidays}
-                          onCheckedChange={(checked) =>
-                            handleSwitchChange("includeHolidays", checked)
-                          }
-                          id="includeHolidays"
-                        />
-                      </div>
-
-                      <div className="flex gap-2 px-2">
-                        <label className="block text-sm mb-2">
-                          Include Week Offs
-                        </label>
-                        <Switch
-                          checked={formData.includeWeekOffs}
-                          onCheckedChange={(checked) =>
-                            handleSwitchChange("includeWeekOffs", checked)
-                          }
-                          id="includeWeekOffs"
-                        />
-                      </div>
+                    <div className="mt-3 flex gap-1 text-muted-foreground">
+                      <Info className="h-5" />
+                      <p className=" text-sm ">
+                        Deduction (in Days) : Full Day - 1, Half Day - 0.5,
+                        Short Leave - 0.25{" "}
+                      </p>
                     </div>
-                    <div className="bg-[#121212] p-2 rounded">
-                      <div className="flex gap-2 bg-[#121212]  rounded">
-                        <div className="flex gap-2">
-                          <label className="block text-sm mt-1 text-[#787CA5]">
-                            Unit
-                          </label>
-                          <div className="flex space-x-4">
-                            {unitOptions.map((unit) => (
-                              <button
-                                key={unit}
-                                type="button"
-                                className={clsx(
-                                  "px-4 py-2 text-xs rounded  text-[#787CA5] bg-[#815BF5]",
-                                  formData.unit.includes(unit)
-                                    ? "bg-[#017A5B] text-white"
-                                    : "bg-transparent border border-[#505356]  "
-                                )}
-                                onClick={() => handleUnitToggle(unit)}
-                              >
-                                {unit}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex gap-1 text-muted-foreground">
-                        <Info className="h-5" />
-                        <p className=" text-sm ">
-                          Deduction (in Days) : Full Day - 1, Half Day - 0.5,
-                          Short Leave - 0.25{" "}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        className="bg-[#017A5B] w-full text-sm text-white px-4  mt-2  py-2 rounded"
-                      >
-                        {isEdit ? "Update Leave Type" : "Add Leave Type"}
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="bg-[#017A5B] w-full text-sm text-white px-4  mt-2  py-2 rounded"
+                    >
+                      {isEdit ? "Update Leave Type" : "Add Leave Type"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
-      {leaveTypes.length === 0 ? (
-        <div className="text-center">
-          <button
-            className="mt-2 bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md"
-            onClick={handleCreateRecommendedLeaveTypes}
-            disabled={loading}
-          >
-            {loading ? "Creating..." : "+ Create Recommended Leave Types"}
-          </button>
-        </div>
-      ) : (
-        <>
-          <h1 className="text-center mb-4">
-            Total Leaves Alloted: {totalAllotedLeaves}
-          </h1>
-        </>
-      )}
+      {
+        leaveTypes.length === 0 ? (
+          <div className="text-center">
+            <button
+              className="mt-2 bg-[#017A5B] text-white text-xs px-4 py-2 rounded-md"
+              onClick={handleCreateRecommendedLeaveTypes}
+              disabled={loading}
+            >
+              {loading ? "Creating..." : "+ Create Recommended Leave Types"}
+            </button>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-center mb-4">
+              Total Leaves Alloted: {totalAllotedLeaves}
+            </h1>
+          </>
+        )
+      }
       <div></div>
       {/* Leave Types Grid */}
-      {leaveTypes.length === 0 ? (
-        <div className="">
-          <div className="flex w-full justify-center">
-            <img src="/animations/not found.gif" className="h-48 " />
-          </div>
-          <h1 className="text-center  text-sm mt-6">No Leave Types Found</h1>
-          <p className="text-center text-xs">
-            Click on New Leave type to create a leave type
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredLeaveTypes.map((leave) => (
-            <div
-              key={leave._id}
-              className="border shadow-md rounded-lg p-4 flex flex-col justify-between"
-            >
-              <div>
-                <h2 className="text-sm font-semibold">{leave.leaveType}</h2>
-                <span
-                  className={clsx(
-                    "inline-block px-2 py-1 text-xs font-medium rounded mt-2",
-                    leave.type === "Paid"
-                      ? "bg-[#017A5B] text-white -800"
-                      : "bg-[#202560] text-white"
-                  )}
-                >
-                  {leave.type}
-                </span>
-              </div>
-              <div className="mt-4">
-                <p className="text-sm">
-                  Leaves Allotted: <strong>{leave.allotedLeaves}</strong>
-                </p>
-                <div className="mt-2 flex  justify-end gap-2">
-                  <button className="text-gray-600 hover:text-gray-800">
-                    <Edit2
-                      onClick={() => openEditModal(leave)}
-                      className="h-5 text-blue-400"
-                    />
-                  </button>
-                  <button className="text-gray-600 hover:text-red-600">
-                    <Trash2
-                      onClick={() => handleDeleteClick(leave._id)}
-                      className="h-5 text-red-500"
-                    />
-                  </button>
-                </div>
-                {loading ? (
-                  <Loader />
-                ) : (
-                  <DeleteConfirmationDialog
-                    isOpen={isDeleteDialogOpen}
-                    onClose={() => setIsDeleteDialogOpen(false)}
-                    onConfirm={handleDelete}
-                    title="Delete Leave Type"
-                    description="Are you sure you want to delete this leave type? This action cannot be undone."
-                  />
-                )}
-              </div>
+      {
+        leaveTypes.length === 0 ? (
+          <div className="">
+            <div className="flex w-full justify-center">
+              <img src="/animations/not found.gif" className="h-48 " />
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+            <h1 className="text-center  text-sm mt-6">No Leave Types Found</h1>
+            <p className="text-center text-xs">
+              Click on New Leave type to create a leave type
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredLeaveTypes.map((leave) => (
+              <div
+                key={leave._id}
+                className="border shadow-md rounded-lg p-4 flex flex-col justify-between"
+              >
+                <div>
+                  <h2 className="text-sm font-semibold">{leave.leaveType}</h2>
+                  <span
+                    className={clsx(
+                      "inline-block px-2 py-1 text-xs font-medium rounded mt-2",
+                      leave.type === "Paid"
+                        ? "bg-[#017A5B] text-white -800"
+                        : "bg-[#202560] text-white"
+                    )}
+                  >
+                    {leave.type}
+                  </span>
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm">
+                    Leaves Allotted: <strong>{leave.allotedLeaves}</strong>
+                  </p>
+                  <div className="mt-2 flex  justify-end gap-2">
+                    <button className="text-gray-600 hover:text-gray-800">
+                      <Edit2
+                        onClick={() => openEditModal(leave)}
+                        className="h-5 text-blue-400"
+                      />
+                    </button>
+                    <button className="text-gray-600 hover:text-red-600">
+                      <Trash2
+                        onClick={() => handleDeleteClick(leave._id)}
+                        className="h-5 text-red-500"
+                      />
+                    </button>
+                  </div>
+                  {loading ? (
+                    <Loader />
+                  ) : (
+                    <DeleteConfirmationDialog
+                      isOpen={isDeleteDialogOpen}
+                      onClose={() => setIsDeleteDialogOpen(false)}
+                      onConfirm={handleDelete}
+                      title="Delete Leave Type"
+                      description="Are you sure you want to delete this leave type? This action cannot be undone."
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div >
   );
 };
 

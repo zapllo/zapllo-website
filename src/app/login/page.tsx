@@ -102,7 +102,7 @@ export default function LoginPage() {
                             <h1 className="text-xs absolute ml-2 bg-[#000101] ">Password</h1>
                             <Input
                                 id="password"
-                                placeholder="••••••••"
+                                placeholder="Enter password"
                                 value={user.password}
                                 onChange={(e) => setUser({ ...user, password: e.target.value })}
                                 type={showPassword ? "text" : "password"} // Toggle between text and password

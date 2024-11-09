@@ -166,7 +166,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
           </button>
           <button
             onClick={handleOkClick} // Set the time and close the modal
-            className="bg-[#017a5b] absolute -mt-[58px]  right-12 hover:bg-[#017a5b] text-white rounded px-4 py-2 w-24 text-sm"
+            className="bg-[#017a5b] absolute -mt-[58px]  left-96 hover:bg-[#017a5b] text-white rounded px-4 py-2 w-24 text-sm"
           >
             OK
           </button>

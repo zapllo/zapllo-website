@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Meteors from "@/components/magicui/meteors";
 import Loader from "@/components/ui/loader";
+import { getCountryCallingCode } from "libphonenumber-js";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -46,6 +47,9 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [emailError, setEmailError] = useState<string>("");
+  const [countryCode, setCountryCode] = useState('+91'); // Default country code for India
+  const [selectedCountry, setSelectedCountry] = useState(organization?.country || "IN");
+
 
   // Handle category selection
   const handlenOnCategorySelect = (category: string) => {
@@ -68,9 +72,17 @@ export default function SignupPage() {
     setShowConfirmPassword(!showConfirmPassword);
 
   // Handler to receive selected country code from CountryDrop
-  const handleCountrySelect = (countryCode: string) => {
-    setOrganization({ ...organization, country: countryCode });
+  const handleCountrySelect = (countryCode: any) => {
+    const phoneCode = getCountryCallingCode(countryCode);
+    setCountryCode(`+${phoneCode}`);
+    setSelectedCountry(countryCode);
+    setOrganization(prevOrg => ({
+      ...prevOrg,
+      country: countryCode,
+    }));
   };
+
+
 
   const onSignup = async () => {
     setLoading(true);
@@ -123,6 +135,8 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+
 
   return (
     <>
@@ -410,21 +424,25 @@ export default function SignupPage() {
                 </div>
               </LabelInputContainer>
               <CountryDrop
-                selectedCountry={organization.country}
+                selectedCountry={selectedCountry}
                 onCountrySelect={handleCountrySelect}
               />
               <LabelInputContainer className="mb-8">
                 <h1 className="text-xs absolute ml-2 bg-[#000101]">
                   Whatsapp No
                 </h1>
-                <Input
-                  id="whatsappNo"
-                  type="text"
-                  value={user.whatsappNo}
-                  onChange={(e) =>
-                    setUser({ ...user, whatsappNo: e.target.value })
-                  }
-                />
+                <div className="flex  ">
+                  <span className="py-3 h-10 px-2  bg-[#0A0D28] rounded-l   text-xs">{countryCode}</span>
+                  <Input
+                    id="whatsappNo"
+                    type="text"
+                    className="w-[350px] -ml-1"
+                    value={user.whatsappNo}
+                    onChange={(e) =>
+                      setUser({ ...user, whatsappNo: e.target.value })
+                    }
+                  />
+                </div>
               </LabelInputContainer>
 
               <button

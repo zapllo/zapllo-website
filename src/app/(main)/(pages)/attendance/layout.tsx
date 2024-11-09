@@ -4,12 +4,41 @@ import LeavesSidebar from '@/components/sidebar/leavesSidebar';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 type Props = { children: React.ReactNode }
 
 const Layout = (props: Props) => {
     const [isTrialExpired, setIsTrialExpired] = useState(false);
+    const [isLeaveAccess, setIsLeaveAccess] = useState();
+    const router = useRouter();
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            try {
+                const [userResponse, organizationResponse] = await Promise.all([
+                    axios.get('/api/users/me'),
+                    axios.get('/api/organization/getById')
+                ]);
+
+                const user = userResponse.data.data;
+                const organization = organizationResponse.data.data;
+
+                setIsLeaveAccess(user.isLeaveAccess);
+
+                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
+                setIsTrialExpired(isExpired);
+
+                if (!user.isLeaveAccess || isExpired) {
+                    router.push('/dashboard');
+                }
+            } catch (error) {
+                console.error('Error fetching user details or trial status:', error);
+            }
+        };
+        getUserDetails();
+    }, [router]);
 
     useEffect(() => {
         const getUserDetails = async () => {

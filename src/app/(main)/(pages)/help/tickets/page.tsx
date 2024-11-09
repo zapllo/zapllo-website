@@ -3,10 +3,11 @@
 import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDialog";
 import ChecklistSidebar from "@/components/sidebar/checklistSidebar";
 import { Button } from "@/components/ui/button";
-import * as Dialog from "@radix-ui/react-dialog";
 import {
+  Dialog,
   DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Loader from "@/components/ui/loader";
@@ -225,7 +226,7 @@ export default function Tickets() {
                 <div className="p-10    flex justify-center -mt-16 l w-full max-w-8xl  ml-52">
                   <div className="overflow-x-auto scrollbar-hide  w-full max-w-4xl -ml-56 ">
                     <div className="w-full max-w-8xl mb-4 flex  justify-center">
-                      <Dialog.Root
+                      <Dialog
                         open={isDialogOpen}
                         onOpenChange={setIsDialogOpen}
                       >
@@ -243,237 +244,235 @@ export default function Tickets() {
                         </div>
                         <Separator className="bg-[#0A0D28]" />
 
-                        <Dialog.Portal>
-                          <Dialog.Content className="fixed z-[50] inset-0 flex items-center justify-center">
-                            <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
-                              <div className="flex border-b py-2  w-full justify-between">
-                                <Dialog.Title className="text-md   px-6 py-2 font-medium">
-                                  Raise a Ticket
-                                </Dialog.Title>
-                                <Dialog.DialogClose className="px-6 py-2">
-                                  <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-                                </Dialog.DialogClose>
-                              </div>
+                        <DialogContent className="z-[100]">
+                          <div className="bg-[#0b0d29]    shadow-lg w-full   max-w-lg  rounded-lg">
+                            <div className="flex border-b py-2  w-full justify-between">
+                              <DialogTitle className="text-md   px-6 py-2 font-medium">
+                                Raise a Ticket
+                              </DialogTitle>
+                              <DialogClose className="px-6 py-2">
+                                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                              </DialogClose>
+                            </div>
 
-                              <form className="space-y-4 p-6">
-                                {/* Select Category */}
-                                <div className="relative">
-                                  {/* <label htmlFor='category' className='block text-xs font-medium text-white -700'>
+                            <form className="space-y-4 p-6">
+                              {/* Select Category */}
+                              <div className="relative">
+                                {/* <label htmlFor='category' className='block text-xs font-medium text-white -700'>
                                                             Select Category
                                                         </label> */}
 
-                                  <select
-                                    id="category"
-                                    value={category}
-                                    onChange={(e) =>
-                                      setCategory(e.target.value)
-                                    }
-                                    className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
-                                    style={{
-                                      color: category ? "white" : "#787CA5",
-                                    }}
+                                <select
+                                  id="category"
+                                  value={category}
+                                  onChange={(e) =>
+                                    setCategory(e.target.value)
+                                  }
+                                  className="w-full text-xs p-2 bg-[#1A1C20] outline-none border rounded bg-transparent"
+                                  style={{
+                                    color: category ? "white" : "#787CA5",
+                                  }}
+                                >
+                                  <option
+                                    className="bg-[#1A1C20]  text-[#787CA5] -mt-1"
+                                    disabled
+                                    value=""
                                   >
-                                    <option
-                                      className="bg-[#1A1C20]  text-[#787CA5] -mt-1"
-                                      disabled
-                                      value=""
-                                    >
-                                      Select a category
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Report An Error"
-                                    >
-                                      Report An Error
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Provide Feedback"
-                                    >
-                                      Provide Feedback
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Payment/Subscription Issue"
-                                    >
-                                      Payment/Subscription Issue
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Delete My Account"
-                                    >
-                                      Delete My Account
-                                    </option>
-                                  </select>
-                                </div>
+                                    Select a category
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Report An Error"
+                                  >
+                                    Report An Error
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Provide Feedback"
+                                  >
+                                    Provide Feedback
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Payment/Subscription Issue"
+                                  >
+                                    Payment/Subscription Issue
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Delete My Account"
+                                  >
+                                    Delete My Account
+                                  </option>
+                                </select>
+                              </div>
 
-                                {/* Select a subcategory */}
-                                <div>
-                                  {/* <label htmlFor='subcategory' className='block text-xs font-medium text-white -700'>
+                              {/* Select a subcategory */}
+                              <div>
+                                {/* <label htmlFor='subcategory' className='block text-xs font-medium text-white -700'>
                                                             Select Subcategory
                                                         </label> */}
-                                  <select
-                                    id="subcategory"
-                                    value={subcategory}
-                                    onChange={(e) =>
-                                      setSubcategory(e.target.value)
-                                    }
-                                    className="w-full text-xs p-2 border  bg-[#1A1C20] bg-transparent outline-none rounded"
-                                    style={{
-                                      color: subcategory ? "white" : "#787CA5",
-                                    }}
+                                <select
+                                  id="subcategory"
+                                  value={subcategory}
+                                  onChange={(e) =>
+                                    setSubcategory(e.target.value)
+                                  }
+                                  className="w-full text-xs p-2 border  bg-[#1A1C20] bg-transparent outline-none rounded"
+                                  style={{
+                                    color: subcategory ? "white" : "#787CA5",
+                                  }}
+                                >
+                                  <option
+                                    disabled
+                                    className="bg-[#1A1C20]"
+                                    value=""
                                   >
-                                    <option
-                                      disabled
-                                      className="bg-[#1A1C20]"
-                                      value=""
-                                    >
-                                      Select a subcategory
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Task Delegation"
-                                    >
-                                      Task Delegation
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="My Team"
-                                    >
-                                      My Team
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Intranet"
-                                    >
-                                      Intranet
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Leaves"
-                                    >
-                                      Leaves
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Attendance"
-                                    >
-                                      Attendance
-                                    </option>
-                                    <option
-                                      className="bg-[#1A1C20]"
-                                      value="Other"
-                                    >
-                                      Other
-                                    </option>
-                                  </select>
-                                </div>
-
-                                {/* Subject */}
-
-                                <div className="relative">
-                                  <label
-                                    htmlFor="subject"
-                                    className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
+                                    Select a subcategory
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Task Delegation"
                                   >
-                                    Subject
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="subject"
-                                    value={subject}
-                                    onChange={(e) => setSubject(e.target.value)}
-                                    className="w-full text-sm p-2 border bg-transparent outline-none rounded"
-                                  />
-                                </div>
-
-                                {/* Description */}
-                                <div className="relative">
-                                  <label
-                                    htmlFor="subject"
-                                    className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
+                                    Task Delegation
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="My Team"
                                   >
-                                    Description
-                                  </label>
-                                  <textarea
-                                    id="description"
-                                    rows={4}
-                                    value={description}
-                                    onChange={(e) =>
-                                      setDescription(e.target.value)
-                                    }
-                                    className="w-full text-sm p-2 border bg-transparent outline-none rounded"
-                                  />
-                                </div>
-
-                                {/* Attach File */}
-
-                                <div className="flex items-center space-x-2">
-                                  <input
-                                    id="file-upload"
-                                    type="file"
-                                    multiple
-                                    onChange={handleFileUpload}
-                                    style={{ display: "none" }} // Hide the file input
-                                  />
-
-                                  <label
-                                    htmlFor="file-upload"
-                                    className="cursor-pointer flex items-center space-x-2"
+                                    My Team
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Intranet"
                                   >
-                                    <FaUpload className="h-3 w-3" />
-                                    <span className="text-xs">
-                                      Attach Files
-                                    </span>
-                                  </label>
-                                </div>
+                                    Intranet
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Leaves"
+                                  >
+                                    Leaves
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Attendance"
+                                  >
+                                    Attendance
+                                  </option>
+                                  <option
+                                    className="bg-[#1A1C20]"
+                                    value="Other"
+                                  >
+                                    Other
+                                  </option>
+                                </select>
+                              </div>
 
-                                {/* Display selected file names */}
-                                <div>
-                                  {files.length > 0 && (
-                                    <ul className="list-disc list-inside">
-                                      {files.map((file, index) => (
-                                        <li
-                                          className="text-xs flex justify-between ml-4"
-                                          key={index}
-                                        >
-                                          {file.name}
-                                          <div>
-                                            {/* <button
+                              {/* Subject */}
+
+                              <div className="relative">
+                                <label
+                                  htmlFor="subject"
+                                  className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
+                                >
+                                  Subject
+                                </label>
+                                <input
+                                  type="text"
+                                  id="subject"
+                                  value={subject}
+                                  onChange={(e) => setSubject(e.target.value)}
+                                  className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                                />
+                              </div>
+
+                              {/* Description */}
+                              <div className="relative">
+                                <label
+                                  htmlFor="subject"
+                                  className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1"
+                                >
+                                  Description
+                                </label>
+                                <textarea
+                                  id="description"
+                                  rows={4}
+                                  value={description}
+                                  onChange={(e) =>
+                                    setDescription(e.target.value)
+                                  }
+                                  className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                                />
+                              </div>
+
+                              {/* Attach File */}
+
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  id="file-upload"
+                                  type="file"
+                                  multiple
+                                  onChange={handleFileUpload}
+                                  style={{ display: "none" }} // Hide the file input
+                                />
+
+                                <label
+                                  htmlFor="file-upload"
+                                  className="cursor-pointer flex items-center space-x-2"
+                                >
+                                  <FaUpload className="h-3 w-3" />
+                                  <span className="text-xs">
+                                    Attach Files
+                                  </span>
+                                </label>
+                              </div>
+
+                              {/* Display selected file names */}
+                              <div>
+                                {files.length > 0 && (
+                                  <ul className="list-disc list-inside">
+                                    {files.map((file, index) => (
+                                      <li
+                                        className="text-xs flex justify-between ml-4"
+                                        key={index}
+                                      >
+                                        {file.name}
+                                        <div>
+                                          {/* <button
                                               onClick={() => removeFile(index)}
                                               className="ml- text-red-600 hover:text-red-800 text-xs "
                                             >
                                               <X className="h-4 w-4" />
                                             </button> */}
-                                            <CrossCircledIcon
-                                              onClick={() => removeFile(index)}
-                                              className="h-4 w-4 text-xs text-red-600 ml- hover:text-red-800 rounded-full cursor-pointer "
-                                            />
-                                          </div>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
-                                </div>
+                                          <CrossCircledIcon
+                                            onClick={() => removeFile(index)}
+                                            className="h-4 w-4 text-xs text-red-600 ml- hover:text-red-800 rounded-full cursor-pointer "
+                                          />
+                                        </div>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
 
-                                {/* Submit Ticket button */}
-                                <div className="flex justify-center">
-                                  {isSubmitting ? (
-                                    <Loader />
-                                  ) : (
-                                    <Button
-                                      onClick={handleSubmit}
-                                      className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
-                                    >
-                                      Submit Ticket
-                                    </Button>
-                                  )}
-                                </div>
-                              </form>
-                            </div>
-                          </Dialog.Content>
-                        </Dialog.Portal>
-                      </Dialog.Root>
+                              {/* Submit Ticket button */}
+                              <div className="flex justify-center">
+                                {isSubmitting ? (
+                                  <Loader />
+                                ) : (
+                                  <Button
+                                    onClick={handleSubmit}
+                                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                                  >
+                                    Submit Ticket
+                                  </Button>
+                                )}
+                              </div>
+                            </form>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                     <table className="min-w-full divide-y 0">
                       <thead className="bg-[#0A0D28] text-white">
@@ -517,15 +516,14 @@ export default function Tickets() {
                               {ticket.subject}
                             </td>
                             <td
-                              className={`px-6 py-4 whitespace-nowrap text-sm   -500 ${
-                                ticket.status === "Pending"
-                                  ? "text-red-800"
-                                  : ticket.status === "In Resolution"
+                              className={`px-6 py-4 whitespace-nowrap text-sm   -500 ${ticket.status === "Pending"
+                                ? "text-red-800"
+                                : ticket.status === "In Resolution"
                                   ? "text-blue-400"
                                   : ticket.status === "Closed"
-                                  ? "text-green-700"
-                                  : "text-yellow-400"
-                              }`}
+                                    ? "text-green-700"
+                                    : "text-yellow-400"
+                                }`}
                             >
                               {ticket.status}
                             </td>
@@ -561,7 +559,7 @@ export default function Tickets() {
                   />
 
                   {selectedTicket && (
-                    <Dialog.Root
+                    <Dialog
                       open={isViewDialogOpen}
                       onOpenChange={() => setIsViewDialogOpen(false)}
                     >
@@ -591,7 +589,7 @@ export default function Tickets() {
                                                 </div>
                                             )} */}
                       </DialogContent>
-                    </Dialog.Root>
+                    </Dialog>
                   )}
                 </div>
               )}

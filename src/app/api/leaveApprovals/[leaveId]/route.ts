@@ -32,7 +32,7 @@ const sendLeaveApprovalEmail = async (leave: any, status: 'Approved' | 'Partiall
                     </div>
                     <div style="padding: 20px;">
                         <p>Dear ${user.firstName},</p>
-                        <p>Your leave application has been ${status} by ${reportingManager.firstName}, given below are the details:</p>
+                        <p>Your leave application has been ${status} by ${reportingManager?.firstName}, given below are the details:</p>
                         <p><strong>Leave Type:</strong> ${leave.leaveType.leaveType}</p>
                         <p><strong>From:</strong> ${formatDate(leave.fromDate)}</p>
                         <p><strong>To:</strong> ${formatDate(leave.toDate)}</p>
@@ -96,7 +96,7 @@ const sendLeaveApprovalWebhookNotification = async (
         templateName,  // Use the dynamic template name here
         bodyVariables: [
             leave.user.firstName,  // 1. User's first name
-            leave.user.reportingManager?.firstName,  // 2. Reporting Manager's first name
+            leave.user.reportingManager?.firstName || 'N/A',  // 2. Reporting Manager's first name or fallback
             leave.leaveType.leaveType,  // 3. Leave type
             formatDate(leave.fromDate),  // 4. From date
             formatDate(leave.toDate),    // 5. To date
