@@ -69,11 +69,8 @@ const Layout = (props: Props) => {
         getUserDetails();
     }, [])
 
-    useEffect(() => {
-        if (isTaskAccess === false) {
-            router.push('/dashboard')
-        }
-    }, []);
+    
+
 
 
     return (
