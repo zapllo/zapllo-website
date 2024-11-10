@@ -36,7 +36,7 @@ const ForgotPassword = () => {
                 <img src="/logo.png" className="h-6 mt-12" />
 
             </div>
-            <Toaster />
+                        {/* <Toaster /> */}
             <div className="w-full flex justify-center">
                 <Card className="p-5 mt-12  h-fit  max-w-3xl w-1/2   rounded bg-transparent shadow-sm">
                     <CardTitle className="text- font-medium text-md">Forgot Password </CardTitle>

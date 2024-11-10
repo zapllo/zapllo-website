@@ -144,7 +144,7 @@ export default function SignupPage() {
         <div className="z-10 bg-[#04071F]">
           <Meteors number={30} />
         </div>
-        <Toaster /> {/* Sonner toaster for notifications */}
+                    {/* <Toaster /> */} {/* Sonner toaster for notifications */}
         <div className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           {showOrganizationForm ? (
             <ArrowLeft

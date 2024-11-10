@@ -54,7 +54,7 @@ export default function ContactForm() {
 
     return (
         <form className="p-8" onSubmit={handleSubscribe}>
-            <Toaster />
+                        {/* <Toaster /> */}
             {error && <div className="text-red-500 mb-4">{error}</div>}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">

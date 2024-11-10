@@ -1450,9 +1450,9 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
                         className="h-full w-full rounded-full object-cover"
                       />
                     ) : (
-                      <AvatarFallback className="ml-2">
+                      <AvatarFallback className=" w-8 h-8 ">
 
-                        <h1 className="text-sm">
+                        <h1 className="text-sm ">
                           {`${user.firstName}`.slice(0, 1)}
                           {`${user.lastName}`.slice(0, 1)}
                         </h1>

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
-import { Edit, Edit3, FileEdit, Mail, Pencil, Phone, Plus, Trash, Trash2, User, UserCheck, UserCircle, Users, Users2Icon } from "lucide-react";
+import { Edit, Edit3, FileEdit, Mail, Pencil, Phone, Plus, PlusCircleIcon, Trash, Trash2, User, UserCheck, UserCircle, Users, Users2Icon } from "lucide-react";
 import axios from "axios";
 import { Tabs2, TabsList2, TabsTrigger2 } from "../ui/tabs2";
 import { Tabs3, TabsList3, TabsTrigger3 } from "../ui/tabs3";
@@ -375,7 +375,7 @@ export default function TeamTabs() {
   // }, [selectedUser]);
   return (
     <div className="w-full max-w-5xl overflow-y-scroll h-[550px] mb-12  scrollbar-hide mt-16 mx-auto">
-      <Toaster />
+                  {/* <Toaster /> */}
       <div className="gap-2 ml-44  mb-6 w-full">
         <div className="flex mt-4  gap-2 mb-4">
           <div>
@@ -410,7 +410,7 @@ export default function TeamTabs() {
               {loggedInUserRole === "orgAdmin" && (
                 <DialogTrigger asChild>
                   <Button size="sm" className="ml-4 bg-[#04061E] border hover:bg-[#] gap-2" onClick={() => setIsModalOpen(true)}>
-                    Add Member <Plus /></Button>
+                  <Plus className="h-5" />  Add Member </Button>
                 </DialogTrigger>
               )}
               <DialogContent className="p-6 m-auto  overflow-y-scroll scrollbar-hide z-[100]">

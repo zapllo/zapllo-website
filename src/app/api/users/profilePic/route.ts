@@ -21,3 +21,17 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to update profile picture' }, { status: 500 });
     }
 }
+
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const userId = await getDataFromToken(request);
+        const user = await User.findByIdAndUpdate(userId, { profilePic: '' }, { new: true });
+        if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+        return NextResponse.json({ message: 'Profile picture removed successfully' });
+    } catch (error) {
+        console.error('Error removing profile picture:', error);
+        return NextResponse.json({ error: 'Failed to remove profile picture' }, { status: 500 });
+    }
+}

@@ -36,7 +36,7 @@ const ChangePassword = () => {
   return (
     <Card className="p-6  bg-transparent m-6 s">
       <CardTitle className="text-start">Change Your Password</CardTitle>
-      <Toaster />
+                  {/* <Toaster /> */}
       <form onSubmit={handleSubmit}>
         <div className="mt-4">
           {/* <Label htmlFor="currentPassword">Current Password</Label> */}

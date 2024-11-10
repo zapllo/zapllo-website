@@ -771,9 +771,18 @@ export default function MyAttendance() {
     return (
       <>
         {regularizationEntries?.length === 0 ? (
-          <p className="text-center text-gray-600">
-            No Regularization Entries found!
-          </p>
+          <div className='flex  justify-center w-full'>
+            <div className=' w-full mt-4  justify-center '>
+              <div className='flex justify-center'>
+                <img src='/animations/emptylist.gif' className='h-40  ' />
+              </div>
+              <div className='text-center w-full'>
+                <h1 className=' text-lg font-semibold text-  '>No Entries Found</h1>
+                <p className='text-sm p-2 '>It seems like you have not raised any requests yet</p>
+              </div>
+            </div>
+
+          </div>
         ) : (
           <ul className="space-y-4">
             {regularizationEntries.map((entry, index) => (
@@ -985,7 +994,7 @@ export default function MyAttendance() {
   // console.log(displayedEntries, 'loginEntries');
   return (
     <div className="container h-screen overflow-y-scroll scrollbar-hide rounded-lg p-4 shadow-lg">
-      <Toaster />
+      {/* <Toaster /> */}
       {displayLoader && (
         <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
           {/* <Toaster /> */}
@@ -1003,7 +1012,7 @@ export default function MyAttendance() {
       )}
       {attendanceLoading && (
         <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-          {/* <Toaster /> */}
+
           <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
             <div className="">
               <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
@@ -1443,8 +1452,8 @@ export default function MyAttendance() {
 
       {/* Map Modal */}
       <Dialog open={mapModalOpen} onOpenChange={setMapModalOpen}>
-        <DialogContent className="fixed  inset-0 flex justify-center items-center">
-          <div className="bg-[#121212] p-4 overflow-y-scroll scrollbar-hide h-[500px]   shadow-lg w-full   max-w-md  rounded-lg">
+        <DialogContent className="bg-[#121212] z-[100]">
+          <div className=" p-4 overflow-y-scroll scrollbar-hide h-[500px]   shadow-lg w-full   max-w-lg  rounded-lg">
             <div className="w-full flex justify-between">
               <h1 className="py-4 flex gap-2  ">
                 <Globe className="h-6 text-[#815BF5]" />

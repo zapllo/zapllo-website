@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
 import Script from "next/script";
+import { Toaster } from "sonner";
 
 const inter = Lato({ weight: "400", subsets: ['latin'] });
 
@@ -26,18 +27,27 @@ export default function RootLayout({
           async
         />
       </head>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {/* <FloatingNavbar /> */}
-          <body className={inter.className}>
-            <NextTopLoader />
-            {children}
-          </body>
-        </ThemeProvider>
+      <Toaster
+        toastOptions={{
+          duration: 2500, // Sets default duration to 2 seconds for all toasts
+          classNames: {
+            toast: 'bg-white text-black ',
+            
+          },
+        }}
+        position="bottom-center" />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {/* <FloatingNavbar /> */}
+        <body className={inter.className}>
+          <NextTopLoader />
+          {children}
+        </body>
+      </ThemeProvider>
     </html>
   );
 }

@@ -201,7 +201,7 @@ const LeaveTypes: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       {/* Tabs for filtering */}
-      <Toaster />
+                  {/* <Toaster /> */}
       {/* Add Leave Type Button */}
       <div className="flex gap-4 justify-center items-center mb-6">
         {/* <h1 className="text-lg font-bold">Leave Types</h1> */}
@@ -489,11 +489,11 @@ const LeaveTypes: React.FC = () => {
       {
         leaveTypes.length === 0 ? (
           <div className="">
-            <div className="flex w-full justify-center">
-              <img src="/animations/not found.gif" className="h-48 " />
+            <div className="flex w-full mt-12 justify-center">
+              <img src="/animations/emptylist.gif" className="h-40 " />
             </div>
-            <h1 className="text-center  text-sm mt-6">No Leave Types Found</h1>
-            <p className="text-center text-xs">
+            <h1 className="text-center  text-md font-semibold ">No Leave Types Found</h1>
+            <p className="text-center text-xs p-2">
               Click on New Leave type to create a leave type
             </p>
           </div>

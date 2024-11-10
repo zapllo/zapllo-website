@@ -95,7 +95,7 @@ const HolidayList: React.FC = () => {
     return (
         <div className="container mx-auto p-6">
             <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
-            <Toaster />
+                        {/* <Toaster /> */}
             {holidays.length > 0 ? (
                 <table className="w-full rounded table-auto border-collapse border">
                     <thead className='bg-[#0B0D29]  '>
@@ -135,11 +135,11 @@ const HolidayList: React.FC = () => {
                 </table>
             ) : (<div className='flex w-full justify-center '>
                 < div className="mt-8 ml-4">
-                    <img src='/animations/notfound.gif' className="h-56 ml-8" />
-                    <h1 className="text-center font-bold text-md mt-2 ">
+                    <img src='/animations/emptylist.gif' className="h-40 ml-2" />
+                    <h1 className="text-center font-bold text-md m ">
                         No Holidays Found
                     </h1>
-                    <p className="text-center text-sm ">The list is currently empty </p>
+                    <p className="text-center text-sm p-2 ">The list is currently empty </p>
                 </div>
             </div >)}
             {

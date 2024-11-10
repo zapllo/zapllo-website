@@ -330,7 +330,7 @@ export default function RegisterFace() {
 
   return (
     <div className="container mx-auto p-6">
-      <Toaster />
+                  {/* <Toaster /> */}
 
       {/* Date Filters */}
       <div className="flex justify-center gap-4 mb-2">

@@ -65,7 +65,7 @@ const RegularizationApprovalModal: React.FC<
 
     return (
       <>
-        <Toaster />
+                    {/* <Toaster /> */}
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full pb-6   max-w-md  rounded-lg">
             <div className="flex border-b py-2  w-full justify-between">

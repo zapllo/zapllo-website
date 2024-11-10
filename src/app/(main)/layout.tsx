@@ -17,6 +17,7 @@ const Layout = (props: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(true);
+  const [isPro, setIsPro] = useState(false);
   const [isTrialExpired, setIsTrialExpired] = useState(false);
   const [trialExpires, setTrialExpires] = useState<Date | null>(null);
   const [timeMessage, setTimeMessage] = useState("");
@@ -29,6 +30,7 @@ const Layout = (props: Props) => {
       try {
         setUserLoading(true);
         const userRes = await axios.get("/api/users/me");
+        setIsPro(userRes.data.data.isPro);
         const response = await axios.get("/api/organization/getById");
 
         const organization = response.data.data;
@@ -112,7 +114,7 @@ const Layout = (props: Props) => {
 
   return (
     <div>
-      {isVisible && (
+      {isVisible && !isPro && (
         <div className="p-2 flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border">
           <div className="flex gap-2 justify-center w-full">
             <h1 className="text-center mt-1 flex text-white text-xs">
@@ -136,7 +138,7 @@ const Layout = (props: Props) => {
         </div>
       )}
       <div
-        className={`flex overflow-hidden ${isVisible ? "mt-10" : ""
+        className={`flex overflow-hidden ${isVisible && !isPro  ? "mt-10" : ""
           } dark:bg-[#04061E] scrollbar-hide h-full w-full`}
       >
         <MenuOptions />

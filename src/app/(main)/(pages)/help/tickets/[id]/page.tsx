@@ -113,7 +113,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
     return (
         <div className="flex mt-24">
             <ChecklistSidebar />
-            <Toaster />
+                        {/* <Toaster /> */}
             <div className="flex-1   p-4">
                 <div className="w-full  -ml-2 max-w-8xl mx-auto">
                     <div className="gap-2 flex  w-full">

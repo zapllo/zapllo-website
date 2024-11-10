@@ -68,7 +68,7 @@ import { format, parse } from "date-fns";
 import CustomDatePicker from "./date-picker";
 import CustomTimePicker from "./time-picker";
 import { Separator } from "../ui/separator";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Loader from "../ui/loader";
 import { Toggle } from "../ui/toggle";
 import Select, { StylesConfig } from "react-select";
@@ -219,7 +219,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   // Handle Save Reminders
   const handleSaveReminders = () => {
     setReminders(tempReminders); // Save the reminders
-    toast.success("Reminders saved successfully!");
+    toast.success("Reminders saved successfully")
     // setTempReminders([]); // Clear the temporary reminders
     setIsReminderModalOpen(false);
   };
@@ -554,7 +554,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   const handleAssignTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dueDate || !dueTime) {
-      alert("Due date and time are required.");
+      toast.error("Due date and time are required.");
       return;
     }
     setLoading(true);
@@ -653,19 +653,29 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
       const result = await response.json();
 
+      if (assignMoreTasks) {
+        clearFormFields();
+      } else {
+        closeModal();
+      }
+
       if (response.ok) {
         console.log("Task Assigned:", result);
         setLoading(false);
-        toast.success("Task created successfully!");
-
-        if (assignMoreTasks) {
-          clearFormFields();
-        } else {
-          closeModal();
-        }
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex   justify-center">
+            <img src="/animations/tick.gif" alt="Custom Icon" className=" h-36" />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Task created successfully</h1>
+        </div>);
       } else {
         console.error("Error assigning task:", result.error);
-        toast.error("Please provide all fields");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex   justify-center">
+            <img src="/animations/wrong.gif" alt="Custom Icon" className=" h-36" />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Task Creation Failed</h1>
+        </div>);
       }
     } catch (error: any) {
       console.error("Error assigning task:", error);
@@ -812,7 +822,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
 
   return (
     <div className="absolute overflow-y-scroll scrollbar-hide z-[100] h-screen max-h-screen inset-0 bg-black backdrop-blur-sm -900  bg-opacity-50 rounded-xl flex justify-center items-center">
-      <Toaster />
+
 
       <motion.div
         className="bg-[#0B0D29] z-[100] h-fit m-auto   scrollbar-hide  text-[#D0D3D3] w-[50%] rounded-lg "

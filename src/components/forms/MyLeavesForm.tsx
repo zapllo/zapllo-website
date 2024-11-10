@@ -421,7 +421,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <Toaster />
+                  {/* <Toaster /> */}
 
 
       <DialogContent className="z-[100] w-full max-w-lg ">

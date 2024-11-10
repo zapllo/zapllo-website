@@ -100,7 +100,7 @@ const EditLeaveBalanceModal: React.FC<EditLeaveBalanceModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <Toaster />
+                  {/* <Toaster /> */}
       <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
         <div className="flex border-b py-2  w-full justify-between">
           <h2 className="text-md   px-6 py-2 font-medium">

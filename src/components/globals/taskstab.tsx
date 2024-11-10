@@ -116,8 +116,10 @@ type DateFilter =
   | "yesterday"
   | "thisWeek"
   | "lastWeek"
+  | "nextWeek"
   | "thisMonth"
   | "lastMonth"
+  | "nextMonth"
   | "thisYear"
   | "allTime"
   | "custom";
@@ -462,11 +464,7 @@ export default function TasksTab({
 
   const getDateRange = (filter: DateFilter) => {
     const today = new Date();
-    const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
     let startDate, endDate;
 
@@ -493,6 +491,12 @@ export default function TasksTab({
         endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 7);
         break;
+      case "nextWeek":
+        startDate = new Date(startOfToday);
+        startDate.setDate(startOfToday.getDate() - startOfToday.getDay() + 7);
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 7);
+        break;
       case "thisMonth":
         startDate = new Date(today.getFullYear(), today.getMonth(), 1);
         endDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
@@ -500,6 +504,10 @@ export default function TasksTab({
       case "lastMonth":
         startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
         endDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        break;
+      case "nextMonth":
+        startDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        endDate = new Date(today.getFullYear(), today.getMonth() + 2, 1);
         break;
       case "thisYear":
         startDate = new Date(today.getFullYear(), 0, 1);
@@ -514,9 +522,7 @@ export default function TasksTab({
           startDate = new Date(customStartDate);
           endDate = new Date(customEndDate);
         } else {
-          // Handle the case where dates are not provided
           console.error("Custom dates are not defined");
-          // You can set default values or handle the error accordingly
           startDate = new Date();
           endDate = new Date();
         }
@@ -1205,7 +1211,6 @@ export default function TasksTab({
       <div>
         {userLoading && (
           <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-            {/* <Toaster /> */}
             <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
               <div className="">
                 <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
@@ -1279,11 +1284,11 @@ export default function TasksTab({
             <div className="-mt-2">
               <div className="p-4">
                 <div className="w-full max-w-8xl ">
-                  <Toaster />
+                  {/* <Toaster /> */}
                   <div className=" w-full ml-2  justify-start">
                     <div className=" scrollbar-hide  mt-6">
-                      <div className="flex   w-full justify-center ">
-                        <div className="justify-center ml-12  w-full flex ">
+                      <div className="flex scale-90  w-full justify-center ">
+                        <div className="justify-center  -ml-12  w-full flex ">
                           <Tabs3
                             defaultValue={activeDateFilter}
                             onValueChange={setActiveDateFilter}
@@ -1314,6 +1319,9 @@ export default function TasksTab({
                               >
                                 Last Week
                               </TabsTrigger3>
+                              <TabsTrigger3 value="nextWeek" className="text-xs h-7">
+                                Next Week
+                              </TabsTrigger3>
                               <TabsTrigger3
                                 value="thisMonth"
                                 className="text-xs h-7"
@@ -1325,6 +1333,9 @@ export default function TasksTab({
                                 className="text-xs h-7"
                               >
                                 Last Month
+                              </TabsTrigger3>
+                              <TabsTrigger3 value="nextMonth" className="text-xs h-7">
+                                Next Month
                               </TabsTrigger3>
                               <TabsTrigger3
                                 value="thisYear"
@@ -1447,7 +1458,7 @@ export default function TasksTab({
                       <div>
                         {activeTab === "all" ? (
                           <div className="flex mt-4 -ml-48 flex-col ">
-                            <div className=" ml-28  w-full flex justify-center text-xs gap-4">
+                            <div className=" ml-20 w-full flex justify-center text-xs gap-4">
                               {/* <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
                                */}
                               <TaskSummary
@@ -1460,7 +1471,7 @@ export default function TasksTab({
                               />
                             </div>
                             {/* <DashboardAnalytics /> */}
-                            <div className="flex gap-4 ml-24   w-full justify-center">
+                            <div className="flex gap-4 ml-20   w-full justify-center">
                               <div className="w-fit px-6 border-b-2 ">
                                 <Tabs2
                                   value={activeDashboardTab}
@@ -1516,7 +1527,7 @@ export default function TasksTab({
                                     className="px-3 py-2 border text-xs outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
                                   />
                                 </div>
-                                <div className="grid w-[80%] ml-56 gap-4">
+                                <div className="grid w-[75%] ml-56 gap-4">
                                   {users
                                     .filter((user) => {
                                       const query = searchQuery.toLowerCase();
@@ -1703,7 +1714,7 @@ export default function TasksTab({
                                     className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A]  bg-transparent rounded-md "
                                   />
                                 </div>
-                                <div className="grid gap-4 ml-56 w-[80%]">
+                                <div className="grid gap-4 ml-56 w-[75%]">
                                   {categories
                                     .filter((category) => {
                                       const query = searchQuery.toLowerCase();
@@ -1776,7 +1787,7 @@ export default function TasksTab({
                                       className="px-3 py-2 text-xs ml-32 border outline-none text-[#8A8A8A] bg-transparent rounded-md"
                                     />
                                   </div>
-                                  <div className="grid gap-4 ml-56 w-[80%]">
+                                  <div className="grid gap-4 ml-56 w-[75%]">
                                     {categories
                                       .filter((category) => {
                                         const query = searchQuery.toLowerCase();
@@ -1866,7 +1877,7 @@ export default function TasksTab({
                                   />
                                   {/* // Add this block below the search input in MyTasks, DelegatedTasks, and AllTasks */}
                                 </div>
-                                <div className="grid w-[80%] ml-56 gap-4">
+                                <div className="grid w-[75%] ml-56 gap-4">
                                   {users
                                     .filter((user) => {
                                       const query = searchQuery.toLowerCase();
@@ -2152,7 +2163,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CircleAlert className="text-red-500 h-3" />
-                                        Overdue ({myTasksOverdueCount})
+                                        Overdue
                                       </TabsTrigger2>
 
                                       {/* Pending Filter */}
@@ -2164,7 +2175,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <Circle className="text-red-400 h-3" />
-                                        Pending ({myTasksPendingCount})
+                                        Pending
                                       </TabsTrigger2>
 
                                       {/* In Progress Filter */}
@@ -2176,7 +2187,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <IconProgress className="text-orange-500 h-3" />
-                                        In Progress ({myTasksInProgressCount})
+                                        In Progress
                                       </TabsTrigger2>
 
                                       {/* Completed Filter */}
@@ -2188,7 +2199,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CheckCircle className="text-green-500 h-3" />
-                                        Completed ({myTasksCompletedCount})
+                                        Completed
                                       </TabsTrigger2>
 
                                       {/* In Time Filter */}
@@ -2200,7 +2211,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <Clock className="text-green-500 h-3" />
-                                        In Time ({myTasksInTimeCount})
+                                        In Time
                                       </TabsTrigger2>
 
                                       {/* Delayed Filter */}
@@ -2212,7 +2223,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CheckCircle className="text-red-500 h-3" />
-                                        Delayed ({myTasksDelayedCount})
+                                        Delayed
                                       </TabsTrigger2>
                                     </TabsList2>
                                   </Tabs2>
@@ -2223,7 +2234,7 @@ export default function TasksTab({
                                 filteredTasks?.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[100.7%] ml- mb-2   border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[95%] ml- mb-2   border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -2241,7 +2252,12 @@ export default function TasksTab({
                                         <div className="flex gap-2">
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
-                                            <h1 className="mt-[1.5px]">
+                                            <h1
+                                              className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
+                                                ? "text-red-400"
+                                                : "text-[#E0E0E0]"
+                                                }`}
+                                            >
                                               {formatTaskDate(task.dueDate)}
                                             </h1>
                                           </div>
@@ -2411,17 +2427,17 @@ export default function TasksTab({
 
                                 // >
                                 <div>
-                                  <div className="flex w-full justify-center ">
+                                  <div className="flex w-full justify-center -ml-4">
                                     <div className="mt-8">
                                       <img
-                                        src="/animations/notfound.gif"
-                                        className="h-56"
+                                        src="/animations/emptylist.gif"
+                                        className="h-40 ml-[58px]"
                                       />
-                                      <h1 className="text-center font-bold text-md mt-2 ml-4">
+                                      <h1 className="text-center font-bold text-md  -ml-4">
                                         No Tasks Found
                                       </h1>
-                                      <p className="text-center text-sm ml-4">
-                                        The list is currently empty
+                                      <p className="text-center text-sm -ml-4 p-2">
+                                        The list is currently empty for the selected filters
                                       </p>
                                     </div>
                                   </div>
@@ -2573,7 +2589,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CircleAlert className="text-red-500 h-3" />
-                                        Overdue ({myTasksOverdueCount})
+                                        Overdue
                                       </TabsTrigger2>
 
                                       {/* Pending Filter */}
@@ -2585,7 +2601,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <Circle className="text-red-400 h-3" />
-                                        Pending ({myTasksPendingCount})
+                                        Pending
                                       </TabsTrigger2>
 
                                       {/* In Progress Filter */}
@@ -2597,7 +2613,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <IconProgress className="text-orange-500 h-3" />
-                                        In Progress ({myTasksInProgressCount})
+                                        In Progress
                                       </TabsTrigger2>
 
                                       {/* Completed Filter */}
@@ -2609,7 +2625,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CheckCircle className="text-green-500 h-3" />
-                                        Completed ({myTasksCompletedCount})
+                                        Completed
                                       </TabsTrigger2>
 
                                       {/* In Time Filter */}
@@ -2621,7 +2637,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <Clock className="text-green-500 h-3" />
-                                        In Time ({myTasksInTimeCount})
+                                        In Time
                                       </TabsTrigger2>
 
                                       {/* Delayed Filter */}
@@ -2633,7 +2649,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CheckCircle className="text-red-500 h-3" />
-                                        Delayed ({myTasksDelayedCount})
+                                        Delayed
                                       </TabsTrigger2>
                                     </TabsList2>
                                   </Tabs2>
@@ -2644,7 +2660,7 @@ export default function TasksTab({
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[78.5%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -2662,7 +2678,12 @@ export default function TasksTab({
                                         <div className="flex gap-2">
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
-                                            <h1 className="mt-[1.5px]">
+                                            <h1
+                                              className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
+                                                ? "text-red-400"
+                                                : "text-[#E0E0E0]"
+                                                }`}
+                                            >
                                               {formatTaskDate(task.dueDate)}
                                             </h1>
                                           </div>
@@ -2829,14 +2850,14 @@ export default function TasksTab({
                               ) : (
                                 <div className="mt-8 ml-36">
                                   <img
-                                    src="/animations/notfound.gif"
-                                    className="h-56 ml-[41%]"
+                                    src="/animations/emptylist.gif"
+                                    className="h-40 ml-[43%]"
                                   />
-                                  <h1 className="text-center font-bold text-md mt-2 ml-4">
+                                  <h1 className="text-center font-bold text-md  ml-4">
                                     No Tasks Found
                                   </h1>
-                                  <p className="text-center text-sm ml-4">
-                                    The list is currently empty
+                                  <p className="text-center text-sm p-2 ml-4">
+                                    The list is currently empty for the selected filters
                                   </p>
                                 </div>
                               )}
@@ -3003,7 +3024,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CircleAlert className="text-red-500 h-3" />
-                                        Overdue ({myTasksOverdueCount})
+                                        Overdue
                                       </TabsTrigger2>
 
                                       {/* Pending Filter */}
@@ -3015,7 +3036,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <Circle className="text-red-400 h-3" />
-                                        Pending ({myTasksPendingCount})
+                                        Pending
                                       </TabsTrigger2>
 
                                       {/* In Progress Filter */}
@@ -3027,7 +3048,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <IconProgress className="text-orange-500 h-3" />
-                                        In Progress ({myTasksInProgressCount})
+                                        In Progress
                                       </TabsTrigger2>
 
                                       {/* Completed Filter */}
@@ -3039,7 +3060,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CheckCircle className="text-green-500 h-3" />
-                                        Completed ({myTasksCompletedCount})
+                                        Completed
                                       </TabsTrigger2>
 
                                       {/* In Time Filter */}
@@ -3051,7 +3072,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <Clock className="text-green-500 h-3" />
-                                        In Time ({myTasksInTimeCount})
+                                        In Time
                                       </TabsTrigger2>
 
                                       {/* Delayed Filter */}
@@ -3063,7 +3084,7 @@ export default function TasksTab({
                                           }`}
                                       >
                                         <CheckCircle className="text-red-500 h-3" />
-                                        Delayed ({myTasksDelayedCount})
+                                        Delayed
                                       </TabsTrigger2>
                                     </TabsList2>
                                   </Tabs2>
@@ -3074,7 +3095,7 @@ export default function TasksTab({
                                 filteredTasks!.map((task) => (
                                   <div key={task._id} className="">
                                     <Card
-                                      className="flex  w-[81.45%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
+                                      className="flex  w-[78.5%] ml-52 mb-2 border-[0.5px] rounded hover:border-[#815BF5] shadow-sm items-center bg-[#] justify-between cursor-pointer px-4 py-1"
                                       onClick={() => setSelectedTask(task)}
                                     >
                                       <div className=" items-center gap-4">
@@ -3092,7 +3113,12 @@ export default function TasksTab({
                                         <div className="flex gap-2">
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
-                                            <h1 className="mt-[1.5px]">
+                                            <h1
+                                              className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
+                                                ? "text-red-400"
+                                                : "text-[#E0E0E0]"
+                                                }`}
+                                            >
                                               {formatTaskDate(task?.dueDate)}
                                             </h1>
                                           </div>
@@ -3256,14 +3282,16 @@ export default function TasksTab({
                                   </div>
                                 ))
                               ) : (
-                                <div className="ml-52">
-                                  <h1 className="text-center font-bold text-md mt-12">
-                                    {" "}
-                                    {/**All */}
+                                <div className="mt-8 ml-36">
+                                  <img
+                                    src="/animations/emptylist.gif"
+                                    className="h-40 ml-[43%]"
+                                  />
+                                  <h1 className="text-center font-bold text-md  ml-4">
                                     No Tasks Found
                                   </h1>
-                                  <p className="text-center text-sm">
-                                    The list is currently empty
+                                  <p className="text-center text-sm p-2 ml-4">
+                                    The list is currently empty for the selected filters
                                   </p>
                                 </div>
                               )}

@@ -230,7 +230,7 @@ const Categories: React.FC = () => {
   return (
     <div className="p-4 h-screen overflow-y-scroll scrollbar-hide ">
       {/* <h1 className='text- text-xl font-medium bg-[#0A0D28]   py-2 rounded px-2'>Category</h1> */}
-      <Toaster />
+                  {/* <Toaster /> */}
       <div className="flex justify-start bg- rounded ">
         {role === "orgAdmin" && (
           <div className="flex justify-center w-full">
@@ -281,7 +281,7 @@ const Categories: React.FC = () => {
             </div>
           </DialogTrigger>
 
-          <DialogContent className="z-[100] w-full max-w-3xl">
+          <DialogContent className="z-[100] w-full p-6  max-w-5xl">
             <div className="flex justify-between ">
               <div className="">
                 <div className="flex gap-2 items-center text-muted-foreground">
@@ -468,7 +468,7 @@ const Categories: React.FC = () => {
                     <Edit3 className="h-4 text-blue-400" />
                   </button>
                 </DialogTrigger>
-                <DialogContent className="z-[100]">
+                <DialogContent className="z-[100] p-6">
                   <div
                     className=""
                   >

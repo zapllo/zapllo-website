@@ -55,25 +55,25 @@ export default function WalletLogs({ }: Props) {
 
   if (!orderLogs.length) {
     return (
-      <div className="flex mt-12">
-        <BillingSidebar />
-        <div className="flex-1 p-4">
-          <div className="w-full -ml-2 max-w-8xl mx-auto">
-            <div className="gap-2 flex mb-6 w-full">
-              <div className="-mt-2">
-                <div className="p-4">
-                  <div className="overflow-x-auto  flex justify-center w-full ">
-                    <div className='ml-80'>
-                      <img src='/animations/money.gif' className='w-[30%]' />
-                      <h1 className=' text-sm ml-4 '>No Wallet Logs Found</h1>
-                    </div>
-                  </div>
-                </div>
+      <>
+        <div className="flex   mt-12">
+          <BillingSidebar />
+          <div className='flex  justify-center w-full'>
+            <div className=' w-full mt-12  justify-center '>
+              <div className='flex justify-center'>
+                <img src='/animations/emptylist.gif' className='h-40  ' />
+              </div>
+              <div className='text-center w-full'>
+                <h1 className=' text-lg font-semibold text-  '>No Wallet Logs Found</h1>
+                <p className='text-sm p-2 '>It seems like you don't have any active plans yet</p>
               </div>
             </div>
+
           </div>
+
         </div>
-      </div>
+
+      </>
     )
   }
 

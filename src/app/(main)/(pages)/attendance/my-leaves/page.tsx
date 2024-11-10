@@ -639,7 +639,7 @@ const MyLeaves: React.FC = () => {
         ) : (
           <div className="flex w-full justify-center ">
             <div className="mt-8 ml-4">
-              <img src="/animations/notfound.gif" className="h-56 ml-8" />
+              <img src="/animations/emptylist.gif" className="h-40 ml-14" />
               <h1 className="text-center font-bold text-md mt-2 ">
                 No Leaves Found
               </h1>

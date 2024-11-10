@@ -51,7 +51,7 @@ const HolidayManager: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <Toaster />
+                  {/* <Toaster /> */}
       {/* <h2 className="text-lg font-bold mb-6">Holiday Manager</h2> */}
 
       {/* Dialog Root */}

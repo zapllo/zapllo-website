@@ -102,7 +102,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({ entries, fetchEntries, se
 
     return (
         <div className="relative mt-6">
-            <Toaster />
+            {/*             <Toaster /> */}
 
             {/* Table container with a fixed height and scrollable content */}
             <div className="h-80 overflow-y-auto rounded-md">

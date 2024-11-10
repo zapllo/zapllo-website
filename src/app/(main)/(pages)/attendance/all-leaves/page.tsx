@@ -607,11 +607,11 @@ export default function AllLeaves() {
           {filteredLeaves.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/notfound.gif" className="h-56 ml-8" />
-                <h1 className="text-center font-bold text-md mt-2 ">
+                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+                <h1 className="text-center font-bold text-md  ">
                   No Leaves Found
                 </h1>
-                <p className="text-center text-sm ">
+                <p className="text-center text-sm p-2 ">
                   The list is currently empty for the selected filters
                 </p>
               </div>

@@ -2,9 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Loader from "@/components/ui/loader";
-import { Dialog, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { Mail, Phone } from "lucide-react";
@@ -43,6 +42,8 @@ export default function Profile({ }: Props) {
   const [userProfile, setUserProfile] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const [isRemoving, setIsRemoving] = useState(false);
 
 
   useEffect(() => {
@@ -158,6 +159,7 @@ export default function Profile({ }: Props) {
       const file = e.target.files[0];
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
+      setIsRemoving(false); // Reset isRemoving to false when a new file is selected
     }
   };
 
@@ -187,13 +189,31 @@ export default function Profile({ }: Props) {
   };
 
   console.log(userProfile, 'profile')
+
+
+  const handleRemoveProfilePic = async () => {
+    try {
+      await axios.delete('/api/users/profilePic');
+      setUserProfile('');  // Clear the profile picture in the UI
+      setProfilePic('');
+      setPreviewUrl(null);
+      setIsRemoving(false);
+      setIsModalOpen(false);
+      toast.success("Profile picture removed successfully!");
+    } catch (error) {
+      console.error("Error removing profile picture:", error);
+      toast.error("Failed to remove profile picture.");
+    }
+  };
+
+
   return (
     <div className="mt-16">
       <div className="flex justify-center w-full p-2">
         <div className="flex cursor-pointer bg-transparent border border-lg w-fit rounded text-xs px-4 py-2 items-center justify-center">
           <div className="flex items-center text-[#E0E0E0] gap-4">
             {/* Dialog to open Modal */}
-            <Toaster />
+                        {/* <Toaster /> */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
                 <div
@@ -209,8 +229,8 @@ export default function Profile({ }: Props) {
               </DialogTrigger>
 
               {/* Fullscreen Modal */}
-              <DialogContent className="  flex justify-center items-center z-[100]">
-                <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+              <DialogContent className="   z-[100]">
+                <div className="bg-[#0b0d29] overflow-y-scroll max- scrollbar-hide h-fit   shadow-lg w-full   max-w-lg  rounded-lg">
                   <div className="flex border-b py-2  w-full justify-between ">
                     <DialogTitle className="text-lg   px-6 py-2 font-medium">Update Profile Pic</DialogTitle>
                     <DialogClose className=" px-6 py-2">
@@ -218,10 +238,28 @@ export default function Profile({ }: Props) {
                     </DialogClose>
                   </div>
                   <div className="bg-[#0b0d29] p-8 flex flex-col items-center">
-                    {previewUrl ? (
-                      <img src={previewUrl} alt="Preview" className="w-24 h-24 rounded-full object-cover mb-4" />
+                    {previewUrl || userProfile ? (
+                      <div className="relative">
+                        <img
+                          src={previewUrl || userProfile}
+                          alt="Preview"
+                          className="w-24 h-24 rounded-full object-cover mb-4"
+                        />
+                        <button
+                          onClick={() => {
+                            setPreviewUrl(null);
+                            setSelectedFile(null);
+                            setUserProfile('');
+                            setIsRemoving(true); // Change button to "Remove Profile Picture"
+                          }}
+                          className="absolute top-0 right-0 p-1  text-white "
+                          aria-label="Remove profile picture"
+                        >
+                          <CrossCircledIcon className="w-4 h-4 rounded-full hover:bg-red-600 bg-red-500" />
+                        </button>
+                      </div>
                     ) : (
-                      <div className="w-24 h-24 bg- border border-dashed  rounded-full flex items-center justify-center text-gray-400">
+                      <div className="w-24 h-24 border border-dashed rounded-full flex items-center justify-center text-gray-400">
                         No Preview
                       </div>
                     )}
@@ -230,10 +268,15 @@ export default function Profile({ }: Props) {
                       <input type="file" onChange={handleFileChange} className="hidden" />
                     </label>
                     <div className="flex gap-2 mt-6 w-full">
-                      <Button className="bg-[#017a5b] hover:bg-[#018a5b] w-full" onClick={handleUploadProfilePic}>
-                        {loading ? <Loader /> : "Update Profile Picture"}
+                      <Button className="bg-[#017a5b] hover:bg-[#018a5b] w-full" onClick={isRemoving ? handleRemoveProfilePic : handleUploadProfilePic}>
+                        {loading ? (
+                          <Loader />
+                        ) : isRemoving ? (
+                          "Remove Profile Picture"
+                        ) : (
+                          "Update Profile Picture"
+                        )}
                       </Button>
-                      {/* <Button onClick={() => setIsModalOpen(false)}>Cancel</Button> */}
                     </div>
                   </div>
                 </div>

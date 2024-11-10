@@ -668,7 +668,7 @@ export default function Approvals() {
   return (
     <div className="container mx-auto p-6">
       {/* Date Filter Buttons */}
-      <Toaster />
+                  {/* <Toaster /> */}
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setDateFilter("Today")}
@@ -939,11 +939,11 @@ export default function Approvals() {
           {finalFilteredLeaves.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/notfound.gif" className="h-56 ml-8" />
-                <h1 className="text-center font-bold text-md mt-2 ">
+                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+                <h1 className="text-center font-bold text-md m ">
                   No Leaves Found
                 </h1>
-                <p className="text-center text-sm ">
+                <p className="text-center text-sm p-2">
                   The list is currently empty for the selected filters
                 </p>
               </div>
@@ -1047,11 +1047,11 @@ export default function Approvals() {
           {finalFilteredRegularizations.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/notfound.gif" className="h-56 ml-8" />
-                <h1 className="text-center font-bold text-md mt-2 ">
-                  No Regularization Entries Found
+                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+                <h1 className="text-center font-bold text-md  ">
+                  No Entries Found
                 </h1>
-                <p className="text-center text-sm ">
+                <p className="text-center text-sm p-2 ">
                   The list is currently empty for the selected filters
                 </p>
               </div>

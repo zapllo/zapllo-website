@@ -43,8 +43,8 @@ export default function Page() {
   const [industry, setIndustry] = useState("");
   const [teamSize, setTeamSize] = useState("");
   const [isTrialExpired, setIsTrialExpired] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [whatsappNotifications, setWhatsappNotifications] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(false);
+  const [whatsappNotifications, setWhatsappNotifications] = useState(false);
   const [whatsappReminders, setWhatsappReminders] = useState(false);
   const [emailReminders, setEmailReminders] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,13 +71,9 @@ export default function Page() {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    // Fetch the current settings
-    axios.get("/api/users/me").then((response) => {
-      setEmailNotifications(response.data.notifications.email);
-      setWhatsappNotifications(response.data.notifications.whatsapp);
-    });
-  }, []);
+ 
+
+  console.log(emailNotifications, whatsappNotifications, 'true fal')
 
   const handleCreateCategory = async () => {
     if (!newCategory) return;
@@ -154,11 +150,15 @@ export default function Page() {
     const getUserDetails = async () => {
       const res = await axios.get("/api/users/me");
       const user = res.data.data;
+      console.log(user, ' user for notif')
       setFirstName(user.firstName);
       setLastName(user.lastName);
       setLoading(true);
       setRole(user.role);
       setLoading(false);
+      // Initialize notification states from API response
+      setEmailNotifications(user.notifications?.email ?? false);
+      setWhatsappNotifications(user.notifications?.whatsapp ?? false);
       setEmail(user.email);
       setWhatsAppNo(user.whatsappNo);
       const trialStatusRes = await axios.get("/api/organization/trial-status");
@@ -209,7 +209,7 @@ export default function Page() {
 
   return (
     <div className="p-4 ">
-      <Toaster />
+      {/* <Toaster /> */}
 
       {role === "orgAdmin" && (
         <div>
@@ -374,11 +374,11 @@ export default function Page() {
                     Daily Reminder Time
                   </h1>
                   {dueTime ? (
-                    <h1 className="text-md mt-1 text-gray-800 dark:text-white">
+                    <h1 className="text-xs mt-1 text-gray-800 dark:text-white">
                       {formatTimeToAMPM(dueTime)}
                     </h1>
                   ) : (
-                    <h1 className="text-md  mt-1 text-gray-800 dark:text-white">
+                    <h1 className="text-xs  mt-1 text-gray-800 dark:text-white">
                       Please Select Time
                     </h1>
                   )}

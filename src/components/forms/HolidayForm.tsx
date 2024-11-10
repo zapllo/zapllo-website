@@ -62,7 +62,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
 
   return (
     <div className="relative">
-      <Toaster />
+                  {/* <Toaster /> */}
       <form onSubmit={handleSubmit} className="space-y-4 p-6">
         <div className="relative">
           <label className="absolute bg-[#0b0d29] text-[#787CA5] ml-2 text-xs -mt-2 px-1">

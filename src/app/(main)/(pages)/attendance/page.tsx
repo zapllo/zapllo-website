@@ -393,7 +393,7 @@ const AttendanceDashboard: React.FC = () => {
     <div className="p-6 h-screen overflow-y-scroll">
       {attendanceLoading && (
         <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-          {/* <Toaster /> */}
+         
           <div
             className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
             <div className="">
@@ -439,7 +439,7 @@ const AttendanceDashboard: React.FC = () => {
               </button> */}
           </div>
           <div className='grid grid-cols-2 gap-2'>
-            <div className="flex-1 border  shadow-md rounded p-6">
+            <div className="flex-1 border  shadow-md rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-medium ">Daily Report</h3>
 
@@ -537,7 +537,7 @@ const AttendanceDashboard: React.FC = () => {
               </table>
             </div>
 
-            <div className="flex-1 border b  shadow-md rounded p-6">
+            <div className="flex-1 border b  shadow-md rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-medium">Cumulative Report</h3>
 
