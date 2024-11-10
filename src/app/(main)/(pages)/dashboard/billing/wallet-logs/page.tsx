@@ -65,7 +65,7 @@ export default function WalletLogs({ }: Props) {
               </div>
               <div className='text-center w-full'>
                 <h1 className=' text-lg font-semibold text-  '>No Wallet Logs Found</h1>
-                <p className='text-sm p-2 '>It seems like you don't have any active plans yet</p>
+                <p className='text-sm p-2 '>It seems like you do not have any active plans yet</p>
               </div>
             </div>
 
