@@ -71,7 +71,10 @@ type Regularization = {
   remarks: string;
   approvalStatus: "Pending" | "Approved" | "Rejected";
   approvalRemarks?: string;
-  approvedBy?: string;
+  approvedBy?: {
+    firstName: string;
+    lastName: string;
+  };
   approvedAt?: string;
 };
 
