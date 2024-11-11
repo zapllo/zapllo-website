@@ -93,7 +93,7 @@ export default function Home() {
                     </div>
                     <div className="w-full flex justify-center mt-6 p-2 ">
                         <p className="text-center w-1/2 text-[#676B93] ">Lock in our best-ever price and get access to every new feature, For an year. This
-                            one-time Offer ends soon. Act now before it's gone for good!</p>
+                            one-time Offer ends soon. Act now before it&apos;s gone for good!</p>
                     </div>
                     <div className="w-full flex cursor-pointer  justify-center mt-8">
                         <a href="#cards">

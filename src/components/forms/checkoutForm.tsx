@@ -282,6 +282,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                     <div >
                                         {countries.filter((country) => country.code === formData.countryCode).map((country) => (
                                             <button
+                                                key={country.code} // Add a unique key here
                                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                                 className="bg-transparent  text-white w-full text-left focus:outline-none"
                                             >
