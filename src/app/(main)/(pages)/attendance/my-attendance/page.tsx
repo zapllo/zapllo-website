@@ -991,7 +991,9 @@ export default function MyAttendance() {
     filterApprovedEntries(filteredEntries)
   );
 
-  // console.log(displayedEntries, 'loginEntries');
+
+
+  console.log(todayEntries, 'todays');
   return (
     <div className="container h-screen overflow-y-scroll scrollbar-hide rounded-lg p-4 shadow-lg">
       {/* <Toaster /> */}
@@ -1068,13 +1070,15 @@ export default function MyAttendance() {
         ) : (
           <div className="space-y-4 bg-[#0B0D29]  rounded p-4 w-[60%] mx-12">
             {todayEntries?.map((entry: LoginEntry, index: number) => {
-              const formattedLoginTime = new Date(
-                entry.loginTime
-              ).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              });
+              // Format login and logout times to 01:00 PM format
+              const formattedLoginTime = entry.loginTime
+                ? new Date(entry.loginTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                : null;
+
               const formattedLogoutTime = entry.logoutTime
                 ? new Date(entry.logoutTime).toLocaleTimeString([], {
                   hour: "2-digit",
@@ -1082,38 +1086,30 @@ export default function MyAttendance() {
                   hour12: true,
                 })
                 : null;
-              const date = new Date(entry.loginTime);
+
               return (
-                <div key={index} className=" w-full  grid grid-cols-3">
+                <div key={index} className="w-full grid grid-cols-3">
                   {entry.loginTime && (
                     <div>
-                      <h1 className="text-xs py-1">
-                        Login: {formatTimeToAMPM(entry.loginTime)}
-                      </h1>{" "}
-                      {/* Displaying the date */}
+                      <h1 className="text-xs py-1">Login: {formattedLoginTime}</h1>
                     </div>
                   )}
                   {entry.logoutTime && (
                     <div>
-                      <h2 className="text-xs py-1">
-                        Logout: {formattedLogoutTime}
-                      </h2>
+                      <h2 className="text-xs py-1">Logout: {formattedLogoutTime}</h2>
                     </div>
                   )}
                   <div
-                    className={`px-2 py-1 h-6 w-fit flex justify-center  text-xs border rounded-xl text-white ${entry.action === "login"
-                      ? "bg-green-800 text-xs"
-                      : "bg-[#8A3D17] text-xs"
+                    className={`px-2 py-1 h-6 w-fit flex justify-center text-xs border rounded-xl text-white ${entry.action === "login" ? "bg-green-800 text-xs" : "bg-[#8A3D17] text-xs"
                       }`}
                   >
                     <h1 className="text-xs">{entry.action.toUpperCase()}</h1>
                   </div>
-                  {/* Render map icon only if lat and lng are present */}
                   {entry.lat && entry.lng && (
-                    <div className="flex justify-end ">
+                    <div className="flex justify-end">
                       <button
                         onClick={() => handleViewMap(entry.lat, entry.lng)}
-                        className="underline text-white h-5 -500 "
+                        className="underline text-white h-5"
                       >
                         <MapPin />
                       </button>
@@ -1122,6 +1118,7 @@ export default function MyAttendance() {
                 </div>
               );
             })}
+
           </div>
         )}
       </div>

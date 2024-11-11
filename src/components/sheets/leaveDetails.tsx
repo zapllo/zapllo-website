@@ -71,7 +71,7 @@ const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) =
                     </div>
                 </SheetHeader>
                 <div className="border overflow-y-scroll scrollbar-hide h-10/11 p-4 rounded-lg">
-                    <h1 className="font-bold text-sm px-2">{selectedLeave.leaveType.leaveType}</h1>
+                    <h1 className="font-bold text-sm px-2">{selectedLeave.leaveType?.leaveType}</h1>
 
           <div className="flex mt-4 justify-start space-x-12 text-start items-center gap-6 px-2">
             {/* Requested By */}
@@ -171,7 +171,7 @@ const LeaveDetails: React.FC<LeaveDetailsProps> = ({ selectedLeave, onClose }) =
             </Label>
             <div className="flex ml-6 justify-start">
               <h1 id="leaveType" className="col-span-3 text-xs">
-                {selectedLeave.leaveType.leaveType}
+                {selectedLeave.leaveType?.leaveType}
               </h1>
             </div>
           </div>

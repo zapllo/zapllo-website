@@ -19,6 +19,21 @@ export async function GET(request: NextRequest) {
 
         // Connect to the database
         await connectDB();
+        const user = await User.findOne({ _id: managerId }).
+            select("-password");
+
+        if (user?.role === 'orgAdmin') {
+            // Fetch all regularization entries if the user is an orgAdmin
+            const allRegularizations = await LoginEntry.find({ action: 'regularization' })
+                .populate('userId', 'firstName lastName email')
+                .populate('approvedBy', 'firstName lastName'); // Populate approver details
+
+            return NextResponse.json(
+                { success: true, regularizations: allRegularizations },
+                { status: 200 }
+            );
+        }
+
 
         // Find team members reporting to the manager
         const teamMembers = await User.find({ reportingManager: managerId });

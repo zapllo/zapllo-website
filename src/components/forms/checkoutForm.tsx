@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Flag from 'react-world-flags';
+import { AsYouType, CountryCode, getCountryCallingCode } from 'libphonenumber-js';
+import { getData as getCountryData } from 'country-list';
+import { cn } from '@/lib/utils';
+import { Info } from 'lucide-react';
 
-type PlanKeys = 'Task Pro' | 'Money Saver Bundle';
+type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle' | 'Zapllo Payroll';
 
-const MultiStepForm = () => {
+interface Country {
+    code: CountryCode;
+    name: string;
+}
+
+const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         firstName: '',
@@ -11,19 +21,60 @@ const MultiStepForm = () => {
         companyName: '',
         industry: '',
         email: '',
-        countryCode: '+91',
+        countryCode: 'IN',
         whatsappNo: '',
-        selectedPlan: 'Money Saver Bundle' as PlanKeys,
-        subscribedUserCount: 1, // Changed from quantity to subscribedUserCount
-        discountCode: '',
+        selectedPlan,
+        subscribedUserCount: 5, // Changed from quantity to subscribedUserCount
+        discountCode: 'FREEDOMSALE',
     });
 
     const plans: Record<PlanKeys, number> = {
-        'Task Pro': 1999,
-        'Money Saver Bundle': 3000,
+        'Zapllo Tasks': 2000,
+        'Zapllo Money Saver Bundle': 3000,
+        'Zapllo Payroll': 1000,
     };
 
     const [payableAmount, setPayableAmount] = useState(plans[formData.selectedPlan] * formData.subscribedUserCount);
+
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [discount, setDiscount] = useState(0);
+    const [discountedPrice, setDiscountedPrice] = useState(0);
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [countries, setCountries] = useState<Country[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+
+
+    useEffect(() => {
+        const updatePricing = () => {
+            const pricePerUser = plans[formData.selectedPlan] * 2;
+            const calculatedTotalPrice = pricePerUser * formData.subscribedUserCount;
+            const calculatedDiscount = 0.5 * calculatedTotalPrice;
+            const calculatedDiscountedPrice = calculatedTotalPrice - calculatedDiscount;
+
+            setTotalPrice(calculatedTotalPrice);
+            setDiscount(calculatedDiscount);
+            setDiscountedPrice(calculatedDiscountedPrice);
+        };
+
+        updatePricing();
+    }, [formData.selectedPlan, formData.subscribedUserCount]);
+
+    useEffect(() => {
+        const countryList = getCountryData()
+            .map(country => ({
+                code: country.code as CountryCode,
+                name: country.name,
+            }))
+            .filter(country => {
+                try {
+                    return getCountryCallingCode(country.code);
+                } catch {
+                    return false;
+                }
+            });
+        setCountries(countryList);
+    }, []);
 
     useEffect(() => {
         // Load Razorpay script
@@ -43,6 +94,27 @@ const MultiStepForm = () => {
             [name]: value,
         });
     };
+
+    useEffect(() => {
+        setFormData((prev) => ({
+            ...prev,
+            selectedPlan,
+        }));
+    }, [selectedPlan]);
+
+    const handleCountryChange = (countryCode: string) => {
+        setFormData({
+            ...formData,
+            countryCode,
+        });
+        setIsDropdownOpen(false);
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const phoneNumber = new AsYouType().input(e.target.value);
+        setFormData({ ...formData, whatsappNo: phoneNumber });
+    };
+
 
     const nextStep = () => setStep(step + 1);
     const prevStep = () => setStep(step - 1);
@@ -64,9 +136,10 @@ const MultiStepForm = () => {
     };
 
     const handlePayment = async () => {
+        const payableAmountWithGst = payableAmount * 1.18; // Adding 18% GST to the payable amount
         try {
             const { data } = await axios.post('/api/create-order', {
-                amount: payableAmount * 100,
+                amount: Math.round(payableAmountWithGst * 100), // Razorpay accepts amount in paise
                 currency: 'INR',
                 planName: formData.selectedPlan,
                 subscribedUserCount: formData.subscribedUserCount,
@@ -77,7 +150,7 @@ const MultiStepForm = () => {
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-                amount: payableAmount * 100,
+                amount: Math.round(payableAmountWithGst * 100),
                 currency: 'INR',
                 name: formData.selectedPlan,
                 description: `Payment for ${formData.selectedPlan}`,
@@ -93,8 +166,9 @@ const MultiStepForm = () => {
                         companyName: formData.companyName,
                         industry: formData.industry,
                         email: formData.email,
+                        countryCode: formData.countryCode,
                         whatsappNo: formData.whatsappNo,
-                        amount: payableAmount,
+                        amount: payableAmountWithGst,
                         planName: formData.selectedPlan,
                         subscribedUserCount: formData.subscribedUserCount,
                     };
@@ -128,10 +202,14 @@ const MultiStepForm = () => {
         }
     };
 
+    const filteredCountries = countries.filter(country =>
+        country.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
 
     return (
-        <div className="bg-[#0a0c29] border text-white p-8 rounded-lg w-full max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold mb-8">Contact Form</h1>
+        <div className="bg-[#0A0D28]  text-white p-8 rounded-2xl w-full max-w-4xl mx-auto">
+            <h1 className="text-2xl font-medium mb-8">Contact Form</h1>
 
             {/* Step Progress Bar */}
             <div className="flex items-center mb-8">
@@ -145,7 +223,7 @@ const MultiStepForm = () => {
                 <p className="text-sm font-semibold text-gray-400">Step 1</p>
                 <p className="text-sm font-semibold text-gray-400">Step 2</p>
             </div>
-            <div className='flex justify-between w-[55%]'>
+            <div className='flex justify-between w-[53.9%]'>
                 <h2 className={`text-lg font-semibold mb-4 ${step === 1 ? "text-white" : "text-gray-400"}  `}>Contact Details</h2>
                 <h2 className={`text-lg font-semibold mb-4  ${step === 2 ? "text-white" : "text-gray-400"}  `}>Checkout</h2>
             </div>
@@ -161,7 +239,7 @@ const MultiStepForm = () => {
                                 placeholder="First Name"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                className="p-3 bg-[#0F1224] border border-gray-600 rounded-md focus:outline-none text-gray-200"
+                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <input
                                 type="text"
@@ -169,7 +247,7 @@ const MultiStepForm = () => {
                                 placeholder="Last Name"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                className="p-3 bg-[#0F1224] border border-gray-600 rounded-md focus:outline-none text-gray-200"
+                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <input
                                 type="text"
@@ -177,13 +255,13 @@ const MultiStepForm = () => {
                                 placeholder="Company Name"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                className="p-3 bg-[#0F1224] border border-gray-600 rounded-md focus:outline-none text-gray-200"
+                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <select
                                 name="industry"
                                 value={formData.industry}
                                 onChange={handleChange}
-                                className="p-3 bg-[#0F1224] border border-gray-600 rounded-md focus:outline-none text-gray-200"
+                                className="p-3 bg-[#0A0D28] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             >
                                 <option value="" disabled>Industry</option>
                                 <option value="IT">IT</option>
@@ -196,29 +274,68 @@ const MultiStepForm = () => {
                                 placeholder="Email ID"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="p-3 bg-[#0F1224] border border-gray-600 rounded-md focus:outline-none text-gray-200"
+                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
-                            <div className="flex">
-                                <span className="flex items-center justify-center w-16 bg-gray-700 rounded-l-md text-gray-300">
-                                    <img src="/path-to-country-flag.png" alt="Country Flag" className="w-6 h-4 mr-1" />
-                                    {formData.countryCode}
-                                </span>
+                            <div className="flex relative">
+                                <div className="flex w-36  items-center border-[#424882] border border-r-0 rounded-2xl rounded-r-none p-3 relative">
+                                    <Flag code={formData.countryCode} className="w-6 h-4 mr-2" />
+                                    <div >
+                                        {countries.filter((country) => country.code === formData.countryCode).map((country) => (
+                                            <button
+                                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                                className="bg-transparent  text-white w-full text-left focus:outline-none"
+                                            >
+                                                (+{getCountryCallingCode(country.code)})
+
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {isDropdownOpen && (
+                                        <div className="absolute left-0 top-full mt-1 w-64 max-h-60 overflow-y-auto scrollbar-hide bg-black p-2 border border-[#424882] rounded-2xl z-50">
+                                            <input
+                                                type="text"
+                                                placeholder="Search Country"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="p-2 mb-2 w-full text-white outline-none border rounded"
+                                            />
+                                            {filteredCountries.map((country) => (
+                                                <div
+                                                    key={country.code}
+                                                    className="flex items-center p-2 cursor-pointer hover:bg-[#04061E] text-white"
+                                                    onClick={() => handleCountryChange(country.code)}
+                                                >
+                                                    <Flag code={country.code} className="w-6 h-4 mr-2" />
+                                                    {country.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                                 <input
                                     type="text"
                                     name="whatsappNo"
-                                    placeholder="WhatsApp Number"
+                                    placeholder="Mobile Number"
                                     value={formData.whatsappNo}
-                                    onChange={handleChange}
-                                    className="p-3 bg-[#0F1224] border border-gray-600 rounded-r-md focus:outline-none w-full text-gray-200"
+                                    onChange={handlePhoneChange}
+                                    className="p-3 bg-transparent border-[#424882] border rounded-l-none rounded-2xl placeholder:text-[#676B93] text-white focus:outline-none w-full"
                                 />
                             </div>
                         </div>
-                        <button
-                            onClick={nextStep}
-                            className="bg-gradient-to-r from-[#815BF5] to-[#FC8929] mt-6 w-full py-2 rounded-full text-white font-semibold"
-                        >
-                            Next
-                        </button>
+
+                        <div className="w-full flex cursor-pointer  justify-end mt-8">
+                            <div
+                                onClick={nextStep}
+                                className={cn(
+                                    "group rounded-full border border-black/5  transition-all ease-in  text-base w-fit px-24 hover: py-2 text-white  cursor-pointer  dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#815BF5] to-[#5E29FF] dark:hover:bg-blue-800",
+                                )}
+                            >
+                                <button
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )
             }
@@ -227,71 +344,242 @@ const MultiStepForm = () => {
             {
                 step === 2 && (
                     <div>
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="grid grid-cols-3 gap-4 mb-6">
                             {Object.keys(plans).map((plan) => (
                                 <label
                                     key={plan}
-                                    className={`flex flex-col items-start p-4 border rounded-md cursor-pointer ${formData.selectedPlan === plan ? 'border-[#FC8929] bg-[#1A1D2F]' : 'border-gray-500 bg-[#0F1224]'
+                                    className={`flex flex-col items-start p-4 border border-[#37384B] rounded-2xl cursor-pointer ${formData.selectedPlan === plan ? ' bg-transparent' : 'bg-transparent'
                                         }`}
                                     onClick={() => handlePlanChange(plan as PlanKeys)}
                                 >
-                                    <input
-                                        type="radio"
-                                        name="selectedPlan"
-                                        value={plan}
-                                        checked={formData.selectedPlan === plan}
-                                        onChange={() => handlePlanChange(plan as PlanKeys)}
-                                        className="hidden"
-                                    />
-                                    <span className="text-lg font-semibold text-gray-200">{plan}</span>
-                                    <span className="text-sm text-gray-400">
-                                        {plan === 'Money Saver Bundle' ? (
+                                    <div className='flex gap-2'>
+                                        <label className="flex items-center cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="selectedPlan"
+                                                value={plan}
+                                                checked={formData.selectedPlan === plan}
+                                                onChange={() => handlePlanChange(plan as PlanKeys)}
+                                                className="hidden" // Hide the default radio input
+                                            />
+                                            <span
+                                                className={`relative w-4 h-4  rounded-full border-2 flex-shrink-0 mr-2 ${formData.selectedPlan === plan
+                                                    ? "bg-[#FC8929]  border-4 border-transparent  p-[2px] "
+                                                    : "bg-[#37384b] border-gray-400"
+                                                    }`}
+                                            >
+                                                {formData.selectedPlan === plan && (
+                                                    <span className="absolute inset-0   rounded-full bg-white">
+
+                                                    </span>
+                                                )}
+                                            </span>
+                                            <span className="text-white font-semibold">{plan}</span>
+                                        </label>
+                                    </div>
+                                    <div className="text-sm text-gray-400">
+                                        {plan === 'Zapllo Money Saver Bundle' ? (
                                             <>
-                                                ₹{plans[plan]} / per user per year
+                                                <h1 className='px-6 text-[#676B93]'>
+                                                    Includes Task Delegation, CRM, Leave & Attendance
+                                                </h1>
+                                                <div className='px-4 mt-4'>
+                                                    <h1 className='text-white  text-lg font-semibold'>
+                                                        <p className='relative inline-block'>                                             <span className=' text-gray-200 -500'>₹{plans[plan] * 2 - 1}</span>
+                                                            <span className="absolute inset-0 bg-red-500 h-[2px] top-1/2 w-14 -ml-[2px] transform -translate-y-1/2"></span>
+                                                        </p>
+
+                                                        <span
+                                                            className="ml-2 text-lg"
+                                                            style={{
+                                                                fontSize: "16px",
+                                                                fontWeight: "400",
+                                                                lineHeight: "24px",
+                                                                color: "#676B93",
+                                                            }}
+                                                        >
+                                                            /  user / year
+                                                        </span>
+                                                    </h1>
+                                                    <h1 className='text-white mt-2  text-2xl font-semibold'>
+                                                        <p className='relative inline-block'>                                             <span className=' text-white -500'>₹{plans[plan] - 1}</span>
+
+                                                        </p>
+
+                                                        <span
+                                                            className="ml-2 text-sm"
+                                                            style={{
+
+
+                                                                color: "#676B93",
+                                                            }}
+                                                        >
+                                                            /  user / year
+                                                        </span>
+                                                    </h1>
+                                                </div>
                                                 <br />
-                                                Includes Task Delegation, CRM, Leave & Attendance
                                             </>
-                                        ) : (
+                                        ) : plan === 'Zapllo Tasks' ? (
                                             <>
-                                                ₹{plans[plan as PlanKeys]} / per user per year
+                                                <h1 className='px-6 text-[#676B93]'>
+                                                    Includes Task Delegation Only
+                                                </h1>
+                                                <div className='px-4 mt-4'>
+                                                    <h1 className='text-white  text-lg font-semibold'>
+                                                        <p className='relative inline-block'>                                             <span className=' text-gray-200 -500'>₹{plans[plan] * 2 - 1}</span>
+                                                            <span className="absolute inset-0 bg-red-500 h-[2px] top-1/2 w-14 -ml-[2px] transform -translate-y-1/2"></span>
+                                                        </p>
+
+                                                        <span
+                                                            className="ml-2 text-lg"
+                                                            style={{
+                                                                fontSize: "16px",
+                                                                fontWeight: "400",
+                                                                lineHeight: "24px",
+                                                                color: "#676B93",
+                                                            }}
+                                                        >
+                                                            /  user / year
+                                                        </span>
+                                                    </h1>
+                                                    <h1 className='text-white mt-2  text-2xl font-semibold'>
+                                                        <p className='relative inline-block'>                                             <span className=' text-white -500'>₹{plans[plan] - 1}</span>
+
+                                                        </p>
+
+                                                        <span
+                                                            className="ml-2 text-sm"
+                                                            style={{
+
+
+                                                                color: "#676B93",
+                                                            }}
+                                                        >
+                                                            /  user / year
+                                                        </span>
+                                                    </h1>
+                                                </div>
                                                 <br />
-                                                Task Delegation Only
+
                                             </>
-                                        )}
-                                    </span>
+                                        ) :
+                                            <>
+                                                <h1 className='px-6 text-[#676B93]'>
+                                                    Includes Zapllo Payroll Only
+                                                </h1>
+                                                <div className='px-4 mt-4'>
+                                                    <h1 className='text-white  text-lg font-semibold'>
+                                                        <p className='relative inline-block'>                                             <span className=' text-gray-200 -500'>₹{plans[plan as PlanKeys] * 2 - 1}</span>
+                                                            <span className="absolute inset-0 bg-red-500 h-[2px] top-1/2 w-14 -ml-[2px] transform -translate-y-1/2"></span>
+                                                        </p>
+
+                                                        <span
+                                                            className="ml-2 text-lg"
+                                                            style={{
+                                                                fontSize: "16px",
+                                                                fontWeight: "400",
+                                                                lineHeight: "24px",
+                                                                color: "#676B93",
+                                                            }}
+                                                        >
+                                                            /  user / year
+                                                        </span>
+                                                    </h1>
+                                                    <h1 className='text-white mt-2  text-2xl font-semibold'>
+                                                        <p className='relative inline-block'>                                             <span className=' text-white -500'>₹{plans[plan as PlanKeys] - 1}</span>
+
+                                                        </p>
+
+                                                        <span
+                                                            className="ml-2 text-sm"
+                                                            style={{
+
+
+                                                                color: "#676B93",
+                                                            }}
+                                                        >
+                                                            /  user / year
+                                                        </span>
+                                                    </h1>
+                                                </div>
+                                                <br />
+
+                                            </>
+                                        }
+                                    </div>
                                 </label>
                             ))}
                         </div>
                         <div className="grid grid-cols-2 gap-4 mb-4">
-                            <select
-                                name="subscribedUserCount"
-                                value={formData.subscribedUserCount}
-                                onChange={handleSubscribedUserCountChange}
-                                className="p-3 bg-[#1A1D2F] border border-gray-600 rounded-md text-sm focus:outline-none text-gray-200"
-                            >
-                                {[...Array(100).keys()].map((num) => (
-                                    <option key={num + 1} value={num + 1}>{num + 1}</option>
-                                ))}
-                            </select>
-                            <input
-                                type="text"
-                                name="discountCode"
-                                placeholder="Discount Code"
-                                value={formData.discountCode}
-                                onChange={handleChange}
-                                className="p-3 bg-[#1A1D2F] border border-gray-600 rounded-md text-sm focus:outline-none text-gray-200"
-                            />
+                            <div>
+                                <h1 className='mb-2'>Select No. of Users</h1>
+                                <select
+                                    name="subscribedUserCount"
+                                    value={formData.subscribedUserCount}
+                                    onChange={handleSubscribedUserCountChange}
+                                    className="p-3 w-full bg-[#0A0D28] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                >
+                                    {[...Array(20).keys()].map((num) => (
+                                        <option key={(num + 1) * 5} value={(num + 1) * 5}>{(num + 1) * 5}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <h1 className='mb-2'>Discount Code:</h1>
+                                <input
+                                    type="text"
+                                    name="discountCode"
+                                    placeholder="Discount Code"
+                                    disabled
+                                    value={formData.discountCode}
+                                    onChange={handleChange}
+                                    className="p-3 bg-transparent w-full border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                />
+                            </div>
                         </div>
-                        <button onClick={handlePayment} className="bg-gradient-to-r from-[#815BF5] to-[#FC8929] mt-4 w-full py-3 rounded-full text-white font-semibold">
-                            Pay ₹{payableAmount.toLocaleString()}
-                        </button>
-                        <button onClick={prevStep} className="bg-gray-600 w-full py-2 rounded-full text-white font-semibold mt-4">
-                            Back
-                        </button>
+                        <div className='border p-3 grid grid-cols-2 w-full gap-2 rounded-2xl'>
+                            <div className='p-2 space-y-6'>
+                                <p>Total Price: ₹{(plans[formData.selectedPlan] * 2).toLocaleString()} X {formData.subscribedUserCount} employees = ₹{totalPrice.toLocaleString()}</p>
+                                <p>Discount Applied: 50% OFF - ₹{discount.toLocaleString()}</p>
+                                <p>Total Amount (excl. GST): ₹{discountedPrice.toLocaleString()}</p>
+                                <p className='text-green-500'>Net Amount: ₹{Math.round(payableAmount * 1.18).toLocaleString()}</p>
+                            </div>
+                            <div className='p-4 border rounded-2xl'>
+                                <div className='flex items-center mb-2 gap-2'>
+                                    <Info className='text-gray-400' /> <h1 className='text-xl text-muted-foreground'>One Time Fast Action Bonus</h1>
+                                </div>
+                                <h1 className='text-sm'>Get 10% Additional Bonus when you purchase <span className='text-red-400'>20 or more users</span>. Bonus will be added to your subscription wallet that can be redeemed for purchasing more users, <span className='text-orange-400'>receiving AI Tokens </span>, upcoming apps and renewals.</h1>
+                                <p className='mt-2 text-sm text-start'>Your Wallet Bonus: ₹ 10,000</p>
+                            </div>
+                        </div>
+                        <div className='flex items-center mt-4'>
+                            <div className=''>
+                                <button onClick={prevStep} className="bg-[#121212] border border-primary w-full px-24 py-2  rounded-full text-white font-semibold ">
+                                    Back
+                                </button>
+                            </div>
+                            <div className="w-full flex cursor-pointer  justify-end ">
+
+                                <div
+                                    onClick={handlePayment}
+                                    className={cn(
+                                        "group rounded-full border border-black/5  transition-all ease-in  text-base w-fit px-24 hover: py-2 text-white  cursor-pointer  dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#815BF5] to-[#5E29FF] dark:hover:bg-blue-800",
+                                    )}
+                                >
+
+                                    <button
+                                    >
+                                        Payable Amount ₹{Math.round(payableAmount * 1.18).toLocaleString()}
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 )
             }
-        </div>
+        </div >
     );
 };
 

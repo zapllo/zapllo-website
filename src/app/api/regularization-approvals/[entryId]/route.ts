@@ -3,12 +3,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import LoginEntry from '@/models/loginEntryModel';
-import User from '@/models/userModel';
+import User, { IUser } from '@/models/userModel';
 import { getDataFromToken } from '@/helper/getDataFromToken'; // Your custom token extraction function
 
 import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
 
-const sendRegularizationApprovalEmail = async (user: any, regularizationEntry: any) => {
+const sendRegularizationApprovalEmail = async (user: any, regularizationEntry: any, approverName: string) => {
     const emailOptions: SendEmailOptions = {
         to: `${user.email}`,
         text: "Regularization Request - Approved",
@@ -24,7 +24,7 @@ const sendRegularizationApprovalEmail = async (user: any, regularizationEntry: a
                     </div>
                     <div style="padding: 20px;">
                         <p>Dear ${user.firstName},</p>
-                        <p>Your regularization application has been Approved by ${regularizationEntry.approvedBy.firstName}, given below are the details:</p>
+                        <p>Your regularization application has been Approved by ${approverName}, given below are the details:</p>
                         <p><strong>Date:</strong> ${formatDate(regularizationEntry.createdAt)}</p>
                         <p><strong>Login Time:</strong> ${regularizationEntry.loginTime}</p>
                         <p><strong>Logout Time:</strong> ${regularizationEntry.logoutTime}</p>
@@ -42,7 +42,7 @@ const sendRegularizationApprovalEmail = async (user: any, regularizationEntry: a
     await sendEmail(emailOptions);
 };
 
-const sendRegularizationRejectionEmail = async (user: any, regularizationEntry: any) => {
+const sendRegularizationRejectionEmail = async (user: any, regularizationEntry: any, approverName: string) => {
     const emailOptions: SendEmailOptions = {
         to: `${user.email}`,
         text: "Regularization Request - Rejected",
@@ -57,8 +57,8 @@ const sendRegularizationRejectionEmail = async (user: any, regularizationEntry: 
                         <h1 style="margin: 0; color: #ffffff;">Regularization Request - Rejected</h1>
                     </div>
                     <div style="padding: 20px;">
-                        <p>Dear ${user.firstName},</p>r
-                        <p>Your regularization application has been Rejected by ${regularizationEntry.approvedBy.firstName}, given below are the details:</p>
+                        <p>Dear ${user.firstName},</p>
+                        <p>Your regularization application has been Rejected by ${approverName}, given below are the details:</p>
                         <p><strong>Date:</strong> ${formatDate(regularizationEntry.createdAt)}</p>
                         <p><strong>Login Time:</strong> ${regularizationEntry.loginTime}</p>
                         <p><strong>Logout Time:</strong> ${regularizationEntry.logoutTime}</p>
@@ -77,6 +77,7 @@ const sendRegularizationRejectionEmail = async (user: any, regularizationEntry: 
 };
 
 
+
 interface ApprovalRequestBody {
     action: 'approve' | 'reject';
     remarks?: string;
@@ -89,11 +90,10 @@ const formatDate = (date: Date): string => {
     return new Intl.DateTimeFormat('en-GB', options).format(date);
 };
 
-// Helper function to send WhatsApp notification
 const sendWhatsAppRegularizationNotification = async (
     user: any,
     phoneNumber: string,
-    reportingManager: any,
+    approverName: string,
     regularizationEntry: any,
     templateName: string
 ) => {
@@ -102,7 +102,7 @@ const sendWhatsAppRegularizationNotification = async (
         templateName, // Use the dynamic template name for either approval or rejection
         bodyVariables: [
             user.firstName, // 1. User's first name
-            reportingManager.firstName, // 2. Reporting Manager's first name
+            approverName, // 2. Approver's name (either reporting manager or orgAdmin)
             formatDate(regularizationEntry.createdAt), // 3. Created at date (formatted)
             regularizationEntry.loginTime, // 4. Login time
             regularizationEntry.logoutTime, // 5. Logout time
@@ -134,6 +134,8 @@ const sendWhatsAppRegularizationNotification = async (
 };
 
 
+
+
 export async function PATCH(request: NextRequest, { params }: { params: { entryId: string } }) {
     const { entryId } = params;
 
@@ -159,12 +161,13 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
         if (regularizationEntry.action !== 'regularization' || regularizationEntry.approvalStatus !== 'Pending') {
             return NextResponse.json({ success: false, message: 'Invalid regularization entry' }, { status: 400 });
         }
-        const user = await User.findById(regularizationEntry.userId).populate('reportingManager', 'firstName lastName');
+
+        const user = await User.findById(regularizationEntry.userId).populate<{ reportingManager: IUser | null }>('reportingManager', 'firstName lastName');
         if (!user) {
             return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
         }
 
-        const isManager = user.reportingManager?.toString() === managerId;
+        const isManager = user.reportingManager && user.reportingManager._id.equals(managerId);
         const isOrgAdmin = loggedInUser.role === 'orgAdmin';
 
         if (!isManager && !isOrgAdmin) {
@@ -192,19 +195,23 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
             model: 'users', // Explicitly specify the model name
         });
 
+        // Determine the approver's name for the notification
+        const approverName = isOrgAdmin
+            ? `${loggedInUser.firstName} ${loggedInUser.lastName}`
+            : `${user.reportingManager?.firstName || ''} ${user.reportingManager?.lastName || ''}`;
+
         // Send WhatsApp notification based on the action (approve or reject)
         if (user.whatsappNo) {
             const templateName = action === 'approve' ? 'regularizationapproval' : 'regularizationrejection';
-            await sendWhatsAppRegularizationNotification(user, user.whatsappNo, user.reportingManager, regularizationEntry, templateName);
+            await sendWhatsAppRegularizationNotification(user, user.whatsappNo, approverName, regularizationEntry, templateName);
         }
 
         // Send Email based on the action
         if (action === 'approve') {
-            await sendRegularizationApprovalEmail(user, regularizationEntry);
+            await sendRegularizationApprovalEmail(user, regularizationEntry, approverName);
         } else {
-            await sendRegularizationRejectionEmail(user, regularizationEntry);
+            await sendRegularizationRejectionEmail(user, regularizationEntry, approverName);
         }
-
 
         return NextResponse.json({ success: true, message: `Regularization has been ${action}d successfully.` }, { status: 200 });
     } catch (error: any) {
@@ -212,6 +219,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
         return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });
     }
 }
+
 
 
 export async function DELETE(request: NextRequest, { params }: { params: { entryId: string } }) {

@@ -44,6 +44,7 @@ const RegularizationApprovalModal: React.FC<
 
         if (response.data.success) {
           onSubmit(); // Refresh data or perform other actions
+          onClose();
           toast.success("Regularization Request Approved");
         } else {
           throw new Error(
@@ -55,9 +56,7 @@ const RegularizationApprovalModal: React.FC<
           "Error approving regularization:",
           error.response?.data || error.message
         );
-        toast.error(
-          error.message || "An error occurred while approving the regularization."
-        );
+      
       } finally {
         setLoading(false);
       }

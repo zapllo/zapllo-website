@@ -11,6 +11,7 @@ interface Ionboarding extends Document {
     paymentId: string;
     amount: number;
     planName: string;
+    countryCode: string;
     creditedAmount: number;
     createdAt: Date;
     subscribedUserCount: number;
@@ -35,6 +36,10 @@ const OnboardingSchema: Schema<Ionboarding> = new Schema(
             required: true,
         },
         whatsappNo: {
+            type: String,
+            required: true,
+        },
+        countryCode: {
             type: String,
             required: true,
         },

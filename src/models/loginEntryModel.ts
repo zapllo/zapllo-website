@@ -16,8 +16,9 @@ export interface ILoginEntry extends Document {
 
     // New Fields for Approval
     approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
+    approvedBy?: IUser | mongoose.Types.ObjectId; // Approver's User ID (either manager or orgAdmin)
     approvalRemarks?: string;
-    approvedBy?: mongoose.Types.ObjectId; // Manager's User ID
+
     approvedAt?: Date;
 }
 
@@ -35,7 +36,7 @@ const loginEntrySchema: Schema<ILoginEntry> = new Schema(
         // Approval Fields
         approvalStatus: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
         approvalRemarks: { type: String },
-        approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users' }, // Explicitly reference 'users' collection
         approvedAt: { type: Date },
     },
     { timestamps: true }

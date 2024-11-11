@@ -78,6 +78,8 @@ import CustomAudioPlayer from "./customAudioPlayer";
 import DaysSelectModal from "../modals/DaysSelect";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 import axios from "axios";
 
 interface TaskModalProps {
@@ -664,7 +666,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         setLoading(false);
         toast(<div className=" w-full mb-6 gap-2 m-auto  ">
           <div className="w-full flex   justify-center">
-            <img src="/animations/tick.gif" alt="Custom Icon" className=" h-36" />
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
           </div>
           <h1 className="text-black text-center font-medium text-lg">Task created successfully</h1>
         </div>);

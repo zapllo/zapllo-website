@@ -158,7 +158,7 @@ export default function TaskManagement() {
         <div className='p-4  '>
             {/* <h1 className='text-center text-xl font-bold under'>Task Management</h1> */}
             <div className="fixed bottom-8 right-8 z-50">
-                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-[#b8631f] text-white hover:bg-[#FC8929]  focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" onClick={openModal}>
+                <button className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-[#b8631f] text-white bg-[#FC8929]  focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" onClick={openModal}>
                     <Plus size={24} />
                 </button>
             </div>

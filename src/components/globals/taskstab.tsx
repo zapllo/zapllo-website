@@ -2162,7 +2162,7 @@ export default function TasksTab({
                                           : "bg-[#] hover:bg-[#] "
                                           }`}
                                       >
-                                        <CircleAlert className="text-red-500 h-3" />
+                                        <CircleAlert className="text-red-500 h-4" />
                                         Overdue
                                       </TabsTrigger2>
 
@@ -2174,7 +2174,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <Circle className="text-red-400 h-3" />
+                                        <Circle className="text-red-400 h-4" />
                                         Pending
                                       </TabsTrigger2>
 
@@ -2186,7 +2186,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <IconProgress className="text-orange-500 h-3" />
+                                        <IconProgress className="text-orange-500 h-4" />
                                         In Progress
                                       </TabsTrigger2>
 
@@ -2198,7 +2198,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <CheckCircle className="text-green-500 h-3" />
+                                        <CheckCircle className="text-green-500 h-4" />
                                         Completed
                                       </TabsTrigger2>
 
@@ -2210,7 +2210,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <Clock className="text-green-500 h-3" />
+                                        <Clock className="text-green-500 h-4" />
                                         In Time
                                       </TabsTrigger2>
 
@@ -2222,7 +2222,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <CheckCircle className="text-red-500 h-3" />
+                                        <CheckCircle className="text-red-500 h-4" />
                                         Delayed
                                       </TabsTrigger2>
                                     </TabsList2>
@@ -2253,9 +2253,9 @@ export default function TasksTab({
                                           <div className="flex -ml-1  text-xs mt-2">
                                             <IconClock className="h-5" />
                                             <h1
-                                              className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
+                                              className={`mt-[1.5px]  ${new Date(task.dueDate) < new Date()
                                                 ? "text-red-400"
-                                                : "text-[#E0E0E0]"
+                                                : "text-green-500"
                                                 }`}
                                             >
                                               {formatTaskDate(task.dueDate)}
@@ -2320,7 +2320,7 @@ export default function TasksTab({
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:border-[#007A5A] rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
                                                   <h1 className="text-xs">
@@ -2350,7 +2350,7 @@ export default function TasksTab({
                                                     );
                                                     setIsDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
                                                   <h1 className="text-xs">
@@ -2367,7 +2367,7 @@ export default function TasksTab({
                                                       true
                                                     );
                                                   }}
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-2 px-2 py-3 bg-transparent hover:bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
                                                   <h1 className="text-xs">
@@ -2493,7 +2493,7 @@ export default function TasksTab({
                                   </div>
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"
+                                    className="bg-[#007A5A] hover:border-[#007A5A] mt-4 h-8"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>
@@ -2588,9 +2588,9 @@ export default function TasksTab({
                                           : "bg-[#] hover:bg-[#] "
                                           }`}
                                       >
-                                        <CircleAlert className="text-red-500 h-3" />
+                                        <CircleAlert className="text-red-500 h-4" />
                                         Overdue
-                                      </TabsTrigger2>
+                                      </TabsTrigger2> 
 
                                       {/* Pending Filter */}
                                       <TabsTrigger2
@@ -2600,7 +2600,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <Circle className="text-red-400 h-3" />
+                                        <Circle className="text-red-400 h-4" />
                                         Pending
                                       </TabsTrigger2>
 
@@ -2612,7 +2612,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <IconProgress className="text-orange-500 h-3" />
+                                        <IconProgress className="text-orange-500 h-4" />
                                         In Progress
                                       </TabsTrigger2>
 
@@ -2624,7 +2624,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <CheckCircle className="text-green-500 h-3" />
+                                        <CheckCircle className="text-green-500 h-4" />
                                         Completed
                                       </TabsTrigger2>
 
@@ -2636,7 +2636,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <Clock className="text-green-500 h-3" />
+                                        <Clock className="text-green-500 h-4" />
                                         In Time
                                       </TabsTrigger2>
 
@@ -2648,7 +2648,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <CheckCircle className="text-red-500 h-3" />
+                                        <CheckCircle className="text-red-500 h-4" />
                                         Delayed
                                       </TabsTrigger2>
                                     </TabsList2>
@@ -2746,7 +2746,7 @@ export default function TasksTab({
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:border-[#007A5A] rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
                                                   <h1 className="text-xs">
@@ -2758,7 +2758,7 @@ export default function TasksTab({
                                                   onClick={() =>
                                                     handleDelete(task._id)
                                                   }
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <Trash className="h-4 rounded-full text-red-400" />
                                                   <h1 className="text-xs">
@@ -2776,7 +2776,7 @@ export default function TasksTab({
                                                     );
                                                     setIsDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 hover:bg-transparent bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
                                                   <h1 className="text-xs">
@@ -2793,7 +2793,7 @@ export default function TasksTab({
                                                       true
                                                     );
                                                   }}
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-2 px-2 py-3 hover:bg-transparent bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
                                                   <h1 className="text-xs">
@@ -2915,7 +2915,7 @@ export default function TasksTab({
 
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] hover:bg-[#007A5A] mt-4 h-8"
+                                    className="bg-[#007A5A] hover:border-[#007A5A] mt-4 h-8"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>
@@ -3023,7 +3023,7 @@ export default function TasksTab({
                                           : "bg-[#] hover:bg-[#] "
                                           }`}
                                       >
-                                        <CircleAlert className="text-red-500 h-3" />
+                                        <CircleAlert className="text-red-500 h-4" />
                                         Overdue
                                       </TabsTrigger2>
 
@@ -3035,7 +3035,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <Circle className="text-red-400 h-3" />
+                                        <Circle className="text-red-400 h-4" />
                                         Pending
                                       </TabsTrigger2>
 
@@ -3047,7 +3047,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <IconProgress className="text-orange-500 h-3" />
+                                        <IconProgress className="text-orange-500 h-4" />
                                         In Progress
                                       </TabsTrigger2>
 
@@ -3059,7 +3059,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <CheckCircle className="text-green-500 h-3" />
+                                        <CheckCircle className="text-green-500 h-4" />
                                         Completed
                                       </TabsTrigger2>
 
@@ -3071,7 +3071,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <Clock className="text-green-500 h-3" />
+                                        <Clock className="text-green-500 h-4" />
                                         In Time
                                       </TabsTrigger2>
 
@@ -3083,7 +3083,7 @@ export default function TasksTab({
                                           : ""
                                           }`}
                                       >
-                                        <CheckCircle className="text-red-500 h-3" />
+                                        <CheckCircle className="text-red-500 h-4" />
                                         Delayed
                                       </TabsTrigger2>
                                     </TabsList2>
@@ -3116,7 +3116,7 @@ export default function TasksTab({
                                             <h1
                                               className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
                                                 ? "text-red-400"
-                                                : "text-[#E0E0E0]"
+                                                : "text-[#007A5A]"
                                                 }`}
                                             >
                                               {formatTaskDate(task?.dueDate)}
@@ -3181,7 +3181,7 @@ export default function TasksTab({
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:border-[#007A5A] rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
                                                   <h1 className="text-xs">
@@ -3193,7 +3193,7 @@ export default function TasksTab({
                                                   onClick={() =>
                                                     handleDelete(task._id)
                                                   }
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <Trash className="h-4 rounded-full text-red-400" />
                                                   <h1 className="text-xs">
@@ -3211,7 +3211,7 @@ export default function TasksTab({
                                                     );
                                                     setIsDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-2 h-6 py-3 px-2 hover:bg-transparent bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
                                                   <h1 className="text-xs">
@@ -3228,7 +3228,7 @@ export default function TasksTab({
                                                       true
                                                     );
                                                   }}
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-2 px-2 py-3 hover:bg-transparent bg-transparent h-6 rounded hover:border-[#017a5b] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
                                                   <h1 className="text-xs">

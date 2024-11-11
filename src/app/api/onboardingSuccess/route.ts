@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
         email,
         whatsappNo,
         amount,
+        countryCode,
         planName,
         subscribedUserCount,
     } = await request.json();
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
             companyName,
             industry,
             email,
+            countryCode,
             whatsappNo,
             orderId: razorpay_order_id,
             paymentId: razorpay_payment_id,

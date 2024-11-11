@@ -15,6 +15,7 @@ import {
   CheckCircle,
   Circle,
   CheckCheck,
+  Bell,
 } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
 
@@ -34,7 +35,10 @@ interface Regularization {
   remarks: string;
   approvalStatus?: "Pending" | "Approved" | "Rejected";
   notes?: string;
-  approvedBy?: string;
+  approvedBy?: {
+    firstName: string;
+    lastName: string;
+  };
   approvedAt?: string;
   updatedAt?: string;
 }
@@ -77,7 +81,7 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
         </SheetHeader>
         <div className="border overflow-y-scroll scrollbar-hide h-10/11 p-4 rounded-lg">
           <h1 className="font-bold text-sm px-2">
-            Regularization by {selectedRegularization.userId.firstName}{" "}
+            Regularization by {selectedRegularization.userId?.firstName}{" "}
           </h1>
 
           <div className="flex mt-4 justify-start space-x-12 text-start items-center gap-6 px-2">
@@ -88,7 +92,7 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                 <Label htmlFor="user" className="text-right text-xs mt-1">
                   Applied By
                 </Label>
-                {selectedRegularization.userId.firstName && (
+                {selectedRegularization.userId?.firstName && (
                   <div className="flex gap-2 justify-start ml-11">
                     <div className="h-6 w-6 rounded-full bg-primary">
                       <h1 className="text-center uppercase text-xs mt-1">
@@ -103,28 +107,30 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                   </div>
                 )}
               </div>
-              <div className="flex gap-2">
-                <Label htmlFor="user" className="text-right text-xs mt-1">
-                  Manager
-                </Label>
-                {selectedRegularization.userId.reportingManager ? (
+              {selectedRegularization.approvedBy ? (
+
+                <div className="flex gap-2">
+                  <Label htmlFor="user" className="text-right text-xs mt-1">
+                    Approved By
+                  </Label>
                   <div className="flex gap-2 justify-start">
                     <div className="h-6 w-6 rounded-full bg-primary">
                       <h1 className="text-center uppercase text-xs mt-1">
-                        {selectedRegularization.userId.reportingManager.firstName[0]}
-                        {selectedRegularization.userId.reportingManager.lastName[0]}
+                        {selectedRegularization.approvedBy?.firstName[0]}
+                        {selectedRegularization.approvedBy?.lastName[0]}
                       </h1>
                     </div>
                     <h1
                       id="userName"
                       className="col-span-3 text-sm"
-                    >{`${selectedRegularization.userId.reportingManager.firstName} ${selectedRegularization.userId.reportingManager.lastName}`}</h1>
+                    >{`${selectedRegularization.approvedBy?.firstName} ${selectedRegularization.approvedBy?.lastName}`}</h1>
                   </div>
-                ) : (
-                  <h1 className="text-sm  text-gray-500">N/A</h1>
-                )}
 
-              </div>
+
+                </div>
+              ) : (
+                <h1 className="text-sm  text-gray-500">N/A</h1>
+              )}
             </div>
           </div>
           <div className="flex px-2 mt-2  gap-2">
@@ -225,7 +231,7 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
               <CheckCheck className="h-5" />
               <Label className=" text-md mt-auto">Updates</Label>
             </div>
-            <div className="mt-2 border bg-[#121212] p-2 rounded">
+            <div className="mt-2 border bg-[#121212] p-2 py-8 rounded">
               {selectedRegularization.notes ? (
                 <div className="flex justify-between items-center p-2 rounded">
                   {/* Display remark and approvedBy user */}
@@ -233,17 +239,17 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                     <div className="h-6 w-6 rounded-full bg-primary">
                       <h1 className="text-center uppercase text-xs mt-1">
                         {
-                          selectedRegularization.userId?.reportingManager
+                          selectedRegularization.approvedBy
                             ?.firstName[0]
                         }
                         {
-                          selectedRegularization.userId.reportingManager
+                          selectedRegularization.approvedBy
                             ?.lastName[0]
                         }
                       </h1>
                     </div>
                     <div>
-                      <h1 className="text-sm font-semibold">{`${selectedRegularization.userId.reportingManager?.firstName} ${selectedRegularization.userId.reportingManager?.lastName}`}</h1>
+                      <h1 className="text-sm font-semibold">{`${selectedRegularization.approvedBy?.firstName} ${selectedRegularization.approvedBy?.lastName}`}</h1>
                       <p className="text-xs text-gray-500">
                         {" "}
                         {selectedRegularization.updatedAt
@@ -264,7 +270,14 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500">No remarks provided.</p>
+                <div className='flex justify-center'>
+                <div>
+                    <Bell />
+                    <p className="text-xs mt-2 -ml-10 text-white -500">
+                        No remarks provided.
+                    </p>
+                </div>
+            </div>
               )}
             </div>
           </div>

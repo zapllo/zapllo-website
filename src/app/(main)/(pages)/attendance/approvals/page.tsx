@@ -297,6 +297,8 @@ export default function Approvals() {
     }
   }, []);
 
+
+
   useEffect(() => {
     const fetchApprovals = async () => {
       try {
@@ -665,10 +667,13 @@ export default function Approvals() {
     );
   }
 
+  console.log(regularizations, 'regularizations');
+  console.log(finalFilteredRegularizations, 'filtered');
+
   return (
     <div className="container mx-auto p-6">
       {/* Date Filter Buttons */}
-                  {/* <Toaster /> */}
+      {/* <Toaster /> */}
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setDateFilter("Today")}
@@ -1067,15 +1072,15 @@ export default function Approvals() {
                   <div className="flex items-center gap-4">
                     {/* User Profile Icon */}
                     <div className="h-6 w-6 rounded-full bg-[#7c3987] flex items-center justify-center text-white text-sm">
-                      {reg.userId.firstName[0]}
+                      {reg?.userId?.firstName[0]}
                     </div>
                     <h3 className="text-md text-white">
-                      {reg.userId.firstName}
+                      {reg?.userId?.firstName}
                     </h3>
                     <p className="text-sm text-gray-400">
                       Date:{" "}
                       <span className="text-white">
-                        {format(new Date(reg.timestamp), "MMM d, yyyy")}
+                        {format(new Date(reg?.timestamp), "MMM d, yyyy")}
                       </span>
                     </p>
                   </div>
@@ -1089,7 +1094,7 @@ export default function Approvals() {
                           : "bg-gray-500 text-white"
                       }`}
                   >
-                    {reg.approvalStatus}
+                    {reg?.approvalStatus}
                   </span>
                 </div>
                 {currentUserRole === "orgAdmin" && (

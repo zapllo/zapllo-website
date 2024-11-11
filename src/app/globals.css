@@ -4,6 +4,7 @@
 
 html {
   background-color: #05071E;
+  scroll-behavior: smooth;
   @apply scrollbar-hide;
 }
 
