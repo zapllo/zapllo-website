@@ -24,7 +24,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
         countryCode: 'IN',
         whatsappNo: '',
         selectedPlan,
-        subscribedUserCount: 5, // Changed from quantity to subscribedUserCount
+        subscribedUserCount: 20, // Changed from quantity to subscribedUserCount
         discountCode: 'FREEDOMSALE',
     });
 
@@ -512,6 +512,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 </label>
                             ))}
                         </div>
+
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <h1 className='mb-2'>Select No. of Users</h1>
@@ -539,6 +540,16 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 />
                             </div>
                         </div>
+                        {(formData.selectedPlan === 'Zapllo Tasks' && formData.subscribedUserCount >= 20) ||
+                            (formData.selectedPlan === 'Zapllo Money Saver Bundle' && formData.subscribedUserCount >= 20) ? (
+                            <div className='p-4 border mb-4 rounded-2xl'>
+                                <div className='flex items-center mb-2 gap-2'>
+                                    🎉<h1 className='text-xl text-muted-foreground'>Congratulations, you've unlocked the WhatsApp Marketing Software FREE of cost!</h1>
+                                </div>
+                                <h1 className='text-sm'>The onboarding team will contact you and set this up for absolutely <span className='text-orange-400'>free of cost</span> with 3 done-for-you custom chatbots!</h1>
+                                {/* <p className='mt-2 text-sm text-start'>Your Wallet Bonus: ₹ 10,000</p> */}
+                            </div>
+                        ) : null}
                         <div className='border p-3 grid grid-cols-2 w-full gap-2 rounded-2xl'>
                             <div className='p-2 space-y-6'>
                                 <p>Total Price: ₹{(plans[formData.selectedPlan] * 2).toLocaleString()} X {formData.subscribedUserCount} employees = ₹{totalPrice.toLocaleString()}</p>

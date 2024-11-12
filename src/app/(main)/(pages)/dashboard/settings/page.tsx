@@ -51,6 +51,7 @@ export default function Page() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dueTime, setDueTime] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     // Fetch categories from the server
@@ -71,7 +72,7 @@ export default function Page() {
     fetchCategories();
   }, []);
 
- 
+
 
   console.log(emailNotifications, whatsappNotifications, 'true fal')
 
@@ -192,7 +193,8 @@ export default function Page() {
         email: emailNotifications,
         whatsapp: whatsappNotifications,
       });
-      alert("Settings updated");
+      toast.success("Settings updated");
+      setSettingsOpen(false);
     } catch (error) {
       console.error("Failed to update settings", error);
       alert("Failed to update settings");
@@ -312,7 +314,7 @@ export default function Page() {
       <div className=" mt-4 bg-[#0A0D28] p-2 border rounded ">
         <h1 className="text-sm">Task App Settings</h1>
       </div>
-      <Dialog>
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DialogTrigger>
           <div className="mb-2 bg-[#007A5A]  mt-2 px-4 w-full m border rounded py-2">
             <h1 className=" text-xs w-full">Notifications & Reminders</h1>

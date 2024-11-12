@@ -66,6 +66,7 @@ interface Leave {
     _id: string;
   };
   leaveReason: string;
+  createdAt: string; // Add createdAt field
   updatedAt: string;
 }
 
@@ -201,7 +202,7 @@ const MyLeaves: React.FC = () => {
       case "today":
         dateFilteredLeaves = leaves.filter(
           (leave) =>
-            normalizeDate(new Date(leave.fromDate)).getTime() ===
+            normalizeDate(new Date(leave.createdAt)).getTime() ===
             todayNormalized.getTime()
         );
         break;
@@ -209,7 +210,7 @@ const MyLeaves: React.FC = () => {
         const thisWeekStart = new Date(today);
         thisWeekStart.setDate(today.getDate() - today.getDay());
         dateFilteredLeaves = leaves.filter((leave) => {
-          const leaveDate = normalizeDate(new Date(leave.fromDate));
+          const leaveDate = normalizeDate(new Date(leave.createdAt));
           return (
             leaveDate >= normalizeDate(thisWeekStart) &&
             leaveDate <= todayNormalized
@@ -218,13 +219,13 @@ const MyLeaves: React.FC = () => {
         break;
       case "thisMonth":
         dateFilteredLeaves = leaves.filter((leave) => {
-          const leaveDate = normalizeDate(new Date(leave.fromDate));
+          const leaveDate = normalizeDate(new Date(leave.createdAt));
           return leaveDate >= thisMonthStart && leaveDate <= thisMonthEnd;
         });
         break;
       case "lastMonth":
         dateFilteredLeaves = leaves.filter((leave) => {
-          const leaveDate = normalizeDate(new Date(leave.fromDate));
+          const leaveDate = normalizeDate(new Date(leave.createdAt));
           return leaveDate >= lastMonthStart && leaveDate <= lastMonthEnd;
         });
         break;
@@ -233,7 +234,7 @@ const MyLeaves: React.FC = () => {
           const startNormalized = normalizeDate(customDateRange.start);
           const endNormalized = normalizeDate(customDateRange.end);
           dateFilteredLeaves = leaves.filter((leave) => {
-            const leaveDate = normalizeDate(new Date(leave.fromDate));
+            const leaveDate = normalizeDate(new Date(leave.createdAt));
             return leaveDate >= startNormalized && leaveDate <= endNormalized;
           });
         }

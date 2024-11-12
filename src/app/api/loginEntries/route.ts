@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'; // Add this line
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import LoginEntry from '@/models/loginEntryModel';
 import { getDataFromToken } from '@/helper/getDataFromToken';
@@ -8,30 +8,49 @@ export async function GET(request: NextRequest) {
     try {
         const userId = await getDataFromToken(request);
 
-        // Fetch all login entries for the user and populate the user and their reporting manager information
-        const entries = await LoginEntry.find({ userId }).populate({
-            path: 'userId', // Populate the `userId` field to get user's firstName, lastName
-            select: 'firstName lastName reportingManager', // Include `reportingManager` in the population
-            populate: {
-                path: 'reportingManager', // Populate the `reportingManager` field within the `userId`
-                select: 'firstName lastName', // Select only `firstName` and `lastName` of the reporting manager
-            },
-        }).sort({ createdAt: -1 }).exec();
+        // Fetch all login entries for the user, populate `userId` and `reportingManager`
+        const entries = await LoginEntry.find({ userId })
+            .populate({
+                path: 'userId',
+                select: 'firstName lastName reportingManager',
+                populate: {
+                    path: 'reportingManager',
+                    select: 'firstName lastName',
+                },
+            })
+            .sort({ createdAt: -1 })
+            .exec();
 
-        // Ensure timestamp is returned as an ISO string in UTC
-        const formattedEntries = entries.map((entry) => {
-            const populatedUser = entry.userId as IUser; // Type assertion to IUser (because of .populate)
+        // Populate `approvedBy` only for entries with action 'regularization'
+        const populatedEntries = await Promise.all(entries.map(async (entry) => {
+            if (entry.action === 'regularization') {
+                await entry.populate({ path: 'approvedBy', select: 'firstName lastName' });
+            }
+            return entry;
+        }));
+
+        // Format entries to ensure timestamp is in ISO and populate necessary fields
+        const formattedEntries = populatedEntries.map((entry) => {
+            const populatedUser = entry.userId as IUser;
             return {
-                ...entry.toObject(), // Convert Mongoose Document to plain JS object
-                timestamp: new Date(entry.timestamp).toISOString(), // Convert to ISO string for uniformity
+                ...entry.toObject(),
+                timestamp: new Date(entry.timestamp).toISOString(),
                 userId: {
                     firstName: populatedUser.firstName,
                     lastName: populatedUser.lastName,
-                    reportingManager: populatedUser.reportingManager ? {
-                        firstName: (populatedUser.reportingManager as unknown as IUser)?.firstName,
-                        lastName: (populatedUser.reportingManager as unknown as IUser)?.lastName,
-                    } : null, // If the user has a reporting manager, include their info
+                    reportingManager: populatedUser.reportingManager
+                        ? {
+                              firstName: (populatedUser.reportingManager as unknown as IUser).firstName,
+                              lastName: (populatedUser.reportingManager as unknown as IUser).lastName,
+                          }
+                        : null,
                 },
+                approvedBy: entry.approvedBy
+                    ? {
+                          firstName: (entry.approvedBy as IUser).firstName,
+                          lastName: (entry.approvedBy as IUser).lastName,
+                      }
+                    : null,
             };
         });
 

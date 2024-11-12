@@ -765,8 +765,11 @@ export default function MyAttendance() {
     setSelectedRegularization(null);
   };
 
+  console.log(selectedRegularization, 'reg')
+
   const renderRegularizationEntries = () => {
     const regularizationEntries = filterRegularizationEntries(filteredEntries);
+    console.log(regularizationEntries, ' entries check');
 
     return (
       <>

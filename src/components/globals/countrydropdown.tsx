@@ -135,7 +135,7 @@ const CountryDrop: React.FC<CountryDropProps> = ({ selectedCountry, onCountrySel
     return (
         <div>
             <label className="block my-4 relative">
-                <span className="absolute text-xs -mt-2 bg-[#000100] ml-2 z-[100]">Country</span>
+                <span className="absolute text-xs -mt-2 bg-[#000100] text-[#787CA5] ml-2 z-[100]">Country</span>
                 <CustomDropdown
                     options={countries}
                     selectedValue={selectedOption}

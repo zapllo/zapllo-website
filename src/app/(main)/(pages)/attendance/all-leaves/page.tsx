@@ -105,6 +105,7 @@ interface Leave {
     lastName: string;
     _id: string;
   };
+  createdAt: string; // Add createdAt field
   updatedAt: string;
 }
 
@@ -327,7 +328,7 @@ export default function AllLeaves() {
     );
 
     return entries.filter((entry) => {
-      const entryDate = new Date(entry.fromDate);
+      const entryDate = new Date(entry.createdAt);
 
       switch (dateFilter) {
         case "Today":

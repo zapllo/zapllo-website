@@ -53,26 +53,28 @@ const sendTicketCreationEmail = async (ticketData: any) => {
         text: "New Ticket Created",
         subject: "New Ticket Created",
         html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-            <div style="background-color: #f0f4f8; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                    <div style="text-align: center; padding: 20px;">
-                        <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
-                    </div>     
-                       <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
-                        <h1 style="margin: 0; color: #ffffff;">New Ticket Created</h1>
-                    </div>
+    <div style="background-color: #f0f4f8; padding: 20px; ">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <div style="padding: 20px; text-align: center;">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>
+          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+    <h1 style="margin: 0; font-size: 20px;">New Ticket Created</h1>
+</div>
                     <div style="padding: 20px;">
                         <p>Dear ${ticketData.customerName},</p>
                         <p>Thank you for reaching out to us! Your support ticket has been successfully created. Our team will review your request and reply as soon as possible.</p>
+                         <div style="border-radius:8px; margin-top:4px; color:#000000; padding:10px; background-color:#ECF1F6">
                         <p><strong>Ticket ID:</strong> #${ticketData.ticketId}</p>
                         <p><strong>Date Created:</strong> ${formatDate(ticketData.createdAt)}</p>
                         <p><strong>Issue:</strong> ${ticketData.issue}</p>
                         <p><strong>Description:</strong> ${ticketData.description}</p>
+                        </div>
                         <p>We appreciate your patience while we work to resolve your inquiry.</p>
                         <div style="text-align: center; margin-top: 20px;">
-                            <a href="https://zapllo.com/help/tickets" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Ticket</a>
+                            <a href="https://zapllo.com/help/tickets" style="background-color: #0C874B; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Ticket</a>
                         </div>
-                        <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                        <p style="margin-top:20px; text-align:center; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
                     </div>
                 </div>
             </div>

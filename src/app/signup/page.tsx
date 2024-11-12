@@ -14,7 +14,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Meteors from "@/components/magicui/meteors";
 import Loader from "@/components/ui/loader";
-import { getCountryCallingCode } from "libphonenumber-js";
+import { AsYouType, CountryCode, getCountryCallingCode } from 'libphonenumber-js';
+import { getData as getCountryData } from 'country-list';
+import Flag from "react-world-flags";
+
+interface Country {
+  code: CountryCode;
+  name: string;
+}
 
 export default function SignupPage() {
   const router = useRouter();
@@ -41,7 +48,7 @@ export default function SignupPage() {
     teamSize: "",
     description: "",
     categories: [],
-    country: "", // Initialize country
+    country: "IN", // Initialize country
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -49,7 +56,26 @@ export default function SignupPage() {
   const [emailError, setEmailError] = useState<string>("");
   const [countryCode, setCountryCode] = useState('+91'); // Default country code for India
   const [selectedCountry, setSelectedCountry] = useState(organization?.country || "IN");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [countries, setCountries] = useState<Country[]>([]);
 
+
+  useEffect(() => {
+    const countryList = getCountryData()
+      .map(country => ({
+        code: country.code as CountryCode,
+        name: country.name,
+      }))
+      .filter(country => {
+        try {
+          return getCountryCallingCode(country.code);
+        } catch {
+          return false;
+        }
+      });
+    setCountries(countryList);
+  }, []);
 
   // Handle category selection
   const handlenOnCategorySelect = (category: string) => {
@@ -71,16 +97,17 @@ export default function SignupPage() {
   const toggleConfirmPasswordVisibility = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
-  // Handler to receive selected country code from CountryDrop
-  const handleCountrySelect = (countryCode: any) => {
-    const phoneCode = getCountryCallingCode(countryCode);
+  const handleCountryChange = (code: CountryCode) => {
+    const phoneCode = getCountryCallingCode(code);
     setCountryCode(`+${phoneCode}`);
-    setSelectedCountry(countryCode);
+    setSelectedCountry(code);
     setOrganization(prevOrg => ({
       ...prevOrg,
-      country: countryCode,
+      country: code,
     }));
+    setIsDropdownOpen(false);
   };
+
 
 
 
@@ -136,6 +163,10 @@ export default function SignupPage() {
     }
   };
 
+  const filteredCountries = countries.filter(country =>
+    country.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
 
   return (
@@ -144,7 +175,7 @@ export default function SignupPage() {
         <div className="z-10 bg-[#04071F]">
           <Meteors number={30} />
         </div>
-                    {/* <Toaster /> */} {/* Sonner toaster for notifications */}
+        {/* <Toaster /> */} {/* Sonner toaster for notifications */}
         <div className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           {showOrganizationForm ? (
             <ArrowLeft
@@ -165,7 +196,7 @@ export default function SignupPage() {
               {/* Organization Form */}
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                 <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  <h1 className="text-xs absolute ml-2 bg-[#000101]  text-[#D4D4D4]">
                     Company Name
                   </h1>
                   <Input
@@ -178,7 +209,6 @@ export default function SignupPage() {
                         companyName: e.target.value,
                       })
                     }
-                    placeholder="Company Name"
                   />
                 </LabelInputContainer>
               </div>
@@ -192,9 +222,9 @@ export default function SignupPage() {
                       industry: e.target.value,
                     })
                   }
-                  className="input py-3 px-2 text-sm outline-none rounded-md border"
+                  className="input py-3 px-2 text-white text-sm outline-none rounded-md border"
                 >
-                  <option value="" disabled>
+                  <option value="" className=" text-[#787CA5]" disabled>
                     Select Industry
                   </option>
                   <option value="Retail/E-Commerce">Retail/E-Commerce</option>
@@ -239,7 +269,7 @@ export default function SignupPage() {
                 </select>
               </LabelInputContainer>
               <LabelInputContainer className="mb-8">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
                   Company Description
                 </h1>
                 <Textarea
@@ -341,12 +371,13 @@ export default function SignupPage() {
               {/* User Signup Form */}
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                 <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
                     First name
                   </h1>
                   <Input
                     id="firstName"
                     type="text"
+                    className="text-white"
                     value={user.firstName}
                     onChange={(e) =>
                       setUser({ ...user, firstName: e.target.value })
@@ -355,7 +386,7 @@ export default function SignupPage() {
                   />
                 </LabelInputContainer>
                 <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                  <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
                     Last name
                   </h1>
                   <Input
@@ -370,7 +401,7 @@ export default function SignupPage() {
                 </LabelInputContainer>
               </div>
               <LabelInputContainer className="mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
                   Email address
                 </h1>
                 <Input
@@ -382,7 +413,7 @@ export default function SignupPage() {
                 />
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">Password</h1>
+                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">Password</h1>
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -396,11 +427,11 @@ export default function SignupPage() {
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={togglePasswordVisibility}
                 >
-                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                  {showPassword ? <Eye className=" text-[#D4D4D4]" size={18} /> : <EyeOff className="  text-[#D4D4D4]" size={18} />}
                 </div>
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
                   Confirm Password
                 </h1>
                 <Input
@@ -417,22 +448,52 @@ export default function SignupPage() {
                   onClick={toggleConfirmPasswordVisibility}
                 >
                   {showConfirmPassword ? (
-                    <Eye size={18} />
+                    <Eye size={18} className=" text-[#D4D4D4]" />
                   ) : (
-                    <EyeOff size={18} />
+                    <EyeOff size={18} className=" text-[#D4D4D4]" />
                   )}
                 </div>
               </LabelInputContainer>
-              <CountryDrop
-                selectedCountry={selectedCountry}
-                onCountrySelect={handleCountrySelect}
-              />
+              <div  className="flex  relative mb-2">
+                <div onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex w-full  items-center cursor-pointer bg-[#04071f]  border rounded  p-3 relative"
+                  
+                >
+                  <Flag code={selectedCountry} className="w-6 h-4 mr-2" />
+                  <button className="bg-[#04071f] text-white w-full text-left text-sm focus:outline-none">
+                    {countries.find(country => country.code === selectedCountry)?.name || "Select Country"}
+                  </button>
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute left-0 top-full  w-full max-h-60 overflow-y-auto bg-black p-2 border  rounded z-50">
+                    <input
+                      type="text"
+                      placeholder="Search Country"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="p-2 mb-2 w-full text-sm text-white outline-none border rounded"
+                    />
+                    {filteredCountries.map(country => (
+                      <div
+                        key={country.code}
+                        className="flex items-center p-2 text-sm cursor-pointer hover:bg-[#04061E] text-white"
+                        onClick={() => handleCountryChange(country.code)}
+                      >
+                        <Flag code={country.code} className="w-6 h-4 mr-2" />
+                        {country.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <LabelInputContainer className="mb-8">
-                <h1 className="text-xs absolute ml-2 bg-[#000101]">
+                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
                   Whatsapp No
                 </h1>
                 <div className="flex  ">
-                  <span className="py-3 h-10 px-2  bg-[#0A0D28] rounded-l   text-xs">{countryCode}</span>
+                  <span className="py-3 h-10 px-2  bg-[#0A0D28] text-[#D4D4D4] rounded-l   text-xs">{countryCode}</span>
                   <Input
                     id="whatsappNo"
                     type="text"

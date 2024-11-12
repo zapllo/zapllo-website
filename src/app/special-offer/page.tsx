@@ -155,13 +155,15 @@ export default function Home() {
                         >
                             Zapllo Tasks
                         </h2>
+                        <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                            ₹4000
+                        </p>
 
                         <div className="flex items-end mt-4">
                             <p
                                 className="text-5xl font-semibold"
-
                             >
-                                ₹4000
+                                ₹1999
                             </p>
                             <span
                                 className="ml-2 text-lg"
@@ -233,25 +235,21 @@ export default function Home() {
                                 width: "100%",
                             }}
                         ></div>
-                        <p
-                            className="text-center mt-2 line-through"
-                            style={{
-                                fontSize: "16px",
-                                fontWeight: "400",
-                                lineHeight: "24px",
-                                color: "#F13535",
-                            }}
-                        >
+                        {/* Original Price */}
+                        <p className="text-center text-sm mt-2 line-through text-[#F13535]" style={{}}>
                             ₹4000 per user per year
+                        </p>
+                        <p className="text-center mt-2   text-green-400" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
+                            Today&apos;s Offer - ₹1999 per user per year
                         </p>
                         <button onClick={() => openCheckoutWithPlan('Zapllo Tasks')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold   transition-colors">
                             Get Task Delegation App
                         </button>
                     </div>
                     {/* Middle Card */}
-                    <div className="p-[2px] bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-[50px]">
+                    <div className="p-[2px]  bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-[50px]">
                         <div
-                            className="bg-white rounded-[50px] h-full mb-12 w-full p-8 text-[#05071E] relative z-20 shadow-lg"
+                            className="bg-white mb-8 rounded-[50px] h-full  w-full p-8 text-[#05071E] relative z-20 shadow-lg"
                         >
                             {/* Discount Tag */}
                             <div className="absolute  -top-0 right-0 bg-gradient-to-r from-[#815BF5] to-[#FC8929] px-4 py-1 w-32 rounded-[0_50px_0_20px] text-sm  font-thin text-white">
@@ -262,10 +260,12 @@ export default function Home() {
                             <h2 className="font-golosText text-lg mt-4">
                                 Zapllo Money Saver Bundle
                             </h2>
-
+                            <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                                ₹6000
+                            </p>
                             {/* Price */}
                             <div className="flex items-end mt-4">
-                                <p className="text-5xl font-bold">₹6000</p>
+                                <p className="text-5xl font-bold">₹2999</p>
                                 <span className="ml-2 text-lg text-[#676B93]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
                                     / per user per year
                                 </span>
@@ -299,13 +299,20 @@ export default function Home() {
                             <div className="mt-4 border-t border-[#424882]"></div>
 
                             {/* Original Price */}
-                            <p className="text-center mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                            <p className="text-center text-sm mt-2 line-through text-[#F13535]" style={{}}>
                                 ₹12000 per user per year
                             </p>
+                            <p className="text-center text-sm mt-2 line-through text-[#F13535]" style={{}}>
+                                Today&apos;s Offer - ₹5999 per user per year
+                            </p>
+                            <p className="text-center mt-2   text-green-600" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
+                                Zapllo Freedom Offer - ₹2999 per user per year
+                            </p>
+
 
                             {/* CTA Button */}
                             <button
-                                className="mt-6 w-full py-3 rounded-full font-semibold text-white"
+                                className="mt-8 w-full py-3 rounded-full font-semibold text-white"
                                 onClick={() => openCheckoutWithPlan('Zapllo Money Saver Bundle')}
                                 style={{
                                     background: "radial-gradient(51.84% 97.12% at 50% 100%, #A587FF 0%, #5E29FF 100%)",
@@ -323,18 +330,22 @@ export default function Home() {
                             Get Flat 50% OFF
                         </div>
                         {/* <h2 className="text-2xl font-bold mt-4">Zapllo Payroll</h2> */}
+
                         <h2
                             className=" text-lg mt-4"
 
                         >
                             Zapllo Payroll
                         </h2>
+                        <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                            ₹2000
+                        </p>
                         <div className="flex items-end mt-4">
                             <p
                                 className="text-5xl font-semibold"
 
                             >
-                                ₹2000
+                                ₹999
                             </p>
                             <span
                                 className="ml-2 text-lg"
@@ -415,7 +426,10 @@ export default function Home() {
                                 color: "#F13535",
                             }}
                         >
-                            ₹6000 per user per year
+                            ₹2000 per user per year
+                        </p>
+                        <p className="text-center mt-2   text-green-400" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
+                            Today&apos;s Offer - ₹999 per user per year
                         </p>
 
                         <button onClick={() => openCheckoutWithPlan('Zapllo Payroll')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold transition-colors">
@@ -1103,7 +1117,6 @@ export default function Home() {
 
             {/* Pricing Cards */}
             <div className="mt-12 bg-[#05071E]  mx-4 flex flex-col items-center gap-8">
-
                 <div className="grid grid-cols-3 w-full max-w-7xl   justify-center gap-12 relative">
                     {/* Left Card */}
                     <div className="bg-[#0A0D28] mt-8 border rounded-[50px_50px_50px_50px] w-full   p-6 text-white relative z-10 shadow-lg">
@@ -1117,13 +1130,15 @@ export default function Home() {
                         >
                             Zapllo Tasks
                         </h2>
+                        <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                            ₹4000
+                        </p>
 
                         <div className="flex items-end mt-4">
                             <p
                                 className="text-5xl font-semibold"
-
                             >
-                                ₹4000
+                                ₹1999
                             </p>
                             <span
                                 className="ml-2 text-lg"
@@ -1195,25 +1210,21 @@ export default function Home() {
                                 width: "100%",
                             }}
                         ></div>
-                        <p
-                            className="text-center mt-2 line-through"
-                            style={{
-                                fontSize: "16px",
-                                fontWeight: "400",
-                                lineHeight: "24px",
-                                color: "#F13535",
-                            }}
-                        >
+                        {/* Original Price */}
+                        <p className="text-center text-sm mt-2 line-through text-[#F13535]" style={{}}>
                             ₹4000 per user per year
+                        </p>
+                        <p className="text-center mt-2   text-green-400" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
+                            Today&apos;s Offer - ₹1999 per user per year
                         </p>
                         <button onClick={() => openCheckoutWithPlan('Zapllo Tasks')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold   transition-colors">
                             Get Task Delegation App
                         </button>
                     </div>
                     {/* Middle Card */}
-                    <div className="p-[2px] bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-[50px]">
+                    <div className="p-[2px]  bg-gradient-to-r from-[#815BF5] to-[#FC8929] rounded-[50px]">
                         <div
-                            className="bg-white rounded-[50px] h-full mb-12 w-full p-8 text-[#05071E] relative z-20 shadow-lg"
+                            className="bg-white mb-8 rounded-[50px] h-full  w-full p-8 text-[#05071E] relative z-20 shadow-lg"
                         >
                             {/* Discount Tag */}
                             <div className="absolute  -top-0 right-0 bg-gradient-to-r from-[#815BF5] to-[#FC8929] px-4 py-1 w-32 rounded-[0_50px_0_20px] text-sm  font-thin text-white">
@@ -1224,10 +1235,12 @@ export default function Home() {
                             <h2 className="font-golosText text-lg mt-4">
                                 Zapllo Money Saver Bundle
                             </h2>
-
+                            <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                                ₹6000
+                            </p>
                             {/* Price */}
                             <div className="flex items-end mt-4">
-                                <p className="text-5xl font-bold">₹6000</p>
+                                <p className="text-5xl font-bold">₹2999</p>
                                 <span className="ml-2 text-lg text-[#676B93]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
                                     / per user per year
                                 </span>
@@ -1261,13 +1274,20 @@ export default function Home() {
                             <div className="mt-4 border-t border-[#424882]"></div>
 
                             {/* Original Price */}
-                            <p className="text-center mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                            <p className="text-center text-sm mt-2 line-through text-[#F13535]" style={{}}>
                                 ₹12000 per user per year
                             </p>
+                            <p className="text-center text-sm mt-2 line-through text-[#F13535]" style={{}}>
+                                Today&apos;s Offer - ₹5999 per user per year
+                            </p>
+                            <p className="text-center mt-2   text-green-600" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
+                                Zapllo Freedom Offer - ₹2999 per user per year
+                            </p>
+
 
                             {/* CTA Button */}
                             <button
-                                className="mt-6 w-full py-3 rounded-full font-semibold text-white"
+                                className="mt-8 w-full py-3 rounded-full font-semibold text-white"
                                 onClick={() => openCheckoutWithPlan('Zapllo Money Saver Bundle')}
                                 style={{
                                     background: "radial-gradient(51.84% 97.12% at 50% 100%, #A587FF 0%, #5E29FF 100%)",
@@ -1285,18 +1305,22 @@ export default function Home() {
                             Get Flat 50% OFF
                         </div>
                         {/* <h2 className="text-2xl font-bold mt-4">Zapllo Payroll</h2> */}
+
                         <h2
                             className=" text-lg mt-4"
 
                         >
                             Zapllo Payroll
                         </h2>
+                        <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
+                            ₹2000
+                        </p>
                         <div className="flex items-end mt-4">
                             <p
                                 className="text-5xl font-semibold"
 
                             >
-                                ₹2000
+                                ₹999
                             </p>
                             <span
                                 className="ml-2 text-lg"
@@ -1377,7 +1401,10 @@ export default function Home() {
                                 color: "#F13535",
                             }}
                         >
-                            ₹6000 per user per year
+                            ₹2000 per user per year
+                        </p>
+                        <p className="text-center mt-2   text-green-400" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
+                            Today&apos;s Offer - ₹999 per user per year
                         </p>
 
                         <button onClick={() => openCheckoutWithPlan('Zapllo Payroll')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold transition-colors">

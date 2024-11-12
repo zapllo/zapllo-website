@@ -61,8 +61,10 @@ export async function PATCH(request: NextRequest) {
     if (reportingManager) userToEdit.reportingManager = reportingManager;  // Update the reportingManager
     if (country) userToEdit.country = country;  // Update country
     // Set or update access fields
-    if (isLeaveAccess) userToEdit.isLeaveAccess = isLeaveAccess;
-    if (isTaskAccess) userToEdit.isTaskAccess = isTaskAccess;
+    // Set or update access fields
+    userToEdit.isLeaveAccess = typeof isLeaveAccess !== "undefined" ? isLeaveAccess : userToEdit.isLeaveAccess;
+    userToEdit.isTaskAccess = typeof isTaskAccess !== "undefined" ? isTaskAccess : userToEdit.isTaskAccess;
+
 
     await userToEdit.save();
 

@@ -87,7 +87,7 @@ export default function LoginPage() {
                     </p>
                     <div className="my-8">
                         <LabelInputContainer className="mb-4">
-                            <h1 className="text-xs absolute ml-2 bg-[#000101] ">Email address</h1>
+                            <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4] ">Email address</h1>
 
                             <Input
                                 id="email"
@@ -99,7 +99,7 @@ export default function LoginPage() {
                             />
                         </LabelInputContainer>
                         <LabelInputContainer className="relative mb-4">
-                            <h1 className="text-xs absolute ml-2 bg-[#000101] ">Password</h1>
+                            <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4] ">Password</h1>
                             <Input
                                 id="password"
                                 placeholder="Enter password"
@@ -111,7 +111,7 @@ export default function LoginPage() {
                                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                                 onClick={togglePasswordVisibility}
                             >
-                                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                {showPassword ? <Eye className=" text-[#787CA5]" size={18} /> : <EyeOff className=" text-[#787CA5]" size={18} />}
                             </div>
                         </LabelInputContainer>
                         <button

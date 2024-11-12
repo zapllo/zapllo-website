@@ -102,28 +102,29 @@ export async function POST(request: NextRequest) {
                 subject: "New Task Assigned",
                 text: `Zapllo`,
                 html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-    <div style="background-color: #f0f4f8; padding: 20px;">
+    <div style="background-color: #f0f4f8; padding: 20px; ">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <div style="text-align: center; padding: 20px;">
+            <div style="padding: 20px; text-align: center;">
                 <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
-           <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px; text-align: center;">
-    <h1 style="margin: 0;">New Task Assigned</h1>
+          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+    <h1 style="margin: 0; font-size: 20px;">New Task Assigned</h1>
 </div>
-
             <div style="padding: 20px;">
                 <p><strong> Dear ${assignedUser.firstName} </strong></p>
                 <p>A new task has been assigned to you, given below are the task details:</p>
+                <div style="border-radius:8px; margin-top:4px; color:#000000; padding:10px; background-color:#ECF1F6">
                 <p><strong>Title:</strong> ${savedTask.title}</p>
                 <p><strong>Description:</strong> ${savedTask.description}</p>
                 <p><strong>Due Date:</strong> ${formatDate(savedTask.dueDate)}</p>
                 <p><strong>Assigned By:</strong> ${authenticatedUser.firstName}</p>
                 <p><strong>Category:</strong> ${category.name}</p>
                 <p><strong>Priority:</strong> ${savedTask.priority}</p>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="https://zapllo.com/dashboard/tasks" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="https://zapllo.com/dashboard/tasks" style="background-color: #0C874B; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
+                </div>
+                <p style="margin-top: 20px; text-align: center; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
             </div>
         </div>
     </div>

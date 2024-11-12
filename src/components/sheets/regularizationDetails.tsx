@@ -271,13 +271,13 @@ const RegularizationDetails: React.FC<RegularizationDetailsProps> = ({
                 </div>
               ) : (
                 <div className='flex justify-center'>
-                <div>
+                  <div>
                     <Bell />
                     <p className="text-xs mt-2 -ml-10 text-white -500">
-                        No remarks provided.
+                      No remarks provided.
                     </p>
+                  </div>
                 </div>
-            </div>
               )}
             </div>
           </div>

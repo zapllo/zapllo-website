@@ -217,7 +217,11 @@ export default function TeamTabs() {
 
       if (data.success) {
         // Add the new user to the list
-        setUsers([...users, data.user]);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user._id === editedUser._id ? data.user : user
+          )
+        );
         // Close the modal
         setIsModalOpen(false);
         setErrorMessage(""); // Clear any existing error message
@@ -329,6 +333,8 @@ export default function TeamTabs() {
     }
   };
 
+
+
   const handleDeleteUser = async () => {
     if (!selectedUser) return;
 
@@ -373,9 +379,11 @@ export default function TeamTabs() {
   //     fetchReportingManagerName(selectedUser.reportingManager);
   //   }
   // }, [selectedUser]);
+
+  console.log(editedUser, 'edited user')
   return (
-    <div className="w-full max-w-5xl overflow-y-scroll h-[550px] mb-12  scrollbar-hide mt-16 mx-auto">
-                  {/* <Toaster /> */}
+    <div className="w-full max-w-5xl overflow-y-scroll overflow-x-hidden h-[550px] mb-12  scrollbar-hide mt-16 mx-auto">
+      {/* <Toaster /> */}
       <div className="gap-2 ml-44  mb-6 w-full">
         <div className="flex mt-4  gap-2 mb-4">
           <div>
@@ -410,7 +418,7 @@ export default function TeamTabs() {
               {loggedInUserRole === "orgAdmin" && (
                 <DialogTrigger asChild>
                   <Button size="sm" className="ml-4 bg-[#04061E] border hover:bg-[#] gap-2" onClick={() => setIsModalOpen(true)}>
-                  <Plus className="h-5" />  Add Member </Button>
+                    <Plus className="h-5" />  Add Member </Button>
                 </DialogTrigger>
               )}
               <DialogContent className="p-6 m-auto  overflow-y-scroll scrollbar-hide z-[100]">

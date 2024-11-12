@@ -241,60 +241,60 @@ export async function POST(request: NextRequest) {
 
     if (authenticatedUser) {
       templateName = 'loginsuccessmember'; // Template for new member
-      emailSubject = `Business Workspace Invitation to Team - ${organization.companyName}!`;
+      emailSubject = `Business Workspace Invitation to Team - ${organization.companyName}`;
       emailText = `Dear ${reqBody.firstName},\n\nYou've been added to ${organization.companyName} on Zapllo! ...`;
       emailHtml = `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
     <div style="background-color: #f0f4f8; padding: 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <div style="padding: 20px; text-align: center;">
+         <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+        </div>
+        <div style="padding: 20px;">
+          <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1731423673/01_xlguy8.png" alt="Team Illustration" style="max-width: 100%; height: auto;">
+        </div>
+        <h1 style="font-size: 24px; margin: 0; padding: 10px 20px; color: #000000;">Welcome to Team - ${organization.companyName}</h1>
+        <div style="padding: 20px;">
+          <p>We are excited to have you on board. Here are your account details:</p>
+          <p>Name:<strong> ${reqBody.firstName} ${reqBody.lastName}</strong></p>
+          <p>Email:<strong> <a href="mailto:${email}" style="color: #1a73e8;">${email}</a></strong></p>
+          <p>Password:<strong> ${password}</strong></p>
+          <p>WhatsApp Number:<strong> ${whatsappNo}</strong></p>
+          <p>Role:<strong> ${newUserRole}</strong></p>
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="https://zapllo.com/login" style="background-color: #0C874B; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
+          </div>
+          <p style="margin-top: 20px; font-size: 12px;  text-align: center; color: #888888;">This is an automated notification. Please do not reply.</p>
+        </div>
+      </div>
+    </div>
+  </body>`;
+    } else {
+      templateName = 'loginsuccessadmin'; // Template for new orgAdmin 1st message with heading and no illustration
+      emailSubject = `Business Workspace Creation for Team - ${organization.companyName}!`;
+      emailText = `Dear ${reqBody.firstName},\n\nThank you for signing up at Zapllo! ...`;
+      emailHtml = `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+    <div style="background-color: #f0f4f8; padding: 20px; text-align: center;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <div style="text-align: center; padding: 20px;">
+            <div style="padding: 20px; text-align: center;">
                 <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
-            <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px;  text-align: center;">
-                <h1 style="margin: 0;">Welcome to Team - ${organization.companyName}!</h1>
-            </div>
-            <div style="padding: 20px;">
-                <p>We are excited to have you on board. Here are your account details:</p>
-                <p><strong>First Name:</strong> ${reqBody.firstName}</p>
-                <p><strong>Last Name:</strong>${reqBody.lastName}</p>
-                <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #1a73e8;">${email}</a></p>
-                <p><strong>Password:</strong> ${password}</p>
-                <p><strong>WhatsApp Number:</strong> ${whatsappNo}</p>
-                <p><strong>Role:</strong> ${newUserRole}</p>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="https://zapllo.com/login" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
+          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+    <h1 style="margin: 0; font-size: 20px;">New Workspace Created</h1>
+</div>
+            <div style="padding: 20px; text-align: left;">
+                <p>Dear <strong>${reqBody.firstName},</strong></p>
+                <p>You have created your Workspace - ${organization.companyName}</p>
+                <p>We have started a FREE Trial for your account which is valid till <strong>${formattedTrialExpires}</strong>.</p>
+                <p>In the trial period, you can invite up to 100 team members to try out how the app works.</p>
+                <p>Login to the app now and start Delegating Now!</p>
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="https://zapllo.com/login" style="background-color: #0C874B; color: #ffffff; padding: 12px 24px; font-size: 16px; text-decoration: none; border-radius: 5px; font-weight: bold;">Login</a>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                <p style="margin-top: 20px; font-size: 12px; color: #888888; text-align: center;">This is an automated notification. Please do not reply.</p>
             </div>
         </div>
     </div>
 </body>`;
-    } else {
-      templateName = 'loginsuccessadmin'; // Template for new orgAdmin
-      emailSubject = `Business Workspace Creation for Team - ${organization.companyName}!`;
-      emailText = `Dear ${reqBody.firstName},\n\nThank you for signing up at Zapllo! ...`;
-      emailHtml = `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-      <div style="background-color: #f0f4f8; padding: 20px;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-          <div style="text-align: center; padding: 20px;">
-                  <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
-              </div>
-              <div style="background-color: #74517A; color: #ffffff; padding: 20px;  font-size: 12px; text-align: center;">
-                  <h1 style="margin: 0;">New Workspace Created</h1>
-              </div>
-              <div style="padding: 20px;">
-                  <p><strong>Dear ${reqBody.firstName},</strong></p>
-                  <p>You have created your Workspace - ${organization.companyName}</p>
-                  <p>We have started a FREE Trial for your account which is valid till ${formattedTrialExpires}</p>
-                  <p>In the trial period you can invite upto 5 team members to try out how the app works.</p>
-                  <p>Login to the app now and start Delegating Now!</p>
-                  <div style="text-align: center;  margin-top: 20px;">
-                      <a href="https://zapllo.com/login" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
-                  </div>
-                  <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
-              </div>
-          </div>
-      </div>
-  </body>`;
 
     }
     // Send the email
@@ -312,29 +312,30 @@ export async function POST(request: NextRequest) {
       let emailText;
       let emailHtml;
 
-      emailSubject = `Business Workspace Invitation to Team - ${organization.companyName}!`;
+      emailSubject = `Business Workspace Invitation to Team - ${organization.companyName}!`; {/**Admin 2nd message with illustration */ }
       emailText = `Dear ${reqBody.firstName},\n\nYou've been added to ${organization.companyName} on Zapllo! ...`;
       emailHtml = `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
     <div style="background-color: #f0f4f8; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <div style="text-align: center; padding: 20px;">
-                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
-            </div>
-            <div style="background-color: #74517A; color: #ffffff; padding: 10px; font-size: 12px;  text-align: center;">
-                <h1 style="margin: 0;">Welcome to Team - ${organization.companyName}!</h1>
-            </div>
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <div style="padding: 20px; text-align: center;">
+         <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+        </div>
+        <div style="padding: 20px;">
+          <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1731423673/01_xlguy8.png" alt="Team Illustration" style="max-width: 100%; height: auto;">
+        </div>
+          <h1 style="font-size: 24px; margin: 0; padding: 10px 20px; color: #000000;">Welcome to Team - ${organization.companyName}</h1>
             <div style="padding: 20px;">
                 <p>We are excited to have you on board. Here are your account details:</p>
-                <p><strong>First Name:</strong> ${reqBody.firstName}</p>
-                <p><strong>Last Name:</strong>${reqBody.lastName}</p>
-                <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #1a73e8;">${email}</a></p>
-                <p><strong>Password:</strong> ${password}</p>
-                <p><strong>WhatsApp Number:</strong> ${whatsappNo}</p>
-                <p><strong>Role:</strong> ${newUserRole}</p>
+                <p>First Name:<strong> ${reqBody.firstName}</strong></p>
+                <p>Last Name:<strong>${reqBody.lastName}</strong></p>
+                <p>Email:<strong> <a href="mailto:${email}" style="color: #1a73e8;">${email}</a></strong></p>
+                <p>Password:<strong> ${password}</strong></p>
+                <p>WhatsApp Number:<strong> ${whatsappNo}<strong></p>
+                <p>Role:<strong> ${newUserRole}</strong></p>
                 <div style="text-align: center; margin-top: 20px;">
-                    <a href="https://zapllo.com/login" style="background-color: #74517A; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
+                    <a href="https://zapllo.com/login" style="background-color: #0C874B; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Here</a>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                <p style="margin-top: 20px; font-size: 12px; text-align: center; color: #888888;">This is an automated notification. Please do not reply.</p>
             </div>
         </div>
     </div>

@@ -82,6 +82,7 @@ interface Leave {
   remarks: string;
   user: User;
   updatedAt: string;
+  createdAt: string; // Add createdAt field
 }
 
 interface Regularization {
@@ -356,7 +357,7 @@ export default function Approvals() {
     );
 
     return leaves.filter((leave) => {
-      const entryDate = new Date(leave.fromDate);
+      const entryDate = new Date(leave.createdAt); // Filter based on createdAt
 
       switch (dateFilter) {
         case "Today":
