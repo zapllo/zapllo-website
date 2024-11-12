@@ -544,7 +544,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                             (formData.selectedPlan === 'Zapllo Money Saver Bundle' && formData.subscribedUserCount >= 20) ? (
                             <div className='p-4 border mb-4 rounded-2xl'>
                                 <div className='flex items-center mb-2 gap-2'>
-                                    🎉<h1 className='text-xl text-muted-foreground'>Congratulations, you've unlocked the WhatsApp Marketing Software FREE of cost!</h1>
+                                    🎉<h1 className='text-xl text-muted-foreground'>Congratulations, you&apos;ve unlocked the WhatsApp Marketing Software FREE of cost!</h1>
                                 </div>
                                 <h1 className='text-sm'>The onboarding team will contact you and set this up for absolutely <span className='text-orange-400'>free of cost</span> with 3 done-for-you custom chatbots!</h1>
                                 {/* <p className='mt-2 text-sm text-start'>Your Wallet Bonus: ₹ 10,000</p> */}
