@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import axios from "axios";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { motion, useAnimation } from 'framer-motion'
+import { motion, useAnimation } from "framer-motion";
 import Loader from "@/components/ui/loader";
 
 interface Category {
@@ -101,13 +102,13 @@ const IntranetPage: React.FC = () => {
   const modalVariants = {
     hidden: {
       opacity: 0,
-      y: '100%',
+      y: "100%",
     },
     visible: {
       opacity: 1,
-      y: '0%',
+      y: "0%",
       transition: {
-        type: 'spring',
+        type: "spring",
         stiffness: 300,
         damping: 40,
       },
@@ -116,64 +117,72 @@ const IntranetPage: React.FC = () => {
 
   // Trigger the animation when the component mounts
   useEffect(() => {
-    controls.start('visible');
+    controls.start("visible");
   }, [controls]);
-
-
 
   return (
     <div className="p-6 mt-12">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <div className="w-full space-x-4 flex justify-center">
-          <DialogTrigger asChild>
-            <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
-              New Link
-            </button>
-          </DialogTrigger>
-          <select
-            className="p-2 px-4 text-xs outline-none"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            className="px-4 py-2 text-xs outline-none"
-            placeholder="Search Link Name"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className=" px-2 py-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Intranet</h2>
+
+            <div className="flex items-center space-x-4">
+              <select
+                className="p-2 px-4  bg-[#0B0D29]  h-[35px] rounded-sm text-xs border-gray-700 "
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <DialogTrigger asChild>
+                {/* <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
+                New Links
+              </button> */}
+                <Button className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]  text-white font-semibold py-2 px-4 rounded-lg">
+                  New Link
+                </Button>
+              </DialogTrigger>
+            </div>
+            {/* <input
+              type="text"
+              className="px-4 py-2 text-xs outline-none"
+              placeholder="Search Link Name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            /> */}
+          </div>
         </div>
 
         {/* Add New Link Modal */}
-        <DialogContent className="z-[100] w-full max-w-lg ">
-          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide  h-fit max-h-[600px]  shadow-lg w-full   max-w-lg  rounded-lg">
-            <div className="flex border-b py-2  w-full justify-between ">
-              <DialogTitle className="text-md   px-6 py-2 font-medium">
+        <DialogContent className="z-[100]  w-[480px] rounded-2xl overflow-hidden  ">
+          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide  h-fit max-h-[600px] rounded-2xl shadow-lg w-full   max-w-lg  rounded-lg">
+            <div className="flex items-center justify-between border-b border-gray-800/50 px-6 py-8 ">
+              <DialogTitle className="text-xl font-semibold text-white">
                 Add New Link
               </DialogTitle>
-              <DialogClose className="px-6 py-2">
-                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              <DialogClose className="">
+                <CrossCircledIcon className="scale-150 h-4 w-4  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
               </DialogClose>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 max-w-lg w-full p-6">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
                 <input
                   type="url"
-                  placeholder="Link Url"
+                  placeholder="Link URL"
                   id="linkUrl"
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                   required
-                  className="mt-1 block text-xs w-full  bg-transparent outline-none p-2 border rounded"
+                  className=" h-12 px-4  block text-sm w-full  bg-transparent outline-none p-2 border rounded-md"
+                  // className="w-full h-12 px-4 bg-transparent text-white  rounded-md border-0 outline-none"
                 />
               </div>
 
@@ -185,7 +194,7 @@ const IntranetPage: React.FC = () => {
                   placeholder="Description"
                   onChange={(e) => setDescription(e.target.value)}
                   required
-                  className="mt-1 block text-xs bg-transparent outline-none w-full p-2 border rounded"
+                  className=" w-full min-h-[140px] p-4  block text-sm bg-transparent outline-none w-full p-2 border rounded-md"
                 />
               </div>
 
@@ -198,7 +207,7 @@ const IntranetPage: React.FC = () => {
                   onChange={(e) => setLinkName(e.target.value)}
                   required
                   placeholder="Link Name"
-                  className="mt-1 bg-transparent text-xs outline-none block w-full p-2 border rounded"
+                  className="w-full h-12 px-4 bg-transparent text-sm outline-none block w-full p-2 border rounded-md"
                 />
               </div>
 
@@ -209,7 +218,7 @@ const IntranetPage: React.FC = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className="mt-1  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded"
+                  className="w-full h-12 px-4 bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
@@ -222,15 +231,15 @@ const IntranetPage: React.FC = () => {
 
               <button
                 type="submit"
-                className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                className="bg-[#815BF5] w-full h-12 mt-2 text-lg cursor-pointer  text-white rounded-md"
               >
-                {loading ? <Loader />:"Submit"} 
+                {loading ? <Loader /> : "Submit Now"}
               </button>
             </form>
           </div>
         </DialogContent>
       </Dialog>
-      <div className="w-full flex justify-center">
+      <div className="">
         <IntranetTable
           entries={entries}
           fetchEntries={fetchEntries}
