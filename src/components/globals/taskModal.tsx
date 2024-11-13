@@ -553,6 +553,18 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     }
   };
 
+  // Format the selected due date and due time into a single Date object
+  const getCombinedDateTime = () => {
+    if (!dueDate || !dueTime) return null;
+
+    // Parse due time and set hours and minutes on dueDate
+    const [hours, minutes] = dueTime.split(":").map(Number);
+    const combinedDate = new Date(dueDate);
+    combinedDate.setHours(hours, minutes, 0, 0); // Set time on the selected date
+    return combinedDate;
+  };
+
+
   const handleAssignTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dueDate || !dueTime) {
@@ -560,6 +572,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       return;
     }
     setLoading(true);
+
+    // Generate the combined date and time
+    const combinedDueDateTime = getCombinedDateTime();
+    if (!combinedDueDateTime) {
+      setLoading(false);
+      return;
+    }
 
     let fileUrls: string[] = [];
     let audioUrl: string | null = null;
@@ -635,7 +654,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
       repeatType: repeat ? repeatType : "", // Only include repeatType if repeat is true
       days: repeat ? days : [], // Only include days if repeat is true
       dates: repeatMonthlyDays,
-      dueDate,
+      dueDate: combinedDueDateTime, // Use the combined date and tim
       attachment: fileUrls, // Use the URLs from S3 upload
       audioUrl, // Add the audio URL here
       links,
