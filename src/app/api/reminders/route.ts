@@ -5,8 +5,9 @@ import connectDB from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import Category from '@/models/categoryModel';
 import { sendEmail, SendEmailOptions } from "@/lib/sendEmail";
+export const dynamic = 'force-dynamic';
 
-connectDB();
+
 
 const formatDate = (dateInput: string | Date): string => {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
@@ -92,8 +93,15 @@ const sendReminderNotification = async (task: any, reminder: any, assignedUser: 
     }
 };
 
-export async function GET(req: NextRequest) {
+
+
+export async function GET() {
+    // console.log("GET ENDPOINT");
     try {
+        console.log('GET /api/reminders endpoint called');
+        await connectDB();
+        console.log("MongoDB Connected for reminders!");
+
         const now = new Date();
         const nowUTC = new Date(now.toISOString());
         console.log('Current UTC time:', nowUTC.toISOString());

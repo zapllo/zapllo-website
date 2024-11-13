@@ -121,10 +121,10 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
 
       {/* Table container with a fixed height and scrollable content */}
       <main>
-        <div className="bg-[#0B0D29] rounded-lg overflow-hidden">
+        <div className="bg-[#0B0D29]  rounded-lg overflow-hidden">
           <table className="w-full">
-            <thead className="bg-[#0B0D29]">
-              <tr className="border-b border-gray-700">
+            <thead className="bg-[#0B0D29] border">
+              <tr className="border border-gray-700 ">
                 <th className="text-left py-3 px-4 text-gray-400 font-normal">
                   LINK NAME
                 </th>
@@ -138,7 +138,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
             </thead>
             <tbody>
               {currentEntries?.map((entry) => (
-                <tr key={entry._id} className="border-b border-gray-700">
+                <tr key={entry._id} className="border border-gray-700">
                   <td className="py-4 px-4 font-medium">{entry?.linkName}</td>
                   <td className="py-4 px-4">{entry?.category?.name}</td>
                   <td className="py-4 px-4">
@@ -149,7 +149,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-transparent border border-orange-400 text-orange-400 hover:bg-orange-400/10 px-4 py-1 rounded"
+                        className="bg-transparent border font-semibold border-orange-400 text-orange-400 hover:bg-orange-400/10 px-4 py-1 rounded"
                         onClick={() => handleGoToLink(entry?.linkUrl)}
                       >
                         {/* <Globe className="h-4" /> */}
@@ -161,7 +161,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-transparent border border-purple-400 text-purple-400 hover:bg-purple-400/10 px-4 py-1 rounded"
+                        className="bg-transparent font-semibold border border-[#6943F6] text-[#6943F6] hover:bg-purple-400/10 px-4 py-1 rounded"
                         onClick={() => handleCopyLink(entry?.linkUrl)}
                       >
                         {/* <Copy className="h-4" /> */}
@@ -173,7 +173,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-transparent border border-orange-400 text-orange-400 hover:bg-orange-400/10 px-4 py-1 rounded"
+                        className="bg-transparent border font-semibold border-orange-400 text-orange-400 hover:bg-orange-400/10 px-4 py-1 rounded"
                         onClick={() => handleEdit(entry)}
                       >
                         {/* <Edit className="h-4 text-blue-400" /> */}
@@ -185,7 +185,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-transparent border border-[#E9001C] text-[#E9001C] hover:bg-red-400/20 px-4 py-1 rounded"
+                        className="bg-transparent border font-semibold border-[#E9001C] text-[#E9001C] hover:bg-red-400/20 px-4 py-1 rounded"
                         onClick={() => handleDeleteClick(entry?._id)}
                       >
                         Delete

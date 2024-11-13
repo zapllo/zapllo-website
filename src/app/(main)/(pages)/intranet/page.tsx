@@ -218,7 +218,7 @@ const IntranetPage: React.FC = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className="w-full h-12 px-4 bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
+                  className=" h-12 px-4 bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
