@@ -6,6 +6,12 @@ interface ILeaveBalance {
     balance: number; // Remaining balance for this leave type
 }
 
+interface IReminders {
+    dailyReminderTime: string; // Time in HH:MM AM/PM format
+    email: boolean;            // Email reminder toggle
+    whatsapp: boolean;         // WhatsApp reminder toggle
+}
+
 // Define an interface for the User document
 export interface IUser extends Document {
     _id: mongoose.Types.ObjectId;
@@ -40,6 +46,8 @@ export interface IUser extends Document {
     profilePic: string;
     isLeaveAccess: boolean;
     isTaskAccess: boolean;
+    reminders: IReminders;
+    weeklyOffs: string[]; // Array of days (e.g., ["Sun", "Sat"])
 }
 
 // Define the schema
@@ -98,6 +106,15 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     isTaskAccess: {
         type: Boolean,
         default: true,
+    },
+    reminders: {
+        dailyReminderTime: { type: String, default: "09:00 AM" }, // Stores time in HH:MM AM/PM format
+        email: { type: Boolean, default: false }, // Email reminder toggle
+        whatsapp: { type: Boolean, default: false }, // WhatsApp reminder toggle
+    },
+    weeklyOffs: {
+        type: [String], // Stores weekly off days as an array of strings (e.g., ["Sun", "Sat"])
+        default: [],    // Empty array by default
     },
 }, { timestamps: true });
 

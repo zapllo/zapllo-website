@@ -139,24 +139,24 @@ export default function TeamTabs() {
     return managerNames;
   };
 
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/users/organization");
+      const result = await response.json();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/users/organization");
-        const result = await response.json();
-
-        if (response.ok) {
-          setUsers(result.data);
-          const managerNames = await fetchReportingManagerNames(result.data);
-          setReportingManagerNames(managerNames);
-        } else {
-          console.error("Error fetching users:", result.error);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
+      if (response.ok) {
+        setUsers(result.data);
+        const managerNames = await fetchReportingManagerNames(result.data);
+        setReportingManagerNames(managerNames);
+      } else {
+        console.error("Error fetching users:", result.error);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  useEffect(() => {
+
 
     fetchUsers();
   }, []);
@@ -240,6 +240,7 @@ export default function TeamTabs() {
         });
         setSelectedManager("");
         toast.success("New member added successfully!");
+        fetchUsers();
       } else {
         // Specific handling for subscription limit
         if (data.error === "User limit reached for the current plan.") {

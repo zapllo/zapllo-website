@@ -129,7 +129,7 @@ const IntranetPage: React.FC = () => {
 
             <div className="flex items-center space-x-4">
               <select
-                className="p-2 px-4  bg-[#0B0D29]  h-[35px] rounded-sm text-xs border-gray-700 "
+                className="p-2 px-4  bg-[#0B0D29]  outline-none h-[35px] rounded-sm text-xs border-gray-700 "
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -144,7 +144,7 @@ const IntranetPage: React.FC = () => {
                 {/* <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
                 New Links
               </button> */}
-                <Button className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]  text-white font-semibold py-2 px-4 rounded-lg">
+                <Button className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]  text-white font-semibold  px- rounded-lg">
                   New Link
                 </Button>
               </DialogTrigger>
@@ -218,7 +218,7 @@ const IntranetPage: React.FC = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className=" h-12 px-4 bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
+                  className=" h-12 px-4  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (

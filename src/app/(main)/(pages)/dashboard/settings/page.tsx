@@ -159,7 +159,10 @@ export default function Page() {
       setLoading(false);
       // Initialize notification states from API response
       setEmailNotifications(user.notifications?.email ?? false);
+      setEmailReminders(user.reminders?.email ?? false);
       setWhatsappNotifications(user.notifications?.whatsapp ?? false);
+      setWhatsappReminders(user.reminders?.whatsapp ?? false);
+      setSelectedDays(user.weeklyOffs || []);
       setEmail(user.email);
       setWhatsAppNo(user.whatsappNo);
       const trialStatusRes = await axios.get("/api/organization/trial-status");
@@ -193,6 +196,7 @@ export default function Page() {
         email: emailNotifications,
         whatsapp: whatsappNotifications,
       });
+      updateReminders();
       toast.success("Settings updated");
       setSettingsOpen(false);
     } catch (error) {
@@ -200,6 +204,25 @@ export default function Page() {
       alert("Failed to update settings");
     }
   };
+
+  const updateReminders = async () => {
+    try {
+      await axios.patch("/api/users/update-reminders", {
+        reminders: {
+          dailyReminderTime: dueTime,
+          email: emailReminders,
+          whatsapp: whatsappReminders,
+        },
+        weeklyOffs: selectedDays,
+      });
+      // toast.success("Settings updated");
+      setSettingsOpen(false);
+    } catch (error) {
+      console.error("Failed to update settings", error);
+      alert("Failed to update settings");
+    }
+  };
+
 
   const handleCheckboxChange = (day: string) => {
     setSelectedDays((prev) =>

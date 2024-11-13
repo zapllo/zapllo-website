@@ -152,15 +152,28 @@ export async function GET() {
         const now = new Date();
         const nowUTC = new Date(now.toISOString());
         console.log('Current UTC time:', nowUTC.toISOString());
+        const todayDay = now.toLocaleDateString('en-US', { weekday: 'short' }); // Get today's day in "Sun", "Mon", etc.
         const tasks = await Task.find()
             .populate<{ assignedUser: IUser }>('assignedUser')
             .populate('category')
             .exec();
         console.log(`Found ${tasks.length} tasks`);
 
+
+
         for (const task of tasks) {
             console.log(`Processing task: ${task.title}, dueDate: ${task.dueDate}`);
 
+            const assignedUser = task.assignedUser;
+            if (!assignedUser) {
+                console.error('Assigned user is missing');
+                continue;
+            }
+            // Check if today is a weekly off day for the assigned user
+            if (assignedUser.weeklyOffs && assignedUser.weeklyOffs.includes(todayDay)) {
+                console.log(`Skipping reminders for user: ${assignedUser.email} because today (${todayDay}) is a weekly off.`);
+                continue;
+            }
             for (const reminder of task.reminders) {
                 let reminderDate = new Date(task.dueDate);
 
