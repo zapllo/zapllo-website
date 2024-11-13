@@ -21,6 +21,42 @@ const formatDate = (dateInput: string | Date): string => {
     return `${formattedDate} ${formattedTimeUppercase}`;
 };
 
+
+const sendWebhookNotification = async (task: any, assignedUser: any, reminderTime: string, formattedDueDate: string) => {
+    const payload = {
+        phoneNumber: assignedUser.whatsappNo, // Ensure this field exists on the user model
+        templateName: 'reminder_template',
+        bodyVariables: [
+            assignedUser.firstName,      // {{1}}
+            reminderTime,                // {{2}}
+            task.category.name,          // {{3}}
+            task.title,                  // {{4}}
+            formattedDueDate,            // {{5}}
+            task.priority,               // {{6}}
+        ],
+    };
+    console.log(payload, 'payload')
+    try {
+        const response = await fetch('https://zapllo.com/api/webhook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            throw new Error(`Webhook API error: ${responseData.message}`);
+        }
+        console.log('Webhook notification sent successfully:', payload);
+    } catch (error) {
+        console.error('Error sending webhook notification:', error);
+        throw new Error('Failed to send webhook notification');
+    }
+};
+
+
 const sendReminderNotification = async (task: any, reminder: any, assignedUser: any) => {
     console.log(`Sending ${reminder.notificationType} reminder for task: ${task.title} to user: ${assignedUser.email}`);
 
@@ -72,7 +108,18 @@ const sendReminderNotification = async (task: any, reminder: any, assignedUser: 
                 throw new Error('Failed to send email notification');
             }
         } else {
-            console.log('Email reminder value is zero or less; skipping email reminder');
+            console.log('Reminder type not supported or user has disabled notifications');
+        }
+    } else if (reminder.notificationType === 'whatsapp' && assignedUser.notifications.whatsapp) {
+        console.log('Preparing to send WhatsApp reminder');
+        console.log('Sending WhatsApp reminder to', assignedUser.whatsappNo);
+        try {
+            await sendWebhookNotification(task, assignedUser, reminderTime, formattedDueDate);
+            console.log('WhatsApp message sent successfully to', assignedUser.whatsappNo);
+            reminder.sent = true; // Mark this specific reminder as sent
+        } catch (error) {
+            console.error('Error sending WhatsApp message:', error);
+            throw new Error('Failed to send WhatsApp notification');
         }
     } else {
         console.log('Email reminder already sent or user has disabled email notifications');
