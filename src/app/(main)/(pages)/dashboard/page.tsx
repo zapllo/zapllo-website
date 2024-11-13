@@ -197,11 +197,11 @@ const DashboardPage = () => {
         )}
       </div>
       <div className='grid grid-cols-3  '>
-        <div className='flex  gap-4 '>
+        <div className='flex items-center  gap-4 '>
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#]   m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
-              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/atask.png' className=' ml-[15px] mt-3 h-6     object-cover' />
+              <div className='rounded-full flex items-center justify-items-center h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/atask.png' className=' h-6  ml-[10px]   object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Zapllo Tasks</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
@@ -222,11 +222,11 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-        <div className='flex  gap-4 '>
+        <div className='flex items-center w-full  gap-4 '>
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
-              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <Globe className=' ml-[11px] mt-3 h-6     object-cover' />
+              <div className='rounded-full h-12 flex items-center border-[#E0E0E066] border w-12'>
+                <img src='/icons/Zapllo Intranet.png' className=' h-6  ml-[10px]   object-cover' />
               </div>
               <h1 className='text-lg font-medium'>Zapllo Intranet</h1>
               <p className='text-xs font-medium'>Manage all your Important Company Links</p>
@@ -241,8 +241,8 @@ const DashboardPage = () => {
         <div className="flex  gap-4 ">
           <div className="p-4 w-full border border-[#E0E0E066] bg-[#] m-4  text-white items-center relative flex justify-start rounded-xl ">
             <div className=" font-bold text-xl space-y-1">
-              <div className="rounded-full h-12 border-[#E0E0E066] border w-12">
-                <CalendarMinus className=" ml-[11px] mt-3 h-6     object-cover" />
+              <div className="rounded-full flex items-center h-12 border-[#E0E0E066] border w-12">
+                <img src='/icons/Zapllo Leaves.png' className=' h-6  ml-[10px]   object-cover' />
               </div>
               <h1 className="text-lg font-medium">Zapllo Leaves</h1>
               <p className="text-xs font-medium">
@@ -302,8 +302,9 @@ const DashboardPage = () => {
         <div className='flex  gap-4 '>
           <div className='p-4 w-full border border-[#E0E0E066] bg-[#]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
-              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/attendance.png' className=' ml-3 mt-3 h-6     object-cover' />
+              <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/Zapllo attendance.png' className=' h-6  ml-[10px]   object-cover' />
+
               </div>
               <h1 className="text-lg font-medium">Zapllo Attendance</h1>
               <p className="text-xs font-medium">
@@ -357,8 +358,9 @@ const DashboardPage = () => {
         <div className='flex  gap-4 '>
           <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
-              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/whatsapp.png' className=' ml-3 mt-[10px] h-6     object-cover' />
+              <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/Group.png' className=' h-6  ml-[10px]   object-cover' />
+
               </div>
               <h1 className='text-lg font-medium'>Zapllo WABA</h1>
               <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
@@ -373,8 +375,9 @@ const DashboardPage = () => {
         <div className='flex  gap-4 '>
           <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
-              <div className='rounded-full h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/crm.png' className=' ml-[10px] mt-3 h-6  invert-[100]    object-cover' />
+              <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
+              <img src='/icons/crmm.png' className=' h-6  ml-[10px]   object-cover' />
+
               </div>
               <h1 className='text-lg font-medium'>Zapllo CRM</h1>
               <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
