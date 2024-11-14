@@ -120,7 +120,7 @@ const AttendanceDashboard: React.FC = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState<boolean>(false);
   const [workingDays, setWorkingDays] = useState<number>(0);
   const [holidayCount, setHolidayCount] = useState<number>(0);
-  const [period, setPeriod] = useState('thisMonth');
+  const [period, setPeriod] = useState('thisWeek');
   const [report, setReport] = useState<UserwiseReport[]>([]);
   const [attendanceReport, setAttendanceReport] = useState([]);
   const [managerId, setManagerId] = useState('');
@@ -152,12 +152,13 @@ const AttendanceDashboard: React.FC = () => {
 
   useEffect(() => {
     const computeCounts = () => {
-      setDailyTotalCount(dailyReport.length);
-      setDailyPresentCount(dailyReport.filter(entry => entry.status === 'Present').length);
-      setDailyOnLeaveCount(dailyReport.filter(entry => entry.status === 'On Leave').length);
-      setDailyAbsentCount(dailyReport.filter(entry => entry.status === 'Absent').length);
+      setDailyTotalCount(dailyReport?.length || 0);
+    
+      setDailyPresentCount(dailyReport?.filter(entry => entry.status === 'Present').length || 0);
+      setDailyOnLeaveCount(dailyReport?.filter(entry => entry.status === 'On Leave').length || 0);
+      setDailyAbsentCount(dailyReport?.filter(entry => entry.status === 'Absent').length || 0);
     };
-
+    
     computeCounts();
   }, [dailyReport]);
 
@@ -194,13 +195,13 @@ const AttendanceDashboard: React.FC = () => {
 
       if (period === 'thisMonth') {
         startDate = startOfMonth(new Date());
-        endDate = endOfMonth(new Date());
+        endDate = new Date();
       } else if (period === 'lastMonth') {
         startDate = startOfMonth(subMonths(new Date(), 1));
         endDate = endOfMonth(subMonths(new Date(), 1));
       } else if (period === 'thisWeek') {
         startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
-        endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
+        endDate = new Date();
       } else if (period === 'lastWeek') {
         startDate = startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 });
         endDate = endOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 });
@@ -393,7 +394,7 @@ const AttendanceDashboard: React.FC = () => {
     <div className="p-6 h-screen overflow-y-scroll">
       {attendanceLoading && (
         <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-         
+
           <div
             className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
             <div className="">
@@ -506,7 +507,7 @@ const AttendanceDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dailyReport.map((entry, index) => (
+                  {dailyReport?.map((entry, index) => (
                     <tr key={index} className='border-t'>
                       <td className="px-4 text-xs py-2">{entry.user}</td>
                       <td
