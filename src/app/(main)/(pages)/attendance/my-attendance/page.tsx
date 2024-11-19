@@ -1677,7 +1677,7 @@ export default function MyAttendance() {
                       )}
                     </button>
                   </DialogTrigger>
-                  <DialogContent className=" z-[100]  scale-90  flex justify-center ">
+                  <DialogContent className=" z-[100]  scale-[80%]  flex justify-center ">
                     <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
                       <div className="w-full flex mb-4 justify-between">
                         <CustomDatePicker
@@ -1829,8 +1829,8 @@ export default function MyAttendance() {
         open={isRegisterFaceModalOpen}
         onOpenChange={setIsRegisterFaceModalOpen}
       >
-        <DialogContent className="z-[100] flex justify-center">
-          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full   max-w-md  rounded-lg">
+        <DialogContent className="z-[100] flex w-full justify-center">
+          <div className="w-full">
             <div className="flex border-b py-2  w-full justify-between ">
               <DialogTitle className="text-md   px-6 py-2 font-medium">
                 Register Faces (Upload 3 Images)

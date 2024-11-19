@@ -5,6 +5,8 @@ import { AsYouType, CountryCode, getCountryCallingCode } from 'libphonenumber-js
 import { getData as getCountryData } from 'country-list';
 import { cn } from '@/lib/utils';
 import { Info } from 'lucide-react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle' | 'Zapllo Payroll';
 
@@ -15,6 +17,7 @@ interface Country {
 
 const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
     const [step, setStep] = useState(1);
+    const [isStep1Valid, setIsStep1Valid] = useState(false); // Add validation state
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -28,11 +31,24 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
         discountCode: 'FREEDOMSALE',
     });
 
+
     const plans: Record<PlanKeys, number> = {
         'Zapllo Tasks': 2000,
         'Zapllo Money Saver Bundle': 3000,
         'Zapllo Payroll': 1000,
     };
+
+    // Validation function
+    useEffect(() => {
+        const isValid =
+            formData.firstName.trim() !== '' &&
+            formData.lastName.trim() !== '' &&
+            formData.companyName.trim() !== '' &&
+            formData.industry.trim() !== '' &&
+            formData.email.trim() !== '' &&
+            formData.whatsappNo.trim() !== '';
+        setIsStep1Valid(isValid);
+    }, [formData]);
 
     const [payableAmount, setPayableAmount] = useState(plans[formData.selectedPlan] * formData.subscribedUserCount);
 
@@ -43,6 +59,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [countries, setCountries] = useState<Country[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
 
 
     useEffect(() => {
@@ -116,7 +133,12 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
     };
 
 
-    const nextStep = () => setStep(step + 1);
+    const nextStep = () => {
+        if (isStep1Valid) {
+            setStep(step + 1);
+        }
+    };
+
     const prevStep = () => setStep(step - 1);
 
     const updatePayableAmount = (selectedPlan: PlanKeys, subscribedUserCount: number) => {
@@ -176,9 +198,10 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                     try {
                         const verification = await axios.post('/api/onboardingSuccess', paymentResult);
                         if (verification.data.success) {
-                            alert('Payment successful!');
+                            toast.success('Payment successful!');
+                            router.push('/onboardingSuccess');
                         } else {
-                            alert('Payment verification failed.');
+                            toast.error('Payment verification failed.');
                         }
                     } catch (error) {
                         console.error('Error verifying payment:', error);
@@ -198,7 +221,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
             rzp1.open();
         } catch (error) {
             console.error('Error initiating payment:', error);
-            alert('Something went wrong. Please try again.');
+            toast.error('Something went wrong. Please try again.');
         }
     };
 
@@ -263,10 +286,21 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 onChange={handleChange}
                                 className="p-3 bg-[#0A0D28] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             >
-                                <option value="" disabled>Industry</option>
-                                <option value="IT">IT</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Healthcare">Healthcare</option>
+                                <option value="" disabled>Select your Industry</option>
+                                <option value="Retail/E-Commerce">Retail/E-Commerce</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Service Provider">Service Provider</option>
+                                <option value="Healthcare(Doctors/Clinics/Physicians/Hospital)">Healthcare(Doctors/Clinics/Physicians/Hospital)</option>
+                                <option value="Logistics">Logistics</option>
+                                <option value="Financial Consultants">Financial Consultants</option>
+                                <option value="Trading">Trading</option>
+                                <option value="Education">Education</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Real Estate/Construction/Interior/Architects">
+                                    Real Estate/Construction/Interior/Architects
+                                </option>
+                                <option value="Other">Other</option>
+
                             </select>
                             <input
                                 type="email"
@@ -328,13 +362,11 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                             <div
                                 onClick={nextStep}
                                 className={cn(
-                                    "group rounded-full border border-black/5  transition-all ease-in  text-base w-fit px-24 hover: py-2 text-white  cursor-pointer  dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#815BF5] to-[#5E29FF] dark:hover:bg-blue-800",
+                                    `group rounded-full border border-black/5 transition-all ease-in text-base w-fit px-24 py-2 text-white cursor-pointer dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#815BF5] to-[#5E29FF] dark:hover:bg-blue-800`,
+                                    { 'opacity-50 cursor-not-allowed': !isStep1Valid }
                                 )}
                             >
-                                <button
-                                >
-                                    Next
-                                </button>
+                                <button disabled={!isStep1Valid}>Next</button>
                             </div>
                         </div>
                     </div>
@@ -544,9 +576,9 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                             (formData.selectedPlan === 'Zapllo Money Saver Bundle' && formData.subscribedUserCount >= 20) ? (
                             <div className='p-4 border mb-4 rounded-2xl'>
                                 <div className='flex items-center mb-2 gap-2'>
-                                    🎉<h1 className='text-xl text-muted-foreground'>Congratulations, you&apos;ve unlocked the WhatsApp Marketing Software FREE of cost!</h1>
+                                    🎉<h1 className='text-xl '>Congratulations, you&apos;ve unlocked the WhatsApp Marketing Software FREE of cost!</h1>
                                 </div>
-                                <h1 className='text-sm'>The onboarding team will contact you and set this up for absolutely <span className='text-orange-400'>free of cost</span> with 3 done-for-you custom chatbots!</h1>
+                                <h1 className='text-sm text-muted-foreground'>The onboarding team will contact you and set this up for absolutely <span className='text-orange-400'>free of cost</span> with 3 done-for-you custom chatbots!</h1>
                                 {/* <p className='mt-2 text-sm text-start'>Your Wallet Bonus: ₹ 10,000</p> */}
                             </div>
                         ) : null}
@@ -559,9 +591,9 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                             </div>
                             <div className='p-4 border rounded-2xl'>
                                 <div className='flex items-center mb-2 gap-2'>
-                                    <Info className='text-gray-400' /> <h1 className='text-xl text-muted-foreground'>One Time Fast Action Bonus</h1>
+                                    <Info className='text-gray-400' /> <h1 className='text-xl '>One Time Fast Action Bonus</h1>
                                 </div>
-                                <h1 className='text-sm'>Get 10% Additional Bonus when you purchase <span className='text-red-400'>20 or more users</span>. Bonus will be added to your subscription wallet that can be redeemed for purchasing more users, <span className='text-orange-400'>receiving AI Tokens </span>, upcoming apps and renewals.</h1>
+                                <h1 className='text-sm text-muted-foreground'>Get 10% Additional Bonus when you purchase <span className='text-red-400'>20 or more users</span>. Bonus will be added to your subscription wallet that can be redeemed for purchasing more users, <span className='text-orange-400'>receiving AI Tokens </span>, upcoming apps and renewals.</h1>
                                 <p className='mt-2 text-sm text-start'>Your Wallet Bonus: ₹ 10,000</p>
                             </div>
                         </div>

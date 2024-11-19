@@ -48,6 +48,12 @@ const organizationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  subscribedPlan: {
+    type: String, // e.g., "Basic", "Standard", "Premium"
+  },
+  subscribedUserCount: {
+    type: Number, // The number of subscribed users
+  },
   subscriptionExpires: {
     type: Date,
   },

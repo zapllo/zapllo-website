@@ -22,6 +22,9 @@ const Layout = (props: Props) => {
   const [trialExpires, setTrialExpires] = useState<Date | null>(null);
   const [timeMessage, setTimeMessage] = useState("");
   const [userLoading, setUserLoading] = useState<boolean | null>(false);
+  const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
+  const [subscriptionExpires, setSubscriptionExpires] = useState<Date | null>(null);
+
 
   const handleClose = () => setIsVisible(false);
 
@@ -32,13 +35,21 @@ const Layout = (props: Props) => {
         const userRes = await axios.get("/api/users/me");
         setIsPro(userRes.data.data.isPro);
         const response = await axios.get("/api/organization/getById");
-
         const organization = response.data.data;
         const trialEnd = new Date(organization.trialExpires);
-        const expired = trialEnd <= new Date();
+        const subscriptionEnd = organization.subscriptionExpires
+          ? new Date(organization.subscriptionExpires)
+          : null;
+
+        const trialExpired = trialEnd <= new Date();
+        const subscriptionActive =
+          subscriptionEnd && subscriptionEnd > new Date();
 
         setTrialExpires(trialEnd);
-        setIsTrialExpired(expired);
+        setSubscriptionExpires(subscriptionEnd);
+        setIsTrialExpired(trialExpired);
+        setIsSubscriptionActive(!!subscriptionActive);
+
         setUserLoading(false);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -81,6 +92,7 @@ const Layout = (props: Props) => {
 
   if (
     isTrialExpired &&
+    !isSubscriptionActive &&
     pathname !== "/dashboard/billing" &&
     pathname !== "/tutorials" &&
     pathname !== "/dashboard/tickets" &&
@@ -114,7 +126,7 @@ const Layout = (props: Props) => {
 
   return (
     <div>
-      {isVisible && !isPro && (
+      {isVisible && !isPro && !isSubscriptionActive && (
         <div className="p-2 flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border">
           <div className="flex gap-2 justify-center w-full">
             <h1 className="text-center mt-1 flex text-white text-xs">
@@ -138,7 +150,7 @@ const Layout = (props: Props) => {
         </div>
       )}
       <div
-        className={`flex overflow-hidden ${isVisible && !isPro  ? "mt-10" : ""
+        className={`flex overflow-hidden ${isVisible && !isPro && !isSubscriptionActive ? "mt-10" : ""
           } dark:bg-[#04061E] scrollbar-hide h-full w-full`}
       >
         <MenuOptions />

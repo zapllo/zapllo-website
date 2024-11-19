@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
         const organization = await Organization.find({});
 
         return NextResponse.json({
-            message: "Users fetched successfully",
+            message: "Organizations fetched successfully",
             data: organization,
         });
     } catch (error: any) {

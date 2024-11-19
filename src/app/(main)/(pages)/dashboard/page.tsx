@@ -20,6 +20,7 @@ const DashboardPage = () => {
   const [role, setRole] = useState<string | null>(null); // Track the user's role
   const [isLeaveAcess, setIsLeaveAccess] = useState<boolean | null>(null); // Track the user's role
   const [isTaskAccess, setIsTaskAccess] = useState<boolean | null>(null); // Track the user's role
+  const [isSubscribed, setIsSubscribed] = useState<boolean | null>(false); // Track the user's role
   const router = useRouter();
   const [leavesRemainingTime, setLeavesRemainingTime] = useState("");
   const [attendanceRemainingTime, setAttendanceRemainingTime] = useState("");
@@ -106,7 +107,7 @@ const DashboardPage = () => {
 
   const fetchTrialStatus = async () => {
     const response = await axios.get("/api/organization/getById");
-    const { leavesTrialExpires, attendanceTrialExpires } = response.data.data;
+    const { leavesTrialExpires, attendanceTrialExpires, isPro } = response.data.data;
     setLeavesTrialExpires(
       leavesTrialExpires && new Date(leavesTrialExpires) > new Date()
         ? leavesTrialExpires
@@ -117,6 +118,7 @@ const DashboardPage = () => {
         ? attendanceTrialExpires
         : null
     );
+    setIsSubscribed(isPro);
     setIsLoading(false); // Data fetched, stop showing the global loader
   };
 
@@ -376,7 +378,7 @@ const DashboardPage = () => {
           <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
-              <img src='/icons/crmm.png' className=' h-6  ml-[10px]   object-cover' />
+                <img src='/icons/crmm.png' className=' h-6  ml-[10px]   object-cover' />
 
               </div>
               <h1 className='text-lg font-medium'>Zapllo CRM</h1>

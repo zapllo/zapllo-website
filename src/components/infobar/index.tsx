@@ -252,9 +252,9 @@ const InfoBar = (props: Props) => {
                       </h1>
                     ) : role === "manager" ? (
                       <h1 className="text-[10px]">Manager</h1>
-                    ) : (
-                      <h1 className="text-[10px]">Member</h1>
-                    )}
+                    ) : role === "Admin" ? (
+                      <h1 className="text-[10px]">Super Admin</h1>
+                    ) : <h1 className="text-[10px]"> Member</h1>}
                   </div>
                 </div>
               </DropdownMenuTrigger>
@@ -268,6 +268,8 @@ const InfoBar = (props: Props) => {
                       <span>Admin</span>
                     ) : role === "manager" ? (
                       <span className="text-[10px]">Manager</span>
+                    ) : role === "Admin" ? (
+                      <span className="text-[10px]">Super Admin</span>
                     ) : (
                       <span className="text-[10px]">Member</span>
                     )}

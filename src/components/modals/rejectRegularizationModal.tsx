@@ -3,8 +3,10 @@
 "use client";
 
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import axios from "axios";
 import { X } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface RegularizationRejectModalProps {
   regularizationId: string;
@@ -21,6 +23,41 @@ const RegularizationRejectModal: React.FC<RegularizationRejectModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+
+  const [approvalRemarks, setApprovalRemarks] = useState<string>("");
+  const [loading, setLoading] = useState(false); // For handling loading state
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.patch(
+        `/api/regularization-approvals/${regularizationId}`,
+        {
+          action: "reject", // Automatically approving
+          notes: approvalRemarks,
+        }
+      );
+
+      if (response.data.success) {
+        onSubmit(); // Refresh data or perform other actions
+        onClose();
+        toast.success("Regularization Request Approved");
+      } else {
+        throw new Error(
+          response.data.message || "Failed to approve regularization."
+        );
+      }
+    } catch (error: any) {
+      console.error(
+        "Error approving regularization:",
+        error.response?.data || error.message
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full pb-6   max-w-md  rounded-lg">
@@ -46,7 +83,7 @@ const RegularizationRejectModal: React.FC<RegularizationRejectModalProps> = ({
         <div className="flex justify-end space-x-2 mt-6 px-6">
           {/* <button onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>r */}
           <button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-4 -mt-6 py-2 rounded"
           >
             Reject
