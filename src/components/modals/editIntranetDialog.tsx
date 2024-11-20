@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { Dialog } from "../ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import Loader from "../ui/loader";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 
 interface Category {
@@ -26,7 +27,7 @@ interface EditIntranetDialogProps {
 }
 
 const EditIntranetDialog: React.FC<EditIntranetDialogProps> = ({ entry, onClose, onSave }) => {
-
+    const [isOpen, setIsOpen] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [linkUrl, setLinkUrl] = useState(entry.linkUrl);
     const [description, setDescription] = useState(entry.description);
@@ -90,65 +91,76 @@ const EditIntranetDialog: React.FC<EditIntranetDialogProps> = ({ entry, onClose,
         });
     };
 
-    return (
-        <div className="absolute  z-[100]  inset-0 bg-black -900  bg-opacity-60 rounded-xl flex justify-center items-center">
 
-            <motion.div
-                className="bg-[#0B0D29] z-[100] h-[450px] max-h-screen text-[#D0D3D3] w-[50%] rounded-lg p-8"
-                variants={modalVariants}
-                initial="hidden"
-                animate={controls}
-            >
-                <div className="flex justify-between w-full">
-                    <h2 className="text-sm mb-4">Edit Link</h2>
+    const handleClose = () => {
+        setIsOpen(false);
+        onClose();
+      };
+    
+    return (
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                setIsOpen(open);
+                if (!open) {
+                    onClose();
+                }
+            }}
+        >
+           
+            <DialogContent className="">
+            <DialogTitle>
+                <div className="flex justify-between px-6 py-4  items-center border-b w-full">
+                    <h2 className="text-sm ">Edit Link</h2>
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="text-sm text-white px-4  rounded"
+                        className=""
                     >
-                        X
+                        <CrossCircledIcon className="scale-150 h-4 w-4  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                     </button>
                 </div>
-                <form onSubmit={handleSubmit}>
+            </DialogTitle>
+                <form className="px-6 mb-4" onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="text-xs">Link URL:</label>
+                        <label className="text-[10px] text-[#787CA5] absolute -mt-2 bg-[#0B0D29]  ml-2">Link URL</label>
                         <input
                             type="url"
                             value={linkUrl}
                             onChange={(e) => setLinkUrl(e.target.value)}
                             required
-                            className="block w-full outline-none text-xs p-2 border rounded"
+                            className="block w-full bg-transparent outline-none text-xs p-2 border rounded"
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="text-xs">Description:</label>
+                        <label className="text-[10px] text-[#787CA5] absolute -mt-2 bg-[#0B0D29]   ml-2">Description</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             required
-                            className="block w-full outline-none text-xs p-2 border rounded"
+                            className="block w-full bg-transparent outline-none text-xs p-2 border rounded"
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="text-xs">Link Name:</label>
+                        <label className="text-[10px] text-[#787CA5] absolute -mt-2 bg-[#0B0D29]   ml-2">Link Name</label>
                         <input
                             type="text"
                             value={linkName}
                             onChange={(e) => setLinkName(e.target.value)}
                             required
-                            className="block text-xs outline-none w-full p-2 border rounded"
+                            className="block text-xs bg-transparent outline-none w-full p-2 border rounded"
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="text-xs">Category:</label>
+                        <label className="text-[10px] text-[#787CA5] absolute -mt-2 bg-[#0B0D29]   ml-2">Category</label>
                         <select
                             value={category._id}
                             onChange={(e) =>
                                 setCategory(categories.find(cat => cat._id === e.target.value) || category)
                             }
                             required
-                            className="block w-full outline-none text-xs p-2 border rounded"
+                            className="block bg-[#0B0D29] w-full outline-none text-xs p-2 border rounded"
                         >
                             <option value="" disabled>Select a category</option>
                             {categories.map((cat) => (
@@ -160,14 +172,14 @@ const EditIntranetDialog: React.FC<EditIntranetDialogProps> = ({ entry, onClose,
 
                         <button
                             type="submit"
-                            className="bg-[#017A5B] w-full text-sm text-white px-4 py-2 rounded"
+                            className="bg-[#815bf5] w-full text-sm text-white px-4 py-2 rounded"
                         >
-                           {loading?<Loader/>:"Save"} 
+                            {loading ? <Loader /> : "Save"}
                         </button>
                     </div>
                 </form>
-            </motion.div>
-        </div >
+            </DialogContent>
+        </Dialog>
     );
 };
 

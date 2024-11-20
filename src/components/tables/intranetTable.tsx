@@ -105,7 +105,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
     if (deleteEntryId) {
       try {
         await axios.delete("/api/intranet", { data: { id: deleteEntryId } });
-        toast.success("Entry deleted successfully");
+        toast.success("Link deleted successfully");
         setIsDeleteDialogOpen(false);
         setDeleteEntryId(null);
         await fetchEntries();
@@ -116,15 +116,15 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
   };
 
   return (
-    <div className="relative mt-6">
+    <div className="relative mt-6 w-full">
       {/*             <Toaster /> */}
 
       {/* Table container with a fixed height and scrollable content */}
       <main>
-        <div className="bg-[#0B0D29]  rounded-lg overflow-hidden">
+        <div className="bg-[#0B0D29] text-sm w-full rounded-2xl  border overflow-hidden">
           <table className="w-full">
-            <thead className="bg-[#0B0D29] border">
-              <tr className="border border-gray-700 ">
+            <thead className="bg-[#0B0D29] ">
+              <tr className=" ">
                 <th className="text-left py-3 px-4 text-gray-400 font-normal">
                   LINK NAME
                 </th>
@@ -138,7 +138,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
             </thead>
             <tbody>
               {currentEntries?.map((entry) => (
-                <tr key={entry._id} className="border border-gray-700">
+                <tr key={entry._id} className=" border-t">
                   <td className="py-4 px-4 font-medium">{entry?.linkName}</td>
                   <td className="py-4 px-4">{entry?.category?.name}</td>
                   <td className="py-4 px-4">
@@ -248,7 +248,7 @@ const IntranetTable: React.FC<IntranetTableProps> = ({
                 category: updatedEntry.category._id,
               });
               setIsEditDialogOpen(false);
-              toast.success("Link Updated Successfully!");
+              toast.success("Link Updated Successfully");
               await fetchEntries();
             } catch (error) {
               console.error("Failed to update entry:", error);

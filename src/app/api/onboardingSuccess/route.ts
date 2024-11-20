@@ -7,7 +7,7 @@ import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
 const sendWebhookNotification = async (user: any) => {
     const payload = {
         phoneNumber: user.whatsappNo,
-        templateName: 'purchase_success',
+        templateName: 'onboarding_purchase',
         bodyVariables: [
             user.firstName,
         ],
@@ -66,9 +66,6 @@ export async function POST(request: NextRequest) {
     try {
         await connectDB();
 
-        // GST rate (18%)
-        const gstRate = 0.18;
-        const amountWithoutGST = amount / (1 + gstRate); // Amount before GST
 
         // Save the onboarding details in the database
         const onboardingData = {
@@ -83,7 +80,6 @@ export async function POST(request: NextRequest) {
             paymentId: razorpay_payment_id,
             amount,
             planName,
-            creditedAmount: amountWithoutGST,
             subscribedUserCount,
             createdAt: new Date(),
         };

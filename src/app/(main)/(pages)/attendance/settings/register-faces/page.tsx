@@ -9,10 +9,11 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import { Cross1Icon, CrossCircledIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, CrossCircledIcon, HamburgerMenuIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDialog";
 import { toast, Toaster } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { FaSearch } from "react-icons/fa";
 
 interface IUser {
   _id: string;
@@ -148,6 +149,7 @@ export default function RegisterFace() {
         if (registerResponse.ok) {
           console.log("Face details registered successfully:", registerData);
           toast.success("Face details registered successfully");
+          fetchRequests();
           setIsDialogOpen(false); // Close the dialog on successful registration
         } else {
           console.error("Error registering face details:", registerData.error);
@@ -330,7 +332,7 @@ export default function RegisterFace() {
 
   return (
     <div className="container mx-auto p-6">
-                  {/* <Toaster /> */}
+      {/* <Toaster /> */}
 
       {/* Date Filters */}
       <div className="flex justify-center gap-4 mb-2">
@@ -470,20 +472,26 @@ export default function RegisterFace() {
         </DialogContent>
       </Dialog>
       {/* Search Input */}
-      <div className="flex justify-center mb-6">
-        <input
-          type="text"
-          placeholder="Search by name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="text-xs outline-none border rounded px-4 py-2"
-        />
+      <div className="flex justify-center mb-6 p-2">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="text-xs outline-none bg-transparent border rounded pl-10 pr-4 py-2"
+          />
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <MagnifyingGlassIcon className="text-gray-400 scale-125" />
+          </div>
+        </div>
       </div>
+
 
       {/* Status Tabs */}
       <div className="tabs mb-6 flex justify-center mt-4 space-x-4">
         <button
-          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === "all" ? "bg-[#815BF5] text-white" : "bg-[#28152e]"
+          className={`px-4 py-2 flex text-xs rounded gap-2 ${activeTab === "all" ? "bg-[#815BF5] text-white" : "bg-[#] border"
             }`}
           onClick={() => setActiveTab("all")}
         >
@@ -686,7 +694,7 @@ export default function RegisterFace() {
           >
 
             <DialogContent className="  z-[100]   flex justify-center items-center">
-              <div className="bg-[#211025] z-[100] relative p-6 max-w-2xl rounded-lg">
+              <div className="bg-[#] z-[100] relative p-6 max-w-2xl rounded-lg">
                 <img
                   src={imageModalUrl}
                   alt="Face Preview"

@@ -32,7 +32,6 @@ const OrderSchema: Schema<IOrder> = new Schema(
         },
         creditedAmount: {
             type: Number,
-            required: true,
         },
         subscribedUserCount: {
             type: Number,

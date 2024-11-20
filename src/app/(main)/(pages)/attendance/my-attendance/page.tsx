@@ -1452,7 +1452,7 @@ export default function MyAttendance() {
 
       {/* Map Modal */}
       <Dialog open={mapModalOpen} onOpenChange={setMapModalOpen}>
-        <DialogContent className="bg-[#121212] z-[100]">
+        <DialogContent className=" z-[100]">
           <div className=" p-4 overflow-y-scroll scrollbar-hide h-[500px]   shadow-lg w-full   max-w-lg  rounded-lg">
             <div className="w-full flex justify-between">
               <h1 className="py-4 flex gap-2  ">

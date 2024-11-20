@@ -25,6 +25,7 @@ interface User {
     email: string;
     role: string;
     profilePic: string;
+    reportingManager: string;
 }
 
 interface Reminder {

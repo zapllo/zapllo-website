@@ -61,7 +61,6 @@ const OnboardingSchema: Schema<Ionboarding> = new Schema(
         },
         creditedAmount: {
             type: Number,
-            required: true,
         },
         subscribedUserCount: {
             type: Number,

@@ -133,6 +133,7 @@ interface User {
   email: string;
   role: string;
   profilePic: string;
+  reportingManager: string;
 }
 
 interface Reminder {
@@ -1479,7 +1480,7 @@ export default function TasksTab({
                                   className="gap-4"
                                 >
                                   <TabsList2 className="flex gap-4">
-                                    {userDetails?.role === "orgAdmin" && (
+                                    {userDetails?.role === "orgAdmin" || userDetails?.role === "manager" && (
                                       <>
                                         <TabsTrigger2
                                           className="flex gap-1 text-xs tabs-trigger"
@@ -1532,30 +1533,22 @@ export default function TasksTab({
                                     .filter((user) => {
                                       const query = searchQuery.toLowerCase();
                                       return (
-                                        user.firstName
-                                          .toLowerCase()
-                                          .includes(query) ||
-                                        user.lastName
-                                          .toLowerCase()
-                                          .includes(query)
+                                        user.firstName.toLowerCase().includes(query) ||
+                                        user.lastName.toLowerCase().includes(query)
                                       );
                                     })
-                                    // Remove the second filter to include all users
-                                    // .filter((user) => {
-                                    //   // Fetch task stats for the user
-                                    //   const {
-                                    //     overdueTasks,
-                                    //     inProgressTasks,
-                                    //     pendingTasks,
-                                    //   } = getUserTaskStats(user._id);
-
-                                    //   // Only include users with at least one relevant task count
-                                    //   return (
-                                    //     overdueTasks > 0 ||
-                                    //     pendingTasks > 0 ||
-                                    //     inProgressTasks > 0
-                                    //   );
-                                    // })
+                                    .filter((user) => {
+                                      if (userDetails?.role === 'manager') {
+                                        // Include only users who report to the manager or the manager himself
+                                        return (
+                                          (user.reportingManager && user.reportingManager === userDetails._id) ||
+                                          user._id === userDetails._id
+                                        );
+                                      } else {
+                                        // For other roles, include all users
+                                        return true;
+                                      }
+                                    })
                                     .map((user) => {
                                       const {
                                         overdueTasks = 0,
@@ -2590,7 +2583,7 @@ export default function TasksTab({
                                       >
                                         <CircleAlert className="text-red-500 h-4" />
                                         Overdue
-                                      </TabsTrigger2> 
+                                      </TabsTrigger2>
 
                                       {/* Pending Filter */}
                                       <TabsTrigger2

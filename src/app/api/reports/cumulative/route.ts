@@ -8,6 +8,12 @@ import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import { getDataFromToken } from '@/helper/getDataFromToken';
 
+// Define your type guard function
+function isIUser(user: any): user is IUser {
+    return user && typeof user === 'object' && 'firstName' in user && 'lastName' in user;
+}
+
+
 export async function POST(request: NextRequest) {
     await connectDB();
 
@@ -16,7 +22,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const loggedInUser = await User.findById(userId).select('organization');
+    // Get the logged-in user's organization and role
+    const loggedInUser = await User.findById(userId).select('organization role');
     if (!loggedInUser || !loggedInUser.organization) {
         return NextResponse.json({ success: false, message: 'User organization not found' }, { status: 404 });
     }
@@ -33,25 +40,49 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message: 'Invalid date range' }, { status: 400 });
     }
 
-    const userFilter: { [key: string]: any } = { organization: loggedInUser.organization };
-    if (employeeId) {
-        userFilter._id = new mongoose.Types.ObjectId(employeeId);
-    } else if (managerId) {
-        userFilter.reportingManager = new mongoose.Types.ObjectId(managerId);
-    }
-
     try {
+        let userFilter: { [key: string]: any };
+
+        if (loggedInUser.role === 'manager') {
+            // For managers, include only the manager and their direct reports
+            userFilter = {
+                organization: loggedInUser.organization,
+                $or: [
+                    { _id: loggedInUser._id }, // The manager himself
+                    { reportingManager: loggedInUser._id }, // Employees reporting to the manager
+                ],
+            };
+        } else {
+            // For orgAdmin or other roles, include all users in the organization
+            userFilter = { organization: loggedInUser.organization };
+
+            if (employeeId) {
+                userFilter._id = new mongoose.Types.ObjectId(employeeId);
+            } else if (managerId) {
+                userFilter.reportingManager = new mongoose.Types.ObjectId(managerId);
+            }
+        }
+
+        // Fetch the users based on the constructed filter
         const organizationUsers = await User.find(userFilter)
             .select('_id reportingManager firstName lastName')
             .populate('reportingManager', 'firstName lastName');
 
+        console.log("Filtered Users for Report:", organizationUsers);
+
+        // Proceed with your existing logic to generate the report
+        // ...
+
+        // Extract user IDs
         const organizationUserIds = organizationUsers.map(user => user._id);
 
+        // Fetch login entries for filtered users
         const loginEntries = await LoginEntry.find({
             timestamp: { $gte: parsedStartDate, $lte: parsedEndDate },
             userId: { $in: organizationUserIds }
         });
 
+        // Aggregate leaves for filtered users
         const leaves = await Leave.aggregate([
             {
                 $match: {
@@ -73,16 +104,19 @@ export async function POST(request: NextRequest) {
             userLeaveData.set(leave._id.toString(), leave.leaveCount);
         });
 
+        // Fetch holidays
         const holidays = await Holiday.find({
             holidayDate: { $gte: parsedStartDate, $lte: parsedEndDate },
             organization: loggedInUser.organization
         });
 
+        // Calculate days in the period
         const allDaysInPeriod = eachDayOfInterval({ start: parsedStartDate, end: parsedEndDate });
         const weekdaysInPeriod = allDaysInPeriod.filter(day => !isWeekend(day));
         const totalDays = weekdaysInPeriod.length;
         const weekOffs = allDaysInPeriod.filter(isWeekend).length;
 
+        // Map login entries by user ID and date
         const loginDataMap = new Map();
         loginEntries.forEach(entry => {
             const date = format(entry.timestamp, 'yyyy-MM-dd');
@@ -91,12 +125,14 @@ export async function POST(request: NextRequest) {
             loginDataMap.get(userId).add(date);
         });
 
+        // Generate report
         const report = organizationUsers.map(user => {
             const userId = user._id.toString();
             const leaveCount = userLeaveData.get(userId) || 0;
 
             let presentDays = 0;
             let absentDays = 0;
+
             weekdaysInPeriod.forEach(day => {
                 const dayStr = format(day, 'yyyy-MM-dd');
                 if (loginDataMap.has(userId) && loginDataMap.get(userId).has(dayStr)) {
@@ -106,10 +142,10 @@ export async function POST(request: NextRequest) {
                 }
             });
 
+
             let reportingManagerName = 'Not Assigned';
-            if (user.reportingManager && typeof user.reportingManager !== 'string') {
-                const rm = user.reportingManager as unknown as IUser;
-                reportingManagerName = `${rm.firstName} ${rm.lastName}`;
+            if (isIUser(user.reportingManager)) {
+                reportingManagerName = `${user.reportingManager.firstName} ${user.reportingManager.lastName}`;
             }
 
             return {

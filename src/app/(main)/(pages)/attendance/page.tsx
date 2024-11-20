@@ -153,12 +153,12 @@ const AttendanceDashboard: React.FC = () => {
   useEffect(() => {
     const computeCounts = () => {
       setDailyTotalCount(dailyReport?.length || 0);
-    
+
       setDailyPresentCount(dailyReport?.filter(entry => entry.status === 'Present').length || 0);
       setDailyOnLeaveCount(dailyReport?.filter(entry => entry.status === 'On Leave').length || 0);
       setDailyAbsentCount(dailyReport?.filter(entry => entry.status === 'Absent').length || 0);
     };
-    
+
     computeCounts();
   }, [dailyReport]);
 
@@ -351,7 +351,10 @@ const AttendanceDashboard: React.FC = () => {
       const res = await fetch('/api/reports/daily', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, employeeId }),
+        body: JSON.stringify({
+          date, managerId,
+          employeeId,
+        }),
       });
       const data = await res.json();
       setDailyReport(data.report);
@@ -378,6 +381,7 @@ const AttendanceDashboard: React.FC = () => {
   };
 
   const allowedRoles = ['orgAdmin', 'manager'];
+  const adminRoles = ['orgAdmin'];
   const disallowedRoles = ['member'];
 
   useEffect(() => {
@@ -410,35 +414,38 @@ const AttendanceDashboard: React.FC = () => {
       )}
       {allowedRoles.includes(role) && (
         <div className='mb-12  gap-2'>
-          <div className="mb-4 flex gap-2 justify-center w-full">
-            <select
-              className="border rounded text-xs border-[] bg-[#04061E]  outline-none p-2"
-              onChange={(e) => setManagerId(e.target.value)}
-            >
-              <option value="">Select Manager</option>
-              {managers?.map((manager) => (
-                <option key={manager._id} value={manager._id}>
-                  {manager.firstName} {manager.lastName}
-                </option>
-              ))}
-            </select>
-            {/* <label htmlFor="employee" className="mr-2">Employee:</label> */}
-            <select
-              className="border-[#] border outline-none bg-[#04061E] text-xs  rounded p-2"
-              id="employee"
-              onChange={(e) => setEmployeeId(e.target.value)} // Update selected employee
-            >
-              <option value="">Select Employee</option>
-              {employees?.map((employee) => (
-                <option key={employee._id} value={employee._id}>
-                  {employee.firstName} {employee.lastName}
-                </option>
-              ))}
-            </select>
-            {/* <button onClick={fetchCumulativeReport} className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg">
+          {adminRoles.includes(role) && (
+            <div className="mb-4 flex gap-2 justify-center w-full">
+
+              <select
+                className="border rounded text-xs border-[] bg-[#04061E]  outline-none p-2"
+                onChange={(e) => setManagerId(e.target.value)}
+              >
+                <option value="">Select Manager</option>
+                {managers?.map((manager) => (
+                  <option key={manager._id} value={manager._id}>
+                    {manager.firstName} {manager.lastName}
+                  </option>
+                ))}
+              </select>
+              {/* <label htmlFor="employee" className="mr-2">Employee:</label> */}
+              <select
+                className="border-[#] border outline-none bg-[#04061E] text-xs  rounded p-2"
+                id="employee"
+                onChange={(e) => setEmployeeId(e.target.value)} // Update selected employee
+              >
+                <option value="">Select Employee</option>
+                {employees?.map((employee) => (
+                  <option key={employee._id} value={employee._id}>
+                    {employee.firstName} {employee.lastName}
+                  </option>
+                ))}
+              </select>
+              {/* <button onClick={fetchCumulativeReport} className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg">
                 Fetch Report
               </button> */}
-          </div>
+            </div>
+          )}
           <div className='grid grid-cols-2 gap-2'>
             <div className="flex-1 border  shadow-md rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">

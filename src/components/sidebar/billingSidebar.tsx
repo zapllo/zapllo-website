@@ -33,7 +33,7 @@ const BillingSidebar: React.FC = () => {
                         className={`w-[90%] rounded-lg gap-2 px-4 bg-transparent justify-start hover:bg-[#815BF5] hover:rounded-lg mb-2 ${isActive('/dashboard/billing/wallet-logs') ? 'bg-[#815BF5] hover:bg-[#815BF5] rounded-lg text-white' : 'text-gray-400'}`}
                         onClick={() => handleNavigation('/dashboard/billing/wallet-logs')}
                     >
-                        <Wallet className='h-5' /> Wallet Logs
+                        <Wallet className='h-5' /> Billing Logs
                     </Button>
                 </div>
                 {/* <div className='flex justify-center'>

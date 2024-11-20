@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { motion, useAnimation } from "framer-motion";
 import Loader from "@/components/ui/loader";
+import { toast } from "sonner";
 
 interface Category {
   _id: string;
@@ -90,6 +91,7 @@ const IntranetPage: React.FC = () => {
       setCategory("");
       setLoading(false);
       setIsDialogOpen(false); // Close dialog
+      toast.success("Link Added Successfully")
       fetchEntries();
     } catch (error) {
       console.error("Failed to create intranet entry:", error);
@@ -121,131 +123,137 @@ const IntranetPage: React.FC = () => {
   }, [controls]);
 
   return (
-    <div className="p-6 mt-12">
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <div className=" px-2 py-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Intranet</h2>
+    <div className="flex w-full justify-center ">
+      <div className="p-6 mt-12 w-full">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <div className=" px-2 py-4">
+            <div className="flex items-center justify-center">
 
-            <div className="flex items-center space-x-4">
-              <select
-                className="p-2 px-4  bg-[#0B0D29]  outline-none h-[35px] rounded-sm text-xs border-gray-700 "
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="">Select Category</option>
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <DialogTrigger asChild>
-                {/* <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
+              <div className="flex items-center space-x-4">
+                <DialogTrigger asChild>
+                  {/* <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
                 New Links
               </button> */}
-                <Button className="bg-gradient-to-r from-[#815BF5] to-[#FC8929]  text-white font-semibold  px- rounded-lg">
-                  New Link
-                </Button>
-              </DialogTrigger>
-            </div>
-            {/* <input
-              type="text"
-              className="px-4 py-2 text-xs outline-none"
-              placeholder="Search Link Name"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            /> */}
-          </div>
-        </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border font-semibold hover:bg-[#017a5b] border-[#017a5b] text-[#ffffff]  px-4 py-1 rounded"
 
-        {/* Add New Link Modal */}
-        <DialogContent className="z-[100]  w-[480px] rounded-2xl overflow-hidden  ">
-          <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide  h-fit max-h-[600px] rounded-2xl shadow-lg w-full   max-w-lg  rounded-lg">
-            <div className="flex items-center justify-between border-b border-gray-800/50 px-6 py-8 ">
-              <DialogTitle className="text-xl font-semibold text-white">
-                Add New Link
-              </DialogTitle>
-              <DialogClose className="">
-                <CrossCircledIcon className="scale-150 h-4 w-4  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
-              </DialogClose>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
-                <input
-                  type="url"
-                  placeholder="Link URL"
-                  id="linkUrl"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  required
-                  className=" h-12 px-4  block text-sm w-full  bg-transparent outline-none p-2 border rounded-md"
-                  // className="w-full h-12 px-4 bg-transparent text-white  rounded-md border-0 outline-none"
-                />
-              </div>
-
-              <div>
-                {/* <label htmlFor="description" className="block text-xs font-medium text-white -700">Description</label> */}
-                <textarea
-                  id="description"
-                  value={description}
-                  placeholder="Description"
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  className=" w-full min-h-[140px] p-4  block text-sm bg-transparent outline-none w-full p-2 border rounded-md"
-                />
-              </div>
-
-              <div>
-                {/* <label htmlFor="linkName" className="block text-xs font-medium text-white -700">Link Name</label> */}
-                <input
-                  type="text"
-                  id="linkName"
-                  value={linkName}
-                  onChange={(e) => setLinkName(e.target.value)}
-                  required
-                  placeholder="Link Name"
-                  className="w-full h-12 px-4 bg-transparent text-sm outline-none block w-full p-2 border rounded-md"
-                />
-              </div>
-
-              <div>
-                {/* <label htmlFor="category" className="block text-xs font-medium text-white -700">Category</label> */}
+                  >
+                    New Link </Button>
+                </DialogTrigger>
                 <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  required
-                  className=" h-12 px-4  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
+                  className="p-2 px-4  bg-[#0B0D29] border  outline-none h-[35px] rounded-sm text-xs border-gray-700 "
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
                 >
-                  <option value="">Select a category</option>
+                  <option value="">Select Category</option>
                   {categories.map((cat) => (
                     <option key={cat._id} value={cat._id}>
                       {cat.name}
                     </option>
                   ))}
                 </select>
+
+              </div>
+              {/* <input
+              type="text"
+              className="px-4 py-2 text-xs outline-none"
+              placeholder="Search Link Name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            /> */}
+            </div>
+          </div>
+
+          {/* Add New Link Modal */}
+          <DialogContent className="z-[100]   ">
+            <div className="mb-6 ">
+              <div className="flex items-center justify-between border-b  p-6  ">
+                <DialogTitle className="text-md font-semibold text-white">
+                  Add New Link
+                </DialogTitle>
+                <DialogClose className="">
+                  <CrossCircledIcon className="scale-150 h-4 w-4  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                </DialogClose>
               </div>
 
-              <button
-                type="submit"
-                className="bg-[#815BF5] w-full h-12 mt-2 text-lg cursor-pointer  text-white rounded-md"
-              >
-                {loading ? <Loader /> : "Submit Now"}
-              </button>
-            </form>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <div className="">
-        <IntranetTable
-          entries={entries}
-          fetchEntries={fetchEntries}
-          selectedCategory={selectedCategory}
-          searchQuery={searchQuery}
-        />
+              <form onSubmit={handleSubmit} className="px-6 mt-4 space-y-4">
+                <div>
+                  {/* <label htmlFor="linkUrl" className="block text-xs font-medium text-white -700">Link URL</label> */}
+                  <input
+                    type="url"
+                    placeholder="Link URL"
+                    id="linkUrl"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    required
+                    className="  px-4  block text-sm w-full  bg-transparent outline-none p-2 border rounded-md"
+                  // className="w-full h-12 px-4 bg-transparent text-white  rounded-md border-0 outline-none"
+                  />
+                </div>
+
+                <div>
+                  {/* <label htmlFor="description" className="block text-xs font-medium text-white -700">Description</label> */}
+                  <textarea
+                    id="description"
+                    value={description}
+                    placeholder="Description"
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    className=" w-full h-24 px-4  block text-sm bg-transparent outline-none  p-2 border rounded-md"
+                  />
+                </div>
+
+                <div>
+                  {/* <label htmlFor="linkName" className="block text-xs font-medium text-white -700">Link Name</label> */}
+                  <input
+                    type="text"
+                    id="linkName"
+                    value={linkName}
+                    onChange={(e) => setLinkName(e.target.value)}
+                    required
+                    placeholder="Link Name"
+                    className="w-full px-4 bg-transparent text-sm outline-none block  p-2 border rounded-md"
+                  />
+                </div>
+
+                <div>
+                  {/* <label htmlFor="category" className="block text-xs font-medium text-white -700">Category</label> */}
+                  <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                    className=" h-9 px-4  bg-[#0b0d29] block text-xs  outline-none w-full p-2 border rounded-md"
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  className="bg-[#815BF5] w-full  mt-2 py-2 mb-4 text-sm cursor-pointer  text-white rounded-md"
+                >
+                  {loading ? <Loader /> : "Submit Now"}
+                </button>
+              </form>
+            </div>
+          </DialogContent>
+        </Dialog>
+        <div className="w-full  ">
+          <IntranetTable
+            entries={entries}
+            fetchEntries={fetchEntries}
+            selectedCategory={selectedCategory}
+            searchQuery={searchQuery}
+          />
+        </div>
       </div>
     </div>
   );

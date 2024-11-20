@@ -4,6 +4,7 @@ import Leave from '@/models/leaveModel';
 import User, { IUser } from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 import { getDataFromToken } from '@/helper/getDataFromToken';
+import mongoose from 'mongoose';
 
 export async function POST(request: NextRequest) {
   await connectDB();
@@ -13,21 +14,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
-  const loggedInUser = await User.findById(userId).select('organization');
+  // Get the logged-in user's organization and role
+  const loggedInUser = await User.findById(userId).select('organization role');
   if (!loggedInUser || !loggedInUser.organization) {
     return NextResponse.json({ success: false, message: 'User organization not found' }, { status: 404 });
   }
 
-  const { date, employeeId } = await request.json();
+  const { date, employeeId, managerId } = await request.json();
   const startOfDay = new Date(date);
   startOfDay.setHours(0, 0, 0, 0);
   const endOfDay = new Date(date);
   endOfDay.setHours(23, 59, 59, 999);
 
   try {
-    const queryFilter = employeeId
-      ? { _id: employeeId, organization: loggedInUser.organization }
-      : { organization: loggedInUser.organization };
+    let queryFilter: { [key: string]: any };
+
+    if (loggedInUser.role === 'manager') {
+      // For managers, include only the manager and their direct reports
+      queryFilter = {
+        organization: loggedInUser.organization,
+        $or: [
+          { _id: loggedInUser._id }, // The manager himself
+          { reportingManager: loggedInUser._id }, // Employees reporting to the manager
+        ],
+      };
+    } else {
+      // For orgAdmin or other roles, include all users in the organization
+      queryFilter = { organization: loggedInUser.organization };
+
+      if (employeeId) {
+        queryFilter._id = new mongoose.Types.ObjectId(employeeId);
+      } else if (managerId) {
+        queryFilter.reportingManager = new mongoose.Types.ObjectId(managerId);
+      }
+    }
 
     console.log('Fetching organization users with filter:', queryFilter);
     const organizationUsers = await User.find(queryFilter).select('_id firstName lastName');

@@ -88,32 +88,34 @@ export default function WalletLogs({ }: Props) {
             <div className="gap-2 flex mb-6 w-full">
               <div className="-mt-2">
                 <div className="p-4">
-                  <div className="overflow-x-auto  ">
-                    <h2 className="text-lg font-semibold mb-4">Wallet Logs</h2>
-                    <table className="min-w-full  border">
-                      <thead>
-                        <tr className="bg-[#815BF5] -100">
-                          <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Order ID</th>
-                          <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Payment ID</th>
-                          <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Plan</th>
-                          <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Amount</th>
-                          <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Credited</th>
-                          <th className="px-6 py-3 border-b text-left text-sm font-medium text-white -700">Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orderLogs.map((order, index) => (
-                          <tr key={index} className="border-b">
-                            <td className="px-6 py-4 text-sm text-white">{order.orderId}</td>
-                            <td className="px-6 py-4 text-sm text-white">{order.paymentId}</td>
-                            <td className="px-6 py-4 text-sm text-white">{order.planName}</td>
-                            <td className="px-6 py-4 text-sm text-white">₹{order.amount.toFixed(2)}</td>
-                            <td className="px-6 py-4 text-sm text-white">₹{order.creditedAmount.toFixed(2)}</td>
-                            <td className="px-6 py-4 text-sm text-white">{new Date(order.createdAt).toLocaleString()}</td>
+                  <div className="overflow-x-auto rounded-2xl    ">
+                    {/* <h2 className="text-lg font-semibold mb-4">Billing Logs</h2> */}
+                    <div className='rounded-2xl border'>
+                      <table className="min-w-full bg-[#0B0D29] rounded-2xl  ">
+                        <thead className='border-b'>
+                          <tr className="bg-[#] rounded-2xl   -100">
+                            <th className="px-6 py-3   text-left text-sm font-medium text-gray-400 -700">Order ID</th>
+                            <th className="px-6 py-3  text-left text-sm font-medium text-gray-400 -700">Payment ID</th>
+                            <th className="px-6 py-3  text-left text-sm font-medium text-gray-400 -700">Plan</th>
+                            <th className="px-6 py-3  text-left text-sm font-medium text-gray-400 -700">Amount</th>
+                            <th className="px-6 py-3  text-left text-sm font-medium text-gray-400 -700">Credits (-)</th>
+                            <th className="px-6 py-3  text-left text-sm font-medium text-gray-400 -700">Date</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {orderLogs.map((order, index) => (
+                            <tr key={index} className="border-b">
+                              <td className="px-6 py-4 text-sm text-white">{order.orderId}</td>
+                              <td className="px-6 py-4 text-sm text-white">{order.paymentId}</td>
+                              <td className="px-6 py-4 text-sm text-white">{order.planName}</td>
+                              <td className="px-6 py-4 text-sm text-white">₹{order.amount.toFixed(2)}</td>
+                              <td className="px-6 py-4 text-sm text-white">₹{order.creditedAmount.toFixed(2)}</td>
+                              <td className="px-6 py-4 text-sm text-white">{new Date(order.createdAt).toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

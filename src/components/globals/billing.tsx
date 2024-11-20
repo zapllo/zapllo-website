@@ -73,6 +73,17 @@ export default function Billing() {
     }, []);
     console.log(subscribedUserCount, 'subscribed user count for the latest order')
 
+
+    const calculatePaymentDetails = (planCost: number, count: number) => {
+        const subtotal = planCost * count;
+        const discount = Math.min(currentUser?.credits || 0, subtotal);
+        const payableExclGST = Math.max(0, subtotal - discount);
+        const gst = payableExclGST * 0.18;
+        const total = payableExclGST + gst;
+
+        return { subtotal, discount, payableExclGST, gst, total };
+    };
+
     const plans = {
         'Task Pro': 1999,
         'Money Saver Bundle': 3000,
@@ -90,23 +101,34 @@ export default function Billing() {
     };
 
     const handleConfirmUsers = async () => {
+        const plan = selectedPlan as PlanKeys;
+        const { subtotal, discount, payableExclGST, gst, total } = calculatePaymentDetails(plans[plan], userCount);
         try {
-            // Ensure a valid plan is selected
-            if (!selectedPlan || !(selectedPlan in plans)) {
-                console.error("Selected plan is invalid.");
+            // Deduct applied credits from the wallet first
+            const walletDeductionResponse = await axios.post('/api/wallet/deduct', {
+                userId: currentUser?._id,
+                amount: discount, // Deduct only the applied discount amount
+            });
+
+            if (!walletDeductionResponse.data.success) {
+                toast.error('Failed to deduct credits. Please try again.');
                 return;
             }
 
-            const plan = selectedPlan as PlanKeys;
-            const planCost = plans[plan];
+            // Show success message for credit deduction
+            toast.success(`Discount of ₹${discount} applied using wallet credits.`);
 
-            // Calculate the total amount for the selected number of additional users
-            const amountExclGST = additionalUserCount * planCost;
-            const gstAmount = amountExclGST * 0.18; // 18% GST
-            const totalAmount = amountExclGST + gstAmount;
+            // If the total payable amount is zero, complete the payment here
+            if (total === 0) {
+                toast.success('Payment successful! No additional amount charged.');
+                setIsDialogOpen(false);
+                setModalStep(1);
+                setGstNumber('');
+                return;
+            }
 
             const orderData = {
-                amount: totalAmount * 100, // Amount in paise
+                amount: total * 100, // Amount in paise
                 currency: 'INR',
                 subscribedUserCount: totalUserCount, // Pass the updated user count
                 planName: plan // Pass the selected plan
@@ -235,28 +257,50 @@ export default function Billing() {
             return;
         }
         const plan = selectedPlan as PlanKeys;
-        const planCost = plans[plan];
-        const amountExclGST = userCount * planCost;
-        const gstAmount = amountExclGST * 0.18;
-        const totalAmount = amountExclGST + gstAmount;
-        const orderData = {
-            amount: totalAmount * 100,
-            currency: 'INR',
-            receipt: 'receipt_order_123456',
-            notes: {
-                email: currentUser?.email,
-                whatsappNo: currentUser?.whatsappNo,
-                planName: plan,
-                gstNumber: gstNumber,
-            },
-            subscribedUserCount: userCount // Store the selected number of users
-
-        };
+        const { subtotal, discount, payableExclGST, gst, total } = calculatePaymentDetails(plans[plan], userCount);
         try {
+            // Deduct applied credits from the wallet first
+            const walletDeductionResponse = await axios.post('/api/wallet/deduct', {
+                userId: currentUser?._id,
+                amount: discount, // Deduct only the applied discount amount
+            });
+
+            if (!walletDeductionResponse.data.success) {
+                toast.error('Failed to deduct credits. Please try again.');
+                return;
+            }
+
+            // Show success message for credit deduction
+            toast.success(`Discount of ₹${discount} applied using wallet credits.`);
+
+            // If the total payable amount is zero, complete the payment here
+            if (total === 0) {
+                toast.success('Payment successful! No additional amount charged.');
+                setIsDialogOpen(false);
+                setModalStep(1);
+                setGstNumber('');
+                return;
+            }
+
+            // Proceed with Razorpay checkout for non-zero payable amounts
+            const orderData = {
+                amount: total * 100, // Amount in paise
+                currency: 'INR',
+                receipt: 'receipt_order_123456',
+                notes: {
+                    email: currentUser?.email,
+                    whatsappNo: currentUser?.whatsappNo,
+                    planName: plan,
+                    gstNumber: gstNumber,
+                },
+                subscribedUserCount: userCount, // Store the selected number of users
+            };
+
             const { data } = await axios.post('/api/create-order', orderData);
             if (!data.orderId) {
                 throw new Error('Order ID not found in the response');
             }
+
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
                 amount: orderData.amount,
@@ -270,7 +314,7 @@ export default function Billing() {
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_signature: response.razorpay_signature,
-                        planName: plan
+                        planName: plan,
                     };
                     try {
                         const { data: verificationResult } = await axios.post('/api/payment-success', {
@@ -280,13 +324,13 @@ export default function Billing() {
                             gstNumber: gstNumber,
                             subscribedUserCount: userCount,
                         });
+
                         if (verificationResult.success) {
                             toast.success('Payment successful!');
                             setIsDialogOpen(false);
                             setModalStep(1);
                             setGstNumber('');
                         } else {
-                            // Payment verification failed
                             router.push('/payment-failed'); // Redirect to payment failed page
                         }
                     } catch (error) {
@@ -306,11 +350,12 @@ export default function Billing() {
                     color: '#007A5A',
                 },
             };
+
             const rzp1 = new (window as any).Razorpay(options);
             rzp1.open();
         } catch (error) {
-            console.error('Error creating order: ', error);
-            toast.error('Error creating order. Please try again.');
+            console.error('Error processing payment:', error);
+            toast.error('Error processing payment. Please try again.');
         }
     };
 
@@ -417,7 +462,7 @@ export default function Billing() {
 
     return (
         <div className="flex w-full ">
-                        {/* <Toaster /> */}
+            {/* <Toaster /> */}
             <BillingSidebar />
             {currentUser?.role === "orgAdmin" ? (
                 <div className="flex-1 overflow-y-scroll h-screen  p-4">
@@ -533,14 +578,13 @@ export default function Billing() {
                                                 <h1>Amount (excluding GST) = </h1>
                                                 INR {userCount * plans[selectedPlan]}
                                             </div>
-                                            <div className='flex gap-4'>
-                                                <h1>GST (18%) = </h1>
-                                                INR {(userCount * plans[selectedPlan] * 0.18).toFixed(2)}
+                                            <div>
+                                                <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits || 0, plans[selectedPlan] * userCount)}</h1></div>
+                                            <div>
+                                                Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits))}
                                             </div>
-                                            <div className='flex gap-4'>
-                                                <h1>Total Amount (including GST) = </h1>
-                                                INR {(userCount * plans[selectedPlan] * 1.18).toFixed(2)}
-                                            </div>
+                                            <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
+                                            <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
                                             <div className="mt-4">
                                                 <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
                                                 <input
@@ -575,7 +619,7 @@ export default function Billing() {
                                             <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
                                             <div className="flex gap-4 mt-4">
                                                 <div>Subscribe Users: {subscribedUserCount}</div>
-                                                <div>Valid Till: <span className="text-blue-500">Jul 3, 2025</span></div>
+                                                <div>Valid Till: <span className="text-blue-500">{formatDate(renewsOn)}</span></div>
                                             </div>
 
                                             <div className="mt-4">
@@ -611,14 +655,14 @@ export default function Billing() {
                                                 <h1>Amount (excluding GST) = </h1>
                                                 INR {additionalUserCount * plans[selectedPlan]}
                                             </div>
-                                            <div className='flex gap-4'>
-                                                <h1>GST (18%) = </h1>
-                                                INR {(additionalUserCount * plans[selectedPlan] * 0.18).toFixed(2)}
+                                            <div>
+                                                <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits || 0, plans[selectedPlan] * additionalUserCount)}</h1></div>
+                                            <div>
+                                                Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * additionalUserCount - (currentUser?.credits))}
                                             </div>
-                                            <div className='flex gap-4'>
-                                                <h1>Total Amount (including GST) = </h1>
-                                                INR {(additionalUserCount * plans[selectedPlan] * 1.18).toFixed(2)}
-                                            </div>
+                                            <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * additionalUserCount - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
+                                            <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * additionalUserCount - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
+
                                             <div className="mt-4">
                                                 <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
                                                 <input
@@ -913,6 +957,6 @@ export default function Billing() {
                     </div>
                 </div>
             }
-        </div>
+        </div >
     );
 }
