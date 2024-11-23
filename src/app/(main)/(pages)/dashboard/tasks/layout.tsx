@@ -17,6 +17,7 @@ type Props = { children: React.ReactNode };
 const Layout = (props: Props) => {
     const [isTrialExpired, setIsTrialExpired] = useState(false);
     const [isTaskAccess, setIsTaskAccess] = useState<boolean | undefined>(undefined);
+    const [isTaskLocked, setIsTaskLocked] = useState<boolean | undefined>(undefined);
     const router = useRouter();
 
     useEffect(() => {
@@ -36,7 +37,13 @@ const Layout = (props: Props) => {
                 setIsTrialExpired(isExpired);
 
                 // Redirect if trial has expired or user lacks task access
-                if (!user.isTaskAccess || isExpired) {
+               
+                // Redirect if trial has expired, user lacks task access, or the subscribed plan is not suitable
+                if (
+                    !user.isTaskAccess || 
+                    isExpired || 
+                    ['Zapllo Payroll', 'Money Saver Bundle'].includes(organization.subscribedPlan)
+                ) {
                     router.push('/dashboard');
                 }
             } catch (error) {

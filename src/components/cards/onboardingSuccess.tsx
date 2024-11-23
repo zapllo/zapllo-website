@@ -57,7 +57,7 @@ const RegistrationSuccess = () => {
                 <p className="mt-8 text-gray-300">
                     Join The{" "}
                     <span className="text-green-400 font-medium">
-                        "Zapllo Business Workspace Community"
+                    &quot;Zapllo Business Workspace Community&quot;
                     </span>{" "}
                     on WhatsApp For More Updates
                 </p>
@@ -70,9 +70,9 @@ const RegistrationSuccess = () => {
                     </button>
                 </div>
                 {/* Motivational Message */}
-              
+
             </div>
-         
+
         </div>
     );
 };

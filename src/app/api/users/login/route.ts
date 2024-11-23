@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
             httpOnly: true,  // This makes the cookie inaccessible to client-side JavaScript
             secure: process.env.NODE_ENV === "production",  // Ensures the cookie is only sent over HTTPS in production
             sameSite: "strict",  // Prevents the cookie from being sent along with cross-site requests
-            maxAge: 24 * 60 * 60,  // The duration (in seconds) for which the cookie will be valid (1 day here)
+            maxAge: 15 * 24 * 60 * 60, // 15 days in seconds
             path: "/",  // The path scope of the cookie
         });
         
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 24 * 60 * 60, // 1 day
+            maxAge: 15 * 24 * 60 * 60, // 15 days in seconds
             path: "/",
         });
 

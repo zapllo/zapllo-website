@@ -163,10 +163,7 @@ interface Task {
   completionDate: string;
   attachment?: string[];
   links?: string[];
-  reminders: [{
-    email?: Reminder | null; // Use the updated Reminder type
-    whatsapp?: Reminder | null; // Use the updated Reminder type
-  }] | null;
+  reminders: Reminder[];
   status: string;
   comments: Comment[];
   createdAt: string;
@@ -1480,7 +1477,7 @@ export default function TasksTab({
                                   className="gap-4"
                                 >
                                   <TabsList2 className="flex gap-4">
-                                    {userDetails?.role === "orgAdmin" || userDetails?.role === "manager" && (
+                                    {(userDetails?.role === "orgAdmin" || userDetails?.role === "manager") && (
                                       <>
                                         <TabsTrigger2
                                           className="flex gap-1 text-xs tabs-trigger"

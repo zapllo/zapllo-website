@@ -99,21 +99,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check if the user is part of an organization and update the organization's isPro status
     if (user.organization) {
       const subscriptionExpires = new Date();
       subscriptionExpires.setDate(subscriptionExpires.getDate() + 365);
 
+      // Update organization's fields only if the plan is not 'Recharge'
+      const organizationUpdate: Partial<{
+        isPro: boolean;
+        subscriptionExpires: Date;
+        subscribedPlan: string;
+        subscribedUserCount: number;
+      }> = {
+        isPro: true,
+        subscriptionExpires,
+      };
+
+      if (planName !== 'Recharge') {
+        organizationUpdate.subscribedPlan = planName;
+        organizationUpdate.subscribedUserCount = subscribedUserCount;
+      }
+
       await Organization.updateOne(
         { _id: user.organization },
-        {
-          $set: {
-            isPro: true,
-            subscribedPlan: planName,
-            subscribedUserCount,
-            subscriptionExpires,
-          },
-        }
+        { $set: organizationUpdate }
       );
     }
 

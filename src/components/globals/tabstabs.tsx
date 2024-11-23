@@ -29,6 +29,7 @@ import { getCountryCallingCode } from 'libphonenumber-js';
 import UserCountry from "./userCountry";
 import { Switch } from "../ui/switch";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface User {
   _id: string;
@@ -241,20 +242,26 @@ export default function TeamTabs() {
         setSelectedManager("");
         toast.success("New member added successfully!");
         fetchUsers();
-      } else {
-        // Specific handling for subscription limit
-        if (data.error === "User limit reached for the current plan.") {
-          setErrorMessage("You have reached the maximum number of members for your current plan.");
-        } else if (data.error === "A user with this email already exists.") {
-          setErrorMessage("This email is already registered.");
-        } else {
-          setErrorMessage("An unexpected error occurred. Please try again.");
-        }
       }
     } catch (error: any) {
       console.error("Error creating user:", error);
       if (error.response && error.response.data && error.response.data.error) {
         setErrorMessage(error.response.data.error); // Display specific server error message
+        // Specific handling for subscription limit
+        if (error.response.data.error === "User limit reached for the current plan.") {
+          // alert(error.response.data.error);
+          toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+            <div className="w-full flex   justify-center">
+              <DotLottieReact
+                src="/lottie/error.lottie"
+                loop
+                autoplay
+              />
+            </div>
+            <h1 className="text-black text-center font-medium text-lg">You have reached the maximum number of members for your current plan</h1>
+          </div>);
+          setErrorMessage("You have reached the maximum number of members for your current plan.");
+        }
       } else {
         setErrorMessage("An unexpected error occurred. Please try again.");
       }
@@ -262,7 +269,7 @@ export default function TeamTabs() {
       setLoading(false); // Stop loader
     }
   };
-  console.log(errorMessage, "errorrr");
+  // console.log(errorMessage, "errorrr");
 
   const clearFields = () => {
     setIsModalOpen(false);

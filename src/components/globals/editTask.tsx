@@ -78,10 +78,7 @@ interface Task {
   completionDate: string;
   attachment?: string[];
   links?: string[];
-  reminders: [{
-    email?: Reminder | null; // Use the updated Reminder type
-    whatsapp?: Reminder | null; // Use the updated Reminder type
-  }] | null;
+  reminders: Reminder[];
   status: string;
   comments: Comment[];
   createdAt: string;
@@ -147,6 +144,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
     status: "Pending",
     reminders: [] as Reminder[], // Add reminders field with Reminder[] type
   });
+
   const [links, setLinks] = useState<string[]>([""]);
   const [files, setFiles] = useState<File[]>([]); // Updated to handle array of files
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -225,15 +223,8 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
   // Working On Add  Reminder
 
   // Reminder state and handlers
-  const [reminders, setReminders] = useState<Reminder[]>(() => {
-    // Ensure task and task.reminders are defined, then flatten the reminders array
-    return task?.reminders
-      ? task.reminders.flatMap(({ email, whatsapp }) => [
-        ...(email ? [email] : []), // Include email reminder if it exists
-        ...(whatsapp ? [whatsapp] : []), // Include whatsapp reminder if it exists
-      ])
-      : []; // Default to an empty array if task.reminders is undefined
-  });
+  const [reminders, setReminders] = useState<Reminder[]>(task?.reminders || []);
+
 
   const [tempReminders, setTempReminders] = useState<Reminder[]>([]);
   // States for input controls

@@ -167,16 +167,25 @@ export default function SignupPage() {
     country.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      onSignup();
+    }
+  };
 
   return (
     <>
-      <div className="relative flex bg-[#04071F] items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
+      <div
+        
+        className="relative flex bg-[#04071F] items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
         <div className="z-10 bg-[#04071F]">
           <Meteors number={30} />
         </div>
         {/* <Toaster /> */} {/* Sonner toaster for notifications */}
-        <div className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+        <div
+        onKeyDown={handleKeyDown} // Listen for keydown events here
+        tabIndex={0} // Ensure the div is focusable for key events
+        className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           {showOrganizationForm ? (
             <ArrowLeft
               onClick={() => setShowOrganizationForm(false)}
@@ -454,10 +463,10 @@ export default function SignupPage() {
                   )}
                 </div>
               </LabelInputContainer>
-              <div  className="flex  relative mb-2">
+              <div className="flex  relative mb-2">
                 <div onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex w-full  items-center cursor-pointer bg-[#04071f]  border rounded  p-3 relative"
-                  
+
                 >
                   <Flag code={selectedCountry} className="w-6 h-4 mr-2" />
                   <button className="bg-[#04071f] text-white w-full text-left text-sm focus:outline-none">

@@ -230,7 +230,7 @@ const Categories: React.FC = () => {
   return (
     <div className="p-4 h-screen overflow-y-scroll scrollbar-hide ">
       {/* <h1 className='text- text-xl font-medium bg-[#0A0D28]   py-2 rounded px-2'>Category</h1> */}
-                  {/* <Toaster /> */}
+      {/* <Toaster /> */}
       <div className="flex justify-start bg- rounded ">
         {role === "orgAdmin" && (
           <div className="flex justify-center w-full">
@@ -256,185 +256,98 @@ const Categories: React.FC = () => {
         )}
       </div>
       {role === "orgAdmin" && (
-        <Dialog open={isDialogOpen} onOpenChange={handleClose}>
-          <DialogTrigger asChild>
-            <div className="">
-              <div
-                className="  rounded-lg w-72 border  mt-2 px-4 py-2 cursor-pointer"
-                onClick={handleAddSuggestedCategories}
-              >
-                <div className="flex gap-2  mt-4 items-center text-muted-foreground">
-                  <img src="/branding/AII.png" className="h-10" />
-                  <img src="/branding/zapllo ai.png" className="h-5 mt-2" />
-                </div>
-                <p className="text-muted-foreground text-xs w-fit mt-4">
-                  Use our intelligent AI engine to analyze your industry and
-                  carefully curate a selection of categories for your workflow.
-                </p>
-                <Button className="flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#5e38d0]">
-                  <Plus className="h-4" />
-                  <h1 className="text-xs font-medium">
-                    Add Suggested Categories
-                  </h1>
-                </Button>
-              </div>
-            </div>
-          </DialogTrigger>
-
-          <DialogContent className="z-[100] w-full p-6  max-w-5xl">
-            <div className="flex justify-between ">
+        <div>
+          <Dialog open={isDialogOpen} onOpenChange={handleClose}>
+            <DialogTrigger asChild>
               <div className="">
-                <div className="flex gap-2 items-center text-muted-foreground">
-                  <img src="/branding/AII.png" className="h-7" />
-                  <img src="/branding/zapllo ai.png" className="h-4 mt-2" />
+                <div
+                  className="  rounded-lg w-72 border  mt-2 px-4 py-2 cursor-pointer"
+                  onClick={handleAddSuggestedCategories}
+                >
+                  <div className="flex gap-2  mt-4 items-center text-muted-foreground">
+                    <img src="/branding/AII.png" className="h-10" />
+                    <img src="/branding/zapllo ai.png" className="h-5 mt-2" />
+                  </div>
+                  <p className="text-muted-foreground text-xs w-fit mt-4">
+                    Use our intelligent AI engine to analyze your industry and
+                    carefully curate a selection of categories for your workflow.
+                  </p>
+                  <Button className="flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#5e38d0]">
+                    <Plus className="h-4" />
+                    <h1 className="text-xs font-medium">
+                      Add Suggested Categories
+                    </h1>
+                  </Button>
                 </div>
-                {/* <DialogTitle className='text-md mt-4 '>✨ Suggested Categories
+              </div>
+            </DialogTrigger>
+
+            <DialogContent className="z-[100] w-full p-6  max-w-5xl">
+              <div className="flex justify-between ">
+                <div className="">
+                  <div className="flex gap-2 items-center text-muted-foreground">
+                    <img src="/branding/AII.png" className="h-7" />
+                    <img src="/branding/zapllo ai.png" className="h-4 mt-2" />
+                  </div>
+                  {/* <DialogTitle className='text-md mt-4 '>✨ Suggested Categories
 
                             </DialogTitle> */}
 
-                <DialogDescription className="mt-4 ml-1 text-xs ">
-                  Our intelligent AI engine has analyzed your industry and
-                  carefully curated a selection of categories. Choose the ones
-                  that suit your business, and let’s add them to your workflow
-                  effortlessly!
-                </DialogDescription>
+                  <DialogDescription className="mt-4 ml-1 text-xs ">
+                    Our intelligent AI engine has analyzed your industry and
+                    carefully curated a selection of categories. Choose the ones
+                    that suit your business, and let’s add them to your workflow
+                    effortlessly!
+                  </DialogDescription>
+                </div>
+                <div>
+                  <DialogClose>
+                    <CrossCircledIcon className="scale-150 mt-1 cursor-pointer hover:bg-white rounded-full hover:text-[#815BF5]" />
+                  </DialogClose>
+                </div>
               </div>
-              <div>
-                <DialogClose>
-                  <CrossCircledIcon className="scale-150 mt-1 cursor-pointer hover:bg-white rounded-full hover:text-[#815BF5]" />
-                </DialogClose>
+              {loadingAI && <Loader />}{" "}
+              {/* Show loader while fetching AI categories */}
+              <div className="grid grid-cols-3 gap-4 mt-6 ">
+                {suggestedCategories.map((category, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      if (selectedCategories.includes(category)) {
+                        setSelectedCategories(
+                          selectedCategories.filter((cat) => cat !== category)
+                        );
+                      } else {
+                        setSelectedCategories([...selectedCategories, category]);
+                      }
+                    }}
+                    className={`cursor-pointer border-2 text-xs rounded-lg p-2 hover:shadow-lg transition-all ${selectedCategories.includes(category)
+                      ? "bg-gradient-to-l from-[#815BF5] to-purple-900 text-white border-transparent"
+                      : "border text-white -700 "
+                      }`}
+                  >
+                    <h3 className="font-medium">
+                      {typeof category === "string" ? category : category.name}
+                    </h3>
+                    <p className="text-xs mt-1 text-muted-foreground">
+                      Tap to select
+                    </p>
+                  </div>
+                ))}
               </div>
-            </div>
-            {loadingAI && <Loader />}{" "}
-            {/* Show loader while fetching AI categories */}
-            <div className="grid grid-cols-3 gap-4 mt-6 ">
-              {suggestedCategories.map((category, index) => (
-                <div
-                  key={index}
-                  onClick={() => {
-                    if (selectedCategories.includes(category)) {
-                      setSelectedCategories(
-                        selectedCategories.filter((cat) => cat !== category)
-                      );
-                    } else {
-                      setSelectedCategories([...selectedCategories, category]);
-                    }
-                  }}
-                  className={`cursor-pointer border-2 text-xs rounded-lg p-2 hover:shadow-lg transition-all ${selectedCategories.includes(category)
-                    ? "bg-gradient-to-l from-[#815BF5] to-purple-900 text-white border-transparent"
-                    : "border text-white -700 "
-                    }`}
+              <DialogFooter>
+                <Button
+                  onClick={handleCreateCategoriesFromSelection}
+                  className="mt-6 bg-[#017a5b] text-white hover:bg-[#017a5b] w-full"
                 >
-                  <h3 className="font-medium">
-                    {typeof category === "string" ? category : category.name}
-                  </h3>
-                  <p className="text-xs mt-1 text-muted-foreground">
-                    Tap to select
-                  </p>
-                </div>
-              ))}
-            </div>
-            <DialogFooter>
-              <Button
-                onClick={handleCreateCategoriesFromSelection}
-                className="mt-6 bg-[#017a5b] text-white hover:bg-[#017a5b] w-full"
-              >
-                {loading ? <Loader /> : "Confirm & Save"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-      {role === "manager" && (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <div className="">
-              <div
-                className="  rounded-lg w-72 border  mt-2 px-4 py-2 cursor-pointer"
-                onClick={handleAddSuggestedCategories}
-              >
-                <div className="flex gap-2  mt-4 items-center text-muted-foreground">
-                  <img src="/branding/AII.png" className="h-10" />
-                  <img src="/branding/zapllo ai.png" className="h-5 mt-2" />
-                </div>
-                <p className="text-muted-foreground text-xs w-fit mt-4">
-                  Use our intelligent AI engine to analyze your industry and
-                  carefully curate a selection of categories for your workflow.
-                </p>
-                <Button className="flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#815BF5]">
-                  <Plus className="h-4" />
-                  <h1 className="text-xs font-medium">
-                    Add Suggested Categories
-                  </h1>
+                  {loading ? <Loader /> : "Confirm & Save"}
                 </Button>
-              </div>
-            </div>
-          </DialogTrigger>
-
-          <DialogContent className="z-[100]">
-            <div className="flex justify-between">
-              <div className="">
-                <div className="flex gap-2 items-center text-muted-foreground">
-                  <img src="/branding/AII.png" className="h-7" />
-                  <img src="/branding/zapllo ai.png" className="h-4 mt-2" />
-                </div>
-                {/* <DialogTitle className='text-md mt-4 '>✨ Suggested Categories
-
-                            </DialogTitle> */}
-
-                <DialogDescription className="mt-4 ml-1 text-xs ">
-                  Our intelligent AI engine has analyzed your industry and
-                  carefully curated a selection of categories. Choose the ones
-                  that suit your business, and let’s add them to your workflow
-                  effortlessly!
-                </DialogDescription>
-              </div>
-              <div>
-                <DialogClose>
-                  <CrossCircledIcon className="scale-150 mt-1 cursor-pointer hover:bg-white rounded-full hover:text-[#815BF5]" />
-                </DialogClose>
-              </div>
-            </div>
-            {loadingAI && <Loader />}{" "}
-            {/* Show loader while fetching AI categories */}
-            <div className="grid grid-cols-3 gap-4 mt-6 ">
-              {suggestedCategories.map((category, index) => (
-                <div
-                  key={index}
-                  onClick={() => {
-                    if (selectedCategories.includes(category)) {
-                      setSelectedCategories(
-                        selectedCategories.filter((cat) => cat !== category)
-                      );
-                    } else {
-                      setSelectedCategories([...selectedCategories, category]);
-                    }
-                  }}
-                  className={`cursor-pointer border-2 text-xs rounded-lg p-2 hover:shadow-lg transition-all ${selectedCategories.includes(category)
-                    ? "bg-gradient-to-l from-[#815BF5] to-purple-900 text-white border-transparent"
-                    : "border text-white -700 "
-                    }`}
-                >
-                  <h3 className="font-medium">
-                    {typeof category === "string" ? category : category.name}
-                  </h3>
-                  <p className="text-xs mt-1 text-muted-foreground">
-                    Tap to select
-                  </p>
-                </div>
-              ))}
-            </div>
-            <DialogFooter>
-              <Button
-                onClick={handleCreateCategoriesFromSelection}
-                className="mt-6 bg-[#017a5b] text-white hover:bg-[#017a5b] w-full"
-              >
-                {loading ? <Loader /> : "Confirm & Save"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       )}
+ 
       <div
         className={`${loading
           ? "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"

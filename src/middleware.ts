@@ -15,11 +15,13 @@ export function middleware(request: NextRequest) {
         const currentTime = new Date().getTime();
         const elapsedTime = currentTime - Number(loginTime);
 
-        if (elapsedTime > 3600000) {  // Check if more than 1 hour has passed
+        const fifteenDaysInMilliseconds = 15 * 24 * 60 * 60 * 1000; // 15 days in milliseconds
+
+        if (elapsedTime > fifteenDaysInMilliseconds) { // Check if more than 15 days have passed
             // Clear cookies if session expired
             const response = NextResponse.redirect(new URL('/login', request.nextUrl));
-            response.cookies.set('token', '', { maxAge: 0, path: '/' });  // Clear the token cookie
-            response.cookies.set('loginTime', '', { maxAge: 0, path: '/' });  // Clear the loginTime cookie
+            response.cookies.set('token', '', { maxAge: 0, path: '/' }); // Clear the token cookie
+            response.cookies.set('loginTime', '', { maxAge: 0, path: '/' }); // Clear the loginTime cookie
             return response;
         }
     }
@@ -40,7 +42,26 @@ export function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/dashboard',
-        '/profile',
+        '/attendance',
+        '/attendance/my-leaves',
+        '/attendance/all-leaves',
+        '/attendance/all-attendance',
+        '/attendance/my-attendance',
+        '/attendance/settings/leave-types',
+        '/attendance/settings',
+        '/attendance/holidays',
+        '/attendance/approvals',
+        '/attendance/settings/register-faces',
+        '/dashboard/profile',
+        '/dashboard/billing',
+        '/dashboard/settings',
+        '/dashboard/tasks',
+        '/intranet',
+        '/intranet',
+        '/help/tickets',
+        '/help/tickets',
+        '/help/events',
+        '/dashboard/teams',
         '/login',
         '/signup',
         '/verifyemail'

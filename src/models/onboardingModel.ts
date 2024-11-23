@@ -12,7 +12,6 @@ interface Ionboarding extends Document {
     amount: number;
     planName: string;
     countryCode: string;
-    creditedAmount: number;
     createdAt: Date;
     subscribedUserCount: number;
 }
@@ -28,6 +27,10 @@ const OnboardingSchema: Schema<Ionboarding> = new Schema(
             required: true,
         },
         companyName: {
+            type: String,
+            required: true,
+        },
+        industry: {
             type: String,
             required: true,
         },
@@ -58,9 +61,6 @@ const OnboardingSchema: Schema<Ionboarding> = new Schema(
         planName: {
             type: String,
             required: true,
-        },
-        creditedAmount: {
-            type: Number,
         },
         subscribedUserCount: {
             type: Number,

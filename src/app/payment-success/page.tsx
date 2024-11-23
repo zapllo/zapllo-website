@@ -9,7 +9,7 @@ const PaymentSuccess = () => {
   const router = useRouter();
 
   const handleBackToTasks = () => {
-    router.push('/dashboard');
+    router.replace('/dashboard/billing');
   };
 
   return (
@@ -45,7 +45,7 @@ const PaymentSuccess = () => {
             className="mt-6 bg-[#007A5A] hover:bg-[#006148] text-white transition-colors duration-200 px-6 py-3 text-lg rounded-md"
             onClick={handleBackToTasks}
           >
-            Back to Dashboard
+            Back to Billing
           </Button>
         </Card>
       </div>

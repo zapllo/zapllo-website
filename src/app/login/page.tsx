@@ -30,7 +30,9 @@ export default function LoginPage() {
         // Check if the user is already logged in
         const token = Cookies.get("token");
         if (token) {
-            router.replace("/dashboard");
+            setTimeout(() => {
+                router.replace("/dashboard");
+            }, 100); // Delay for cookie propagation
         }
     }, [router]);
 
@@ -39,10 +41,14 @@ export default function LoginPage() {
         try {
             setLoading(true);
             setUserLoading(true)
-            const response = await axios.post("/api/users/login", user);
+            const response = await axios.post("/api/users/login", user, {
+                withCredentials: true, // Ensure cookies are handled properly
+            });
             if (response.status === 200) {
-                Cookies.set("token", response.data.token);
-                router.replace("/dashboard");
+                // Ensure cookie is set before redirect
+                setTimeout(() => {
+                    router.replace("/dashboard");
+                }, 100); // Small delay to ensure cookie propagation
             }
         } catch (error: any) {
             console.log("Login failed", error.message);
@@ -52,6 +58,13 @@ export default function LoginPage() {
             setUserLoading(false)
         }
     };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "Enter") {
+            onLogin();
+        }
+    };
+
 
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -74,7 +87,10 @@ export default function LoginPage() {
                     </div>
                 </div>
             )}
-            <div className="relative flex bg-[#211123] h-screen z-[50] items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
+            <div
+                onKeyDown={handleKeyDown} // Listen for keydown events here
+                tabIndex={0} // Ensure the div is focusable for key events
+                className="relative flex bg-[#211123] h-screen z-[50] items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
                 <div className="z-10 bg-[#211123]">
                     <Meteors number={30} />
                 </div>

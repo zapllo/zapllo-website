@@ -19,6 +19,8 @@ const DashboardPage = () => {
   const [attendanceTrialExpires, setAttendanceTrialExpires] = useState(Date());
   const [role, setRole] = useState<string | null>(null); // Track the user's role
   const [isLeaveAcess, setIsLeaveAccess] = useState<boolean | null>(null); // Track the user's role
+  const [isPlanEligible, setIsPlanEligible] = useState<boolean | null>(null); // Track the user's role
+  const [isTaskPlanEligible, setIsTaskPlanEligible] = useState<boolean | null>(null); // Track the user's role
   const [isTaskAccess, setIsTaskAccess] = useState<boolean | null>(null); // Track the user's role
   const [isSubscribed, setIsSubscribed] = useState<boolean | null>(false); // Track the user's role
   const router = useRouter();
@@ -107,20 +109,34 @@ const DashboardPage = () => {
 
   const fetchTrialStatus = async () => {
     const response = await axios.get("/api/organization/getById");
-    const { leavesTrialExpires, attendanceTrialExpires, isPro } = response.data.data;
+    const {
+      leavesTrialExpires,
+      attendanceTrialExpires,
+      isPro,
+      subscribedPlan,
+    } = response.data.data;
+
+    const eligiblePlans = ["Money Saver Bundle", "Zapllo Payroll"];
+    const taskEligiblePlans = ["Task Pro", "Money Saver Bundle"]; // Define task-eligible plans
+    const isPlanEligible = eligiblePlans.includes(subscribedPlan);
+    const isTaskPlanEligible = taskEligiblePlans.includes(subscribedPlan);
+
     setLeavesTrialExpires(
-      leavesTrialExpires && new Date(leavesTrialExpires) > new Date()
+      isPlanEligible || (leavesTrialExpires && new Date(leavesTrialExpires) > new Date())
         ? leavesTrialExpires
         : null
     );
     setAttendanceTrialExpires(
-      attendanceTrialExpires && new Date(attendanceTrialExpires) > new Date()
+      isPlanEligible || (attendanceTrialExpires && new Date(attendanceTrialExpires) > new Date())
         ? attendanceTrialExpires
         : null
     );
     setIsSubscribed(isPro);
+    setIsPlanEligible(isPlanEligible);
+    setIsTaskPlanEligible(isTaskPlanEligible); // Track task plan eligibility
     setIsLoading(false); // Data fetched, stop showing the global loader
   };
+
 
   useEffect(() => {
     fetchTrialStatus();
@@ -208,7 +224,7 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo Tasks</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className="pt-2">
-                {role === "orgAdmin" || isTaskAccess ? (
+                 {(isTaskAccess || isTaskPlanEligible) ? (
                   <Link href="/dashboard/tasks">
                     <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
                       Go To Task Management
@@ -251,8 +267,14 @@ const DashboardPage = () => {
                 Manage your Employee Leaves & Holidays
               </p>
               <div className="">
-                {role === "orgAdmin" || isLeaveAcess ? (
-                  leavesTrialExpires ? (
+                { isLeaveAcess ? (
+                  isPlanEligible ? (
+                    <Link href="/attendance/my-leaves">
+                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                        Go To Leaves
+                      </Button>
+                    </Link>
+                  ) : leavesTrialExpires ? (
                     <>
                       <p className="text-xs text-red-600 py-2">
                         Free Trial Expires {leavesRemainingTime}
@@ -313,8 +335,14 @@ const DashboardPage = () => {
                 Track your Team Attendance & Breaks
               </p>
               <div className="">
-                {role === "orgAdmin" || isLeaveAcess ? (
-                  leavesTrialExpires ? (
+                {isLeaveAcess ? (
+                  isPlanEligible ? (
+                    <Link href="/attendance/my-leaves">
+                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                        Go To Leaves
+                      </Button>
+                    </Link>
+                  ) : leavesTrialExpires ? (
                     <>
                       <p className="text-xs text-red-600 py-2">
                         Free Trial Expires {leavesRemainingTime}
@@ -391,8 +419,8 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

@@ -419,9 +419,21 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
     setTotalAppliedDays(totalDays);
   }, [formData.leaveDays]);
 
+
+  useEffect(() => {
+    const requestedDays = calculateTotalAppliedDays(); // Calculate requested days based on leaveDays
+    if (userLeaveBalance !== null && requestedDays > userLeaveBalance) {
+      const exceededDays = requestedDays - userLeaveBalance; // Calculate exceeded days
+      setError(`Leave request exceeds balance by ${exceededDays} day(s), please apply them under any other leave type`);
+    } else {
+      setError(null);
+    }
+  }, [formData.leaveDays, userLeaveBalance]);
+
+
   return (
     <Dialog open onOpenChange={onClose}>
-                  {/* <Toaster /> */}
+      {/* <Toaster /> */}
 
 
       <DialogContent className="z-[100] w-full max-w-lg ">
@@ -642,8 +654,12 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                   </div>
                 ))}
             </div>
-            <div className="mt-2 flex justify-start text-xs text-white bg-[#252738] p-3 rounded">
-              <p>Leave Application for : {totalAppliedDays} day(s)</p>
+            <div className="mt-2  text-xs text-white bg-[#252738] p-3 rounded">
+              <p className="text-right">Leave Application for : {totalAppliedDays} day(s)</p>
+              <div>
+              {error && <p className="text-red-500 text-xs">{error}</p>}
+
+              </div>
             </div>
             <div>
               <div className="relative">
@@ -659,8 +675,6 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
               />
             </div>
 
-            {/* Display Error if leave request exceeds balance */}
-            {error && <p className="text-red-500 text-xs">{error}</p>}
 
             {/* Audio Recording and File Attachment */}
             <div className="flex gap-4">

@@ -2,13 +2,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Separator } from '../ui/separator';
-import { UpdateIcon } from '@radix-ui/react-icons';
+import { CheckboxIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
-import { ArrowLeft, Bell, Calendar, CheckCheck, CheckCircle, Circle, Clock, Edit, File, FileTextIcon, Flag, GlobeIcon, Link, Loader, MailIcon, PlayIcon, Repeat, RepeatIcon, Tag, Trash } from 'lucide-react';
+import { ArrowLeft, Bell, Calendar, CheckCheck, CheckCircle, Circle, Clock, Edit, File, FileTextIcon, Flag, GlobeIcon, Link, Loader, Mail, MailIcon, PlayIcon, Repeat, RepeatIcon, Tag, Trash } from 'lucide-react';
 import EditTaskDialog from './editTask';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { IconCopy } from '@tabler/icons-react';
+import { IconCopy, IconProgress } from '@tabler/icons-react';
 import CustomAudioPlayer from './customAudioPlayer';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -32,7 +32,7 @@ interface Reminder {
     notificationType: 'email' | 'whatsapp';
     type: 'minutes' | 'hours' | 'days' | 'specific';
     value?: number;  // Optional based on type
-    date?: Date;     // Optional for specific reminders
+    date?: Date;     // Optional for specitfic reminders
     sent?: boolean;
 }
 
@@ -55,10 +55,7 @@ interface Task {
     completionDate: string;
     attachment?: string[];
     links?: string[];
-    reminders: [{
-        email?: Reminder | null; // Use the updated Reminder type
-        whatsapp?: Reminder | null; // Use the updated Reminder type
-    }] | null;
+    reminders: Reminder[]; // Correctly define reminders as an array of Reminder objects
     status: string;
     comments: Comment[];
     createdAt: string;
@@ -424,40 +421,35 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                             <div className="bg-red-600 h-6 w-6 rounded-full">
                                 <Bell className="h-4 mt-1" />
                             </div>
-
                         </div>
-                        {/* <div className="px-4">
-                            {selectedTask.reminder ? (
-                                <div className="flex flex-col gap-2">
-                                    {(selectedTask.reminder.email?.value ?? 0) > 0 && (
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold">
-                                                <MailIcon className='h-5' />
-                                            </span>
-                                            <span>
-                                                {`${selectedTask.reminder.email?.value ?? 0} ${selectedTask.reminder.email?.type ?? ''}`}
-                                            </span>
+
+                        {selectedTask.reminders && selectedTask.reminders.length > 0 ? (
+                            <div className="flex flex-col gap-2">
+                                {selectedTask.reminders.map((reminder, index) => (
+                                    <div key={index} className="flex items-center ml-4 gap-2 text-sm">
+                                        <div className="flex items-center gap-1">
+                                            {reminder.notificationType === 'email' ? (
+                                                <Mail className="h-4 w-4 text-blue-500" />
+                                            ) : (
+                                                <img src="/whatsapp.png" className="h-4 w-4 text-green-500" alt="WhatsApp Icon" />
+                                            )}
                                         </div>
-                                    )}
-                                    {(selectedTask.reminder.whatsapp?.value ?? 0) > 0 && (
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold"><img src='/whatsapp.png' className='h-6' /></span>
+                                        {reminder.type === 'specific' && reminder.date ? (
                                             <span>
-                                                {`${selectedTask.reminder.whatsapp?.value ?? 0} ${selectedTask.reminder.whatsapp?.type ?? ''} `}
+                                                {new Date(reminder.date).toLocaleString()} (Specific Date)
                                             </span>
-                                        </div>
-                                    )}
-                                    {!(
-                                        (selectedTask.reminder.email?.value ?? 0) > 0 ||
-                                        (selectedTask.reminder.whatsapp?.value ?? 0) > 0
-                                    ) && (
-                                            <p className='text-xs p-4'>No reminders set</p>
+                                        ) : (
+                                            <span>
+                                                {reminder.value} {reminder.type}
+                                            </span>
                                         )}
-                                </div>
-                            ) : (
-                                <p className='text-xs '>No reminders set.</p>
-                            )}
-                        </div> */}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-gray-500 ml-4 text-sm">No Reminders created</div>
+                        )}
+
 
 
                         {
@@ -476,21 +468,21 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                             setStatusToUpdate("Reopen"); // Assuming 'In Progress' status is used for reopening
                                             setIsReopenDialogOpen(true);
                                         }}
-                                        className="gap-2 border bg-transparent hover:shadow-sm hover:shadow-yellow-500 hover:bg-transparent border-gray-600 w-fit"
+                                        className="gap-2 border bg-transparent  hover:border-yellow-500 hover:bg-transparent border-gray-600 w-fit"
                                     >
                                         <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
                                         Reopen
                                     </Button>
                                     <Button
                                         onClick={handleEditClick}
-                                        className="border bg-transparent hover:shadow-sm hover:shadow-blue-500 hover:bg-transparent border-gray-600 w-fit"
+                                        className="border bg-transparent hover:-sm hover:border-blue-500 hover:bg-transparent border-gray-600 w-fit"
                                     >
                                         <Edit className="h-4 rounded-full text-blue-400" />
                                         Edit
                                     </Button>
                                     <Button
                                         onClick={() => handleDeleteClick(selectedTask._id)}
-                                        className="border bg-transparent hover:shadow-sm hover:shadow-red-500 hover:bg-transparent border-gray-600 w-fit "
+                                        className="border bg-transparent hover:-sm hover:border-red-500 hover:bg-transparent border-gray-600 w-fit "
                                     >
                                         <Trash className="h-4 rounded-full text-red-400" />
                                         Delete
@@ -503,9 +495,9 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                             setStatusToUpdate("In Progress");
                                             setIsDialogOpen(true);
                                         }}
-                                        className="gap-2 border bg-transparent hover:shadow-sm hover:shadow-orange-500 hover:bg-transparent border-gray-600 w-full"
+                                        className="gap-1 border bg-transparent hover:-sm hover:border-orange-500 hover:bg-transparent border-gray-600 w-full"
                                     >
-                                        <PlayIcon className="h-4 bg-[#FDB077] rounded-full w-4" />
+                                        <IconProgress className="scale-105 text-orange-500 rounded-full w-4" />
                                         In Progress
                                     </Button>
                                     <Button
@@ -513,21 +505,21 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ selectedTask,
                                             setStatusToUpdate("Completed");
                                             setIsCompleteDialogOpen(true);
                                         }}
-                                        className="border bg-transparent hover:shadow-sm hover:shadow-green-500 hover:bg-transparent border-gray-600 w-full"
+                                        className="border flex gap-1 bg-transparent hover:-sm hover:border-green-500 hover:bg-transparent border-gray-600 w-full"
                                     >
-                                        <CheckCheck className="h-4 rounded-full text-green-400" />
+                                        <CheckboxIcon className="scale-125 rounded-full text-green-400" />
                                         Completed
                                     </Button>
                                     <Button
                                         onClick={handleEditClick}
-                                        className="border bg-transparent hover:shadow-sm hover:shadow-blue-500 hover:bg-transparent border-gray-600 w-full"
+                                        className="border flex items-center gap-1 bg-transparent hover:-sm hover:border-blue-500 hover:bg-transparent border-gray-600 w-full"
                                     >
                                         <Edit className="h-4 rounded-full text-blue-400" />
                                         Edit
                                     </Button>
                                     <Button
                                         onClick={() => handleDeleteClick(selectedTask._id)}
-                                        className="border rounded hover:shadow-sm hover:shadow-red-500 hover:bg-transparent bg-transparent border-gray-600 w-full"
+                                        className="border flex gap-1 items-center rounded hover:-sm hover:border-red-500 hover:bg-transparent bg-transparent border-gray-600 w-full"
                                     >
                                         <Trash className="h-4 rounded-full text-red-400 " />
                                         Delete

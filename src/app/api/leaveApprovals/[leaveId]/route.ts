@@ -27,7 +27,7 @@ const sendLeaveApprovalEmail = async (leave: any, status: 'Approved' | 'Partiall
             <div style="padding: 20px; text-align: center; ">
                 <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
-          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 10px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
     <h1 style="margin: 0; font-size: 20px;">Leave Application - ${status}</h1>
 </div>
                     <div style="padding: 20px; color:#000000;">
