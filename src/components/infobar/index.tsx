@@ -134,8 +134,8 @@ const InfoBar = (props: Props) => {
       return "My Checklist";
     } else if (pathName === "/help/tickets") {
       return "My Tickets";
-    } else if (pathName === "/help/tickets") {
-      return "My Tickets";
+    } else if (pathName === "/help/mobile-app") {
+      return "Mobile App";
     }
     // Handle the dynamic route for /dashboard/tickets/[id]
     else if (pathName.startsWith("/help/tickets/")) {

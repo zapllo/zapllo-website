@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from 'next/navigation';
 import { GearIcon, PieChartIcon, CardStackIcon } from '@radix-ui/react-icons';
+import { GitBranchPlus, GitGraphIcon } from 'lucide-react';
 
 const SettingsSidebar: React.FC = () => {
     const pathname = usePathname();
@@ -42,6 +43,15 @@ const SettingsSidebar: React.FC = () => {
                         onClick={() => handleNavigation('/dashboard/billing')}
                     >
                         <CardStackIcon className="h-5" /> Billing
+                    </Button>
+                </div>
+                <div className="flex justify-center">
+                    <Button
+                        variant="default"
+                        className={`w-[90%] rounded-none gap-2 px-4 bg-transparent justify-start hover:bg-[#815BF5] hover:rounded-lg mb-2 ${isActive('/dashboard/integrations') ? 'bg-[#815BF5] text-white rounded-lg' : 'text-gray-400'}`}
+                        onClick={() => handleNavigation('/dashboard/integrations')}
+                    >
+                        <GitBranchPlus className="h-5" /> Integrations
                     </Button>
                 </div>
             </div>

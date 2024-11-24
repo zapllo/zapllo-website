@@ -9,6 +9,8 @@ interface IOrder extends Document {
     creditedAmount: number;
     createdAt: Date;
     subscribedUserCount: number;
+    additionalUserCount: number;
+    deduction: number;
 }
 
 const OrderSchema: Schema<IOrder> = new Schema(
@@ -36,7 +38,9 @@ const OrderSchema: Schema<IOrder> = new Schema(
         subscribedUserCount: {
             type: Number,
             required: true
-        }, // Number of users purchased for the plan
+        }, // Number of users purchased for the plan'deduction: { type: Number, default: 0 }, // New field for the applied discount
+        additionalUserCount: { type: Number, default:0}, // Number of users added in this purchase
+        deduction: { type: Number, default: 0 }, // New field for the applied discount
     },
     { timestamps: true }
 );

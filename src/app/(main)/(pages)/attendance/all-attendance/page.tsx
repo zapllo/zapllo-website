@@ -37,6 +37,7 @@ import {
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type User = {
   _id: string;
@@ -87,6 +88,8 @@ function isRegularization(
 function isAttendance(entry: Attendance | Regularization): entry is Attendance {
   return entry.action === "login" || entry.action === "logout";
 }
+
+
 
 export default function AllAttendance() {
   const [groupedEntries, setGroupedEntries] = useState<{
@@ -497,10 +500,10 @@ export default function AllAttendance() {
             </div>
           ) : (
             Object.keys(groupedEntries).map((userId) => (
-              <AccordionItem2 key={userId} value={userId}>
-                <div className="border px-4">
-                  <AccordionTrigger2>
-                    <div className="flex gap-4">
+              <AccordionItem2 className="h-10" key={userId} value={userId}>
+                <div className="border h-10  px-4">
+                  <AccordionTrigger2 className="-mt-2">
+                    <div className="flex items-center gap-4">
                       <div className="h-6 w-6 rounded-full bg-[#815BF5] flex items-center justify-center text-white text-sm">
                         {groupedEntries[userId].user.firstName[0]}
                       </div>
@@ -549,7 +552,12 @@ export default function AllAttendance() {
           {filteredRegularizations.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+              <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
+                                      />
                 <h1 className="text-center font-bold text-md  ">
                   No Entries Found
                 </h1>

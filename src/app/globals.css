@@ -122,6 +122,32 @@ html {
   }
 }
 
+#razorpay-checkout-frame {
+  position: fixed !important;
+  top: 0 !important;
+  background-color: black;
+  color: black;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+
+
+.payment-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 @layer base {
   * {

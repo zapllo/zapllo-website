@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { CrossCircledIcon, StopwatchIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import {
+  ChevronRight,
   Mail,
   Phone,
   PhoneCallIcon,
@@ -52,6 +53,9 @@ export default function Page() {
   const [dueTime, setDueTime] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [wabaOpen, setWabaOpen] = useState(false);
+
+
 
   useEffect(() => {
     // Fetch categories from the server
@@ -233,16 +237,16 @@ export default function Page() {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="p-4 ">
+    <div className="p-4  h-[560px] scrollbar-hide overflow-y-scroll ">
       {/* <Toaster /> */}
 
       {role === "orgAdmin" && (
         <div>
           {loading ? <Loader /> : ""}
-          <div className=" mt-2 bg- p-2 bg-[#0A0D28] text-lg rounded ">
+          <div className=" mt-2 bg- p-2 px-4 border bg-[#0A0D28] text-lg rounded-xl ">
             <h1 className="text-sm">Organization Details</h1>
           </div>
-          <div className=" text-xs grid grid-cols-1 text- gap-2 py-2">
+          <div className=" text-xs grid grid-cols-1 text- p-2 gap-2 py-2">
             <div className="grid-cols-2 grid gap-2 p-2">
               <div className="">
                 <h1 className="mt-2">Company Name</h1>
@@ -334,14 +338,23 @@ export default function Page() {
                     <h1 className='ml-4 mt-1'>Raise a Ticket</h1>
                 </div>
             </Link> */}
-      <div className=" mt-4 bg-[#0A0D28] p-2 border rounded ">
+      <div className=" mt-4 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
+        <h1 className="text-sm">WhatsApp Integration</h1>
+      </div>
+      <div onClick={() => setWabaOpen(true)} className="mb-2  mt-2 flex   px-4 py-4  decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  ">
+        <h1 className=" text-xs text-start w-full">Connect your WABA Number</h1>
+        <ChevronRight className="h-4" />
+      </div>
+
+      <div className=" mt-6 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
         <h1 className="text-sm">Task App Settings</h1>
       </div>
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogTrigger>
-          <div className="mb-2 bg-[#007A5A]  mt-2 px-4 w-full m border rounded py-2">
-            <h1 className=" text-xs w-full">Notifications & Reminders</h1>
+        <DialogTrigger className="w-full  items-center mt-2  flex justify-">
+          <div className="mb-2  px-4 decoration-[#815af5] hover:underline underline-offset-4 py-4  m border-b w-full  ">
+            <h1 className=" text-xs text-start w-full">Notifications & Reminders</h1>
           </div>
+          <ChevronRight className="h-4 -ml-10" />
         </DialogTrigger>
 
         <DialogContent className=" z-[100] flex items-center justify-center">
@@ -496,6 +509,37 @@ export default function Page() {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog open={wabaOpen} onOpenChange={setWabaOpen}>
+        <DialogContent className=" z-[100] flex items-center bg-[#0b0d29] h-[240px] justify-center">
+          <div className="  overflow-y-scroll scrollbar-hide h-full  shadow-lg w-full   max-w-lg  rounded-lg">
+            <div className="flex border-b py-2  w-full justify-between">
+              <DialogTitle className="text-md   px-6 py-2 font-medium">
+                WhatsApp API Connection
+              </DialogTitle>
+              <DialogClose className="px-6 py-2">
+                <CrossCircledIcon className="scale-150 mt-1 hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+              </DialogClose>
+
+            </div>
+            <div className="relative mt-2 p-6 ">
+              <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                WA Channel ID
+              </label>
+              <input type="text"
+                className="w-full text-sm p-2 border bg-transparent outline-none rounded" />
+              <span className=" text-xs px-2">Get Your Channel ID From here -
+                <a className="text-blue-400 hover:underline" href="http://waba.zapllo.com">http://waba.zapllo.com/</a>
+              </span>
+              <Button className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded">
+                Save
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <div className="mb-2   px-4 decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  py-2">
+        <h1 className=" text-xs text-start w-full">Export Tasks (Coming Soon)</h1>
+      </div>
 
       {/* 
             <div className='px-4 py-2 cursor-pointer border mt-4 rounded'>

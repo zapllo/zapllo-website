@@ -42,6 +42,7 @@ import { Button } from "@/components/ui/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { format, parseISO } from "date-fns";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const mapContainerStyle = {
   height: "400px",
@@ -777,7 +778,12 @@ export default function MyAttendance() {
           <div className='flex  justify-center w-full'>
             <div className=' w-full mt-4  justify-center '>
               <div className='flex justify-center'>
-                <img src='/animations/emptylist.gif' className='h-40  ' />
+                <DotLottieReact
+                  src="/lottie/empty.lottie"
+                  loop
+                  className="h-56"
+                  autoplay
+                />
               </div>
               <div className='text-center w-full'>
                 <h1 className=' text-lg font-semibold text-  '>No Entries Found</h1>
@@ -1404,10 +1410,12 @@ export default function MyAttendance() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   {/* Example face detection animtion */}
                   <div className="face-animation">
-                    <img
-                      src="/animations/facelogin.png"
-                      className="h-28 animate-ping"
-                    />
+                  <DotLottieReact
+                                        src="/lottie/facescan.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
+                                      />
                   </div>
                 </div>
               )}

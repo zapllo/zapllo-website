@@ -65,37 +65,55 @@ const sendDailyReminderNotification = async (user: IUser, reminderTime: string) 
     const inProgressCount = tasks.filter(task => task.status === 'In Progress').length;
 
     if (user.reminders.email) {
-        const emailOptions: SendEmailOptions = {
-            to: `${user.email}`,
-            subject: "Daily Task Report",
-            text: `Daily Report`,
-            html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-    <div style="background-color: #f0f4f8; padding: 20px; ">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-            <div style="padding: 20px; text-align: center; ">
-                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
-            </div>
-          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
-    <h1 style="margin: 0; font-size: 20px;">Daily Task Report</h1>
-</div>
-                        <div style="padding: 20px;">
-                            <p><strong>Dear ${user.firstName},</strong></p>
-                            <p>⏰ Here is the detailed curated report on your today’s task update :</p>
-                               <div style="border-radius:8px; margin-top:4px; color:#000000; padding:10px; background-color:#ECF1F6">
-                            <p>Overdue Tasks: <strong>${overdueCount}</strong></p>
-                            <p>Pending Tasks: <strong>${pendingCount}</strong></p>
-                            <p>In Progress Tasks: <strong>${inProgressCount}</strong></p>
-                            </div>
-                            <p>Please ensure timely completion of the tasks and update their status on the application accordingly</p>
-                            <div style="text-align: center; margin-top: 40px;">
-                                <a href="https://zapllo.com/dashboard/tasks" style="background-color: #017a5b; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
-                            </div>
-                            <p style="margin-top: 20px; font-size: 12px; color: #888888; text-align:center;">This is an <span style="color: #d9534f;"><strong>automated</strong></span> notification. Please do not reply</p>
-                        </div>
-                    </div>
+    const taskDetailsHTML = tasks
+    .map(
+        (task) => `
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">${task.title}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${task.status}</td>
+            </tr>`
+    )
+    .join('');
+
+const emailOptions: SendEmailOptions = {
+    to: `${user.email}`,
+    subject: "Daily Task Report",
+    text: `Daily Report`,
+    html: `
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+        <div style="background-color: #f0f4f8; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <div style="padding: 20px; text-align: center;">
+                    <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
                 </div>
-            </body>`,
-        };
+                <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+                    <h1 style="margin: 0; font-size: 20px;">Daily Task Report</h1>
+                </div>
+                <div style="padding: 20px;">
+                    <p><strong>Dear ${user.firstName},</strong></p>
+                    <p>⏰ Here is the detailed curated report on your today’s task update:</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Task Title</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${taskDetailsHTML}
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 20px;">Please ensure timely completion of the tasks and update their status on the application accordingly.</p>
+                    <div style="text-align: center; margin-top: 40px;">
+                        <a href="https://zapllo.com/dashboard/tasks" style="background-color: #017a5b; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Task App</a>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 12px; color: #888888; text-align: center;">This is an automated notification. Please do not reply.</p>
+                </div>
+            </div>
+        </div>
+    </body>`,
+};
+
         try {
             await sendEmail(emailOptions);
             console.log('Email sent successfully to', user.email);

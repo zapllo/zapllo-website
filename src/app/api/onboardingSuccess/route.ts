@@ -107,17 +107,19 @@ Zapllo Support Team`,
             <div style="padding: 20px; text-align: center; ">
                 <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
-            <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 10px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+            <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
                 <h1 style="margin: 0; font-size: 20px;">Thank You for Your Purchase</h1>
             </div>
             <div style="padding: 20px; color:#000000;">
                 <p>Hi ${firstName},</p>
-                <p>🎉 Thank you so much for your purchase.</p>
-                <p>We are excited to get you up and running soon.</p>
-                <p>One of our onboarding specialists will connect with you soon and get your workspace up and running.</p>
-                <p>Regards,<br/>Zapllo Support Team</p>
-                <p style="margin-top: 20px; text-align:center; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
-            </div>
+                <p style="margin-top:4px;">Thank you so much for your purchase  🎉</p>
+                           <p style="margin-top:4px;">We are excited to get you up and running soon. </p>
+                             <p style="margin-top:4px;">One of our onboarding specialists will connect with you soon and get your workspace up and running.</p>
+                  Regards,</br>
+                  <p style="margin-top:4px;">Zapllo Support Team </p>
+                  </p>
+                              <p style="margin-top: 20px; text-align:center; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                          </div>
         </div>
     </div>
 </body>`,

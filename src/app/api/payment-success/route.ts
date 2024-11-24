@@ -49,6 +49,8 @@ export async function POST(request: NextRequest) {
     amount,
     planName,
     subscribedUserCount,
+    additionalUserCount,
+    deduction,
   } = await request.json();
 
   // Compute the expected signature
@@ -134,15 +136,19 @@ export async function POST(request: NextRequest) {
       planName: planName,
       creditedAmount: creditedAmount, // This will be zero if plan is not 'Recharge'
       subscribedUserCount,
+      additionalUserCount: additionalUserCount || 0, // Default to 0 if not provided
+      deduction, // Include deduction from the request
     });
 
     await newOrder.save();
 
-    // **Send Email Notification**
-    const emailOptions: SendEmailOptions = {
-      to: user.email,
-      subject: 'Thank You for Your Purchase',
-      text: `Hi ${user.firstName},
+    // **Send Notifications in the Background**
+    Promise.allSettled([
+      (async () => {
+        const emailOptions: SendEmailOptions = {
+          to: user.email,
+          subject: 'Thank You for Your Purchase',
+          text: `Hi ${user.firstName},
 
 🎉 Thank you so much for your purchase.
 
@@ -152,43 +158,45 @@ One of our onboarding specialists will connect with you soon and get your worksp
 
 Regards,
 Zapllo Support Team`,
-      html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-      <div style="background-color: #f0f4f8; padding: 20px; ">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-              <div style="padding: 20px; text-align: center; ">
-                  <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
-              </div>
-            <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 10px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
-      <h1 style="margin: 0; font-size: 20px;">Thank You for Your Purchase</h1>
-  </div>
-                       <div style="padding: 20px; color:#000000;">
-                        <p>Hi ${user.firstName},<br/>
-                        🎉Thank you so much for your purchase. <br/>
-                        We are excited to get you up and running soon. <br/>
-                        One of our onboarding specialists will connect with you soon and get your workspace up and running.
-  <br/>
-              Regards,
-              Zapllo Support Team </p>
-                          <p style="margin-top: 20px; text-align:center; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+          html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+          <div style="background-color: #f0f4f8; padding: 20px; ">
+              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                  <div style="padding: 20px; text-align: center; ">
+                      <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+                  </div>
+                <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+          <h1 style="margin: 0; font-size: 20px;">Thank You for Your Purchase</h1>
+      </div>
+                           <div style="padding: 20px; color:#000000;">
+                            <p>Hi ${user.firstName},<br/>
+                         <p style="margin-top:4px;">Thank you so much for your purchase  🎉</p>
+                           <p style="margin-top:4px;">We are excited to get you up and running soon. </p>
+                             <p style="margin-top:4px;">One of our onboarding specialists will connect with you soon and get your workspace up and running.</p>
+                  Regards,</br>
+                  <p style="margin-top:4px;">Zapllo Support Team </p>
+                  </p>
+                              <p style="margin-top: 20px; text-align:center; font-size: 12px; color: #888888;">This is an automated notification. Please do not reply.</p>
+                          </div>
                       </div>
                   </div>
-              </div>
-          </body>`,
-    };
+              </body>`,
+        };
 
-    try {
-      await sendEmail(emailOptions);
-      console.log('Email sent successfully to', user.email);
-    } catch (emailError) {
-      console.error('Error sending email:', emailError);
-    }
-
-    // **Send WhatsApp Notification**
-    try {
-      await sendWebhookNotification(user);
-    } catch (webhookError) {
-      console.error('Error sending WhatsApp notification:', webhookError);
-    }
+        await sendEmail(emailOptions);
+        console.log('Email sent successfully to', user.email);
+      })(),
+      sendWebhookNotification(user),
+    ])
+      .then((results) => {
+        results.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            console.error(`Notification ${index + 1} failed:`, result.reason);
+          } else {
+            console.log(`Notification ${index + 1} succeeded.`);
+          }
+        });
+      })
+      .catch((err) => console.error('Unexpected error in notifications:', err));
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -199,3 +207,4 @@ Zapllo Support Team`,
     );
   }
 }
+

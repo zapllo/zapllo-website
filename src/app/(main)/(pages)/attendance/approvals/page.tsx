@@ -40,6 +40,7 @@ import {
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { toast, Toaster } from "sonner";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type LeaveType = {
   _id: string;
@@ -310,9 +311,9 @@ export default function Approvals() {
             setLeaves(response.data.leaves);
           } else {
             console.error(response.data.error);
-            toast.error(
-              response.data.error || "Failed to fetch leave approvals."
-            );
+            // toast.error(
+            //   response.data.error || "Failed to fetch leave approvals."
+            // );
           }
         } else if (filter === "Regularization") {
           const response = await axios.get("/api/regularization-approvals");
@@ -320,9 +321,9 @@ export default function Approvals() {
             setRegularizations(response.data.regularizations);
           } else {
             console.error(response.data.error);
-            toast.error(
-              response.data.error || "Failed to fetch regularization approvals."
-            );
+            // toast.error(
+            //   response.data.error || "Failed to fetch regularization approvals."
+            // );
           }
         }
       } catch (error: any) {
@@ -330,10 +331,10 @@ export default function Approvals() {
           `Error fetching ${filter} approvals:`,
           error.response?.data || error.message
         );
-        toast.error(
-          `Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message
-          }`
-        );
+        // toast.error(
+        //   `Failed to fetch ${filter} approvals: ${error.response?.data?.message || error.message
+        //   }`
+        // );
       } finally {
         setLoading(false);
       }
@@ -945,7 +946,12 @@ export default function Approvals() {
           {finalFilteredLeaves.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+              <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
+                                      />
                 <h1 className="text-center font-bold text-md m ">
                   No Leaves Found
                 </h1>

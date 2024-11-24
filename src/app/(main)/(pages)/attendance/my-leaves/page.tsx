@@ -21,6 +21,7 @@ import {
 } from "@radix-ui/react-icons";
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface LeaveType {
   allotedLeaves: number;
@@ -640,7 +641,12 @@ const MyLeaves: React.FC = () => {
         ) : (
           <div className="flex w-full justify-center ">
             <div className="mt-8 ml-4">
-              <img src="/animations/emptylist.gif" className="h-40 ml-14" />
+              <DotLottieReact
+                src="/lottie/empty.lottie"
+                loop
+                className="h-56"
+                autoplay
+              />
               <h1 className="text-center font-bold text-md mt-2 ">
                 No Leaves Found
               </h1>

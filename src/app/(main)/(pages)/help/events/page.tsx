@@ -1,6 +1,7 @@
 'use client';
 
 import ChecklistSidebar from '@/components/sidebar/checklistSidebar';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import React from 'react';
 
 export default function Events() {
@@ -12,10 +13,16 @@ export default function Events() {
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="-mt-2 w-full">
                             <div className='flex justify-center ml-12 mt-24 p-4'>
-                                <div className='space-y-2'>
-                                    <img src='/animations/loading.gif' className='h-64 ml-24' />
+                                <div className='space-y-2 '>
+                                    <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56 ml-8"
+                                        autoplay
+                                    />
+
                                     <h1 className='text-2xl text-center ml-12 font-bold'>Coming Soon</h1>
-                                    <p className='ml-6'>We are bringing Live Classes to help you grow your business</p>
+                                    <p className='ml-12'>We are bringing Live Classes to help you grow your business</p>
                                 </div>
                             </div>
                         </div>

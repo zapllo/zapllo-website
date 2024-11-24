@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from 'next/navigation';
 import { IconChecklist, IconSportBillard, IconTallymarks } from '@tabler/icons-react';
-import { Calendar, CheckCircleIcon, File, PlusCircle, Ticket, Video, Wallet } from 'lucide-react';
+import { Calendar, CheckCircleIcon, Download, File, PlusCircle, Ticket, Video, Wallet } from 'lucide-react';
 import { VideoIcon } from '@radix-ui/react-icons';
 
 const ChecklistSidebar: React.FC = () => {
@@ -26,6 +26,15 @@ const ChecklistSidebar: React.FC = () => {
                         onClick={() => handleNavigation('/dashboard/checklist')}
                     >
                         <CheckCircleIcon className='h-5' /> Checklist
+                    </Button>
+                </div>
+                <div className='flex justify-center'>
+                    <Button
+                        variant={isActive('/help/mobile-app') ? 'default' : 'default'}
+                        className={`w-[90%] rounded-lg py-1  gap-2  h-10  px-4 bg-transparent justify-start hover:bg-[#815BF5] hover:rounded-lg mb-2 ${isActive('/help/mobile-app') ? 'bg-[#815BF5] py-1 hover:bg-[#815BF5] text-white rounded-lg' : 'text-gray-400'}`}
+                        onClick={() => handleNavigation('/help/mobile-app')}
+                    >
+                        <Download className='h-5' /> Mobile App
                     </Button>
                 </div>
                 <div className='flex justify-center'>
@@ -55,6 +64,7 @@ const ChecklistSidebar: React.FC = () => {
                         <Ticket className='h-5' /> Tickets
                     </Button>
                 </div>
+               
 
                 {/* <Button
                     variant={isActive('/dashboard/tickets') ? 'default' : 'default'}

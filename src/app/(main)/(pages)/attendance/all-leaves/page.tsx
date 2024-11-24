@@ -39,6 +39,7 @@ import {
 import Loader from "@/components/ui/loader";
 import CustomDatePicker from "@/components/globals/date-picker";
 import { toast } from "sonner";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type LeaveType = {
   _id: string;
@@ -608,7 +609,12 @@ export default function AllLeaves() {
           {filteredLeaves.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+              <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
+                                      />
                 <h1 className="text-center font-bold text-md  ">
                   No Leaves Found
                 </h1>

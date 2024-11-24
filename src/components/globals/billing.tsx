@@ -11,6 +11,7 @@ import { toast, Toaster } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 type PlanKeys = 'Zapllo Tasks' | 'Zapllo Payroll';
 
@@ -31,9 +32,11 @@ export default function Billing() {
     const [gstNumber, setGstNumber] = useState('');
     const [rechargeGstNumber, setRechargeGstNumber] = useState('');
     const [subscribedUserCount, setSubscribedUserCount] = useState<number>(0); // State for subscribed user  
-    const [additionalUserCount, setAdditionalUserCount] = useState<number>(5);
+    const [additionalUserCount, setAdditionalUserCount] = useState<number | null>(null);
     const [totalUserCount, setTotalUserCount] = useState<number>(0); // Total after adding
     const [renewsOn, setRenewsOn] = useState<any>();
+    const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+
     const router = useRouter();
 
 
@@ -82,20 +85,33 @@ export default function Billing() {
 
     const handleOpenDialog = () => {
         setIsAddUserOpen(true);
-        setAdditionalUserCount(0); // Reset the additional user count
+        setTotalUserCount(subscribedUserCount + 5); // Update total users with the default
     };
 
+
     const handleUserSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCount = parseInt(e.target.value);
+        const selectedCount = e.target.value ? parseInt(e.target.value, 10) : null; // Handle "Select Number of Users"
         setAdditionalUserCount(selectedCount);
-        setTotalUserCount(subscribedUserCount + selectedCount); // Update the total user count
+        setTotalUserCount(subscribedUserCount + (selectedCount || 0)); // Update total count only if valid
     };
+
+
+
+    useEffect(() => {
+        setTotalUserCount(subscribedUserCount + (additionalUserCount ?? 0));
+    }, [subscribedUserCount, additionalUserCount]);
+
+
 
     const handleConfirmUsers = async () => {
         const plan = selectedPlan as PlanKeys;
         const { subtotal, discount, payableExclGST, gst, total } = calculatePaymentDetails(plans[plan], userCount);
         try {
             // Deduct applied credits from the wallet first
+            setIsAddUserOpen(false);
+            setIsPaymentProcessing(true);
+
+
             const walletDeductionResponse = await axios.post('/api/wallet/deduct', {
                 userId: currentUser?._id,
                 amount: discount, // Deduct only the applied discount amount
@@ -111,7 +127,44 @@ export default function Billing() {
 
             // If the total payable amount is zero, complete the payment here
             if (total === 0) {
-                toast.success('Payment successful! No additional amount charged.');
+                // Handle user count update
+                const updateUserCountResponse = await axios.post('/api/organization/update-user-count', {
+                    organizationId: currentUser?.organization,
+                    subscribedUserCount: totalUserCount, // Updated total user count
+                    additionalUserCount: additionalUserCount || 0, // Newly added users
+                });
+
+                if (!updateUserCountResponse.data.success) {
+                    toast.error('Failed to update user count. Please try again.');
+                    return;
+                }
+
+                // Create an order for record-keeping
+                const orderData = {
+                    userId: currentUser?._id, // Ensure this is passed
+                    amount: 0, // No payment required
+                    planName: plan,
+                    creditedAmount: 0, // No credits for this type of plan
+                    subscribedUserCount: totalUserCount,
+                    additionalUserCount: additionalUserCount || 0,
+                    deduction: plans[plan] * userCount, // Cost of the plan multiplied by user count
+                };
+
+                await axios.post('/api/create-wallet-order', orderData);
+
+                // Show success message and redirect
+                toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+                    <div className="w-full flex   justify-center">
+                        <DotLottieReact
+                            src="/lottie/tick.lottie"
+                            loop
+                            autoplay
+                        />
+                    </div>
+                    <h1 className="text-black text-center font-medium text-lg">Payment Successful, No Additional Amount Charged.</h1>
+                </div>);
+                router.replace('/payment-success');
+                setIsPaymentProcessing(false);
                 setIsDialogOpen(false);
                 setModalStep(1);
                 setGstNumber('');
@@ -122,14 +175,17 @@ export default function Billing() {
                 amount: total * 100, // Amount in paise
                 currency: 'INR',
                 subscribedUserCount: totalUserCount, // Pass the updated user count
-                planName: plan // Pass the selected plan
+                planName: plan, // Pass the selected plan
+                additionalUserCount: additionalUserCount || 0, // Newly added users
             };
 
             // Create order on server and get order ID
-            const { data } = await axios.post('/api/create-order', orderData);
+            const { data } = await axios.post('/api/create-wallet-order', orderData);
             if (!data.orderId) {
                 throw new Error('Order ID not found in the response');
             }
+
+            // Close the modal
 
             // Razorpay payment options
             const options = {
@@ -146,6 +202,8 @@ export default function Billing() {
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_signature: response.razorpay_signature,
                         planName: plan,
+                        deduction: discount, // Include the applied discount here
+                        additionalUserCount: additionalUserCount || 0, // Include the newly added users
                     };
 
                     try {
@@ -156,20 +214,31 @@ export default function Billing() {
                             amount: orderData.amount / 100,
                             gstNumber: gstNumber,
                             subscribedUserCount: totalUserCount, // Update subscribed users
+                            additionalUserCount: additionalUserCount || 0, // Ensure it's passed
                         });
 
                         if (verificationResult.success) {
-                            toast.success('Payment successful! Users added.');
-                            getUserDetails();
-                            router.push('/payment-success');
+                            toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+                                <div className="w-full flex   justify-center">
+                                    <DotLottieReact
+                                        src="/lottie/tick.lottie"
+                                        loop
+                                        autoplay
+                                    />
+                                </div>
+                                <h1 className="text-black text-center font-medium text-lg">Payment Successful, Users Added.</h1>
+                            </div>);
+                            router.replace('/payment-success');
+                            setIsPaymentProcessing(false);
+
                             setSubscribedUserCount(totalUserCount); // Update the subscribed count locally
                             setIsAddUserOpen(false);
                         } else {
-                            router.push('/payment-failed'); // Redirect to payment failed page
+                            router.replace('/payment-failed'); // Redirect to payment failed page
                         }
                     } catch (error) {
                         console.error('Error verifying payment: ', error);
-                        router.push('/payment-failed'); // Redirect to payment failed page
+                        router.replace('/payment-failed'); // Redirect to payment failed page
                     }
                 },
                 prefill: {
@@ -183,7 +252,7 @@ export default function Billing() {
                 theme: {
                     color: "#04061E", // Replace with your brand's primary color
                     backdrop_color: "#0B0D26", // Optional: Set a custom background color for the Razorpay modal
-                  },
+                },
             };
 
             // Open the Razorpay payment modal
@@ -253,6 +322,8 @@ export default function Billing() {
         const plan = selectedPlan as PlanKeys;
         const { subtotal, discount, payableExclGST, gst, total } = calculatePaymentDetails(plans[plan], userCount);
         try {
+            setIsDialogOpen(false);
+            setIsPaymentProcessing(true);
             // Deduct applied credits from the wallet first
             const walletDeductionResponse = await axios.post('/api/wallet/deduct', {
                 userId: currentUser?._id,
@@ -288,6 +359,7 @@ export default function Billing() {
                     gstNumber: gstNumber,
                 },
                 subscribedUserCount: userCount, // Store the selected number of users
+
             };
 
             const { data } = await axios.post('/api/create-order', orderData);
@@ -309,6 +381,7 @@ export default function Billing() {
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_signature: response.razorpay_signature,
                         planName: plan,
+                        deduction: discount, // Include the applied discount here
                     };
                     try {
                         const { data: verificationResult } = await axios.post('/api/payment-success', {
@@ -320,17 +393,27 @@ export default function Billing() {
                         });
 
                         if (verificationResult.success) {
-                            toast.success('Payment successful!');
-                            router.push('/payment-success');
+                            toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+                                <div className="w-full flex   justify-center">
+                                    <DotLottieReact
+                                        src="/lottie/tick.lottie"
+                                        loop
+                                        autoplay
+                                    />
+                                </div>
+                                <h1 className="text-black text-center font-medium text-lg">Payment Successful</h1>
+                            </div>);
+                            router.replace('/payment-success');
+                            setIsPaymentProcessing(false);
                             setIsDialogOpen(false);
                             setModalStep(1);
                             setGstNumber('');
                         } else {
-                            router.push('/payment-failed'); // Redirect to payment failed page
+                            router.replace('/payment-failed'); // Redirect to payment failed page
                         }
                     } catch (error) {
                         console.error('Error verifying payment: ', error);
-                        router.push('/payment-failed'); // Redirect to payment failed page
+                        router.replace('/payment-failed'); // Redirect to payment failed page
                     }
                 },
                 prefill: {
@@ -344,7 +427,9 @@ export default function Billing() {
                 theme: {
                     color: "#04061E", // Replace with your brand's primary color
                     backdrop_color: "#0B0D26", // Optional: Set a custom background color for the Razorpay modal
-                  },
+
+                },
+
             };
 
             const rzp1 = new (window as any).Razorpay(options);
@@ -383,6 +468,10 @@ export default function Billing() {
                 if (!data.orderId) {
                     throw new Error('Order ID not found in the response');
                 }
+                setIsRechargeDialogOpen(false);
+                setIsPaymentProcessing(true);
+
+
                 const options = {
                     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
                     amount: orderData.amount,
@@ -407,17 +496,27 @@ export default function Billing() {
                                 subscribedUserCount: userCount,
                             });
                             if (verificationResult.success) {
-                                toast.success('Recharge successful!');
-                                router.push('/payment-success');
+                                toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+                                    <div className="w-full flex   justify-center">
+                                        <DotLottieReact
+                                            src="/lottie/tick.lottie"
+                                            loop
+                                            autoplay
+                                        />
+                                    </div>
+                                    <h1 className="text-black text-center font-medium text-lg">Recharge Successful</h1>
+                                </div>);
+                                router.replace('/payment-success');
+                                setIsPaymentProcessing(false);
                                 setIsRechargeDialogOpen(false);
                                 setRechargeModalStep(1);
                                 setRechargeGstNumber('');
                             } else {
-                                router.push('/payment-failed'); // Redirect to payment failed page
+                                router.replace('/payment-failed'); // Redirect to payment failed page
                             }
                         } catch (error) {
                             console.error('Error verifying payment: ', error);
-                            router.push('/payment-failed'); // Redirect to payment failed page
+                            router.replace('/payment-failed'); // Redirect to payment failed page
                         }
                     },
                     prefill: {
@@ -431,13 +530,14 @@ export default function Billing() {
                     theme: {
                         color: "#04061E", // Replace with your brand's primary color
                         backdrop_color: "#0B0D26", // Optional: Set a custom background color for the Razorpay modal
-                      },
+                    },
                 };
+
                 const rzp1 = new (window as any).Razorpay(options);
                 rzp1.open();
             } catch (error) {
                 console.error('Error creating order: ', error);
-                router.push('/payment-failed'); // Redirect to payment failed page
+                router.replace('/payment-failed'); // Redirect to payment failed page
             }
         } else {
             toast.error('Recharge amount must be at least ₹5000.');
@@ -466,730 +566,722 @@ export default function Billing() {
     };
 
     return (
-        <div className="flex w-full ">
-            {/* <Toaster /> */}
-            <BillingSidebar />
-            {currentUser?.role === "orgAdmin" ? (
-                <div className="flex-1 overflow-y-scroll h-screen  p-4">
-                    <div className="w-full flex justify-center   max-w-5xl mx-auto">
-                        <div className="gap-2 flex  mb-6 w-full">
-                            <div className="-mt-2">
-                                <div className="p-4">
-                                    <Card className="gap-6 bg-[#0B0D26]  rounded-3xl py-4 border-none w-full">
-                                        <CardHeader>
-                                            <div className="flex justify-between w-[420px]">
-                                                <div className="flex gap-2">
-                                                    <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
-                                                        <Wallet />
+        <>
+            {isPaymentProcessing && <div className="payment-overlay ">
+                <div className='block'>
+                    <DotLottieReact
+                        src="/lottie/loader.lottie"
+                        loop
+                        className='h-32'
+                        autoplay
+                    />
+                </div>
+
+
+
+            </div>}
+            <div className="flex w-full ">
+
+
+                {/* <Toaster /> */}
+                <BillingSidebar />
+                {currentUser?.role === "orgAdmin" ? (
+                    <div className="flex-1 overflow-y-scroll h-screen  p-4">
+                        <div className="w-full flex justify-center   max-w-5xl mx-auto">
+                            <div className="gap-2 flex  mb-6 w-full">
+                                <div className="-mt-2">
+                                    <div className="p-4">
+                                        <Card className="gap-6 border-[#E0E0E066]  rounded-3xl py-4 border w-full">
+                                            <CardHeader>
+                                                <div className="flex justify-between w-[420px]">
+                                                    <div className="flex gap-2">
+                                                        <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
+                                                            <Wallet />
+                                                        </div>
+                                                        <div>
+                                                            <CardTitle className="text-lg font-medium">Current Balance</CardTitle>
+                                                            <h1>₹{currentUser?.credits}</h1>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <CardTitle className="text-lg font-medium">Current Balance</CardTitle>
-                                                        <h1>₹{currentUser?.credits}</h1>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
+                                                            onClick={handleRechargeClick}
+                                                        >
+                                                            Recharge Now
+                                                        </Button>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        size="sm"
-                                                        className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
-                                                        onClick={handleRechargeClick}
-                                                    >
-                                                        Recharge Now
-                                                    </Button>
+                                            </CardHeader>
+                                        </Card>
+                                    </div>
+                                </div>
+                                <div className="-mt-2">
+                                    <div className="p-4">
+                                        <Card className="gap-6  rounded-3xl border py-4 border-[#E0E0E066] w-full">
+                                            <CardHeader>
+                                                <div className="flex justify-between w-[380px]">
+                                                    <div className="flex gap-2">
+                                                        <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
+                                                            <img src='/icons/whatsapp.png' className='h-6' />
+                                                        </div>
+                                                        <div>
+                                                            <CardTitle className="text-lg">Sales</CardTitle>
+                                                            <CardDescription>Connect with team</CardDescription>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
+                                                            onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
+                                                        >
+                                                            Connect Now
+                                                        </Button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </CardHeader>
-                                    </Card>
+                                            </CardHeader>
+                                        </Card>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="-mt-2">
-                                <div className="p-4">
-                                    <Card className="gap-6 bg-[#0B0D26] rounded-3xl border-none py-4 border-[#E0E0E066] w-full">
-                                        <CardHeader>
-                                            <div className="flex justify-between w-[380px]">
-                                                <div className="flex gap-2">
-                                                    <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
-                                                        <img src='/icons/whatsapp.png' className='h-6' />
-                                                    </div>
-                                                    <div>
-                                                        <CardTitle className="text-lg">Sales</CardTitle>
-                                                        <CardDescription>Connect with team</CardDescription>
-                                                    </div>
+
+                            {isDialogOpen && isValidPlan(selectedPlan) && (
+                                <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
+                                    <DialogContent className='z-[100]  p-6'>
+                                        {modalStep === 1 && (
+                                            <>
+                                                <div className='flex justify-between w-full'>
+                                                    <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                                    <DialogClose>
+                                                        <CrossCircledIcon
+                                                            className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                                        />
+                                                    </DialogClose>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        size="sm"
-                                                        className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
-                                                        onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
+                                                <p className="mt-2">This plan costs ₹{plans[selectedPlan]} per user per year.</p>
+                                                <div className="mt-4 flex gap-4">
+
+                                                    <select
+                                                        id="userCount"
+                                                        className="border outline-none w-full bg-[#0b0d29] px-2 py-1 -mt-1 rounded "
+                                                        value={userCount}
+                                                        onChange={(e) => setUserCount(parseInt(e.target.value))}
                                                     >
-                                                        Connect Now
+                                                        <option>Select Number of Users To Add</option>
+                                                        {[...Array(20)].map((_, i) => {
+                                                            const count = (i + 1) * 5;
+                                                            return (
+                                                                <option key={count} value={count}>
+                                                                    {count}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </select>
+                                                </div>
+                                                <div className='flex gap-4'>
+                                                    <h1>Total Subscribed Users = </h1>
+                                                    {userCount} (Adding {userCount} users)
+                                                </div>
+                                                <div className="mt-4">
+                                                    <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={() => setModalStep(2)}>
+                                                        Next
                                                     </Button>
                                                 </div>
-                                            </div>
-                                        </CardHeader>
-                                    </Card>
-                                </div>
-                            </div>
-                        </div>
-
-                        {isDialogOpen && isValidPlan(selectedPlan) && (
-                            <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-                                <DialogContent className='z-[100]  p-6'>
-                                    {modalStep === 1 && (
-                                        <>
-                                            <div className='flex justify-between w-full'>
-                                                <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
-                                                <DialogClose>
-                                                    <CrossCircledIcon
-                                                        className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                            </>
+                                        )}
+                                        {modalStep === 2 && (
+                                            <>
+                                                <h2 className="text-xl font-bold">Payment Details</h2>
+                                                <div className='flex gap-4 mt-4'>
+                                                    <h1>Amount (excluding GST) = </h1>
+                                                    INR {userCount * plans[selectedPlan]}
+                                                </div>
+                                                <div>
+                                                    <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits || 0, plans[selectedPlan] * userCount)}</h1></div>
+                                                <div>
+                                                    Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits))}
+                                                </div>
+                                                <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
+                                                <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
+                                                <div className="mt-4">
+                                                    <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
+                                                    <input
+                                                        id="gstNumber"
+                                                        type="text"
+                                                        className="border focus:ring-1 ring-[#815bf5]  p-2 bg-transparent rounded outline-none w-full"
+                                                        value={gstNumber}
+                                                        onChange={(e) => setGstNumber(e.target.value)}
                                                     />
-                                                </DialogClose>
-                                            </div>
-                                            <p className="mt-2">This plan costs ₹{plans[selectedPlan]} per user per year.</p>
-                                            <div className="mt-4 flex gap-4">
-
-                                                <select
-                                                    id="userCount"
-                                                    className="border outline-none bg-[#0b0d29] px-2 py-1 -mt-1 rounded "
-                                                    value={userCount}
-                                                    onChange={(e) => setUserCount(parseInt(e.target.value))}
-                                                >
-                                                    <option>Select Number of Users To Add:</option>
-                                                    {[...Array(20)].map((_, i) => {
-                                                        const count = (i + 1) * 5;
-                                                        return (
-                                                            <option key={count} value={count}>
-                                                                {count}
-                                                            </option>
-                                                        );
-                                                    })}
-                                                </select>
-                                            </div>
-                                            <div className='flex gap-4'>
-                                                <h1>Total Subscribed Users = </h1>
-                                                {userCount} (Adding {userCount} users)
-                                            </div>
-                                            <div className="mt-4">
-                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={() => setModalStep(2)}>
-                                                    Next
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {modalStep === 2 && (
-                                        <>
-                                            <h2 className="text-xl font-bold">Payment Details</h2>
-                                            <div className='flex gap-4 mt-4'>
-                                                <h1>Amount (excluding GST) = </h1>
-                                                INR {userCount * plans[selectedPlan]}
-                                            </div>
-                                            <div>
-                                                <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits || 0, plans[selectedPlan] * userCount)}</h1></div>
-                                            <div>
-                                                Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits))}
-                                            </div>
-                                            <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
-                                            <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
-                                            <div className="mt-4">
-                                                <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
-                                                <input
-                                                    id="gstNumber"
-                                                    type="text"
-                                                    className="border focus:ring-1 ring-[#815bf5]  p-2 bg-transparent rounded outline-none w-full"
-                                                    value={gstNumber}
-                                                    onChange={(e) => setGstNumber(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mt-4 flex gap-2">
-                                                <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setModalStep(1)}>
-                                                    Back
-                                                </Button>
-                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handlePayment}>
-                                                    Proceed to Payment
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                </DialogContent>
-                            </Dialog>
-                        )}
+                                                </div>
+                                                <div className="mt-4 flex gap-2">
+                                                    <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setModalStep(1)}>
+                                                        Back
+                                                    </Button>
+                                                    <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handlePayment}>
+                                                        Proceed to Payment
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </DialogContent>
+                                </Dialog>
+                            )}
 
 
-                        {isAddUserOpen && isValidPlan(selectedPlan) && (
-                            <Dialog open={isAddUserOpen} onOpenChange={handleCloseAddDialog}>
-                                <DialogTitle>
-                                    <UserPlus2 className='h-4' />  Add Users</DialogTitle>
-                                <DialogContent className='z-[100] p-6'>
-                                    {modalStep === 1 && (
-                                        <>
-                                            <div className='flex justify-between'>
-                                                <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
-                                                <DialogClose>
-                                                    <CrossCircledIcon
-                                                        className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                            {isAddUserOpen && isValidPlan(selectedPlan) && (
+                                <Dialog open={isAddUserOpen} onOpenChange={handleCloseAddDialog}>
+                                    <DialogTitle>
+                                        <UserPlus2 className='h-4' />  Add Users</DialogTitle>
+                                    <DialogContent className='z-[100] p-6'>
+                                        {modalStep === 1 && (
+                                            <>
+                                                <div className='flex justify-between'>
+                                                    <h2 className="text-xl font-bold">{selectedPlan} Plan</h2>
+                                                    <DialogClose>
+                                                        <CrossCircledIcon
+                                                            className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                                        />
+                                                    </DialogClose>
+                                                </div>
+                                                <div className="flex gap-4 mt-4">
+                                                    <div>Subscribed Users: {subscribedUserCount}</div>
+                                                    <div>Valid Till: <span className="text-blue-500">{formatDate(renewsOn)}</span></div>
+                                                </div>
+
+                                                <div className="mt-4">
+
+                                                    <select
+                                                        id="userCount"
+                                                        className="border p-2 w-full mt-2 outline-none bg-[#0b0d29] rounded"
+                                                        value={additionalUserCount || ""}
+                                                        onChange={handleUserSelection}
+                                                    >
+                                                        <option>Select Number of Users To Add</option>
+                                                        {[...Array(20)].map((_, i) => {
+                                                            const count = (i + 1) * 5;
+                                                            return (
+                                                                <option key={count} value={count}>{count}</option>
+                                                            );
+                                                        })}
+                                                    </select>
+                                                </div>
+                                                <div className="mt-4">
+                                                    <h3>Total Users: {subscribedUserCount + (additionalUserCount || 0)}</h3>
+                                                </div>
+
+                                                <div className="mt-4">
+                                                    <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={() => setModalStep(2)}>
+                                                        Next
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                        {modalStep === 2 && (
+                                            <>
+                                                <h2 className="text-xl font-bold">Payment Details</h2>
+                                                <div className='flex gap-4 mt-4'>
+                                                    <h1>Amount (excluding GST) = </h1>
+                                                    ₹ {(additionalUserCount ?? 0) * plans[selectedPlan]}
+                                                </div>
+                                                <div>
+                                                    <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits)}</h1></div>
+                                                <div>
+                                                    Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (currentUser?.credits || 0))}
+                                                </div>
+                                                <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
+                                                <div> Total Payable: ₹{(Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
+
+                                                <div className="mt-4">
+                                                    <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
+                                                    <input
+                                                        id="gstNumber"
+                                                        type="text"
+                                                        className="border focus:ring-1 ring-[#815bf5] p-2 bg-transparent rounded outline-none w-full"
+                                                        value={gstNumber}
+                                                        onChange={(e) => setGstNumber(e.target.value)}
                                                     />
-                                                </DialogClose>
-                                            </div>
-                                            <div className="flex gap-4 mt-4">
-                                                <div>Subscribe Users: {subscribedUserCount}</div>
-                                                <div>Valid Till: <span className="text-blue-500">{formatDate(renewsOn)}</span></div>
-                                            </div>
-
-                                            <div className="mt-4">
-
-                                                <select
-                                                    id="userCount"
-                                                    className="border p-2 w-full mt-2 outline-none bg-[#0b0d29] rounded"
-                                                    value={additionalUserCount}
-                                                    onChange={handleUserSelection}
-                                                >
-                                                    <option>Select Number of Users To Add:</option>
-                                                    {[...Array(20)].map((_, i) => {
-                                                        const count = (i + 1) * 5;
-                                                        return (
-                                                            <option key={count} value={count}>{count}</option>
-                                                        );
-                                                    })}
-                                                </select>
-                                            </div>
-                                            <div className="mt-4">
-                                                <h3>Total Users: {totalUserCount}</h3>
-                                            </div>
-                                            <div className="mt-4">
-                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={() => setModalStep(2)}>
-                                                    Next
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {modalStep === 2 && (
-                                        <>
-                                            <h2 className="text-xl font-bold">Payment Details</h2>
-                                            <div className='flex gap-4 mt-4'>
-                                                <h1>Amount (excluding GST) = </h1>
-                                                ₹ {additionalUserCount * plans[selectedPlan]}
-                                            </div>
-                                            <div>
-                                                <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits)}</h1></div>
-                                            <div>
-                                                Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * additionalUserCount - (currentUser?.credits))}
-                                            </div>
-                                            <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * additionalUserCount - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
-                                            <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * additionalUserCount - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
-
-                                            <div className="mt-4">
-                                                <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
-                                                <input
-                                                    id="gstNumber"
-                                                    type="text"
-                                                    className="border focus:ring-1 ring-[#815bf5] p-2 bg-transparent rounded outline-none w-full"
-                                                    value={gstNumber}
-                                                    onChange={(e) => setGstNumber(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mt-4 flex gap-2">
-                                                <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setModalStep(1)}>
-                                                    Back
-                                                </Button>
-                                                <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handleConfirmUsers}>
-                                                    Proceed to Payment
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                </DialogContent>
-                            </Dialog>
-                        )}
-                        {isRechargeDialogOpen && (
-                            <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
-                                <DialogContent className='z-[100] p-6'>
-                                    {rechargeModalStep === 1 && (
-                                        <>
-                                            <div className='flex justify-between'>
-                                                <h2 className="text-md font-bold">Recharge Wallet</h2>
-                                                <DialogClose>
-                                                    <CrossCircledIcon
-                                                        className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                                </div>
+                                                <div className="mt-4 flex gap-2">
+                                                    <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setModalStep(1)}>
+                                                        Back
+                                                    </Button>
+                                                    <Button className="bg-[#007A5A] hover:bg-[#007A5A] w-full" onClick={handleConfirmUsers}>
+                                                        Proceed to Payment
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </DialogContent>
+                                </Dialog>
+                            )}
+                            {isRechargeDialogOpen && (
+                                <Dialog open={isRechargeDialogOpen} onOpenChange={handleRechargeDialogClose}>
+                                    <DialogContent className='z-[100] p-6'>
+                                        {rechargeModalStep === 1 && (
+                                            <>
+                                                <div className='flex justify-between'>
+                                                    <h2 className="text-md font-bold">Recharge Wallet</h2>
+                                                    <DialogClose>
+                                                        <CrossCircledIcon
+                                                            className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
+                                                        />
+                                                    </DialogClose>
+                                                </div>
+                                                <div className="mt-4">
+                                                    <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount (minimum ₹5000):</label>
+                                                    <input
+                                                        id="rechargeAmount"
+                                                        type="number"
+                                                        className="border p-2 rounded outline-none w-full"
+                                                        value={rechargeAmount}
+                                                        onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
                                                     />
-                                                </DialogClose>
-                                            </div>
-                                            <div className="mt-4">
-                                                <label htmlFor="rechargeAmount" className="block mb-2">Recharge Amount (minimum ₹5000):</label>
-                                                <input
-                                                    id="rechargeAmount"
-                                                    type="number"
-                                                    className="border p-2 rounded outline-none w-full"
-                                                    value={rechargeAmount}
-                                                    onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
-                                                />
-                                            </div>
-                                            <div className="mt-4">
-                                                <Button className="bg-[#017a5b] hover:bg-[#017a5b] w-full" onClick={() => setRechargeModalStep(2)}>
-                                                    Next
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {rechargeModalStep === 2 && (
-                                        <>
-                                            <h2 className="text-xl font-bold">Payment Details</h2>
-                                            <div className='flex gap-4 mt-4'>
-                                                <h1>Amount (excluding GST) = </h1>
-                                                INR {rechargeAmount}
-                                            </div>
-                                            <div className='flex gap-4'>
-                                                <h1>GST (18%) = </h1>
-                                                INR {(rechargeAmount * 0.18).toFixed(2)}
-                                            </div>
-                                            <div className='flex gap-4'>
-                                                <h1>Total Amount (including GST) = </h1>
-                                                INR {(rechargeAmount * 1.18).toFixed(2)}
-                                            </div>
-                                            <div className="mt-4">
-                                                <label htmlFor="rechargeGstNumber" className="block mb-2">Enter GST Number (Optional):</label>
-                                                <input
-                                                    id="rechargeGstNumber"
-                                                    type="text"
-                                                    className="border focus:ring-1 ring-[#815bf5]bg-transparent p-2 rounded outline-none w-full"
-                                                    value={rechargeGstNumber}
-                                                    onChange={(e) => setRechargeGstNumber(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mt-4 flex gap-2">
-                                                <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setRechargeModalStep(1)}>
-                                                    Back
-                                                </Button>
-                                                <Button className="bg-[#017a5b] hover:bg-[#017a5b] w-full" onClick={handleRechargePayment}>
-                                                    Proceed to Payment
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                </DialogContent>
-                            </Dialog>
-                        )}
-                    </div>
-
-
-                    <div className="flex justify-center mb-8">
-                        {/* Sliding Tabs */}
-                        <div className="relative border h-9 flex bg-[#0A0D28] rounded-full w-80">
-                            {/* Active Tab Indicator */}
-                            <div
-                                className={`absolute top-0 bottom-0 left-0 w-1/2 transform rounded-full transition-all duration-300 ${planTab === "Zapllo Sales" ? "translate-x-full" : "translate-x-0"
-                                    }`}
-                                style={{
-                                    background: "linear-gradient(90deg, #815BF5, #FC7A57)",
-                                }}
-                            ></div>
-
-                            {/* Tabs */}
-                            <button
-                                onClick={() => setPlanTab("Zapllo Teams")}
-                                className={`relative w-1/2 text-center z-10 -mt-1 font-medium py-2 transition-colors duration-300 ${planTab === "Zapllo Teams" ? "text-white" : "text-gray-400"
-                                    }`}
-                            >
-                                Zapllo Teams
-                            </button>
-                            <button
-                                onClick={() => setPlanTab("Zapllo Sales")}
-                                className={`relative w-1/2 text-center z-10 -mt-1 font-medium py-2 transition-colors duration-300 ${planTab === "Zapllo Sales" ? "text-white" : "text-gray-400"
-                                    }`}
-                            >
-                                Zapllo Sales
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Plan Cards */}
-                    <div className="w-full flex justify-center">
-                        <div className="max-w-5xl mx-auto">
-
-                            {planTab === "Zapllo Sales" ? (
-                                <div className='grid grid-cols-3 gap-4'>
-                                    <Card className="w-full  border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
-                                        <CardHeader className=" rounded border-b text-">
-                                            <CardTitle className="text-md font-thin">Zapllo CRM</CardTitle>
-                                            <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                <h1 className='text-5xl font-extrabold'>  ₹ 2999</h1>
-                                                <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
-                                            </CardDescription>
-                                            {displayedPlan === 'Zapllo CRM' && (
-                                                <div>
-                                                    <p className="mt-2 text-sm justify-start flex gap-1">
-                                                        <Clock className="h-5" />
-                                                        Renews on:{" "}
-                                                        <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
-                                                    </p>
-                                                    {subscribedUserCount && (
-                                                        <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                            <Users2 className="h-5" />
-                                                            Subscribed Users:{" "}
-                                                            <span className="text-[#3281F6]">{subscribedUserCount}</span>
-                                                        </p>
-                                                    )}
                                                 </div>
-                                            )}
-                                            <div className=''>
-                                                <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
-                                            </div>
-                                            <div className="flex justify-center py-2 w-full">
-
-                                                {displayedPlan === 'Zapllo Tasks' ? (
-                                                    <Button
-                                                        className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
-                                                    // onClick={() => {
-                                                    //     setSelectedPlan(planTab); // Set the selected 
-                                                    //     setIsAddUserOpen(true); // Open the dialog to add more users
-                                                    // }}
-                                                    >
-                                                        <UserPlus2 className='h-4' />  Add Users
+                                                <div className="mt-4">
+                                                    <Button className="bg-[#017a5b] hover:bg-[#017a5b] w-full" onClick={() => setRechargeModalStep(2)}>
+                                                        Next
                                                     </Button>
-                                                ) : (
-                                                    <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " >Coming Soon</Button>
-                                                )}
-                                            </div>
-                                        </CardHeader>
-                                        <div className="mt-4 ">
-                                            <CardContent className="bg-transparent">
-                                                <ul className="list-disc space-y-2 w-full items-center text-sm">
-                                                    {[
-                                                        "Delegate Unlimited Tasks",
-                                                        "Team Performance Report",
-                                                        "Links Management for your Team",
-                                                        "Email Notification",
-                                                        "Whatsapp Notification",
-                                                        "Repeated Tasks",
-                                                        "File Uploads",
-                                                        "Delegate Tasks with Voice Notes",
-                                                        "Task wise Reminders",
-                                                        "Save more than 5 hours per day per employee"
-
-                                                    ].map((item, index) => (
-                                                        <li key={index} className="flex gap-2 items-center">
-                                                            <img src="/icons/tick.png" />
-                                                            <span
-                                                                className="text-sm font-medium"
-                                                            >
-                                                                {item}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </CardContent>
-                                        </div>
-                                        <CardFooter />
-                                    </Card>
-                                    <Card className="w-full  border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
-                                        <CardHeader className=" rounded border-b text-">
-                                            <CardTitle className="text-md font-thin">Zapllo Invoice</CardTitle>
-                                            <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                <h1 className='text-5xl font-extrabold'>  ₹ 1999</h1>
-                                                <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
-                                            </CardDescription>
-                                            {displayedPlan === 'Zapllo CRM' && (
-                                                <div>
-                                                    <p className="mt-2 text-sm justify-start flex gap-1">
-                                                        <Clock className="h-5" />
-                                                        Renews on:{" "}
-                                                        <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
-                                                    </p>
-                                                    {subscribedUserCount && (
-                                                        <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                            <Users2 className="h-5" />
-                                                            Subscribed Users:{" "}
-                                                            <span className="text-[#3281F6]">{subscribedUserCount}</span>
-                                                        </p>
-                                                    )}
                                                 </div>
-                                            )}
-                                            <div className=''>
-                                                <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
-                                            </div>
-                                            <div className="flex justify-center py-2 w-full">
-
-                                                {displayedPlan === 'Zapllo Tasks' ? (
-                                                    <Button
-                                                        className="w-full border-[#A58DE8] border bg-transparent hover:bg-[#815BF5] rounded-2xl px-6"
-                                                    // onClick={() => {
-                                                    //     setSelectedPlan(planTab); // Set the selected 
-                                                    //     setIsAddUserOpen(true); // Open the dialog to add more users
-                                                    // }}
-                                                    >
-                                                        <UserPlus2 className='h-4' />  Add Users
-                                                    </Button>
-                                                ) : (
-                                                    <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " >Coming Soon</Button>
-                                                )}
-                                            </div>
-                                        </CardHeader>
-                                        <div className="mt-4 ">
-                                            <CardContent className="bg-transparent">
-                                                <ul className="list-disc space-y-2 w-full items-center text-sm">
-                                                    {[
-                                                        "Delegate Unlimited Tasks",
-                                                        "Team Performance Report",
-                                                        "Links Management for your Team",
-                                                        "Email Notification",
-                                                        "Whatsapp Notification",
-                                                        "Repeated Tasks",
-                                                        "File Uploads",
-                                                        "Delegate Tasks with Voice Notes",
-                                                        "Task wise Reminders",
-                                                        "Save more than 5 hours per day per employee"
-
-                                                    ].map((item, index) => (
-                                                        <li key={index} className="flex gap-2 items-center">
-                                                            <img src="/icons/tick.png" />
-                                                            <span
-                                                                className="text-sm font-medium"
-                                                            >
-                                                                {item}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </CardContent>
-                                        </div>
-                                        <CardFooter />
-                                    </Card>
-                                    <Card className="w-full border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
-                                        <CardHeader className=" rounded border-b text-">
-                                            <CardTitle className="text-md font-thin">Zapllo Quotation</CardTitle>
-                                            <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                <h1 className='text-5xl font-extrabold'>  ₹ 1999</h1>
-                                                <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
-                                            </CardDescription>
-                                            {displayedPlan === 'Zapllo CRM' && (
-                                                <div>
-                                                    <p className="mt-2 text-sm justify-start flex gap-1">
-                                                        <Clock className="h-5" />
-                                                        Renews on:{" "}
-                                                        <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
-                                                    </p>
-                                                    {subscribedUserCount && (
-                                                        <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                            <Users2 className="h-5" />
-                                                            Subscribed Users:{" "}
-                                                            <span className="text-[#3281F6]">{subscribedUserCount}</span>
-                                                        </p>
-                                                    )}
+                                            </>
+                                        )}
+                                        {rechargeModalStep === 2 && (
+                                            <>
+                                                <h2 className="text-xl font-bold">Payment Details</h2>
+                                                <div className='flex gap-4 mt-4'>
+                                                    <h1>Amount (excluding GST) = </h1>
+                                                    INR {rechargeAmount}
                                                 </div>
-                                            )}
-                                            <div className=''>
-                                                <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
-                                            </div>
-                                            <div className="flex justify-center py-2 w-full">
-
-                                                {displayedPlan === 'Zapllo Tasks' ? (
-                                                    <Button
-                                                        className="w-full border-[#A58DE8] border bg-transparent hover:bg-[#815BF5] rounded-2xl px-6"
-                                                    // onClick={() => {
-                                                    //     setSelectedPlan(planTab); // Set the selected 
-                                                    //     setIsAddUserOpen(true); // Open the dialog to add more users
-                                                    // }}
-                                                    >
-                                                        <UserPlus2 className='h-4' />  Add Users
-                                                    </Button>
-                                                ) : (
-                                                    <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " >Coming Soon</Button>
-                                                )}
-                                            </div>
-                                        </CardHeader>
-                                        <div className="mt-4 ">
-                                            <CardContent className="bg-transparent">
-                                                <ul className="list-disc space-y-2 w-full items-center text-sm">
-                                                    {[
-                                                        "Delegate Unlimited Tasks",
-                                                        "Team Performance Report",
-                                                        "Links Management for your Team",
-                                                        "Email Notification",
-                                                        "Whatsapp Notification",
-                                                        "Repeated Tasks",
-                                                        "File Uploads",
-                                                        "Delegate Tasks with Voice Notes",
-                                                        "Task wise Reminders",
-                                                        "Save more than 5 hours per day per employee"
-
-                                                    ].map((item, index) => (
-                                                        <li key={index} className="flex gap-2 items-center">
-                                                            <img src="/icons/tick.png" />
-                                                            <span
-                                                                className="text-sm font-medium"
-                                                            >
-                                                                {item}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </CardContent>
-                                        </div>
-                                        <CardFooter />
-                                    </Card>
-                                </div>
-                            ) : (
-                                <div className='grid grid-cols-2 mb-24 gap-4'>
-                                    <Card className="w-[400px]  border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
-                                        <CardHeader className=" rounded border-b text-">
-                                            <CardTitle className="text-md font-thin">Zapllo Tasks</CardTitle>
-                                            <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Tasks"]}</h1>
-                                                <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
-                                            </CardDescription>
-                                            {displayedPlan === 'Zapllo Tasks' && (
-                                                <div>
-                                                    <p className="mt-2 text-sm justify-start flex gap-1">
-                                                        <Clock className="h-5" />
-                                                        Renews on:{" "}
-                                                        <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
-                                                    </p>
-                                                    {subscribedUserCount && (
-                                                        <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                            <Users2 className="h-5" />
-                                                            Subscribed Users:{" "}
-                                                            <span className="text-[#3281F6]">{subscribedUserCount}</span>
-                                                        </p>
-                                                    )}
+                                                <div className='flex gap-4'>
+                                                    <h1>GST (18%) = </h1>
+                                                    INR {(rechargeAmount * 0.18).toFixed(2)}
                                                 </div>
-                                            )}
-                                            <div className=''>
-                                                <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
-                                            </div>
-                                            <div className="flex justify-center py-2 w-full">
-
-                                                {displayedPlan === 'Zapllo Tasks' ? (
-                                                    <Button
-                                                        className="w-full border-[#A58DE8] border bg-transparent hover:bg-[#815BF5] rounded-2xl px-6"
-                                                        onClick={() => {
-                                                            setSelectedPlan("Zapllo Tasks"); // Set the selected 
-                                                            setIsAddUserOpen(true); // Open the dialog to add more users
-                                                        }}
-                                                    >
-                                                        <UserPlus2 className='h-4' />  Add Users
-                                                    </Button>
-                                                ) : (
-                                                    <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Tasks")}>Subscribe</Button>
-                                                )}
-                                            </div>
-                                        </CardHeader>
-                                        <div className="mt-4 ">
-                                            <CardContent className="bg-transparent">
-                                                <ul className="list-disc space-y-2 w-full items-center text-sm">
-                                                    {[
-                                                        "Delegate Unlimited Tasks",
-                                                        "Team Performance Report",
-                                                        "Links Management for your Team",
-                                                        "Email Notification",
-                                                        "Whatsapp Notification",
-                                                        "Repeated Tasks",
-                                                        "File Uploads",
-                                                        "Delegate Tasks with Voice Notes",
-                                                        "Task wise Reminders",
-                                                        "Save more than 5 hours per day per employee"
-
-                                                    ].map((item, index) => (
-                                                        <li key={index} className="flex gap-2 items-center">
-                                                            <img src="/icons/tick.png" />
-                                                            <span
-                                                                className="text-sm font-medium"
-                                                            >
-                                                                {item}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </CardContent>
-                                        </div>
-                                        <CardFooter />
-                                    </Card>
-                                    <Card className="w-[400px] border-none bg-[#0B0D26] h-fit px-4  rounded-2xl">
-                                        <CardHeader className=" rounded border-b text-">
-                                            <CardTitle className="text-md font-thin">Zapllo Payroll</CardTitle>
-                                            <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Payroll"]}</h1>
-                                                <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/ Per User Per Year</h1>
-                                            </CardDescription>
-                                            <div>
-                                                <h1 className='mt-4 text-[#9296bf]'>Make sure Employees get to work on time</h1>
-                                            </div>
-                                            {displayedPlan === 'Zapllo Payroll' && (
-                                                <div>
-
-                                                    <p className="mt-2 text-sm justify-start flex gap-1">
-                                                        <Clock className="h-5" />
-                                                        Renews on:{" "}
-                                                        <span className="text-[#A58DE8] font-bold ">{formatDate(renewsOn)}</span>
-                                                    </p>
-                                                    {subscribedUserCount && (
-                                                        <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                            <Users2 className="h-5" />
-                                                            Subscribed Users:{" "}
-                                                            <span className="text-[#A58DE8] font-bold ">{subscribedUserCount}</span>
-                                                        </p>
-                                                    )}
+                                                <div className='flex gap-4'>
+                                                    <h1>Total Amount (including GST) = </h1>
+                                                    INR {(rechargeAmount * 1.18).toFixed(2)}
                                                 </div>
-                                            )}
-
-                                            <div className="flex justify-center py-2 w-full">
-                                                {displayedPlan === 'Zapllo Payroll' ? (
-                                                    <Button
-                                                        className="border-[#A58DE8] hover:bg-[#815BF5] bg-transparent border  w-full rounded-2xl h-10 px-6"
-                                                        onClick={() => {
-                                                            setSelectedPlan("Zapllo Payroll"); // Set the selected 
-                                                            setIsAddUserOpen(true); // Open the dialog to add more users
-                                                        }}
-                                                    >
-                                                        <UserPlus2 className='h-4' />     Add Users
+                                                <div className="mt-4">
+                                                    <label htmlFor="rechargeGstNumber" className="block mb-2">Enter GST Number (Optional):</label>
+                                                    <input
+                                                        id="rechargeGstNumber"
+                                                        type="text"
+                                                        className="border focus:ring-1 ring-[#815bf5]bg-transparent p-2 rounded outline-none w-full"
+                                                        value={rechargeGstNumber}
+                                                        onChange={(e) => setRechargeGstNumber(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="mt-4 flex gap-2">
+                                                    <Button className="bg-gray-500 hover:bg-gray-600 w-full" onClick={() => setRechargeModalStep(1)}>
+                                                        Back
                                                     </Button>
-                                                ) : (
-                                                    <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Payroll")}>Subscribe</Button>
-                                                )}
-                                            </div>
-                                        </CardHeader>
-                                        <div className=" mt-4">
-                                            <CardContent className="bg-transparent">
-                                                <ul className="list-disc space-y-2  w-full items-center text-sm">
-                                                    {[
-                                                        "Geo-Location & Face Recognition Feature",
-                                                        "Easy Leave Application",
-                                                        "Attendance & leave Tracking",
-                                                        "Approval Process",
-                                                        "Regularization Process (Apply for past date attendance)",
-                                                        "Repeated Tasks",
-                                                        "Define your own leave types",
-                                                        "Reports/Dashboard",
-
-
-                                                    ].map((item, index) => (
-                                                        <li key={index} className="flex gap-2 items-center">
-                                                            <img src="/icons/tick.png" />
-                                                            <span
-                                                                className="text-sm font-medium"
-                                                            >
-                                                                {item}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </CardContent>
-                                        </div>
-                                        <CardFooter />
-                                    </Card>
-                                </div>
+                                                    <Button className="bg-[#017a5b] hover:bg-[#017a5b] w-full" onClick={handleRechargePayment}>
+                                                        Proceed to Payment
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </DialogContent>
+                                </Dialog>
                             )}
                         </div>
-                    </div>
 
-                </div>
-            ) :
-                <div className='flex w-full justify-center mt-24'>
-                    <div>
-                        <div className='w-full flex justify-center'>
-                            <img src='/icons/danger.png' className='h-8' />
+
+                        <div className="flex justify-center mb-8">
+                            {/* Sliding Tabs */}
+                            <div className="relative border h-9 flex bg-[#0A0D28] rounded-full w-80">
+                                {/* Active Tab Indicator */}
+                                <div
+                                    className={`absolute top-0 bottom-0 left-0 w-1/2 transform rounded-full transition-all duration-300 ${planTab === "Zapllo Sales" ? "translate-x-full" : "translate-x-0"
+                                        }`}
+                                    style={{
+                                        background: "linear-gradient(90deg, #815BF5, #FC7A57)",
+                                    }}
+                                ></div>
+
+                                {/* Tabs */}
+                                <button
+                                    onClick={() => setPlanTab("Zapllo Teams")}
+                                    className={`relative w-1/2 text-center z-10 -mt-1 font-medium py-2 transition-colors duration-300 ${planTab === "Zapllo Teams" ? "text-white" : "text-gray-400"
+                                        }`}
+                                >
+                                    Zapllo Teams
+                                </button>
+                                <button
+                                    onClick={() => setPlanTab("Zapllo Sales")}
+                                    className={`relative w-1/2 text-center z-10 -mt-1 font-medium py-2 transition-colors duration-300 ${planTab === "Zapllo Sales" ? "text-white" : "text-gray-400"
+                                        }`}
+                                >
+                                    Zapllo Sales
+                                </button>
+                            </div>
                         </div>
-                        <h1 className='text-center m'>You are not authorized to view this page!</h1>
+
+                        {/* Plan Cards */}
+                        <div className="w-full flex justify-center">
+                            <div className="max-w-5xl mx-auto">
+
+                                {planTab === "Zapllo Sales" ? (
+                                    <div className='grid grid-cols-3 gap-4'>
+                                        <Card className="w-full  border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
+                                            <CardHeader className=" rounded border-b text-">
+                                                <CardTitle className="text-md font-thin">Zapllo CRM</CardTitle>
+                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                    <h1 className='text-5xl font-extrabold'>  ₹ 2999</h1>
+                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
+                                                </CardDescription>
+                                                {displayedPlan === 'Zapllo CRM' && (
+                                                    <div>
+                                                        <p className="mt-2 text-sm justify-start flex gap-1">
+                                                            <Clock className="h-5" />
+                                                            Renews on:{" "}
+                                                            <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
+                                                        </p>
+                                                        {subscribedUserCount && (
+                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                <Users2 className="h-5" />
+                                                                Subscribed Users:{" "}
+                                                                <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div className=''>
+                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                </div>
+                                                <div className="flex justify-center py-2 w-full">
+
+                                                    {displayedPlan === 'Zapllo Tasks' ? (
+                                                        <Button
+                                                            className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent opacity-70  rounded-2xl px-6"
+                                                        // onClick={() => {
+                                                        //     setSelectedPlan(planTab); // Set the selected 
+                                                        //     setIsAddUserOpen(true); // Open the dialog to add more users
+                                                        // }}
+                                                        >
+                                                            Coming Soon
+                                                        </Button>
+                                                    ) : (
+                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " >Coming Soon</Button>
+                                                    )}
+                                                </div>
+                                            </CardHeader>
+                                            <div className="mt-4 ">
+                                                <CardContent className="bg-transparent">
+                                                    <ul className="list-disc space-y-2 w-full items-center text-sm">
+                                                        {[
+
+
+                                                        ].map((item, index) => (
+                                                            <li key={index} className="flex gap-2 items-center">
+                                                                <img src="/icons/tick.png" />
+                                                                <span
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    {item}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </CardContent>
+                                            </div>
+                                            <CardFooter />
+                                        </Card>
+                                        <Card className="w-full  border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
+                                            <CardHeader className=" rounded border-b text-">
+                                                <CardTitle className="text-md font-thin">Zapllo Invoice</CardTitle>
+                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                    <h1 className='text-5xl font-extrabold'>  ₹ 1999</h1>
+                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
+                                                </CardDescription>
+                                                {displayedPlan === 'Zapllo CRM' && (
+                                                    <div>
+                                                        <p className="mt-2 text-sm justify-start flex gap-1">
+                                                            <Clock className="h-5" />
+                                                            Renews on:{" "}
+                                                            <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
+                                                        </p>
+                                                        {subscribedUserCount && (
+                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                <Users2 className="h-5" />
+                                                                Subscribed Users:{" "}
+                                                                <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div className=''>
+                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                </div>
+                                                <div className="flex justify-center py-2 w-full">
+
+                                                    {displayedPlan === 'Zapllo Tasks' ? (
+                                                        <Button
+                                                            className="w-full border-[#A58DE8] border bg-transparent opacity-70 hover:bg-[#815BF5] rounded-2xl px-6"
+                                                        // onClick={() => {
+                                                        //     setSelectedPlan(planTab); // Set the selected 
+                                                        //     setIsAddUserOpen(true); // Open the dialog to add more users
+                                                        // }}
+                                                        >
+                                                            Coming Soon
+                                                        </Button>
+                                                    ) : (
+                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " >Coming Soon</Button>
+                                                    )}
+                                                </div>
+                                            </CardHeader>
+                                            <div className="mt-4 ">
+                                                <CardContent className="bg-transparent">
+                                                    <ul className="list-disc space-y-2 w-full items-center text-sm">
+                                                        {[
+
+
+                                                        ].map((item, index) => (
+                                                            <li key={index} className="flex gap-2 items-center">
+                                                                <img src="/icons/tick.png" />
+                                                                <span
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    {item}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </CardContent>
+                                            </div>
+                                            <CardFooter />
+                                        </Card>
+                                        <Card className="w-full border-none bg-[#0B0D26] h-fit px-4  rounded-3xl">
+                                            <CardHeader className=" rounded border-b text-">
+                                                <CardTitle className="text-md font-thin">Zapllo Quotation</CardTitle>
+                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                    <h1 className='text-5xl font-extrabold'>  ₹ 1999</h1>
+                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
+                                                </CardDescription>
+                                                {displayedPlan === 'Zapllo CRM' && (
+                                                    <div>
+                                                        <p className="mt-2 text-sm justify-start flex gap-1">
+                                                            <Clock className="h-5" />
+                                                            Renews on:{" "}
+                                                            <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
+                                                        </p>
+                                                        {subscribedUserCount && (
+                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                <Users2 className="h-5" />
+                                                                Subscribed Users:{" "}
+                                                                <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div className=''>
+                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                </div>
+                                                <div className="flex justify-center py-2 w-full">
+
+                                                    {displayedPlan === 'Zapllo Tasks' ? (
+                                                        <Button
+                                                            className="w-full border-[#A58DE8] border bg-transparent opacity-70 hover:bg-[#815BF5] rounded-2xl px-6"
+                                                        // onClick={() => {
+                                                        //     setSelectedPlan(planTab); // Set the selected 
+                                                        //     setIsAddUserOpen(true); // Open the dialog to add more users
+                                                        // }}
+                                                        >
+                                                            Coming Soon
+                                                        </Button>
+                                                    ) : (
+                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " >Coming Soon</Button>
+                                                    )}
+                                                </div>
+                                            </CardHeader>
+                                            <div className="mt-4 ">
+                                                <CardContent className="bg-transparent">
+                                                    <ul className="list-disc space-y-2 w-full items-center text-sm">
+                                                        {[
+
+
+                                                        ].map((item, index) => (
+                                                            <li key={index} className="flex gap-2 items-center">
+                                                                <img src="/icons/tick.png" />
+                                                                <span
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    {item}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </CardContent>
+                                            </div>
+                                            <CardFooter />
+                                        </Card>
+                                    </div>
+                                ) : (
+                                    <div className='grid grid-cols-2 mb-24 gap-4'>
+                                        <Card className={`w-[400px]  border border-[#E0E0E066] ] h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Tasks' ? "" : "bg-[#0B0D26]"}`}>
+                                            <CardHeader className=" rounded border-b text-">
+                                                <CardTitle className="text-md font-thin">Zapllo Tasks</CardTitle>
+                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                    <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Tasks"]}</h1>
+                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
+                                                </CardDescription>
+                                                {displayedPlan === 'Zapllo Tasks' && (
+                                                    <div>
+                                                        <p className="mt-2 text-sm justify-start flex gap-1">
+                                                            <Clock className="h-5" />
+                                                            Renews on:{" "}
+                                                            <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
+                                                        </p>
+                                                        {subscribedUserCount && (
+                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                <Users2 className="h-5" />
+                                                                Subscribed Users:{" "}
+                                                                <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div className=''>
+                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                </div>
+                                                <div className="flex justify-center py-2 w-full">
+
+                                                    {displayedPlan === 'Zapllo Tasks' ? (
+                                                        <Button
+                                                            className="w-full border-[#A58DE8] border bg-transparent hover:bg-[#815BF5] rounded-2xl px-6"
+                                                            onClick={() => {
+                                                                setSelectedPlan("Zapllo Tasks"); // Set the selected 
+                                                                setIsAddUserOpen(true); // Open the dialog to add more users
+                                                            }}
+                                                        >
+                                                            <UserPlus2 className='h-4' />  Add Users
+                                                        </Button>
+                                                    ) : (
+                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Tasks")}>Subscribe</Button>
+                                                    )}
+                                                </div>
+                                            </CardHeader>
+                                            <div className="mt-4 ">
+                                                <CardContent className="bg-transparent">
+                                                    <ul className="list-disc space-y-2 w-full items-center text-sm">
+                                                        {[
+                                                            "Delegate Unlimited Tasks",
+                                                            "Team Performance Report",
+                                                            "Links Management for your Team",
+                                                            "Email Notification",
+                                                            "Whatsapp Notification",
+                                                            "Repeated Tasks",
+                                                            "File Uploads",
+                                                            "Delegate Tasks with Voice Notes",
+                                                            "Task wise Reminders",
+                                                            "Save more than 5 hours per day per employee"
+
+                                                        ].map((item, index) => (
+                                                            <li key={index} className="flex gap-2 items-center">
+                                                                <img src="/icons/tick.png" />
+                                                                <span
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    {item}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </CardContent>
+                                            </div>
+                                            <CardFooter />
+                                        </Card>
+                                        <Card className={`w-[400px]  border border-[#E0E0E066] ] h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Payroll' ? "" : "bg-[#0B0D26]"}`}>
+                                            <CardHeader className=" rounded border-b text-">
+                                                <CardTitle className="text-md font-thin">Zapllo Payroll</CardTitle>
+                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                    <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Payroll"]}</h1>
+                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/ Per User Per Year</h1>
+                                                </CardDescription>
+                                                <div>
+                                                    <h1 className='mt-4 text-[#9296bf]'>Make sure Employees get to work on time</h1>
+                                                </div>
+                                                {displayedPlan === 'Zapllo Payroll' && (
+                                                    <div>
+
+                                                        <p className="mt-2 text-sm justify-start flex gap-1">
+                                                            <Clock className="h-5" />
+                                                            Renews on:{" "}
+                                                            <span className="text-[#A58DE8] font-bold ">{formatDate(renewsOn)}</span>
+                                                        </p>
+                                                        {subscribedUserCount && (
+                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                <Users2 className="h-5" />
+                                                                Subscribed Users:{" "}
+                                                                <span className="text-[#A58DE8] font-bold ">{subscribedUserCount}</span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <div className="flex justify-center py-2 w-full">
+                                                    {displayedPlan === 'Zapllo Payroll' ? (
+                                                        <Button
+                                                            className="border-[#A58DE8] hover:bg-[#815BF5] bg-transparent border  w-full rounded-2xl h-10 px-6"
+                                                            onClick={() => {
+                                                                setSelectedPlan("Zapllo Payroll"); // Set the selected 
+                                                                setIsAddUserOpen(true); // Open the dialog to add more users
+                                                            }}
+                                                        >
+                                                            <UserPlus2 className='h-4' />     Add Users
+                                                        </Button>
+                                                    ) : (
+                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Payroll")}>Subscribe</Button>
+                                                    )}
+                                                </div>
+                                            </CardHeader>
+                                            <div className=" mt-4">
+                                                <CardContent className="bg-transparent">
+                                                    <ul className="list-disc space-y-2  w-full items-center text-sm">
+                                                        {[
+                                                            "Geo-Location & Face Recognition Feature",
+                                                            "Easy Leave Application",
+                                                            "Attendance & leave Tracking",
+                                                            "Approval Process",
+                                                            "Regularization Process (Apply for past date attendance)",
+                                                            "Repeated Tasks",
+                                                            "Define your own leave types",
+                                                            "Reports/Dashboard",
+
+
+                                                        ].map((item, index) => (
+                                                            <li key={index} className="flex gap-2 items-center">
+                                                                <img src="/icons/tick.png" />
+                                                                <span
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    {item}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </CardContent>
+                                            </div>
+                                            <CardFooter />
+                                        </Card>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
                     </div>
-                </div>
-            }
-        </div >
+                ) :
+                    <div className='flex w-full justify-center mt-24'>
+                        <div>
+                            <div className='w-full flex justify-center'>
+                                <img src='/icons/danger.png' className='h-8' />
+                            </div>
+                            <h1 className='text-center m'>You are not authorized to view this page!</h1>
+                        </div>
+                    </div>
+                }
+            </div >
+        </>
+
     );
 }

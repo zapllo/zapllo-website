@@ -55,16 +55,16 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Task not found' }, { status: 404 });
         }
 
-        // Update task status
+        // Determine newStatus to store in the database
         let newStatus = status;
         if (status === 'Reopen') {
-            newStatus = 'Pending'; // Set status to Pending when reopened
+            newStatus = 'Pending'; // Store "Pending" in the database for Reopen tasks
         } else if (task.repeat) {
-            newStatus = 'Pending';
+            newStatus = 'Pending'; // Handle repeat tasks
         } else {
             newStatus = status;
             if (status === 'Completed') {
-                task.completionDate = new Date();
+                task.completionDate = new Date(); // Add completion date for completed tasks
             }
         }
 
@@ -75,8 +75,8 @@ export async function PATCH(request: NextRequest) {
             userName,
             comment,
             fileUrl,
-            tag: status, // Add the tag here
-            createdAt: new Date()
+            tag: status, // Use the original status (e.g., "Reopen") in comments
+            createdAt: new Date(),
         });
 
         await task.save();
@@ -90,12 +90,13 @@ export async function PATCH(request: NextRequest) {
         // Find the assigned user and task category
         const assignedUser = await User.findById(task.assignedUser);
         if (!assignedUser) {
-            return NextResponse.json({ error: 'assigned user not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Assigned user not found' }, { status: 404 });
         }
         const taskCategory = await Category.findById(task.category);
         if (!taskCategory) {
-            return NextResponse.json({ error: 'category  not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Category not found' }, { status: 404 });
         }
+
         // Send Email to the task creator
         if (assignedUser.notifications.email) { // Check if email notifications are enabled
             const emailOptions: SendEmailOptions = {
@@ -103,17 +104,17 @@ export async function PATCH(request: NextRequest) {
                 subject: "Task Status Updates",
                 text: `Task '${task.title}' has been updated.`,
                 html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-    <div style="background-color: #f0f4f8; padding: 20px; ">
+    <div style="background-color: #f0f4f8; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <div style="padding: 20px; text-align: center;">
                 <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
             </div>
           <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
-    <h1 style="margin: 0; font-size: 20px;">Task Status ${task.status}</h1>
+    <h1 style="margin: 0; font-size: 20px;">Task Status ${status}</h1>
 </div>
                             <div style="padding: 20px;">
                                 <p><strong>Dear ${taskCreator.firstName},</strong></p>
-                                <p>${userName} has updated the task status to ${task.status} for a task assigned by you.</p>
+                                <p>${userName} has updated the task status to ${status} for a task assigned by you.</p>
                                 <p>Update Remarks - ${comment}</p>
                                 <div style="border-radius:8px; margin-top:4px; color:#000000; padding:10px; background-color:#ECF1F6">
                                 <p>Task Details:</p>
@@ -136,15 +137,26 @@ export async function PATCH(request: NextRequest) {
             };
 
             await sendEmail(emailOptions);
-
         }
-        await sendWebhookNotification(task, taskCreator, assignedUser, status, userName, comment, taskCategory);
+
+        // Send webhook notification
+        await sendWebhookNotification(
+            task,
+            taskCreator,
+            assignedUser,
+            status, // Pass the original status (e.g., "Reopen") for the notification
+            userName,
+            comment,
+            taskCategory
+        );
+
         return NextResponse.json({ message: 'Task updated successfully', task }, { status: 200 });
     } catch (error) {
         console.error('Error updating task:', error);
         return NextResponse.json({ error: 'Error updating task' }, { status: 500 });
     }
 }
+
 
 // Helper function to format date
 const formatDate = (dateInput: string | Date): string => {

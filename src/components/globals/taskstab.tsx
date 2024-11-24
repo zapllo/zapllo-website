@@ -110,6 +110,7 @@ import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
 import { BackgroundGradientAnimation } from "../ui/backgroundGradientAnimation";
 import CustomDatePicker from "./date-picker";
 import { ClearIcon } from "@mui/x-date-pickers/icons";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type DateFilter =
   | "today"
@@ -2418,10 +2419,12 @@ export default function TasksTab({
                                 // >
                                 <div>
                                   <div className="flex w-full justify-center -ml-4">
-                                    <div className="mt-8">
-                                      <img
-                                        src="/animations/emptylist.gif"
-                                        className="h-40 ml-[58px]"
+                                    <div className="mt-2">
+                                      <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
                                       />
                                       <h1 className="text-center font-bold text-md  -ml-4">
                                         No Tasks Found
@@ -2838,11 +2841,13 @@ export default function TasksTab({
                                   </div>
                                 ))
                               ) : (
-                                <div className="mt-8 ml-36">
-                                  <img
-                                    src="/animations/emptylist.gif"
-                                    className="h-40 ml-[43%]"
-                                  />
+                                <div className="mt-4 ml-36">
+                                 <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
+                                      />
                                   <h1 className="text-center font-bold text-md  ml-4">
                                     No Tasks Found
                                   </h1>
@@ -3272,11 +3277,13 @@ export default function TasksTab({
                                   </div>
                                 ))
                               ) : (
-                                <div className="mt-8 ml-36">
-                                  <img
-                                    src="/animations/emptylist.gif"
-                                    className="h-40 ml-[43%]"
-                                  />
+                                <div className="mt-4 ml-36">
+                                   <DotLottieReact
+                                        src="/lottie/empty.lottie"
+                                        loop
+                                        className="h-56"
+                                        autoplay
+                                      />
                                   <h1 className="text-center font-bold text-md  ml-4">
                                     No Tasks Found
                                   </h1>

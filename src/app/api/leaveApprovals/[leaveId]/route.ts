@@ -9,7 +9,11 @@ import { getDataFromToken } from '@/helper/getDataFromToken';
 import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
 
 const sendLeaveApprovalEmail = async (leave: any, status: 'Approved' | 'Partially Approved' | 'Rejected', approvedFor: number) => {
-    const reportingManager = leave.user.reportingManager;
+    // Fetch the user who approved the leave
+    const approvedByUser = await User.findById(leave.approvedBy).select("firstName");
+
+    // Fallback to "N/A" if the user is not found
+    const approvedByName = approvedByUser?.firstName || "N/A";
     const user = leave.user;
     const emailSubjectMap = {
         Approved: "Leave Application - Approved",
@@ -32,20 +36,20 @@ const sendLeaveApprovalEmail = async (leave: any, status: 'Approved' | 'Partiall
 </div>
                     <div style="padding: 20px; color:#000000;">
                         <p>Dear ${user.firstName},</p>
-                        <p>Your leave application has been <strong>${status}</strong> by ${reportingManager.firstName}, given below are the details:</p>
+                        <p>Your leave application has been <strong>${status}</strong> by ${approvedByName}, given below are the details:</p>
                           <div style="border-radius:8px; margin-top:4px; color:#000000; padding:10px; background-color:#ECF1F6">
                         <p><strong>Leave Type:</strong> ${leave.leaveType.leaveType}</p>
                         <p><strong>From:</strong> ${formatDate(leave.fromDate)}</p>
                         <p><strong>To:</strong> ${formatDate(leave.toDate)}</p>
                         <p><strong>Applied Duration:</strong> ${leave.appliedDays} days</p>
                         ${status === "Partially Approved"
-            ? `<p><strong>Approved Duration:</strong> ${approvedFor} days</p>`
-            : ""
-        }
+                ? `<p><strong>Approved Duration:</strong> ${approvedFor} days</p>`
+                : ""
+            }
                         ${leave.remarks
-            ? `<p><strong>Remarks:</strong> ${leave.remarks}</p>`
-            : ""
-        }
+                ? `<p><strong>Remarks:</strong> ${leave.remarks}</p>`
+                : ""
+            }
         </div>
                         <div style="text-align: center; margin-top: 40px;">
                             <a href="https://zapllo.com/attendance/my-leaves" style="background-color: #017a5b; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Payroll App</a>
@@ -99,12 +103,13 @@ const sendLeaveApprovalWebhookNotification = async (
     approvedFor: number,
     templateName: string // Add this to make it dynamic
 ) => {
+    const approvedByUser = await User.findById(leave.approvedBy).select("firstName");
     const payload = {
         phoneNumber,
         templateName,  // Use the dynamic template name here
         bodyVariables: [
             leave.user.firstName,  // 1. User's first name
-            leave.user.reportingManager?.firstName || 'N/A',  // 2. Reporting Manager's first name or fallback
+            approvedByUser?.firstName || "N/A", // 2. Approver's first name
             leave.leaveType.leaveType,  // 3. Leave type
             formatDate(leave.fromDate),  // 4. From date
             formatDate(leave.toDate),    // 5. To date
