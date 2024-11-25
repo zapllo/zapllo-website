@@ -786,7 +786,8 @@ export default function MyAttendance() {
                 />
               </div>
               <div className='text-center w-full'>
-                <h1 className=' text-lg font-semibold text-  '>No Entries Found</h1>
+                
+                <h1 className=' text-lg font-semibold text-'>No Entries Found</h1>
                 <p className='text-sm p-2 '>It seems like you have not raised any requests yet</p>
               </div>
             </div>
@@ -1253,8 +1254,14 @@ export default function MyAttendance() {
                     <h1 className="text-xs mt-[1px]">Hours: {totalHours}</h1>
                   </div>
                 </div>
-                <p className="text-center text-gray-600">
-                  No Entries for the selected time frame!
+                <DotLottieReact
+                  src="/lottie/empty.lottie"
+                  loop
+                  className="h-56"
+                  autoplay
+                />
+                <p className="text-center text-white -600">
+                  No Entries for the selected time frame
                 </p>
               </div>
             ) : (
@@ -1410,12 +1417,12 @@ export default function MyAttendance() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   {/* Example face detection animtion */}
                   <div className="face-animation">
-                  <DotLottieReact
-                                        src="/lottie/facescan.lottie"
-                                        loop
-                                        className="h-56"
-                                        autoplay
-                                      />
+                    <DotLottieReact
+                      src="/lottie/facescan.lottie"
+                      loop
+                      className="h-56"
+                      autoplay
+                    />
                   </div>
                 </div>
               )}

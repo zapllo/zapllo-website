@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         // Set the token as an HTTP-only cookie
         response.cookies.set("token", token, {
             httpOnly: true,  // This makes the cookie inaccessible to client-side JavaScript
-            secure: process.env.NODE_ENV === "production",  // Ensures the cookie is only sent over HTTPS in production
+            secure: true,  // Ensures the cookie is only sent over HTTPS in production
             sameSite: "strict",  // Prevents the cookie from being sent along with cross-site requests
             maxAge: 15 * 24 * 60 * 60, // 15 days in seconds
             path: "/",  // The path scope of the cookie
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         const loginTime = new Date().getTime();
         response.cookies.set("loginTime", loginTime.toString(), {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "strict",
             maxAge: 15 * 24 * 60 * 60, // 15 days in seconds
             path: "/",

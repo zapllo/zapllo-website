@@ -102,6 +102,7 @@ export default function Billing() {
     }, [subscribedUserCount, additionalUserCount]);
 
 
+    console.log(currentUser?._id, 'id')
 
     const handleConfirmUsers = async () => {
         const plan = selectedPlan as PlanKeys;
@@ -141,7 +142,7 @@ export default function Billing() {
 
                 // Create an order for record-keeping
                 const orderData = {
-                    userId: currentUser?._id, // Ensure this is passed
+                    userId: currentUser._id, // Ensure this is passed
                     amount: 0, // No payment required
                     planName: plan,
                     creditedAmount: 0, // No credits for this type of plan
@@ -180,10 +181,11 @@ export default function Billing() {
             };
 
             // Create order on server and get order ID
-            const { data } = await axios.post('/api/create-wallet-order', orderData);
+            const { data } = await axios.post('/api/create-order', orderData);
             if (!data.orderId) {
                 throw new Error('Order ID not found in the response');
             }
+            setIsPaymentProcessing(false);
 
             // Close the modal
 
@@ -257,6 +259,10 @@ export default function Billing() {
 
             // Open the Razorpay payment modal
             const rzp1 = new (window as any).Razorpay(options);
+            // Ensure the loader is reset when the Razorpay modal is closed
+            rzp1.on('modal.closed', () => {
+                setIsPaymentProcessing(false); // Reset the loader
+            });
             rzp1.open();
         } catch (error) {
             toast.error("Error adding users. Please try again.");
@@ -366,6 +372,8 @@ export default function Billing() {
             if (!data.orderId) {
                 throw new Error('Order ID not found in the response');
             }
+            setIsPaymentProcessing(false);
+
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
@@ -393,6 +401,7 @@ export default function Billing() {
                         });
 
                         if (verificationResult.success) {
+                            setIsPaymentProcessing(false);
                             toast(<div className=" w-full mb-6 gap-2 m-auto  ">
                                 <div className="w-full flex   justify-center">
                                     <DotLottieReact
@@ -438,6 +447,11 @@ export default function Billing() {
             rzp1.on('payment.failed', function (response: any) {
                 console.error('Payment Failed:', response.error);
             });
+
+            // Ensure the loader is reset when the Razorpay modal is closed
+            rzp1.on('modal.closed', () => {
+                setIsPaymentProcessing(false); // Reset the loader
+            });
             rzp1.open({
                 target: '_blank', // Open in a new window
             });
@@ -464,12 +478,13 @@ export default function Billing() {
                 },
             };
             try {
+                setIsPaymentProcessing(true);
                 const { data } = await axios.post('/api/create-order', orderData);
                 if (!data.orderId) {
                     throw new Error('Order ID not found in the response');
                 }
                 setIsRechargeDialogOpen(false);
-                setIsPaymentProcessing(true);
+                setIsPaymentProcessing(false);
 
 
                 const options = {
@@ -488,6 +503,8 @@ export default function Billing() {
                             planName: 'Recharge'
                         };
                         try {
+                            setIsPaymentProcessing(true);
+
                             const { data: verificationResult } = await axios.post('/api/payment-success', {
                                 ...paymentResult,
                                 userId: currentUser?._id,
@@ -496,6 +513,7 @@ export default function Billing() {
                                 subscribedUserCount: userCount,
                             });
                             if (verificationResult.success) {
+                                setIsPaymentProcessing(false);
                                 toast(<div className=" w-full mb-6 gap-2 m-auto  ">
                                     <div className="w-full flex   justify-center">
                                         <DotLottieReact
@@ -591,58 +609,63 @@ export default function Billing() {
                             <div className="gap-2 flex  mb-6 w-full">
                                 <div className="-mt-2">
                                     <div className="p-4">
-                                        <Card className="gap-6 border-[#E0E0E066]  rounded-3xl py-4 border w-full">
-                                            <CardHeader>
-                                                <div className="flex justify-between w-[420px]">
-                                                    <div className="flex gap-2">
-                                                        <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
-                                                            <Wallet />
+                                        <div className='p-[1px] rounded-3xl bg-gradient-to-r from-[#815BF5] to-[#FC8929]'>
+                                            <Card className="gap-6 border   rounded-3xl py-4  w-full">
+                                                <CardHeader>
+                                                    <div className="flex justify-between w-[420px]">
+                                                        <div className="flex gap-2">
+                                                            <div className="h-12 bg-gradient-to-r from-[#815BF5] to-[#FC8929] w-12 rounded-full border items-center justify-center flex ">
+                                                                <Wallet />
+                                                            </div>
+                                                            <div>
+                                                                <CardTitle className="text-xl font-medium">                                                                <h1>₹{currentUser?.credits}</h1>
+                                                                </CardTitle>
+                                                                <h1 className='text-[#676B93]'>Current Balance</h1>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <CardTitle className="text-lg font-medium">Current Balance</CardTitle>
-                                                            <h1>₹{currentUser?.credits}</h1>
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                size="sm"
+                                                                className="w-full hover:bg-gradient-to-r from-[#815BF5] to-[#FC8929] hover:border-none border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
+                                                                onClick={handleRechargeClick}
+                                                            >
+                                                                Recharge Now
+                                                            </Button>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
-                                                            onClick={handleRechargeClick}
-                                                        >
-                                                            Recharge Now
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </CardHeader>
-                                        </Card>
+                                                </CardHeader>
+                                            </Card>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="-mt-2">
                                     <div className="p-4">
-                                        <Card className="gap-6  rounded-3xl border py-4 border-[#E0E0E066] w-full">
-                                            <CardHeader>
-                                                <div className="flex justify-between w-[380px]">
-                                                    <div className="flex gap-2">
-                                                        <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
-                                                            <img src='/icons/whatsapp.png' className='h-6' />
+                                        <div className='p-[1px] rounded-3xl bg-gradient-to-r from-[#815BF5] to-[#FC8929]'>
+                                            <Card className="gap-6  rounded-3xl border py-4 border-[#E0E0E066] w-full">
+                                                <CardHeader>
+                                                    <div className="flex justify-between w-[380px]">
+                                                        <div className="flex gap-2">
+                                                            <div className="h-12 w-12 rounded-full border items-center justify-center flex border-white">
+                                                                <img src='/icons/whatsapp.png' className='h-6' />
+                                                            </div>
+                                                            <div>
+                                                                <CardTitle className="text-lg">Sales</CardTitle>
+                                                                <CardDescription>Connect with team</CardDescription>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <CardTitle className="text-lg">Sales</CardTitle>
-                                                            <CardDescription>Connect with team</CardDescription>
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                size="sm"
+                                                                className="w-full hover:bg-gradient-to-r from-[#815BF5] to-[#FC8929] hover:border-none border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
+                                                                onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
+                                                            >
+                                                                Connect Now
+                                                            </Button>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            className="w-full hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
-                                                            onClick={() => window.open('https://wa.me/+918910748670?text=Hello, I would like to connect.', '_blank')}
-                                                        >
-                                                            Connect Now
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </CardHeader>
-                                        </Card>
+                                                </CardHeader>
+                                            </Card>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -889,10 +912,10 @@ export default function Billing() {
 
                         <div className="flex justify-center mb-8">
                             {/* Sliding Tabs */}
-                            <div className="relative border h-9 flex bg-[#0A0D28] rounded-full w-80">
+                            <div className="relative border h-10 flex bg-[#0A0D28] rounded-full w-80">
                                 {/* Active Tab Indicator */}
                                 <div
-                                    className={`absolute top-0 bottom-0 left-0 w-1/2 transform rounded-full transition-all duration-300 ${planTab === "Zapllo Sales" ? "translate-x-full" : "translate-x-0"
+                                    className={`absolute  scale-[85%]  top-0 bottom-0 left-0 w-1/2 transform rounded-full transition-all duration-300 ${planTab === "Zapllo Sales" ? "translate-x-full" : "translate-x-0"
                                         }`}
                                     style={{
                                         background: "linear-gradient(90deg, #815BF5, #FC7A57)",
@@ -1118,152 +1141,157 @@ export default function Billing() {
                                     </div>
                                 ) : (
                                     <div className='grid grid-cols-2 mb-24 gap-4'>
-                                        <Card className={`w-[400px]  border border-[#E0E0E066] ] h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Tasks' ? "" : "bg-[#0B0D26]"}`}>
-                                            <CardHeader className=" rounded border-b text-">
-                                                <CardTitle className="text-md font-thin">Zapllo Tasks</CardTitle>
-                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                    <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Tasks"]}</h1>
-                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
-                                                </CardDescription>
-                                                {displayedPlan === 'Zapllo Tasks' && (
-                                                    <div>
-                                                        <p className="mt-2 text-sm justify-start flex gap-1">
-                                                            <Clock className="h-5" />
-                                                            Renews on:{" "}
-                                                            <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
-                                                        </p>
-                                                        {subscribedUserCount && (
-                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                                <Users2 className="h-5" />
-                                                                Subscribed Users:{" "}
-                                                                <span className="text-[#3281F6]">{subscribedUserCount}</span>
+
+                                        <div className={` p-[1px]  h-fit   rounded-3xl ${displayedPlan === 'Zapllo Tasks' ? "bg-gradient-to-r from-[#815BF5] to-[#FC8929]" : "bg-[#]"}`}>
+                                            <Card className={`w-[400px] border-none h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Tasks' ? "" : "bg-[#0B0D26]"}`}>
+                                                <CardHeader className=" rounded border-b text-">
+                                                    <CardTitle className="text-md font-thin">Zapllo Tasks</CardTitle>
+                                                    <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                        <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Tasks"]}</h1>
+                                                        <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/Per User Per Year</h1>
+                                                    </CardDescription>
+                                                    {displayedPlan === 'Zapllo Tasks' && (
+                                                        <div>
+                                                            <p className="mt-2 text-sm justify-start flex gap-1">
+                                                                <Clock className="h-5" />
+                                                                Renews on:{" "}
+                                                                <span className="text-[#3281F6]">{formatDate(renewsOn)}</span>
                                                             </p>
+                                                            {subscribedUserCount && (
+                                                                <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                    <Users2 className="h-5" />
+                                                                    Subscribed Users:{" "}
+                                                                    <span className="text-[#3281F6]">{subscribedUserCount}</span>
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    <div className=''>
+                                                        <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                    </div>
+                                                    <div className="flex justify-center py-2 w-full">
+
+                                                        {displayedPlan === 'Zapllo Tasks' ? (
+                                                            <Button
+                                                                className="w-full border-[#A58DE8] border bg-transparent hover:bg-[#815BF5] rounded-2xl px-6"
+                                                                onClick={() => {
+                                                                    setSelectedPlan("Zapllo Tasks"); // Set the selected 
+                                                                    setIsAddUserOpen(true); // Open the dialog to add more users
+                                                                }}
+                                                            >
+                                                                <UserPlus2 className='h-4' />  Add Users
+                                                            </Button>
+                                                        ) : (
+                                                            <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Tasks")}>Subscribe</Button>
                                                         )}
                                                     </div>
-                                                )}
-                                                <div className=''>
-                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
-                                                </div>
-                                                <div className="flex justify-center py-2 w-full">
+                                                </CardHeader>
+                                                <div className="mt-4 ">
+                                                    <CardContent className="bg-transparent">
+                                                        <ul className="list-disc space-y-2 w-full items-center text-sm">
+                                                            {[
+                                                                "Delegate Unlimited Tasks",
+                                                                "Team Performance Report",
+                                                                "Links Management for your Team",
+                                                                "Email Notification",
+                                                                "Whatsapp Notification",
+                                                                "Repeated Tasks",
+                                                                "File Uploads",
+                                                                "Delegate Tasks with Voice Notes",
+                                                                "Task wise Reminders",
+                                                                "Save more than 5 hours per day per employee"
 
-                                                    {displayedPlan === 'Zapllo Tasks' ? (
-                                                        <Button
-                                                            className="w-full border-[#A58DE8] border bg-transparent hover:bg-[#815BF5] rounded-2xl px-6"
-                                                            onClick={() => {
-                                                                setSelectedPlan("Zapllo Tasks"); // Set the selected 
-                                                                setIsAddUserOpen(true); // Open the dialog to add more users
-                                                            }}
-                                                        >
-                                                            <UserPlus2 className='h-4' />  Add Users
-                                                        </Button>
-                                                    ) : (
-                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Tasks")}>Subscribe</Button>
-                                                    )}
+                                                            ].map((item, index) => (
+                                                                <li key={index} className="flex gap-2 items-center">
+                                                                    <img src="/icons/tick.png" />
+                                                                    <span
+                                                                        className="text-sm font-medium"
+                                                                    >
+                                                                        {item}
+                                                                    </span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </CardContent>
                                                 </div>
-                                            </CardHeader>
-                                            <div className="mt-4 ">
-                                                <CardContent className="bg-transparent">
-                                                    <ul className="list-disc space-y-2 w-full items-center text-sm">
-                                                        {[
-                                                            "Delegate Unlimited Tasks",
-                                                            "Team Performance Report",
-                                                            "Links Management for your Team",
-                                                            "Email Notification",
-                                                            "Whatsapp Notification",
-                                                            "Repeated Tasks",
-                                                            "File Uploads",
-                                                            "Delegate Tasks with Voice Notes",
-                                                            "Task wise Reminders",
-                                                            "Save more than 5 hours per day per employee"
-
-                                                        ].map((item, index) => (
-                                                            <li key={index} className="flex gap-2 items-center">
-                                                                <img src="/icons/tick.png" />
-                                                                <span
-                                                                    className="text-sm font-medium"
-                                                                >
-                                                                    {item}
-                                                                </span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </CardContent>
-                                            </div>
-                                            <CardFooter />
-                                        </Card>
-                                        <Card className={`w-[400px]  border border-[#E0E0E066] ] h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Payroll' ? "" : "bg-[#0B0D26]"}`}>
-                                            <CardHeader className=" rounded border-b text-">
-                                                <CardTitle className="text-md font-thin">Zapllo Payroll</CardTitle>
-                                                <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                    <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Payroll"]}</h1>
-                                                    <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/ Per User Per Year</h1>
-                                                </CardDescription>
-                                                <div>
-                                                    <h1 className='mt-4 text-[#9296bf]'>Make sure Employees get to work on time</h1>
-                                                </div>
-                                                {displayedPlan === 'Zapllo Payroll' && (
+                                                <CardFooter />
+                                            </Card>
+                                        </div>
+                                        <div className={` p-[1px]  h-fit   rounded-3xl ${displayedPlan === 'Zapllo Payroll' ? "bg-gradient-to-r from-[#815BF5] to-[#FC8929]" : "bg-[#]"}`}>
+                                            <Card className={`w-[400px] border-none   ] h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Payroll' ? "" : "bg-[#0B0D26]"}`}>
+                                                <CardHeader className=" rounded border-b text-">
+                                                    <CardTitle className="text-md font-thin">Zapllo Payroll</CardTitle>
+                                                    <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
+                                                        <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Payroll"]}</h1>
+                                                        <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/ Per User Per Year</h1>
+                                                    </CardDescription>
                                                     <div>
+                                                        <h1 className='mt-4 text-[#9296bf]'>Make sure Employees get to work on time</h1>
+                                                    </div>
+                                                    {displayedPlan === 'Zapllo Payroll' && (
+                                                        <div>
 
-                                                        <p className="mt-2 text-sm justify-start flex gap-1">
-                                                            <Clock className="h-5" />
-                                                            Renews on:{" "}
-                                                            <span className="text-[#A58DE8] font-bold ">{formatDate(renewsOn)}</span>
-                                                        </p>
-                                                        {subscribedUserCount && (
-                                                            <p className="mt-1 flex justify-start gap-1 text-sm">
-                                                                <Users2 className="h-5" />
-                                                                Subscribed Users:{" "}
-                                                                <span className="text-[#A58DE8] font-bold ">{subscribedUserCount}</span>
+                                                            <p className="mt-2 text-sm justify-start flex gap-1">
+                                                                <Clock className="h-5" />
+                                                                Renews on:{" "}
+                                                                <span className="text-[#A58DE8] font-bold ">{formatDate(renewsOn)}</span>
                                                             </p>
+                                                            {subscribedUserCount && (
+                                                                <p className="mt-1 flex justify-start gap-1 text-sm">
+                                                                    <Users2 className="h-5" />
+                                                                    Subscribed Users:{" "}
+                                                                    <span className="text-[#A58DE8] font-bold ">{subscribedUserCount}</span>
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex justify-center py-2 w-full">
+                                                        {displayedPlan === 'Zapllo Payroll' ? (
+                                                            <Button
+                                                                className="border-[#A58DE8] hover:bg-[#815BF5] bg-transparent border  w-full rounded-2xl h-10 px-6"
+                                                                onClick={() => {
+                                                                    setSelectedPlan("Zapllo Payroll"); // Set the selected 
+                                                                    setIsAddUserOpen(true); // Open the dialog to add more users
+                                                                }}
+                                                            >
+                                                                <UserPlus2 className='h-4' />     Add Users
+                                                            </Button>
+                                                        ) : (
+                                                            <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Payroll")}>Subscribe</Button>
                                                         )}
                                                     </div>
-                                                )}
+                                                </CardHeader>
+                                                <div className=" mt-4">
+                                                    <CardContent className="bg-transparent">
+                                                        <ul className="list-disc space-y-2  w-full items-center text-sm">
+                                                            {[
+                                                                "Geo-Location & Face Recognition Feature",
+                                                                "Easy Leave Application",
+                                                                "Attendance & leave Tracking",
+                                                                "Approval Process",
+                                                                "Regularization Process (Apply for past date attendance)",
+                                                                "Repeated Tasks",
+                                                                "Define your own leave types",
+                                                                "Reports/Dashboard",
 
-                                                <div className="flex justify-center py-2 w-full">
-                                                    {displayedPlan === 'Zapllo Payroll' ? (
-                                                        <Button
-                                                            className="border-[#A58DE8] hover:bg-[#815BF5] bg-transparent border  w-full rounded-2xl h-10 px-6"
-                                                            onClick={() => {
-                                                                setSelectedPlan("Zapllo Payroll"); // Set the selected 
-                                                                setIsAddUserOpen(true); // Open the dialog to add more users
-                                                            }}
-                                                        >
-                                                            <UserPlus2 className='h-4' />     Add Users
-                                                        </Button>
-                                                    ) : (
-                                                        <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Payroll")}>Subscribe</Button>
-                                                    )}
+
+                                                            ].map((item, index) => (
+                                                                <li key={index} className="flex gap-2 items-center">
+                                                                    <img src="/icons/tick.png" />
+                                                                    <span
+                                                                        className="text-sm font-medium"
+                                                                    >
+                                                                        {item}
+                                                                    </span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </CardContent>
                                                 </div>
-                                            </CardHeader>
-                                            <div className=" mt-4">
-                                                <CardContent className="bg-transparent">
-                                                    <ul className="list-disc space-y-2  w-full items-center text-sm">
-                                                        {[
-                                                            "Geo-Location & Face Recognition Feature",
-                                                            "Easy Leave Application",
-                                                            "Attendance & leave Tracking",
-                                                            "Approval Process",
-                                                            "Regularization Process (Apply for past date attendance)",
-                                                            "Repeated Tasks",
-                                                            "Define your own leave types",
-                                                            "Reports/Dashboard",
-
-
-                                                        ].map((item, index) => (
-                                                            <li key={index} className="flex gap-2 items-center">
-                                                                <img src="/icons/tick.png" />
-                                                                <span
-                                                                    className="text-sm font-medium"
-                                                                >
-                                                                    {item}
-                                                                </span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </CardContent>
-                                            </div>
-                                            <CardFooter />
-                                        </Card>
+                                                <CardFooter />
+                                            </Card>
+                                        </div>
                                     </div>
                                 )}
                             </div>

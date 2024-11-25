@@ -14,6 +14,7 @@ import DeleteConfirmationDialog from "@/components/modals/deleteConfirmationDial
 import { toast, Toaster } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FaSearch } from "react-icons/fa";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface IUser {
   _id: string;
@@ -560,10 +561,11 @@ export default function RegisterFace() {
           // Display this message when there are no requests based on filters
           <div className="flex w-full justify-center">
             <div className="mt-8 ml-4">
-              <img
-                src="/animations/notfound.gif"
-                className="h-56 ml-8"
-                alt="No requests found"
+              <DotLottieReact
+                src="/lottie/empty.lottie"
+                loop
+                className="h-56"
+                autoplay
               />
               <h1 className="text-center font-bold text-md mt-2">
                 No Face Registration Requests Found

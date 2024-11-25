@@ -196,11 +196,11 @@ export default function Approvals() {
           setLeaves(response.data.leaves);
         } else {
           console.error("Error fetching organization leaves");
-          toast.error(response.data.error || "Failed to fetch organization leaves.");
+          // toast.error(response.data.error || "Failed to fetch organization leaves.");
         }
       } catch (error: any) {
         console.error("Error fetching organization leaves:", error);
-        toast.error(error.response?.data?.error || "Failed to fetch organization leaves.");
+        // toast.error(error.response?.data?.error || "Failed to fetch organization leaves.");
       } finally {
         setLoading(false);
       }
@@ -519,45 +519,45 @@ export default function Approvals() {
   //     }
   // };
 
-  const handleApproveSubmit = async () => {
-    if (!selectedEntry || !isLeave(selectedEntry)) return;
+  // const handleApproveSubmit = async () => {
+  //   if (!selectedEntry || !isLeave(selectedEntry)) return;
 
-    const leaveDays = selectedEntry.leaveDays.map((day) => ({
-      date: day.date,
-      unit: day.unit,
-      status: "Approved",
-    }));
+  //   const leaveDays = selectedEntry.leaveDays.map((day) => ({
+  //     date: day.date,
+  //     unit: day.unit,
+  //     status: "Approved",
+  //   }));
 
-    try {
-      const response = await axios.post(
-        `/api/leaveApprovals/${selectedEntry._id}`,
-        {
-          action: "approve",
-          leaveDays,
-        }
-      );
+  //   try {
+  //     const response = await axios.post(
+  //       `/api/leaveApprovals/${selectedEntry._id}`,
+  //       {
+  //         action: "approve",
+  //         leaveDays,
+  //       }
+  //     );
 
-      if (response.data.success) {
-        toast.success("Leave approved successfully!");
-        setIsModalOpen(false);
-        setSelectedEntry(null);
-        handleModalSubmit(); // Refresh data
-      } else {
-        throw new Error(
-          response.data.message || "Failed to approve leave request."
-        );
-      }
-    } catch (error: any) {
-      console.error(
-        `Error approving entry:`,
-        error.response?.data || error.message
-      );
-      toast.error(
-        `Failed to approve entry: ${error.response?.data?.message || error.message
-        }`
-      );
-    }
-  };
+  //     if (response.data.success) {
+  //       toast.success("Leave approved successfully!");
+  //       setIsModalOpen(false);
+  //       setSelectedEntry(null);
+  //       handleModalSubmit(); // Refresh data
+  //     } else {
+  //       throw new Error(
+  //         response.data.message || "Failed to approve leave request."
+  //       );
+  //     }
+  //   } catch (error: any) {
+  //     console.error(
+  //       `Error approving entry:`,
+  //       error.response?.data || error.message
+  //     );
+  //     toast.error(
+  //       `Failed to approve entry: ${error.response?.data?.message || error.message
+  //       }`
+  //     );
+  //   }
+  // };
 
   const handleRejectSubmit = async () => {
     if (!selectedEntry || !isLeave(selectedEntry)) return;
@@ -946,12 +946,12 @@ export default function Approvals() {
           {finalFilteredLeaves.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-              <DotLottieReact
-                                        src="/lottie/empty.lottie"
-                                        loop
-                                        className="h-56"
-                                        autoplay
-                                      />
+                <DotLottieReact
+                  src="/lottie/empty.lottie"
+                  loop
+                  className="h-56"
+                  autoplay
+                />
                 <h1 className="text-center font-bold text-md m ">
                   No Leaves Found
                 </h1>
@@ -1164,7 +1164,6 @@ export default function Approvals() {
               user={selectedEntry.user}
               manager={selectedEntry.user.reportingManager}
               onClose={handleModalClose}
-              onSubmit={handleApproveSubmit}
             />
           ) : (
             <RegularizationApprovalModal

@@ -9,13 +9,13 @@ import { CrossCircledIcon } from "@radix-ui/react-icons";
 interface LeaveDay {
   date: string;
   unit:
-    | "Full Day"
-    | "1st Half"
-    | "2nd Half"
-    | "1st Quarter"
-    | "2nd Quarter"
-    | "3rd Quarter"
-    | "4th Quarter";
+  | "Full Day"
+  | "1st Half"
+  | "2nd Half"
+  | "1st Quarter"
+  | "2nd Quarter"
+  | "3rd Quarter"
+  | "4th Quarter";
   status: "Pending" | "Approved" | "Rejected"; // Ensure this property is present in both
 }
 
@@ -30,7 +30,6 @@ interface LeaveApprovalModalProps {
   user: { firstName: string; lastName: string };
   manager: { firstName: string; lastName: string };
   onClose: () => void;
-  onSubmit: () => void;
 }
 
 const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
@@ -44,7 +43,6 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
   user,
   manager,
   onClose,
-  onSubmit,
 }) => {
   const [approvalData, setApprovalData] = useState<LeaveDay[]>(
     leaveDays.map((day) => ({
@@ -91,7 +89,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
           : "reject", // Send action
       });
       if (response.data.success) {
-        onSubmit(); // Proceed if successful
+        onClose();
         setLoading(false);
       } else {
         console.error("API Error:", response.data.error);
@@ -197,13 +195,12 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
                 {new Date(day.date).toDateString()} ({day.unit})
               </span>
               <select
-                className={`text-xs outline-none border  bg-[#0b0d29] rounded-md p-2 ${
-                  day.status === "Approved"
-                    ? "border-[#017a5b]"
-                    : day.status === "Rejected"
+                className={`text-xs outline-none border  bg-[#0b0d29] rounded-md p-2 ${day.status === "Approved"
+                  ? "border-[#017a5b]"
+                  : day.status === "Rejected"
                     ? "border-red-500"
                     : "border-gray-300"
-                }`}
+                  }`}
                 value={day.status}
                 onChange={(e) =>
                   handleStatusChange(

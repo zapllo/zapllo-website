@@ -7,6 +7,7 @@ import HolidayFormModal from '../modals/EditHoliday'; // Import a component for 
 import Loader from '../ui/loader';
 import { toast, Toaster } from 'sonner';
 import DeleteConfirmationDialog from '../modals/deleteConfirmationDialog'; // Import your delete confirmation modal
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface Holiday {
     _id: string;
@@ -95,7 +96,7 @@ const HolidayList: React.FC = () => {
     return (
         <div className="container mx-auto p-6">
             <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
-                        {/* <Toaster /> */}
+            {/* <Toaster /> */}
             {holidays.length > 0 ? (
                 <table className="w-full rounded table-auto border-collapse border">
                     <thead className='bg-[#0B0D29]  '>
@@ -135,7 +136,12 @@ const HolidayList: React.FC = () => {
                 </table>
             ) : (<div className='flex w-full justify-center '>
                 < div className="mt-8 ml-4">
-                    <img src='/animations/emptylist.gif' className="h-40 ml-2" />
+                    <DotLottieReact
+                        src="/lottie/empty.lottie"
+                        loop
+                        className="h-56"
+                        autoplay
+                    />
                     <h1 className="text-center font-bold text-md m ">
                         No Holidays Found
                     </h1>

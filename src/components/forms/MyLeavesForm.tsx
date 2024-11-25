@@ -434,7 +434,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
   return (
     <Dialog open onOpenChange={onClose}>
       {/* <Toaster /> */}
-      <DialogContent className="z-[100]  overflow-y-scroll h-full m-auto flex w-full max-w-lg ">
+      <DialogContent className="z-[100]  overflow-y-scroll h-full max-h-screen m-auto flex w-full max-w-lg  ">
         <div className="bg-[#0b0d29] scrollbar-hide    shadow-lg w-full   max-w-lg  rounded-lg">
           <div className="flex border-b py-2  w-full justify-between ">
             <DialogTitle className="text-md   px-6 py-2 font-medium">
@@ -445,7 +445,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
             </DialogClose>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 p-6 h-full">
             <div className="relative">
               <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
                 Leave Type

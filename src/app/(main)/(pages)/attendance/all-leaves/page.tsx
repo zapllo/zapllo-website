@@ -694,7 +694,7 @@ export default function AllLeaves() {
                       leave.status === "Pending" && (
                         <div className="flex gap-2">
                           <button
-                            className="bg-transparent py-2 flex gap-2 border border-transparent text-xs text-white px-4 rounded hover:border-green-500"
+                            className="bg-transparent py-2 flex gap-2 border  text-xs text-white px-4 rounded hover:border-green-500"
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent triggering sheet
                               handleApproval(leave, e)
@@ -705,7 +705,7 @@ export default function AllLeaves() {
                           </button>
 
                           <button
-                            className="bg-transparent border border-transparent flex gap-2 text-white px-4 py-2 text-xs rounded hover:border-red-500"
+                            className="bg-transparent border  flex gap-2 text-white px-4 py-2 text-xs rounded hover:border-red-500"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleReject(leave, e)
