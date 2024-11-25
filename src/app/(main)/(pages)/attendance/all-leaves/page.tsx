@@ -756,7 +756,6 @@ export default function AllLeaves() {
               user={selectedLeave.user}
               manager={selectedLeave.user.reportingManager}
               onClose={handleModalClose}
-              onSubmit={handleModalSubmit}
             />
           )}
 
