@@ -107,7 +107,10 @@ export async function POST(request: NextRequest) {
                 lng,
             });
         } else {
-            return NextResponse.json({ success: false, error: 'No matching face found.' });
+            return NextResponse.json({
+                success: false,
+                error: 'No matching face found. Please ensure you are facing the camera clearly and retry.'
+            });
         }
     } catch (error) {
         console.error('Error:', error);

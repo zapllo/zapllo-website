@@ -18,8 +18,6 @@ import { Button } from "@/components/ui/button";
 import {
   CheckCheck,
   FileWarning,
-  User as UserIcon,
-  User,
   Search,
   Bell,
   User2,
@@ -111,101 +109,8 @@ import { BackgroundGradientAnimation } from "../ui/backgroundGradientAnimation";
 import CustomDatePicker from "./date-picker";
 import { ClearIcon } from "@mui/x-date-pickers/icons";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-
-type DateFilter =
-  | "today"
-  | "yesterday"
-  | "thisWeek"
-  | "lastWeek"
-  | "nextWeek"
-  | "thisMonth"
-  | "lastMonth"
-  | "nextMonth"
-  | "thisYear"
-  | "allTime"
-  | "custom";
-
-// Define the User interface
-interface User {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  organization: string;
-  email: string;
-  role: string;
-  profilePic: string;
-  reportingManager: string;
-}
-
-interface Reminder {
-  notificationType: 'email' | 'whatsapp';
-  type: 'minutes' | 'hours' | 'days' | 'specific';
-  value?: number;  // Optional based on type
-  date?: Date;     // Optional for specific reminders
-  sent?: boolean;
-}
-
-// Define the Task interface
-interface Task {
-  _id: string;
-  title: string;
-  user: User;
-  description: string;
-  assignedUser: User;
-  category: { _id: string; name: string }; // Update category type here
-  priority: string;
-  repeatType: string;
-  repeat: boolean;
-  days?: string[];
-  audioUrl?: string;
-  dates?: number[];
-  categories?: string[];
-  dueDate: Date;
-  completionDate: string;
-  attachment?: string[];
-  links?: string[];
-  reminders: Reminder[];
-  status: string;
-  comments: Comment[];
-  createdAt: string;
-}
-
-
-interface DateRange {
-  startDate?: Date;
-  endDate?: Date;
-}
-
-interface Comment {
-  _id: string;
-  userId: string; // Assuming a user ID for the commenter
-  userName: string; // Name of the commenter
-  comment: string;
-  createdAt: string; // Date/time when the comment was added
-  status: string;
-  fileUrl?: string[]; // Optional array of URLs
-  tag?: "In Progress" | "Completed" | "Reopen"; // Optional tag with specific values
-}
-
-interface Category {
-  _id: string;
-  name: string; // Assuming a user ID for the commenter
-  organization: string; // Name of the commenter
-  imgSrc: string;
-}
-
-type TaskUpdateCallback = () => void;
-
-interface TasksTabProps {
-  tasks: Task[] | null;
-  currentUser: User;
-  onTaskUpdate: TaskUpdateCallback;
-  onTaskDelete: (taskId: string) => void;
-}
-
-interface TaskStatusCounts {
-  [key: string]: number;
-}
+import { Task, TasksTabProps, User, Category, DateFilter, DateRange, TaskStatusCounts } from "@/types/tasksTab";
+import MainLoader from "../loaders/loader";
 
 export default function TasksTab({
   tasks,
@@ -1021,23 +926,7 @@ export default function TasksTab({
     inTimeTasks,
   } = getTotalTaskStats();
 
-  const getCategoryReportTaskStats = (categoryId: any) => {
-    const categoryTasks = filteredTasks?.filter(
-      (task) => task.category === categoryId
-    );
-    return {
-      overdueTasks: categoryTasks?.filter((task) => task.status === "Overdue")
-        .length,
-      completedTasks: categoryTasks?.filter(
-        (task) => task.status === "Completed"
-      ).length,
-      inProgressTasks: categoryTasks?.filter(
-        (task) => task.status === "In Progress"
-      ).length,
-      pendingTasks: categoryTasks?.filter((task) => task.status === "Pending")
-        .length,
-    };
-  };
+
   const formatTaskDate = (dateInput: string | Date): string => {
     // Convert the input to a Date object if it's a string
     const date =
@@ -1173,33 +1062,6 @@ export default function TasksTab({
   const handleRemoveOtherFile = () => {
     setOtherFile(null);
   };
-  // const handleSubmit = async () => {
-  //   let fileUrl = [];
-  //   if (files && files.length > 0) {
-  //     // Upload files to S3 and get the URLs
-  //     const formData = new FormData();
-  //     files.forEach(file => formData.append('files', file));
-
-  //     try {
-  //       const s3Response = await fetch('/api/upload', {
-  //         method: 'POST',
-  //         body: formData,
-  //       });
-
-  //       if (s3Response.ok) {
-  //         const s3Data = await s3Response.json();
-  //         console.log('S3 Data:', s3Data); // Log the response from S3
-  //         fileUrl = s3Data.fileUrls;
-  //       } else {
-  //         console.error('Failed to upload files to S3');
-  //         return;
-  //       }
-  //     } catch (error) {
-  //       console.error('Error uploading files:', error);
-  //       return;
-  //     }
-  //   }
-  // }
 
   const handleFileRemove = (file: File) => {
     setImageOrVideo(null);
@@ -1209,21 +1071,7 @@ export default function TasksTab({
     <div className="flex  overflow-x-hidden w-screen ">
       <div>
         {userLoading && (
-          <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-            <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
-              <div className="">
-                <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
-                  <img
-                    src="/logo/loader.png"
-                    className="h-[15%] animate-pulse"
-                  />
-                  <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
-                    Loading...
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MainLoader />
         )}
       </div>
       <div className=" w-44    fixed   ">
@@ -1362,8 +1210,8 @@ export default function TasksTab({
                               </Button>
 
                               {activeDateFilter === "custom" && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[100]">
-                                  <div className="bg-[#0B0D29] p-7 rounded-lg shadow-lg w-96 relative border">
+                                <div className="fixed   inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[100]">
+                                  <div className="bg-[#0B0D29]  p-7 mt-36 rounded-lg shadow-lg w-96 relative border">
                                     {/* Close Button */}
                                     <div className="w-full flex items-center justify-between mb-4">
                                       <h3 className="text-md font-medium text-white ">
@@ -2842,12 +2690,12 @@ export default function TasksTab({
                                 ))
                               ) : (
                                 <div className="mt-4 ml-36">
-                                 <DotLottieReact
-                                        src="/lottie/empty.lottie"
-                                        loop
-                                        className="h-56"
-                                        autoplay
-                                      />
+                                  <DotLottieReact
+                                    src="/lottie/empty.lottie"
+                                    loop
+                                    className="h-56"
+                                    autoplay
+                                  />
                                   <h1 className="text-center font-bold text-md  ml-4">
                                     No Tasks Found
                                   </h1>
@@ -3278,12 +3126,12 @@ export default function TasksTab({
                                 ))
                               ) : (
                                 <div className="mt-4 ml-36">
-                                   <DotLottieReact
-                                        src="/lottie/empty.lottie"
-                                        loop
-                                        className="h-56"
-                                        autoplay
-                                      />
+                                  <DotLottieReact
+                                    src="/lottie/empty.lottie"
+                                    loop
+                                    className="h-56"
+                                    autoplay
+                                  />
                                   <h1 className="text-center font-bold text-md  ml-4">
                                     No Tasks Found
                                   </h1>

@@ -4,6 +4,7 @@ import BillingSidebar from '@/components/sidebar/billingSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { LucideTrendingDown, TrendingUpIcon, Wallet, WalletCards } from 'lucide-react';
@@ -188,7 +189,12 @@ export default function WalletLogs({ }: Props) {
           <div className='flex  justify-center w-full'>
             <div className=' w-full mt-12  justify-center '>
               <div className='flex justify-center'>
-                <img src='/animations/emptylist.gif' className='h-40  ' />
+                <DotLottieReact
+                  src="/lottie/empty.lottie"
+                  loop
+                  className="h-56"
+                  autoplay
+                />
               </div>
               <div className='text-center w-full'>
                 <h1 className=' text-lg font-semibold text-  '>No Wallet Logs Found</h1>

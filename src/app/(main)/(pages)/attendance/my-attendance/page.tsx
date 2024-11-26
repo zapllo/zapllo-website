@@ -666,61 +666,68 @@ export default function MyAttendance() {
     // Capture image
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
-      setCapturedImage(imageSrc);
+        setCapturedImage(imageSrc);
     }
 
     if (!imageSrc || !location) {
-      toast.error("Please capture an image and ensure location is available.");
-      return;
+        toast.error("Please capture an image and ensure location is available.");
+        return;
     }
 
     setIsLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("files", dataURLtoBlob(imageSrc, "captured_image.jpg"));
+        const formData = new FormData();
+        formData.append("files", dataURLtoBlob(imageSrc, "captured_image.jpg"));
 
-      const uploadResponse = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+        const uploadResponse = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+        });
 
-      const uploadData = await uploadResponse.json();
-      const imageUrl = uploadData.fileUrls[0];
+        const uploadData = await uploadResponse.json();
+        const imageUrl = uploadData.fileUrls[0];
 
-      if (!uploadResponse.ok) {
-        throw new Error("Image upload failed.");
-      }
+        if (!uploadResponse.ok) {
+            throw new Error("Image upload failed.");
+        }
 
-      const action = isLoggedIn ? "logout" : "login"; // Determine login or logout action
+        const action = isLoggedIn ? "logout" : "login"; // Determine login or logout action
 
-      const loginResponse = await fetch("/api/face-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          imageUrl,
-          lat: location.lat,
-          lng: location.lng,
-          action, // Send the action (login or logout)
-        }),
-      });
+        const loginResponse = await fetch("/api/face-login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                imageUrl,
+                lat: location.lat,
+                lng: location.lng,
+                action, // Send the action (login or logout)
+            }),
+        });
 
-      const loginData = await loginResponse.json();
+        const loginData = await loginResponse.json();
 
-      if (loginResponse.ok && loginData.success) {
-        setIsLoggedIn(action === "login");
-        setIsModalOpen(false); // Close the modal on successful login/logout
-      } else {
-        throw new Error(loginData.error || "Face recognition failed.");
-      }
+        if (loginResponse.ok && loginData.success) {
+            toast.success(`${action === "login" ? "Login" : "Logout"} successful.`);
+            setIsLoggedIn(action === "login");
+            setIsModalOpen(false); // Close the modal on successful login/logout
+        } else {
+            // Handle specific errors from the server
+            if (loginData.error === "No matching face found.") {
+                toast.error("Face not recognized. Please try again or contact support.");
+            } else {
+                throw new Error(loginData.error || "Face recognition failed.");
+            }
+        }
     } catch (err: any) {
-      toast.error(err.message);
+        toast.error(err.message);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   const filterDailyReportEntries = (entries: LoginEntry[]) => {
     return entries?.filter((entry) => {

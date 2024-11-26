@@ -251,7 +251,7 @@ export default function TeamTabs() {
         if (error.response.data.error === "User limit reached for the current plan.") {
           // alert(error.response.data.error);
           toast(<div className=" w-full mb-6 gap-2 m-auto  ">
-            <div className="w-full flex   justify-center">
+            <div className="w-full flex  justify-center">
               <DotLottieReact
                 src="/lottie/error.lottie"
                 loop

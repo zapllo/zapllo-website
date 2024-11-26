@@ -40,6 +40,7 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { BellIcon } from "@radix-ui/react-icons";
 import { Label } from "../ui/label";
+import MainLoader from "../loaders/loader";
 
 type Props = {};
 
@@ -178,18 +179,7 @@ const InfoBar = (props: Props) => {
   return (
     <>
       {userLoading && (
-        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-          <div className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
-            <div className="">
-              <div className="absolute z-50 inset-0 flex flex-col items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
-                <img src="/logo/loader.png" className="h-[15%] animate-pulse" />
-                <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b text-sm from-white/80 to-white/20">
-                  Loading...
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <MainLoader />
       )}
       <div className="  fixed  w-[100%]  z-[10]">
         <div className="gap-6 ml-12 border-b  items-center px-4 py-2 w-[100%] z-[10] flex flex-row  bg-[#04061e]">
