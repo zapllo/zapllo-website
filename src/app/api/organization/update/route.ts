@@ -25,11 +25,12 @@ export async function PATCH(request: NextRequest) {
 
     // Parse the request body to get the updated fields
     const reqBody = await request.json();
-    const { companyName, industry, teamSize } = reqBody;
+    const { companyName, industry, description, teamSize } = reqBody;
 
     // Update the organization fields
     if (companyName) organization.companyName = companyName;
     if (industry) organization.industry = industry;
+    if (description) organization.description = description;
     if (teamSize) organization.teamSize = teamSize;
 
     // Save the updated organization

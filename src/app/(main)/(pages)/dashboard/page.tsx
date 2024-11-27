@@ -412,14 +412,62 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo CRM</h1>
               <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
               <div className='pt-2'>
-                <Link href='/dashboard/tasks'>
+ 
                   <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
-                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
+                <img src='/icons/Zapllo attendance.png' className=' h-6  ml-[10px]   object-cover' />
+
+              </div>
+              <h1 className='text-lg font-medium'>Zapllo Events</h1>
+              <p className='text-xs font-medium'>Live Q&A Classes and Weekly Business Growth Sessions</p>
+              <div className='pt-2'>
+                
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
+                <img src='/branding/teamsicon.png' className=' h-6  ml-[10px]   object-cover' />
+
+              </div>
+              <h1 className='text-lg font-medium'>Zapllo Workflows</h1>
+              <p className='text-xs font-medium'>Automate, Integrate & Connect anything effortlessly</p>
+              <div className='pt-2'>
+ 
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='flex  gap-4 '>
+          <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
+            <div className=' font-bold text-xl space-y-1'>
+              <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
+                <img src='/branding/AII.png' className=' h-6  ml-[10px]   object-cover' />
+
+              </div>
+              <h1 className='text-lg font-medium'>Zapllo AI Assistant</h1>
+              <p className='text-xs font-medium'>Upgrade your experience by 10X with our proprietory AI Technology</p>
+              <div className='pt-2'>
+ 
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
         </div>
       </div >
+      
     </div >
   );
 };

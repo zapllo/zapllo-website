@@ -21,6 +21,7 @@ const formatDate = (dateInput: string | Date): string => {
 const sendWebhookNotification = async (user: IUser, trialExpired: string) => {
     const payload = {
         phoneNumber: user.whatsappNo,
+        country: user.country,
         templateName: 'trial_expires',
         bodyVariables: [
             user.firstName,

@@ -2,6 +2,7 @@
 
 "use client";
 
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { X } from "lucide-react";
@@ -13,7 +14,6 @@ interface RegularizationRejectModalProps {
   remarks: string;
   setRemarks: (remarks: string) => void;
   onClose: () => void;
-  onSubmit: () => void;
 }
 
 const RegularizationRejectModal: React.FC<RegularizationRejectModalProps> = ({
@@ -21,7 +21,6 @@ const RegularizationRejectModal: React.FC<RegularizationRejectModalProps> = ({
   remarks,
   setRemarks,
   onClose,
-  onSubmit,
 }) => {
 
   const [approvalRemarks, setApprovalRemarks] = useState<string>("");
@@ -39,9 +38,17 @@ const RegularizationRejectModal: React.FC<RegularizationRejectModalProps> = ({
       );
 
       if (response.data.success) {
-        onSubmit(); // Refresh data or perform other actions
         onClose();
-        toast.success("Regularization Request Approved");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Regularization request rejected successfully</h1>
+        </div>);
       } else {
         throw new Error(
           response.data.message || "Failed to approve regularization."

@@ -809,7 +809,6 @@ export default function AllAttendance() {
             remarks={remarks}
             setRemarks={setRemarks}
             onClose={handleModalClose}
-            onSubmit={handleRejectSubmit}
           />
         )}
     </div>

@@ -8,40 +8,53 @@ import Category from "@/models/categoryModel";
 
 connectDB();
 
-const sendWebhookNotification = async (taskData: any, taskCreator: any, assignedUser: any, status: any, userName: any, comment: any, taskCategory: any) => {
+const sendWebhookNotification = async (
+    taskData: any,
+    taskCreator: any,
+    assignedUser: any,
+    status: any,
+    userName: any,
+    comment: any,
+    taskCategory: any
+  ) => {
+    // Create the payload with phone number and country
     const payload = {
-        phoneNumber: taskCreator.whatsappNo,
-        templateName: 'taskupdate',
-        bodyVariables: [
-            taskCreator.firstName,
-            userName,
-            status, // Use the category name instead of "Marketing"
-            comment,
-            taskCategory.name,
-            taskData.title,
-            taskData.dueDate,
-            taskData.priority,
-        ]
+      phoneNumber: taskCreator.whatsappNo, // Local phone number
+      country: taskCreator.country, // Country code (e.g., IN, US)
+      templateName: "taskupdate",
+      bodyVariables: [
+        taskCreator.firstName,
+        userName,
+        status, // Task status
+        comment,
+        taskCategory.name,
+        taskData.title,
+        taskData.dueDate,
+        taskData.priority,
+      ],
     };
+  
     try {
-        const response = await fetch('https://zapllo.com/api/webhook', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const responseData = await response.json();
-            throw new Error(`Webhook API error: ${responseData.message}`);
-        }
-        console.log('Webhook notification sent successfully:', payload);
+      const response = await fetch("https://zapllo.com/api/webhook", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload), // Send payload with country and phone number
+      });
+  
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(`Webhook API error: ${responseData.message}`);
+      }
+  
+      console.log("Webhook notification sent successfully:", payload);
     } catch (error) {
-        console.error('Error sending webhook notification:', error);
-        throw new Error('Failed to send webhook notification');
+      console.error("Error sending webhook notification:", error);
+      throw new Error("Failed to send webhook notification");
     }
-};
+  };
+  
 
 
 export async function PATCH(request: NextRequest) {

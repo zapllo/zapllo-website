@@ -8,6 +8,7 @@ import { getDataFromToken } from '@/helper/getDataFromToken'
 const sendWhatsAppNotification = async (user: any, ticketId: string, status: string, comment: string, templateName: string) => {
     const payload = {
         phoneNumber: user.whatsappNo,
+        country: user.country,
         templateName: templateName,
         bodyVariables: [
             user.firstName,

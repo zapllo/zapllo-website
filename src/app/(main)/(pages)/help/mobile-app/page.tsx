@@ -15,14 +15,14 @@ export default function MobileApp() {
                     <div className="gap-2 flex mb-6 w-full">
                         <div className="mt-24 grid grid-cols-2 ml-56 gap-4 w-full">
 
-                            <Card className='p-6 bg-transparent scale-75'>
+                            <Card className='p-6  bg-transparent scale-75'>
                                 <DotLottieReact
                                     src="/lottie/android.lottie"
                                     loop
-                                    className="h-[85%]"
+                                    className="h-[80%]"
                                     autoplay
                                 />
-                                <div className='flex justify-center'>
+                                <div className='flex  justify-center'>
                                     <Button
                                         size="lg"
                                         className='scale-125 bg-[#815afb]'
@@ -31,14 +31,11 @@ export default function MobileApp() {
                                 </div>
                             </Card>
                             <Card className='p-6 bg-transparent scale-75'>
-                                <DotLottieReact
-                                    src="/lottie/iOs.lottie"
-                                    loop
-                                    className=" "
-                                    autoplay
-                                />
-                                <div className='flex justify-center'>
-                                    <div className='flex justify-center'>
+                                <div className='h-56 flex items-center'>
+                                    <img src='/lottie/ios.png' className='' />
+                                </div>
+                                <div className='flex   justify-center'>
+                                    <div className='flex mb-4 justify-center'>
                                         <Button
                                             size="lg"
                                             className='scale-125 bg-[#815afb]'

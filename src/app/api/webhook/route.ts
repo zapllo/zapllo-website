@@ -1,9 +1,9 @@
+import { getCountryCallingCode } from "libphonenumber-js";
 import { NextRequest, NextResponse } from "next/server";
 
 const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, mediaUrl: string | null, bodyVariables: string[]) => {
     const payload: any = {
-        countryCode: '+91',
-        phoneNumber,
+        fullPhoneNumber: phoneNumber,
         type: 'Template',
         template: {
             name: templateName,
@@ -42,15 +42,21 @@ const sendWhatsAppMessage = async (phoneNumber: string, templateName: string, me
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json();
-        const { phoneNumber, bodyVariables, templateName, mediaUrl } = reqBody;
+        const { phoneNumber, country, bodyVariables, templateName, mediaUrl } = reqBody;
 
         // Validate input
         if (!phoneNumber || !templateName || !bodyVariables || !Array.isArray(bodyVariables) || bodyVariables.length === 0) {
             return NextResponse.json({ error: "Invalid input data" }, { status: 400 });
         }
+        // Validate input
 
+        // Get the country calling code
+        const countryCode = getCountryCallingCode(country);
+
+        // Format the full phone number
+        const fullPhoneNumber = `${countryCode}${phoneNumber}`;
         // Send WhatsApp message
-        await sendWhatsAppMessage(phoneNumber, templateName, mediaUrl, bodyVariables);
+        await sendWhatsAppMessage(fullPhoneNumber, templateName, mediaUrl, bodyVariables);
 
         return NextResponse.json({ status: 'success', message: 'WhatsApp message sent successfully' });
 

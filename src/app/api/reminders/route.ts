@@ -25,6 +25,7 @@ const formatDate = (dateInput: string | Date): string => {
 const sendWebhookNotification = async (task: any, assignedUser: any, reminderTime: string, formattedDueDate: string) => {
     const payload = {
         phoneNumber: assignedUser.whatsappNo, // Ensure this field exists on the user model
+        country: assignedUser.country, // Ensure this field exists on the user model
         templateName: 'reminder_template',
         bodyVariables: [
             assignedUser.firstName,      // {{1}}

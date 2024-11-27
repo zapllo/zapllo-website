@@ -37,6 +37,7 @@ export default function Page() {
   const router = useRouter();
   const [firstName, setFirstName] = useState("User");
   const [organizationName, setOrganizationName] = useState("");
+  const [description, setDescription] = useState("");
   const [lastName, setLastName] = useState("User");
   const [role, setRole] = useState("role");
   const [email, setEmail] = useState("email");
@@ -111,6 +112,7 @@ export default function Page() {
       const res = await axios.get("/api/organization/getById");
       const org = res.data.data;
       setOrganizationName(org.companyName);
+      setDescription(org.description);
       setIndustry(org.industry);
       setTeamSize(org.teamSize);
     };
@@ -122,6 +124,7 @@ export default function Page() {
       setLoading(true);
       const response = await axios.patch("/api/organization/update", {
         companyName: organizationName,
+        description,
         industry,
         teamSize,
       });
@@ -166,9 +169,17 @@ export default function Page() {
       setEmailReminders(user.reminders?.email ?? false);
       setWhatsappNotifications(user.notifications?.whatsapp ?? false);
       setWhatsappReminders(user.reminders?.whatsapp ?? false);
+
+
       setSelectedDays(user.weeklyOffs || []);
       setEmail(user.email);
       setWhatsAppNo(user.whatsappNo);
+
+      // Daily Reminder Time
+      if (user.reminders?.dailyReminderTime) {
+        setDueTime(user.reminders.dailyReminderTime);
+      }
+
       const trialStatusRes = await axios.get("/api/organization/trial-status");
       setIsTrialExpired(trialStatusRes.data.isExpired);
     };
@@ -251,13 +262,14 @@ export default function Page() {
               <div className="">
                 <h1 className="mt-2">Company Name</h1>
                 <h1 className="mt-6">Industry</h1>
+                <h1 className="mt-6">Company Description</h1>
                 <h1 className="mt-8">Team Size</h1>
               </div>
               <div className="">
                 <div>
                   <input
                     type="text"
-                    className="px-4 py-2 w-full bg-[#0B0D29]  border rounded outline-none"
+                    className="px-4 py-2 w-full bg-[#0B0D29] focus:outline-[#815BF5]  border rounded outline-none"
                     value={organizationName}
                     onChange={(e: any) => setOrganizationName(e.target.value)}
                   />
@@ -278,6 +290,13 @@ export default function Page() {
                     <option value="Education">Education</option>
                     <option value="Other">Other</option>
                   </select>
+                </div>
+                <div>
+                  <textarea
+                    className="px-4 py-2 mt-2 w-full bg-[#0B0D29] focus:outline-[#815BF5]  border rounded outline-none"
+                    value={description}
+                    onChange={(e: any) => setDescription(e.target.value)}
+                  />
                 </div>
                 <div>
                   <select
@@ -526,7 +545,7 @@ export default function Page() {
                 WA Channel ID
               </label>
               <input type="text"
-                className="w-full text-sm p-2 border bg-transparent outline-none rounded" />
+                className="w-full text-sm focus:outline-[#815BF5] p-2 border bg-transparent outline-none rounded" />
               <span className=" text-xs px-2">Get Your Channel ID From here -
                 <a className="text-blue-400 hover:underline" href="http://waba.zapllo.com">http://waba.zapllo.com/</a>
               </span>

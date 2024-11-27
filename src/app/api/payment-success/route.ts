@@ -10,6 +10,7 @@ import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
 const sendWebhookNotification = async (user: any) => {
   const payload = {
     phoneNumber: user.whatsappNo, // Ensure this field exists on the user model
+    country: user.country, // Ensure this field exists on the user model
     templateName: 'onboarding_purchase',
     bodyVariables: [
       user.firstName, // Only one body variable

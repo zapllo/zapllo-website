@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { toast, Toaster } from "sonner";
 import { Calendar } from "lucide-react";
 import Loader from "../ui/loader";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface HolidayFormProps {
   onHolidayCreated: () => void; // Callback to trigger after a holiday is created
@@ -39,8 +40,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
       setHolidayName("");
       setHolidayDate(null); // Reset holiday date
       setIsSubmitting(false);
-      toast.success("Holiday added successfully");
-
+     
       // Callback after creation
       onHolidayCreated();
     } catch (error) {
@@ -73,7 +73,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
             value={holidayName}
             onChange={(e) => setHolidayName(e.target.value)}
             required
-            className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+            className="w-full focus:outline-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
           />
         </div>
 

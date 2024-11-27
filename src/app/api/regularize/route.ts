@@ -93,6 +93,7 @@ const sendRegularizationWhatsAppNotification = async (
     user: any,
     reportingManagerFirstName: string,
     reportingManagerPhoneNumber: string,
+    reportingManagerCountry: string,
     loginTime: string,
     logoutTime: string,
     remarks: string,
@@ -100,6 +101,7 @@ const sendRegularizationWhatsAppNotification = async (
 ) => {
     const payload = {
         phoneNumber: reportingManagerPhoneNumber,
+        country: reportingManagerCountry,
         templateName: 'regularizationrequest',
         bodyVariables: [
             reportingManagerFirstName, // 1. Reporting Manager's first name
@@ -216,6 +218,7 @@ export async function POST(request: NextRequest) {
         // Send WhatsApp message after successful save
         let reportingManagerFirstName = 'N/A';
         let reportingManagerPhoneNumber = '';
+        let reportingManagerCountry = '';
         let reportingManagerEmail = '';
 
         if (user.reportingManager && 'firstName' in user.reportingManager) {
@@ -223,12 +226,14 @@ export async function POST(request: NextRequest) {
             reportingManagerFirstName = reportingManager.firstName || 'N/A';
             reportingManagerPhoneNumber = reportingManager.whatsappNo || '';
             reportingManagerEmail = reportingManager.email || '';
+            reportingManagerCountry = reportingManager.country || '';
         }
 
         await sendRegularizationWhatsAppNotification(
             user,
             reportingManagerFirstName,
             reportingManagerPhoneNumber,
+            reportingManagerCountry,
             loginTime,
             logoutTime,
             remarks,

@@ -20,6 +20,7 @@ import React, { useState, useEffect } from "react";
 import { FaUpload } from "react-icons/fa";
 import { toast, Toaster } from "sonner";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type Ticket = {
   _id: string;
@@ -192,7 +193,16 @@ export default function Tickets() {
       if (response.ok) {
         const newTicket = await response.json();
         setTickets([...tickets, newTicket]);
-        toast.success("Ticket Raised successfully!");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Ticket raised successfully</h1>
+        </div>);
         setCategory("");
         setSubcategory("");
         setSubject("");
@@ -215,7 +225,7 @@ export default function Tickets() {
   return (
     <div className="flex mt-24">
       <ChecklistSidebar />
-                  {/* <Toaster /> */}
+      {/* <Toaster /> */}
       <div className="flex-1 p-4">
         <div className="w-full -ml-2  mx-auto">
           <div className="gap-2 flex mb-6 w-full">

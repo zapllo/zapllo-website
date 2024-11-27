@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import Loader from "../ui/loader";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface RegularizationApprovalModalProps {
   regularizationId: string;
@@ -45,7 +46,16 @@ const RegularizationApprovalModal: React.FC<
         if (response.data.success) {
           onSubmit(); // Refresh data or perform other actions
           onClose();
-          toast.success("Regularization Request Approved");
+          toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+            <div className="w-full flex  justify-center">
+              <DotLottieReact
+                src="/lottie/tick.lottie"
+                loop
+                autoplay
+              />
+            </div>
+            <h1 className="text-black text-center font-medium text-lg">Regularization request approved</h1>
+          </div>);
         } else {
           throw new Error(
             response.data.message || "Failed to approve regularization."
@@ -56,7 +66,7 @@ const RegularizationApprovalModal: React.FC<
           "Error approving regularization:",
           error.response?.data || error.message
         );
-      
+
       } finally {
         setLoading(false);
       }
@@ -64,7 +74,7 @@ const RegularizationApprovalModal: React.FC<
 
     return (
       <>
-                    {/* <Toaster /> */}
+        {/* <Toaster /> */}
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-[#0b0d29] overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg w-full pb-6   max-w-md  rounded-lg">
             <div className="flex border-b py-2  w-full justify-between">

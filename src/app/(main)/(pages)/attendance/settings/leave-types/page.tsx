@@ -11,6 +11,7 @@ import Loader from "@/components/ui/loader";
 import { toast, Toaster } from "sonner";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface LeaveFormData {
   leaveType: string;
@@ -134,7 +135,16 @@ const LeaveTypes: React.FC = () => {
         // POST request for creating a new leave type
         await axios.post("/api/leaves/leaveType", formData);
         setLoading(false);
-        toast.success("Leave Type created successfully!");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Leave type created successfully</h1>
+        </div>);
         setIsModalOpen(false);
         fetchLeaveTypes();
       }
@@ -201,7 +211,7 @@ const LeaveTypes: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       {/* Tabs for filtering */}
-                  {/* <Toaster /> */}
+      {/* <Toaster /> */}
       {/* Add Leave Type Button */}
       <div className="flex gap-4 justify-center items-center mb-6">
         {/* <h1 className="text-lg font-bold">Leave Types</h1> */}

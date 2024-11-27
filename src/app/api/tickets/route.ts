@@ -17,6 +17,7 @@ const formatDate = (date: Date): string => {
 const sendTicketWebhookNotification = async (user: any, ticketData: any) => {
     const payload = {
         phoneNumber: user.whatsappNo,
+        country: user.country,
         templateName: 'ticketrequest',
         bodyVariables: [
             user.firstName,

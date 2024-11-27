@@ -119,12 +119,14 @@ const formatDate = (date: Date): string => {
 const sendWhatsAppRegularizationNotification = async (
     user: any,
     phoneNumber: string,
+    country: string,
     approverName: string,
     regularizationEntry: any,
     templateName: string
 ) => {
     const payload = {
         phoneNumber,
+        country,
         templateName, // Use the dynamic template name for either approval or rejection
         bodyVariables: [
             user.firstName, // 1. User's first name
@@ -229,7 +231,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { entryI
         // Send WhatsApp notification based on the action (approve or reject)
         if (user.whatsappNo) {
             const templateName = action === 'approve' ? 'regularizationapproval' : 'regularizationrejection';
-            await sendWhatsAppRegularizationNotification(user, user.whatsappNo, approverName, regularizationEntry, templateName);
+            await sendWhatsAppRegularizationNotification(user, user.whatsappNo, user.country, approverName, regularizationEntry, templateName);
         }
 
         // Send Email based on the action

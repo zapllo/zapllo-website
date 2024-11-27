@@ -21,6 +21,7 @@ const formatDate = (dateInput: string | Date): string => {
 const sendWebhookNotification = async (user: IUser, reminderTime: string, overdueCount: number, pendingCount: number, inProgressCount: number) => {
     const payload = {
         phoneNumber: user.whatsappNo,
+        country: user.country,
         templateName: 'daily_report',
         bodyVariables: [
             user.firstName,
@@ -65,21 +66,21 @@ const sendDailyReminderNotification = async (user: IUser, reminderTime: string) 
     const inProgressCount = tasks.filter(task => task.status === 'In Progress').length;
 
     if (user.reminders.email) {
-    const taskDetailsHTML = tasks
-    .map(
-        (task) => `
+        const taskDetailsHTML = tasks
+            .map(
+                (task) => `
             <tr>
                 <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">${task.title}</td>
                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${task.status}</td>
             </tr>`
-    )
-    .join('');
+            )
+            .join('');
 
-const emailOptions: SendEmailOptions = {
-    to: `${user.email}`,
-    subject: "Daily Task Report",
-    text: `Daily Report`,
-    html: `
+        const emailOptions: SendEmailOptions = {
+            to: `${user.email}`,
+            subject: "Daily Task Report",
+            text: `Daily Report`,
+            html: `
     <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
         <div style="background-color: #f0f4f8; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
@@ -112,7 +113,7 @@ const emailOptions: SendEmailOptions = {
             </div>
         </div>
     </body>`,
-};
+        };
 
         try {
             await sendEmail(emailOptions);

@@ -35,44 +35,47 @@ const sendLeaveWebhookNotification = async (
     reportingManager: any,
     user: any,
     leaveType: any,
-    phoneNumber: string
+    phoneNumber: string,
+    country: string
 ) => {
     const payload = {
-        phoneNumber: phoneNumber,
-        templateName: 'leaverequest', // Change this to the correct template name
+        phoneNumber,
+        country,
+        templateName: "leaverequest", // Change this to the correct template name
         bodyVariables: [
-            reportingManager.firstName,  // Reporting Manager's first name
-            user.firstName,              // User's first name
+            reportingManager.firstName, // Reporting Manager's first name
+            user.firstName, // User's first name
             leaveType.leaveType,
-            formatDate(leave.fromDate),   // Start date of the leave
-            formatDate(leave.toDate),     // End date of the leave
-            String(leave.appliedDays),           // Total applied days
-            leave.leaveReason            // Reason for the leave
-        ]
+            formatDate(leave.fromDate), // Start date of the leave
+            formatDate(leave.toDate), // End date of the leave
+            String(leave.appliedDays), // Total applied days
+            leave.leaveReason, // Reason for the leave
+        ],
     };
 
-    console.log('Sending WhatsApp payload:', payload);
+    console.log("Sending WhatsApp payload:", payload);
 
     try {
-        const response = await fetch('https://zapllo.com/api/webhook', {
-            method: 'POST',
+        const response = await fetch("http://localhost:3000/api/webhook", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             const responseData = await response.json();
-            console.error('Webhook API error:', responseData);
+            console.error("Webhook API error:", responseData);
             throw new Error(`Webhook API error, response data: ${JSON.stringify(responseData)}`);
         }
 
-        console.log('Leave Webhook notification sent successfully:', payload);
+        console.log("Leave Webhook notification sent successfully:", payload);
     } catch (error) {
-        console.error('Error sending leave webhook notification:', error);
+        console.error("Error sending leave webhook notification:", error);
     }
 };
+
 
 // Function to get holidays and weekends in the leave range if applicable
 async function getNonDeductibleDaysInRange(startDate: Date, endDate: Date, organization: mongoose.Types.ObjectId, includeHolidays: boolean, includeWeekOffs: boolean) {
@@ -115,28 +118,22 @@ export async function POST(request: NextRequest) {
 
         console.log('User found:', user.firstName, user.lastName);
 
-        // Ensure that user.organization is a valid ObjectId
         if (!user.organization || !(user.organization instanceof mongoose.Types.ObjectId)) {
             console.error('Invalid or missing organization');
             return NextResponse.json({ success: false, error: 'Invalid or missing organization for the user.' });
         }
 
-        // Re-fetch the user after initialization to ensure updated balances are available
         await user.populate({
             path: 'leaveBalances.leaveType',
             model: 'leaveTypes',
         });
 
-        // Fetch the leave type to get the balance for that type
         const leaveType = await LeaveType.findById(body.leaveType);
         if (!leaveType) {
             console.error('Leave type not found');
             return NextResponse.json({ success: false, error: 'Leave type not found' });
         }
 
-        // console.log('Leave type found:', leaveType.name);
-
-        // Fetch non-deductible days (holidays, weekends)
         const nonDeductibleDays = await getNonDeductibleDaysInRange(
             new Date(body.fromDate),
             new Date(body.toDate),
@@ -146,9 +143,7 @@ export async function POST(request: NextRequest) {
         );
 
         let totalAppliedDays = 0;
-        console.log('Calculating applied days...');
 
-        // Calculate total applied days
         for (const leaveDay of body.leaveDays) {
             if (!nonDeductibleDays.some(day => isSameDay(day, new Date(leaveDay.date)))) {
                 totalAppliedDays += unitMapping[leaveDay.unit as LeaveUnit];
@@ -166,8 +161,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Insufficient leave balance' });
         }
 
-        // Create new leave
-        console.log('Creating leave...');
+        // Create and save the leave
         const newLeave = new Leave({
             user: userId,
             leaveType: body.leaveType,
@@ -181,31 +175,32 @@ export async function POST(request: NextRequest) {
             status: 'Pending',
         });
 
-        // Save the leave
         const savedLeave = await newLeave.save();
-        if (!savedLeave) {
-            throw new Error('Leave creation failed');
-        }
-
         console.log('Leave created successfully:', savedLeave._id);
 
-        // Fetch reporting manager details
-        console.log('Fetching reporting manager...');
-        const reportingManager = await User.findById(user.reportingManager);
-        if (!reportingManager || !reportingManager.whatsappNo) {
-            console.error('Reporting manager not found or WhatsApp number missing');
-            throw new Error('Reporting manager not found or WhatsApp number missing');
-        }
+        // Immediately return the response for quick UI updates
+        const responsePayload = { success: true, leave: savedLeave };
+        const response = NextResponse.json(responsePayload);
 
-        console.log('Reporting manager found:', reportingManager.firstName, reportingManager.whatsappNo);
-        // **Populate the leaveType in savedLeave** before sending the notification
-        await savedLeave.populate('leaveType');
-        if (reportingManager && reportingManager.notifications.email) {
-            const emailOptions: SendEmailOptions = {
-                to: `${reportingManager.email}`,
-                text: 'New Leave Application',
-                subject: "New Leave Application",
-                html: ` <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+        // Background notification processing
+        (async () => {
+            try {
+                console.log('Fetching reporting manager...');
+                const reportingManager = await User.findById(user.reportingManager);
+
+                if (!reportingManager) {
+                    console.error('Reporting manager not found');
+                    return;
+                }
+
+                await savedLeave.populate('leaveType');
+
+                if (reportingManager && reportingManager.notifications.email) {
+                    const emailOptions: SendEmailOptions = {
+                        to: `${reportingManager.email}`,
+                        text: 'New Leave Application',
+                        subject: "New Leave Application",
+                        html: ` <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
     <div style="background-color: #f0f4f8; padding: 20px; ">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <div style="padding: 20px; text-align: center; ">
@@ -232,24 +227,27 @@ export async function POST(request: NextRequest) {
                 </div>
             </div>
         </body>`,
-            };
-            await sendEmail(emailOptions);
-        }
-        // Send WhatsApp notification if enabled for reporting manager
-        if (reportingManager.notifications.whatsapp) {
-            console.log('Sending WhatsApp notification...');
-            await sendLeaveWebhookNotification(
-                savedLeave,
-                reportingManager,
-                user,
-                savedLeave.leaveType,  // Use the populated leaveType
-                reportingManager.whatsappNo
-            );
-        } else {
-            console.log('WhatsApp notifications are disabled for the reporting manager.');
-        }
-
-        return NextResponse.json({ success: true, leave: savedLeave });
+                    };
+                    await sendEmail(emailOptions);
+                }
+                // Send WhatsApp notification if enabled
+                if (reportingManager.notifications.whatsapp) {
+                    console.log('Sending WhatsApp notification...');
+                    await sendLeaveWebhookNotification(
+                        savedLeave,
+                        reportingManager,
+                        user,
+                        savedLeave.leaveType,
+                        reportingManager.whatsappNo,
+                        reportingManager.country,
+                    );
+                    console.log('WhatsApp notification sent');
+                }
+            } catch (error: any) {
+                console.error('Error in background notification processing:', error.message);
+            }
+        })();
+        return response;
     } catch (error: any) {
         console.error('Error during leave creation:', error.message);
         return NextResponse.json({ success: false, error: error.message });

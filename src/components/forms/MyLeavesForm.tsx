@@ -14,6 +14,7 @@ import { CrossCircledIcon, StopIcon } from "@radix-ui/react-icons";
 import { Button } from "../ui/button";
 import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle } from "../ui/dialog";
 import { format, parseISO } from "date-fns";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface LeaveFormProps {
   leaveTypes: any[]; // Leave types passed as prop
@@ -244,7 +245,16 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
 
       if (response.ok) {
         const data = await response.json();
-        toast.success("Leave Request submitted successfully");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Leave request submitted successfully</h1>
+        </div>);
         console.log("Leave request submitted successfully:", data);
         onClose(); // Close the modal on successful submission
       } else {
@@ -668,7 +678,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                 name="leaveReason"
                 value={formData.leaveReason}
                 onChange={handleInputChange}
-                className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                className="w-full focus:outline-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
               />
             </div>
 

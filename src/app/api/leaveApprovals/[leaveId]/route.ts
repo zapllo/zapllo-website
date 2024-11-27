@@ -100,12 +100,14 @@ const formatDate = (dateInput: string | Date): string => {
 const sendLeaveApprovalWebhookNotification = async (
     leave: any,
     phoneNumber: string,
+    country: string,
     approvedFor: number,
     templateName: string // Add this to make it dynamic
 ) => {
     const approvedByUser = await User.findById(leave.approvedBy).select("firstName");
     const payload = {
         phoneNumber,
+        country,
         templateName,  // Use the dynamic template name here
         bodyVariables: [
             leave.user.firstName,  // 1. User's first name
@@ -253,6 +255,7 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
                 await sendLeaveApprovalWebhookNotification(
                     leave,
                     user.whatsappNo,
+                    user.country,
                     approvedFor,
                     'leaveapproval'
                 );
@@ -270,6 +273,7 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
                 await sendLeaveApprovalWebhookNotification(
                     leave,
                     user.whatsappNo,
+                    user.country,
                     approvedFor,
                     'partialapproval_v6'
                 );

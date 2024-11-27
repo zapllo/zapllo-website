@@ -241,7 +241,7 @@ const Categories: React.FC = () => {
                 placeholder="Add New Category"
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full outline-none text-xs text-white bg-[#0A0D28] border rounded px-3 py-2"
+                className="w-full focus:outline-[#815BF5] outline-none text-xs text-white bg-[#0A0D28] border rounded px-3 py-2"
               />
             </div>
             <div className="mt-4">
@@ -366,7 +366,7 @@ const Categories: React.FC = () => {
             placeholder="Search Categories"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className=" outline-none text-xs text-white bg-[#0B0D29] border rounded px-4 py-2 mx-4"
+            className=" outline-none focus:outline-[#815BF5] text-xs text-white bg-[#0B0D29] border rounded px-4 py-2 mx-4"
           />
         </div>
       </div>
@@ -390,7 +390,7 @@ const Categories: React.FC = () => {
                       type="text"
                       value={editCategoryName}
                       onChange={(e) => setEditCategoryName(e.target.value)}
-                      className="w-full text-white outline-none bg-transparent border rounded px-3 py-2"
+                      className="w-full focus:outline-[#815BF5] text-white outline-none bg-transparent border rounded px-3 py-2"
                     />
                     <div className="flex gap-2 mt-4">
                       <button

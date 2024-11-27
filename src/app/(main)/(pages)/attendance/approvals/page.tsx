@@ -579,7 +579,16 @@ export default function Approvals() {
       );
 
       if (response.data.success) {
-        toast.success("Leave rejected successfully!");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Leave Rejected successfully</h1>
+        </div>);
         setIsRejectModalOpen(false);
         setSelectedEntry(null);
         setRemarks("");
@@ -1200,7 +1209,6 @@ export default function Approvals() {
               remarks={remarks}
               setRemarks={setRemarks}
               onClose={handleModalClose}
-              onSubmit={handleRejectSubmit}
             />
           )}
         </>
