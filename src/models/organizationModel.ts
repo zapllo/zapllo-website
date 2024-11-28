@@ -48,6 +48,10 @@ const organizationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  userExceed: {
+    type: Boolean,
+    default: false,
+  },
   subscribedPlan: {
     type: String, // e.g., "Basic", "Standard", "Premium"
   },
@@ -61,6 +65,7 @@ const organizationSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  
   leavesTrialExpires: {
     type: Date,
   },

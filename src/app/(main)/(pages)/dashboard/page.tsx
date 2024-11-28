@@ -117,7 +117,7 @@ const DashboardPage = () => {
     } = response.data.data;
 
     const eligiblePlans = ["Money Saver Bundle", "Zapllo Payroll"];
-    const taskEligiblePlans = ["Task Pro", "Money Saver Bundle"]; // Define task-eligible plans
+    const taskEligiblePlans = ["Zapllo Tasks", "Money Saver Bundle"]; // Define task-eligible plans
     const isPlanEligible = eligiblePlans.includes(subscribedPlan);
     const isTaskPlanEligible = taskEligiblePlans.includes(subscribedPlan);
 

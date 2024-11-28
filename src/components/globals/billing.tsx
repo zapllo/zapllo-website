@@ -13,7 +13,7 @@ import { DialogTitle } from '@radix-ui/react-dialog';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-type PlanKeys = 'Zapllo Tasks' | 'Zapllo Payroll';
+type PlanKeys = 'Zapllo Tasks' | 'Money Saver Bundle';
 
 export default function Billing() {
     const [activeTab, setActiveTab] = useState('Active');
@@ -80,7 +80,7 @@ export default function Billing() {
 
     const plans = {
         'Zapllo Tasks': 1999,
-        'Zapllo Payroll': 999,
+        'Money Saver Bundle': 2999,
     };
 
     const handleOpenDialog = () => {
@@ -346,7 +346,44 @@ export default function Billing() {
 
             // If the total payable amount is zero, complete the payment here
             if (total === 0) {
-                // toast.success('Payment successful! No additional amount charged.');
+                // Handle user count update
+                const updateUserCountResponse = await axios.post('/api/organization/update-user-count', {
+                    organizationId: currentUser?.organization,
+                    subscribedUserCount: userCount, // Updated total user count
+                    additionalUserCount: 0, // Newly added users
+                });
+
+                if (!updateUserCountResponse.data.success) {
+                    toast.error('Failed to update user count. Please try again.');
+                    return;
+                }
+
+                // Create an order for record-keeping
+                const orderData = {
+                    userId: currentUser._id, // Ensure this is passed
+                    amount: 0, // No payment required
+                    planName: plan,
+                    creditedAmount: 0, // No credits for this type of plan
+                    subscribedUserCount: userCount,
+                    additionalUserCount: additionalUserCount || 0,
+                    deduction: plans[plan] * userCount, // Cost of the plan multiplied by user count
+                };
+
+                await axios.post('/api/create-wallet-order', orderData);
+
+                // Show success message and redirect
+                toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+                    <div className="w-full flex   justify-center">
+                        <DotLottieReact
+                            src="/lottie/tick.lottie"
+                            loop
+                            autoplay
+                        />
+                    </div>
+                    <h1 className="text-black text-center font-medium text-lg">Payment Successful, No Additional Amount Charged.</h1>
+                </div>);
+                router.replace('/payment-success');
+                setIsPaymentProcessing(false);
                 setIsDialogOpen(false);
                 setModalStep(1);
                 setGstNumber('');
@@ -1217,18 +1254,18 @@ export default function Billing() {
                                                 <CardFooter />
                                             </Card>
                                         </div>
-                                        <div className={` p-[1px]  h-fit   rounded-3xl ${displayedPlan === 'Zapllo Payroll' ? "bg-gradient-to-r from-[#815BF5] to-[#FC8929]" : "bg-[#]"}`}>
-                                            <Card className={`w-[400px] border-none   ] h-fit px-4  rounded-3xl ${displayedPlan === 'Zapllo Payroll' ? "" : "bg-[#0B0D26]"}`}>
+                                        <div className={` p-[1px]  h-fit   rounded-3xl ${displayedPlan === 'Money Saver Bundle' ? "bg-gradient-to-r from-[#815BF5] to-[#FC8929]" : "bg-[#]"}`}>
+                                            <Card className={`w-[400px] border-none   ] h-fit px-4  rounded-3xl ${displayedPlan === 'Money Saver Bundle' ? "" : "bg-[#0B0D26]"}`}>
                                                 <CardHeader className=" rounded border-b text-">
-                                                    <CardTitle className="text-md font-thin">Zapllo Payroll</CardTitle>
+                                                    <CardTitle className="text-md font-thin">Money Saver Bundle</CardTitle>
                                                     <CardDescription className="text- w-64 relative flex items-center gap-1 text-white text-sm ">
-                                                        <h1 className='text-5xl font-extrabold'>  ₹ {plans["Zapllo Payroll"]}</h1>
+                                                        <h1 className='text-5xl font-extrabold'>  ₹ {plans["Money Saver Bundle"]}</h1>
                                                         <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/ Per User Per Year</h1>
                                                     </CardDescription>
                                                     <div>
                                                         <h1 className='mt-4 text-[#9296bf]'>Make sure Employees get to work on time</h1>
                                                     </div>
-                                                    {displayedPlan === 'Zapllo Payroll' && (
+                                                    {displayedPlan === 'Money Saver Bundle' && (
                                                         <div>
 
                                                             <p className="mt-2 text-sm justify-start flex gap-1">
@@ -1247,18 +1284,18 @@ export default function Billing() {
                                                     )}
 
                                                     <div className="flex justify-center py-2 w-full">
-                                                        {displayedPlan === 'Zapllo Payroll' ? (
+                                                        {displayedPlan === 'Money Saver Bundle' ? (
                                                             <Button
                                                                 className="border-[#A58DE8] hover:bg-[#815BF5] bg-transparent border  w-full rounded-2xl h-10 px-6"
                                                                 onClick={() => {
-                                                                    setSelectedPlan("Zapllo Payroll"); // Set the selected 
+                                                                    setSelectedPlan("Money Saver Bundle"); // Set the selected 
                                                                     setIsAddUserOpen(true); // Open the dialog to add more users
                                                                 }}
                                                             >
                                                                 <UserPlus2 className='h-4' />     Add Users
                                                             </Button>
                                                         ) : (
-                                                            <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Zapllo Payroll")}>Subscribe</Button>
+                                                            <Button className="w-full h-10 mt-2 hover:bg-[#815BF5] border-[#A58DE8] border bg-transparent  rounded-2xl " onClick={() => handleSubscribeClick("Money Saver Bundle")}>Subscribe</Button>
                                                         )}
                                                     </div>
                                                 </CardHeader>

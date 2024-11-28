@@ -3,6 +3,7 @@
 import InfoBar from "@/components/infobar";
 import MenuOptions from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { formatDistanceToNow, intervalToDuration } from "date-fns";
@@ -18,6 +19,7 @@ const Layout = (props: Props) => {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(true);
   const [isPro, setIsPro] = useState(false);
+  const [userExceed, setUserExceed] = useState(false);
   const [isTrialExpired, setIsTrialExpired] = useState(false);
   const [trialExpires, setTrialExpires] = useState<Date | null>(null);
   const [timeMessage, setTimeMessage] = useState("");
@@ -36,6 +38,7 @@ const Layout = (props: Props) => {
         setIsPro(userRes.data.data.isPro);
         const response = await axios.get("/api/organization/getById");
         const organization = response.data.data;
+        setUserExceed(organization.userExceed);
         const trialEnd = new Date(organization.trialExpires);
         const subscriptionEnd = organization.subscriptionExpires
           ? new Date(organization.subscriptionExpires)
@@ -95,7 +98,7 @@ const Layout = (props: Props) => {
     !isSubscriptionActive &&
     pathname !== "/dashboard/billing" &&
     pathname !== "/tutorials" &&
-    pathname !== "/dashboard/tickets" &&
+    pathname !== "/help/tickets" &&
     !isDynamicRoute
   ) {
     return (
@@ -103,21 +106,63 @@ const Layout = (props: Props) => {
         <div className="justify-center flex items-center w-full">
           <div>
             <div className="flex justify-center w-full">
-              <img src="/icons/danger.png" alt="Danger icon" />
+              <DotLottieReact
+                src="/lottie/expired.lottie"
+                loop
+                className="h-36"
+                autoplay
+              />
             </div>
-            <h1 className="text-xl font-bold text-red-500">
+            <h1 className="text-2xl font-bold text-red-500">
               Your trial has expired!
             </h1>
-            <p>{timeMessage}</p>
-            <p>
+            {/* <p>{timeMessage}</p> */}
+            <p className="mt-4">
               Please purchase a subscription to continue using the Task
               Management features.
             </p>
           </div>
         </div>
         <Link href="/dashboard/billing">
-          <Button className="h-8 bg-[#822B90] hover:bg-[#822B90] text-white hover:text-white mt-4 text-sm">
+          <Button className="h-9 bg-[#017a5b] hover:bg-[#23ac8a] text-white hover:text-white mt-4 text-md">
             Upgrade to Pro
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (
+    userExceed &&
+    pathname !== "/dashboard/billing" &&
+    pathname !== "/tutorials" &&
+    pathname !== "/help/tickets" &&
+    !isDynamicRoute
+  ) {
+    return (
+      <div className="text-center pt-48 h-screen">
+        <div className="justify-center flex items-center w-full">
+          <div>
+            <div className="flex justify-center w-full">
+              <DotLottieReact
+                src="/lottie/expired.lottie"
+                loop
+                className="h-36"
+                autoplay
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-red-500">
+              Your User Limit Exceeded
+            </h1>
+            {/* <p>{timeMessage}</p> */}
+            <p className="mt-4">
+             You have created more users than your purchased plan, upgrade to more users or Contact Admin.
+            </p>
+          </div>
+        </div>
+        <Link href="/help/tickets">
+          <Button className="h-9 bg-[#017a5b] hover:bg-[#23ac8a] text-white hover:text-white mt-4 text-md">
+            Raise a Ticket
           </Button>
         </Link>
       </div>

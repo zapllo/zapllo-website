@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import Order from '@/models/orderModel'; // Ensure the Order model is correctly imported
 import connectDB from '@/lib/db';
+import User from '@/models/userModel';
+import Organization from '@/models/organizationModel'; // Import the Organization model
 
 export async function POST(req: NextRequest) {
     try {
@@ -38,7 +40,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        if (!amount && amount !== 0) {
+        if (amount === undefined || amount === null) {
             return NextResponse.json(
                 { success: false, message: 'Missing amount.' },
                 { status: 400 }
@@ -78,6 +80,44 @@ export async function POST(req: NextRequest) {
 
         // Save the new order document to the database
         await newOrder.save();
+
+        // Fetch the user document
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return NextResponse.json({ success: false, message: 'User not found.' }, { status: 404 });
+        }
+
+        // Proceed only if the user is part of an organization
+        if (user.organization) {
+            const organizationId = user.organization;
+
+            // Initialize the organization update object
+            const organizationUpdate: Partial<{
+                isPro: boolean;
+                subscriptionExpires: Date;
+                subscribedPlan: string;
+                subscribedUserCount: number;
+                userExceed: boolean;
+            }> = {};
+
+            // Set common fields
+            organizationUpdate.isPro = true;
+            organizationUpdate.subscriptionExpires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // Set expiration date to 1 year from now
+
+            if (planName !== 'Recharge') {
+                // Update subscribedPlan and subscribedUserCount
+                organizationUpdate.subscribedPlan = planName;
+                organizationUpdate.subscribedUserCount = subscribedUserCount;
+
+                // Calculate userExceed
+                const currentUserCount = await User.countDocuments({ organization: organizationId });
+                organizationUpdate.userExceed = currentUserCount > subscribedUserCount;
+            }
+
+            // Update the organization document
+            await Organization.findByIdAndUpdate(organizationId, { $set: organizationUpdate }, { new: true });
+        }
 
         return NextResponse.json({
             success: true,

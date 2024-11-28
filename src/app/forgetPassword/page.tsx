@@ -10,6 +10,7 @@ import { Home } from "lucide-react";
 import Link from "next/link";
 import { toast, Toaster } from "sonner";
 import Loader from "@/components/ui/loader";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -22,7 +23,16 @@ const ForgotPassword = () => {
         try {
             const response = await axios.post("/api/forgetPassword", { email });
             setLoading(false);
-            toast.success("Password reset email sent successfully")
+            toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+                <div className="w-full flex  justify-center">
+                  <DotLottieReact
+                    src="/lottie/tick.lottie"
+                    loop
+                    autoplay
+                  />
+                </div>
+                <h1 className="text-black text-center font-medium text-lg">Password reset email sent successfully</h1>
+              </div>);
             setMessage(response.data.message);
             setEmail("");
         } catch (error: any) {

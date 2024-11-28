@@ -22,16 +22,25 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
   onAccept,
   onBackToDatePicker,
 }) => {
+  console.log(selectedTime, 'timeeeeeeeeee')
   const [selectedTimeValue, setSelectedTimeValue] =
     React.useState<Dayjs | null>(
       selectedTime ? dayjs(`1970-01-01T${selectedTime}:00`) : dayjs() // Default to the current tt
     );
-
+  // Update selectedTimeValue when selectedTime changes
+  React.useEffect(() => {
+    if (selectedTime && selectedTime !== "") {
+      setSelectedTimeValue(dayjs(`1970-01-01T${selectedTime}:00`));
+    } else {
+      setSelectedTimeValue(dayjs()); // Default to current time
+    }
+  }, [selectedTime]);
   const handleTimeChange = (newValue: Dayjs | null) => {
     if (newValue) {
       setSelectedTimeValue(newValue);
     }
   };
+
 
   const handleOkClick = () => {
     if (selectedTimeValue) {

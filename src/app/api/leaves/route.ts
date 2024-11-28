@@ -56,7 +56,7 @@ const sendLeaveWebhookNotification = async (
     console.log("Sending WhatsApp payload:", payload);
 
     try {
-        const response = await fetch("http://localhost:3000/api/webhook", {
+        const response = await fetch("https://zapllo.com/api/webhook", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

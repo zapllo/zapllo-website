@@ -5,6 +5,8 @@ import axios from "axios";
 import { X } from "lucide-react";
 import Loader from "../ui/loader";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { toast } from "sonner";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface LeaveDay {
   date: string;
@@ -89,6 +91,16 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
           : "reject", // Send action
       });
       if (response.data.success) {
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Leave Approved successfully</h1>
+        </div>);
         onClose();
         setLoading(false);
       } else {
@@ -111,7 +123,7 @@ const LeaveApprovalModal: React.FC<LeaveApprovalModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-[100]">
-      <div className="bg-[#0b0d29] overflow-y-scroll pb-6 scrollbar-hide h-fit max-h-[700px]  shadow-lg w-full z-[100]  max-w-md  rounded-lg">
+      <div className="bg-[#0b0d29] overflow-y-scroll pb-6 scrollbar-hide h-fit max-h-screen m-auto shadow-lg w-full z-[100]  max-w-md  rounded-lg">
         <div className="flex border-b py-2  w-full justify-between">
           <h2 className="text-md   px-6 py-2 font-medium">
             {leaveType} By {user.firstName} {user.lastName}

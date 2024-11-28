@@ -27,7 +27,7 @@ const sendWebhookNotification = async (
   };
   console.log(payload, 'payload');
   try {
-    const response = await fetch('http://localhost:3000/api/webhook', {
+    const response = await fetch('https://zapllo.com/api/webhook', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -123,11 +123,10 @@ export async function POST(request: NextRequest) {
 
     if (organizationId) {
       // Retrieve the latest order for the user's organization
-      const latestOrder = await Order.findOne({ userId: userId })
-        .sort({ createdAt: -1 }) // Sort by most recent
+      const organization = await Organization.findOne({ _id: organizationId })
         .exec();
 
-      const subscribedUserLimit = latestOrder?.subscribedUserCount || 99999;
+      const subscribedUserLimit = organization?.subscribedUserCount || 99999;
 
       // Get the current user count for the organization
       const currentUserCount = await User.countDocuments({ organization: organizationId });

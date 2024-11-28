@@ -284,9 +284,14 @@ export default function WalletLogs({ }: Props) {
                               <td className="px-6 py-4 text-sm text-white">{order.planName}</td>
                               <td className="px-6 py-4 text-sm text-white">₹{(order.amount / 1.18).toFixed(2)}</td>
                               <td className="px-6 py-4 text-sm text-white">
-                                {order.planName === 'Recharge'
-                                  ? "Wallet Recharge"
-                                  : `Added ${order.additionalUserCount ?? order.subscribedUserCount} users to ${order.planName}`}
+                                {order.planName === 'Recharge' ? (
+                                  "Wallet Recharge"
+                                ) : (
+                                  `Added ${order.additionalUserCount && order.additionalUserCount > 0
+                                    ? order.additionalUserCount
+                                    : order.subscribedUserCount
+                                  } users to ${order.planName}`
+                                )}
                               </td>
 
 

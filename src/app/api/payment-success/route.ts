@@ -112,6 +112,7 @@ export async function POST(request: NextRequest) {
         subscriptionExpires: Date;
         subscribedPlan: string;
         subscribedUserCount: number;
+        userExceed: boolean;
       }> = {
         isPro: true,
         subscriptionExpires,
@@ -120,7 +121,16 @@ export async function POST(request: NextRequest) {
       if (planName !== 'Recharge') {
         organizationUpdate.subscribedPlan = planName;
         organizationUpdate.subscribedUserCount = subscribedUserCount;
+        const currentUserCount = await User.countDocuments({ organization: user.organization });
+
+        if (currentUserCount > subscribedUserCount) {
+          organizationUpdate.userExceed = true;
+        } else {
+          organizationUpdate.userExceed = false;
+        }
+
       }
+
 
       await Organization.updateOne(
         { _id: user.organization },

@@ -341,7 +341,7 @@ export default function Approvals() {
     };
 
     fetchApprovals();
-  }, [filter]);
+  }, [filter, selectedEntry]);
 
   // Separate filter functions for Leave and Regularization to maintain type integrity
   const filterLeavesByDate = (leaves: Leave[]): Leave[] => {
@@ -1068,7 +1068,12 @@ export default function Approvals() {
           {finalFilteredRegularizations.length === 0 ? (
             <div className="flex w-full justify-center ">
               <div className="mt-8 ml-4">
-                <img src="/animations/emptylist.gif" className="h-40 ml-16" />
+              <DotLottieReact
+                  src="/lottie/empty.lottie"
+                  loop
+                  className="h-56"
+                  autoplay
+                />
                 <h1 className="text-center font-bold text-md  ">
                   No Entries Found
                 </h1>

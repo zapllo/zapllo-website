@@ -248,42 +248,21 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         }
 
         // Determine and set leave status based on counts
+        // Determine and set leave status based on counts
         if (approvedDaysCount === leave.leaveDays.length) {
             leave.status = 'Approved';
             leave.approvedBy = approvedBy;
-            if (user.whatsappNo) {
-                await sendLeaveApprovalWebhookNotification(
-                    leave,
-                    user.whatsappNo,
-                    user.country,
-                    approvedFor,
-                    'leaveapproval'
-                );
-            }
-            await sendLeaveApprovalEmail(leave, 'Approved', approvedFor);
         } else if (rejectedDaysCount === leave.leaveDays.length) {
             leave.status = 'Rejected';
             leave.rejectedBy = approvedBy;
-            await sendLeaveApprovalEmail(leave, 'Rejected', 0);
         } else if (approvedDaysCount > 0 && rejectedDaysCount > 0) {
             leave.status = 'Partially Approved';
             leave.approvedBy = approvedBy;
             leave.rejectedBy = approvedBy;
-            if (user.whatsappNo) {
-                await sendLeaveApprovalWebhookNotification(
-                    leave,
-                    user.whatsappNo,
-                    user.country,
-                    approvedFor,
-                    'partialapproval_v6'
-                );
-            }
-            await sendLeaveApprovalEmail(leave, 'Partially Approved', approvedFor);
         }
 
         await leave.save();
         console.log('Leave saved after approval.');
-
         // **Balance Deduction Logic**
         if (leave.status === 'Approved' || leave.status === 'Partially Approved') {
             const leaveBalance = user.leaveBalances.find((b: { leaveType: { _id: { equals: (arg0: mongoose.Types.ObjectId) => any; }; }; }) => {
@@ -306,7 +285,44 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
             }
         }
 
-        return NextResponse.json({ success: true, approvedFor });
+        // **Send the response back to the client immediately**
+        console.log('Sending response back to the client.');
+        const response = NextResponse.json({ success: true, approvedFor });
+        // **Trigger background tasks without awaiting them**
+        (async () => {
+            try {
+                if (leave.status === 'Approved') {
+                    if (user.whatsappNo) {
+                        await sendLeaveApprovalWebhookNotification(
+                            leave,
+                            user.whatsappNo,
+                            user.country,
+                            approvedFor,
+                            'leaveapproval'
+                        );
+                    }
+                    await sendLeaveApprovalEmail(leave, 'Approved', approvedFor);
+                } else if (leave.status === 'Partially Approved') {
+                    if (user.whatsappNo) {
+                        await sendLeaveApprovalWebhookNotification(
+                            leave,
+                            user.whatsappNo,
+                            user.country,
+                            approvedFor,
+                            'partialapproval_v6'
+                        );
+                    }
+                    await sendLeaveApprovalEmail(leave, 'Partially Approved', approvedFor);
+                } else if (leave.status === 'Rejected') {
+                    await sendLeaveApprovalEmail(leave, 'Rejected', 0);
+                }
+            } catch (error) {
+                console.error('Error in background tasks:', error);
+            }
+        })();
+
+        // **Return the response to the client**
+        return response;
     } catch (error) {
         console.error('Error in leave approval/rejection flow:', error);
         return NextResponse.json({ success: false, error: 'Internal Server Error' });

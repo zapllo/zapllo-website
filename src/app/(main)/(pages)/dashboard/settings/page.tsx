@@ -51,11 +51,10 @@ export default function Page() {
   const [emailReminders, setEmailReminders] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dueTime, setDueTime] = useState<string>("");
+  const [dueTime, setDueTime] = useState<string>("09:00");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [wabaOpen, setWabaOpen] = useState(false);
-
 
 
   useEffect(() => {
@@ -154,6 +153,21 @@ export default function Page() {
     });
   };
 
+
+  // Function to convert time to "HH:mm" format
+  const parseTimeTo24HourFormat = (timeStr: string): string => {
+    const date = new Date(`1970-01-01T${timeStr}`);
+    if (isNaN(date.getTime())) {
+      // If invalid, try parsing with AM/PM
+      const dateWithAmPm = new Date(`1970-01-01 ${timeStr}`);
+      if (isNaN(dateWithAmPm.getTime())) {
+        return "09:00"; // Default time if parsing fails
+      }
+      return dateWithAmPm.toTimeString().slice(0, 5);
+    }
+    return date.toTimeString().slice(0, 5);
+  };
+
   useEffect(() => {
     const getUserDetails = async () => {
       const res = await axios.get("/api/users/me");
@@ -177,7 +191,9 @@ export default function Page() {
 
       // Daily Reminder Time
       if (user.reminders?.dailyReminderTime) {
-        setDueTime(user.reminders.dailyReminderTime);
+        const timeFromApi = user.reminders.dailyReminderTime;
+        const parsedTime = parseTimeTo24HourFormat(timeFromApi);
+        setDueTime(parsedTime);
       }
 
       const trialStatusRes = await axios.get("/api/organization/trial-status");
@@ -248,7 +264,7 @@ export default function Page() {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="p-4  h-[560px] scrollbar-hide overflow-y-scroll ">
+    <div className="p-4  h-fit max-h-screen  scrollbar-hide overflow-y-scroll ">
       {/* <Toaster /> */}
 
       {role === "orgAdmin" && (
@@ -556,7 +572,7 @@ export default function Page() {
           </div>
         </DialogContent>
       </Dialog>
-      <div className="mb-2   px-4 decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  py-2">
+      <div className="mb-24   px-4 decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  py-2">
         <h1 className=" text-xs text-start w-full">Export Tasks (Coming Soon)</h1>
       </div>
 
