@@ -1,43 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db"; // Your DB connection utility
-import User from "@/models/userModel"; // Your User model
+import User, { IUser } from "@/models/userModel"; // Your User model
 import fetch from "node-fetch";
 
 connectDB();
 
 const WEBHOOK_URL = "https://zapllo.com/api/webhook"; // Replace with your actual webhook URL
 const TEMPLATE_NAME = "admin_success_login_after_1_hours"; // Webhook template name
-const MEDIA_URL = "https://res.cloudinary.com/dndzbt8al/image/upload/v1732650791/50_t0ypt5.png"; // Replace with your actual media URL
 
 // Function to send webhook notification
-const sendWebhookNotification = async (phoneNumber: string) => {
+const sendWebhookNotification = async (admin: IUser) => {
     const payload = {
-        phoneNumber,
+        phoneNumber: admin.whatsappNo,
+        country: admin.country,
+        bodyVariables: [admin.firstName],
         templateName: TEMPLATE_NAME,
-        mediaUrl: MEDIA_URL,
     };
     console.log(payload, 'payload');
 
     try {
         const response = await fetch('https://zapllo.com/api/webhook', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
         });
-    
+        console.log(response, 'response');
         if (!response.ok) {
-          const responseData = await response.json();
-          throw new Error(`Webhook API error: ${responseData.message}`);
+            const responseData = await response.json();
+            console.log(responseData, 'ok')
+            throw new Error(`Webhook API error: ${responseData}`);
         }
         console.log('Webhook notification sent successfully:', payload);
-      } catch (error) {
+    } catch (error) {
         console.error('Error sending webhook notification:', error);
         throw new Error('Failed to send webhook notification');
-      }
-    };
-    
+    }
+};
+
 
 // Endpoint logic
 export async function GET(request: NextRequest) {
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
         for (const admin of orgAdmins) {
             try {
                 // Send the webhook notification
-                await sendWebhookNotification(admin.whatsappNo);
+                await sendWebhookNotification(admin);
 
                 // Update the promotionNotification flag to true
                 admin.promotionNotification = true;

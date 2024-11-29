@@ -134,7 +134,7 @@ export default function TasksTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
   const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
-
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   // State to control which date picker is open: 'start', 'end', or null
   const [datePickerType, setDatePickerType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -196,6 +196,14 @@ export default function TasksTab({
     setSelectedUserId(null);
   };
 
+  const handleCustomApply = () => {
+    if (customStartDate && customEndDate) {
+      setActiveDateFilter("custom");
+      setIsCustomModalOpen(false);
+    } else {
+      alert("Please select both start and end dates");
+    }
+  };
   // Handler to set selected dates
   const handleDateChange = (date: Date) => {
     if (datePickerType === "start") {
@@ -365,6 +373,14 @@ export default function TasksTab({
       fetchCategoryOfSelectedTask(selectedTask.category);
     }
   }, [selectedTask]);
+
+  const handleButtonClick = (filter: DateFilter) => {
+    setCustomStartDate(null);
+    setCustomEndDate(null);
+    setIsCustomModalOpen(false);
+    setActiveDateFilter(filter);
+  };
+
 
   const getDateRange = (filter: DateFilter) => {
     const today = new Date();
@@ -562,13 +578,6 @@ export default function TasksTab({
     });
   };
 
-  // // Filtering tasks by date range after filtering by active tab
-  // const filterTasksByDate = (tasks: Task[], dateRange: { startDate: Date; endDate: Date }) => {
-  //   return tasks.filter(task => {
-  //     const taskDueDate = new Date(task.dueDate);
-  //     return taskDueDate >= dateRange.startDate && taskDueDate <= dateRange.endDate;
-  //   });
-  // };
 
   // Applying the filters
   const myTasks = filterTasks(tasks || [], "myTasks");
@@ -609,17 +618,6 @@ export default function TasksTab({
     }, {} as TaskStatusCounts);
   };
 
-  // // Filter tasks for each tab
-  // const myTasks = filterTasks(tasks || [], "myTasks");
-  // const delegatedTasks = filterTasks(tasks || [], "delegatedTasks");
-  // const allTasks = filterTasks(tasks || [], "allTasks");
-
-  // // Filter tasks for each tab based on the active date range
-  // const myTasksByDate = filterTasksByDate(myTasks, dateRange);
-  // const delegatedTasksByDate = filterTasksByDate(delegatedTasks, dateRange);
-  // const allTasksByDate = filterTasksByDate(allTasks, dateRange);
-
-  // Step 2: Count the statuses for each filtered set of tasks
 
   // Count statuses for my tasks
   const myTasksCounts = countStatuses(myTasksByDate);
@@ -1135,171 +1133,120 @@ export default function TasksTab({
                   <div className=" w-full ml-2  justify-start">
                     <div className=" scrollbar-hide  mt-6">
                       <div className="flex scale-90  w-full justify-center ">
-                        <div className="justify-center  -ml-12  w-full flex ">
-                          <Tabs3
-                            defaultValue={activeDateFilter}
-                            onValueChange={setActiveDateFilter}
-                            className="-mt-1"
+                        <div className="justify-center -ml-12 w-full flex gap-4">
+                          {[
+                            { label: "Today", value: "today" },
+                            { label: "Yesterday", value: "yesterday" },
+                            { label: "This Week", value: "thisWeek" },
+                            { label: "Last Week", value: "lastWeek" },
+                            { label: "Next Week", value: "nextWeek" },
+                            { label: "This Month", value: "thisMonth" },
+                            { label: "Last Month", value: "lastMonth" },
+                            { label: "Next Month", value: "nextMonth" },
+                            { label: "This Year", value: "thisYear" },
+                            { label: "All Time", value: "allTime" },
+                          ].map(({ label, value }) => (
+                            <button
+                              key={value}
+                              onClick={() => handleButtonClick(value as DateFilter)}
+                              className={`text-xs h-7 px-3 whitespace-nowrap  border py-1 rounded ${activeDateFilter === value ? "bg-[#815BF5] text-white" : "bg-"
+                                }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+
+                          <button
+                            onClick={() => setIsCustomModalOpen(true)}
+                            className={`text-xs h-7 px-3 border py-1 rounded ${activeDateFilter === "custom" ? "bg-[#815BF5] text-white" : "-200"
+                              }`}
                           >
-                            <TabsList3 className="flex gap-4">
-                              <TabsTrigger3
-                                className="flex gap-2 text-xs h-7"
-                                value="today"
-                              >
-                                Today
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="yesterday"
-                                className="flex gap-2 text-xs h-7"
-                              >
-                                Yesterday
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="thisWeek"
-                                className="text-xs h-7"
-                              >
-                                This Week
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="lastWeek"
-                                className="text-xs h-7"
-                              >
-                                Last Week
-                              </TabsTrigger3>
-                              <TabsTrigger3 value="nextWeek" className="text-xs h-7">
-                                Next Week
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="thisMonth"
-                                className="text-xs h-7"
-                              >
-                                This Month
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="lastMonth"
-                                className="text-xs h-7"
-                              >
-                                Last Month
-                              </TabsTrigger3>
-                              <TabsTrigger3 value="nextMonth" className="text-xs h-7">
-                                Next Month
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="thisYear"
-                                className="text-xs h-7"
-                              >
-                                This Year
-                              </TabsTrigger3>
-                              <TabsTrigger3
-                                value="allTime"
-                                className="text-xs h-7"
-                              >
-                                All Time
-                              </TabsTrigger3>
-                              <Button
-                                onClick={() => {
-                                  setActiveDateFilter("custom"); // Set directly to "custom"
-                                }}
-                                className={`text-xs bg-[#] hover:bg-[#] border text-muted-foreground h-6 ${activeDateFilter === "custom" ||
-                                  (customStartDate && customEndDate)
-                                  ? "bg-[#815BF5] text-white"
-                                  : ""
-                                  }`}
-                              >
-                                Custom
-                              </Button>
+                            Custom
+                          </button>
 
-                              {activeDateFilter === "custom" && (
-                                <div className="fixed   inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[100]">
-                                  <div className="bg-[#0B0D29]  p-7 mt-36 rounded-lg shadow-lg w-96 relative border">
-                                    {/* Close Button */}
-                                    <div className="w-full flex items-center justify-between mb-4">
-                                      <h3 className="text-md font-medium text-white ">
-                                        Select Custom Date Range
-                                      </h3>
-                                      <CrossCircledIcon
-                                        onClick={() =>
-                                          setActiveDateFilter(undefined)
-                                        }
-                                        className="scale-150  hover:bg-[#ffffff] rounded-full cursor-pointer hover:text-[#815BF5]"
-                                      />
-                                    </div>
-                                    {/* Date Selection Buttons */}
-                                    <div className="flex justify-between gap-2">
-                                      {/* Start Date Button */}
-                                      <div className="w-full">
-                                        {/* <label className="text-sm text-gray-300">Start Date</label> */}
-                                        <button
-                                          type="button"
-                                          onClick={openStartDatePicker}
-                                          // className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
-                                          className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                                        >
-                                          <div className="flex gap-1">
-                                            <Calendar className="h-4" />
-                                            {customStartDate
-                                              ? new Date(
-                                                customStartDate
-                                              ).toLocaleDateString()
-                                              : "Start Date"}
-                                          </div>
-                                        </button>
+                          {isCustomModalOpen && (
+                            <Dialog open={isCustomModalOpen} onOpenChange={() => setIsCustomModalOpen(false)}>
+                              <DialogContent className="w-96 p-6 ml-12 z-[100] bg-[#0B0D29]">
+                                <div className="flex justify-between">
+                                  <DialogTitle className="text-md  font-medium text-white">
+                                    Select Custom Date Range
+                                  </DialogTitle>
+                                  <DialogClose>
+                                    {" "}
+                                    <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+                                    {/* <X className="cursor-pointer border -mt-4 rounded-full border-white h-6 hover:bg-white hover:text-black w-6" /> */}
+                                  </DialogClose>
+                                </div>
+                                {/* Start and End Date Buttons */}
+                                <div className="flex justify-between gap-2">
+                                  <div className="w-full">
+                                    <button
+                                      type="button"
+                                      onClick={() => setDatePickerType("start")}
+                                      className="text-start text-xs text-gray-400 w-full border p-2 rounded"
+                                    >
+                                      <div className="flex gap-1">
+                                        <Calendar className="h-4" />
+                                        {customStartDate
+                                          ? new Date(customStartDate).toLocaleDateString()
+                                          : "Start Date"}
                                       </div>
+                                    </button>
+                                  </div>
 
-                                      {/* End Date Button */}
-                                      <div className="w-full">
-                                        {/* <label className="text-sm text-gray-300">End Date</label> */}
-                                        <button
-                                          type="button"
-                                          onClick={openEndDatePicker}
-                                          // className="w-fit px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 flex text-sm justify-between items-center"
-                                          className="text-start text-xs text-gray-400 mt-2 w-full border p-2 rounded"
-                                        >
-                                          <div className="flex gap-1">
-                                            <Calendar className="h-4" />
-                                            {customEndDate
-                                              ? new Date(
-                                                customEndDate
-                                              ).toLocaleDateString()
-                                              : "End Date"}
-                                          </div>
-                                        </button>
+                                  <div className="w-full">
+                                    <button
+                                      type="button"
+                                      onClick={() => setDatePickerType("end")}
+                                      className="text-start text-xs text-gray-400 w-full border p-2 rounded"
+                                    >
+                                      <div className="flex gap-1">
+                                        <Calendar className="h-4" />
+                                        {customEndDate
+                                          ? new Date(customEndDate).toLocaleDateString()
+                                          : "End Date"}
                                       </div>
-                                    </div>
-
-                                    {/* Submit Button */}
-                                    <div className="flex justify-end gap-4 mt-4">
-                                      <button
-                                        onClick={() =>
-                                          setActiveDateFilter(undefined)
-                                        } // Closes the modal
-                                        className="bg-[#815BF5] text-white py-2 px-4 rounded w-full text-xs"
-                                      >
-                                        Apply
-                                      </button>
-                                    </div>
-
-                                    {/* Custom Date Picker Modal */}
-                                    {datePickerType && (
-                                      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-60">
-                                        <div className="bg-[#0B0D29] p-10 rounded-lg w-[580px] scale-75 ">
-                                          <CustomDatePicker
-                                            selectedDate={
-                                              datePickerType === "start"
-                                                ? customStartDate
-                                                : customEndDate
-                                            }
-                                            onDateChange={handleDateChange}
-                                            onCloseDialog={closeDatePicker}
-                                          />
-                                        </div>
-                                      </div>
-                                    )}
+                                    </button>
                                   </div>
                                 </div>
-                              )}
-                            </TabsList3>
-                          </Tabs3>
+
+                                {/* Apply Button */}
+                                <div className="flex justify-end gap-4 mt-4">
+                                  <button
+                                    onClick={handleCustomApply}
+                                    className="bg-[#815BF5] text-white py-2 px-4 rounded w-full text-xs"
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+
+                          {/* Date Picker Dialog */}
+                          {datePickerType && (
+                            <Dialog open={Boolean(datePickerType)} onOpenChange={() => setDatePickerType(null)}>
+                              <DialogContent className=" z-[100] scale-90  flex justify-center ">
+                                <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                                  <div className="w-full flex mb-4 justify-between">
+                                    <CustomDatePicker
+                                      selectedDate={datePickerType === "start" ? customStartDate : customEndDate}
+                                      onDateChange={(date) => {
+                                        if (datePickerType === "start") {
+                                          setCustomStartDate(date);
+                                        } else if (datePickerType === "end") {
+                                          setCustomEndDate(date);
+                                        }
+                                        setDatePickerType(null); // Close the dialog after selection
+                                      }}
+                                      onCloseDialog={() => setDatePickerType(null)}
+                                    />
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+
                         </div>
                       </div>
                       <div>
@@ -1878,14 +1825,14 @@ export default function TasksTab({
                             <div>
                               <div className="flex  flex-col ">
                                 {customStartDate && customEndDate && (
-                                  <div className="flex gap-8 p-2 justify-center w-full">
+                                  <div className="flex gap-8 p-2  mt-2 justify-center w-full">
                                     <h1 className="text-xs  text-center text-white">
                                       Start Date:{" "}
                                       {customStartDate.toLocaleDateString()}
                                     </h1>
                                     <h1 className="text-xs text-center text-white">
                                       End Date:{" "}
-                                      {customStartDate.toLocaleDateString()}
+                                      {customEndDate.toLocaleDateString()}
                                     </h1>
                                   </div>
                                 )}
@@ -1898,7 +1845,7 @@ export default function TasksTab({
 
                               <div className="flex px-4  -mt-2 w-[100%]    space-x-2 justify-center ">
                                 <div className="space-x-2 flex">
-                                  <div className=" flex px-4 mt-4  space-x-2 justify-center mb-2">
+                                  <div className=" flex px-4 mt-2  space-x-2 justify-center mb-2">
                                     <input
                                       type="text"
                                       placeholder="Search Task"
@@ -1911,7 +1858,7 @@ export default function TasksTab({
                                   </div>
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-4 text-sm"
+                                    className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-2 text-sm"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>

@@ -1225,6 +1225,7 @@ export default function Billing() {
                                                 </CardHeader>
                                                 <div className="mt-4 ">
                                                     <CardContent className="bg-transparent">
+                                                    <h1 className='p-4 text-blue-400 text-md'>Task Delegation App</h1>
                                                         <ul className="list-disc space-y-2 w-full items-center text-sm">
                                                             {[
                                                                 "Delegate Unlimited Tasks",
@@ -1301,6 +1302,7 @@ export default function Billing() {
                                                 </CardHeader>
                                                 <div className=" mt-4">
                                                     <CardContent className="bg-transparent">
+                                                    <h1 className='p-4 text-blue-400 text-md'>Zapllo Payroll (Leave & Attendance App)</h1>
                                                         <ul className="list-disc space-y-2  w-full items-center text-sm">
                                                             {[
                                                                 "Geo-Location & Face Recognition Feature",
@@ -1311,6 +1313,32 @@ export default function Billing() {
                                                                 "Repeated Tasks",
                                                                 "Define your own leave types",
                                                                 "Reports/Dashboard",
+
+
+                                                            ].map((item, index) => (
+                                                                <li key={index} className="flex gap-2 items-center">
+                                                                    <img src="/icons/tick.png" />
+                                                                    <span
+                                                                        className="text-sm font-medium"
+                                                                    >
+                                                                        {item}
+                                                                    </span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                        <h1 className='p-4 text-blue-400 text-md'>Task Delegation App</h1>
+                                                        <ul className="list-disc space-y-2  w-full items-center text-sm">
+                                                            {[
+                                                                 "Delegate Unlimited Tasks",
+                                                                 "Team Performance Report",
+                                                                 "Links Management for your Team",
+                                                                 "Email Notification",
+                                                                 "Whatsapp Notification",
+                                                                 "Repeated Tasks",
+                                                                 "File Uploads",
+                                                                 "Delegate Tasks with Voice Notes",
+                                                                 "Task wise Reminders",
+                                                                 "Save more than 5 hours per day per employee"
 
 
                                                             ].map((item, index) => (
