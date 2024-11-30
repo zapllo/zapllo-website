@@ -10,10 +10,65 @@ import { cn } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Golos_Text } from "next/font/google";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const golos = Golos_Text({ subsets: ["latin"] });
 
 
 type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle' | 'Zapllo Payroll';
+
+
+const mockData = [
+    { name: 'Neha Sharma', plan: 'Money Saver Bundle', timeAgo: '1 hour ago' },
+    { name: 'Rohan Mehta', plan: 'Zapllo Payroll', timeAgo: '30 minutes ago' },
+    { name: 'Priya Verma', plan: 'Zapllo Tasks', timeAgo: '10 minutes ago' },
+    { name: 'Amitabh Chatterjee', plan: 'Money Saver Bundle', timeAgo: '5 minutes ago' },
+    { name: 'Sneha Kapoor', plan: 'Zapllo Payroll', timeAgo: '3 hours ago' },
+    { name: 'Kunal Joshi', plan: 'Zapllo Tasks', timeAgo: '6 hours ago' },
+    { name: 'Anjali Singh', plan: 'Money Saver Bundle', timeAgo: '15 minutes ago' },
+    { name: 'Rahul Gupta', plan: 'Zapllo Tasks', timeAgo: '7 hours ago' },
+    { name: 'Pooja Mishra', plan: 'Zapllo Payroll', timeAgo: '1 day ago' },
+    { name: 'Siddharth Desai', plan: 'Zapllo Tasks', timeAgo: '20 minutes ago' },
+    { name: 'Nisha Patel', plan: 'Money Saver Bundle', timeAgo: '2 days ago' },
+    { name: 'Arjun Iyer', plan: 'Zapllo Payroll', timeAgo: '3 hours ago' },
+    { name: 'Meera Rao', plan: 'Zapllo Tasks', timeAgo: '50 minutes ago' },
+    { name: 'Vikram Nair', plan: 'Money Saver Bundle', timeAgo: '30 seconds ago' },
+    { name: 'Aarti Kulkarni', plan: 'Zapllo Tasks', timeAgo: '4 hours ago' },
+    { name: 'Gaurav Dixit', plan: 'Zapllo Payroll', timeAgo: '1 week ago' },
+    { name: 'Swati Bhattacharya', plan: 'Money Saver Bundle', timeAgo: '10 days ago' },
+    { name: 'Deepak Kumar', plan: 'Zapllo Tasks', timeAgo: '5 hours ago' },
+    { name: 'Komal Jain', plan: 'Zapllo Payroll', timeAgo: '3 days ago' },
+    { name: 'Rajesh Khanna', plan: 'Zapllo Tasks', timeAgo: '1 month ago' },
+    { name: 'Asha Reddy', plan: 'Money Saver Bundle', timeAgo: '2 weeks ago' },
+    { name: 'Ishita Roy', plan: 'Zapllo Payroll', timeAgo: '3 months ago' },
+    { name: 'Prateek Agarwal', plan: 'Zapllo Tasks', timeAgo: '8 minutes ago' },
+    { name: 'Shweta Malhotra', plan: 'Money Saver Bundle', timeAgo: '12 minutes ago' },
+    { name: 'Tarun Bhatia', plan: 'Zapllo Payroll', timeAgo: '1 year ago' },
+    { name: 'Nidhi Tripathi', plan: 'Zapllo Tasks', timeAgo: '40 minutes ago' },
+    { name: 'Harsh Pandey', plan: 'Money Saver Bundle', timeAgo: '1 second ago' },
+    { name: 'Kriti Tiwari', plan: 'Zapllo Payroll', timeAgo: '16 minutes ago' },
+    { name: 'Ravi Chauhan', plan: 'Zapllo Tasks', timeAgo: '2 hours ago' },
+    { name: 'Ankita Bose', plan: 'Money Saver Bundle', timeAgo: '10 hours ago' },
+    { name: 'Suresh Shetty', plan: 'Zapllo Payroll', timeAgo: '1 hour ago' },
+    { name: 'Neeraj Mathur', plan: 'Zapllo Tasks', timeAgo: '2 days ago' },
+    { name: 'Kavita Menon', plan: 'Money Saver Bundle', timeAgo: '6 hours ago' },
+    { name: 'Manoj Jadhav', plan: 'Zapllo Payroll', timeAgo: '7 days ago' },
+    { name: 'Divya Nambiar', plan: 'Zapllo Tasks', timeAgo: '5 minutes ago' },
+    { name: 'Ashok Thakur', plan: 'Money Saver Bundle', timeAgo: '2 months ago' },
+    { name: 'Piyush Arora', plan: 'Zapllo Payroll', timeAgo: '4 minutes ago' },
+    { name: 'Simran Gill', plan: 'Zapllo Tasks', timeAgo: '2 weeks ago' },
+    { name: 'Mohit Bansal', plan: 'Money Saver Bundle', timeAgo: '30 minutes ago' },
+    { name: 'Alok Banerjee', plan: 'Zapllo Payroll', timeAgo: '10 seconds ago' },
+    { name: 'Jyoti Sinha', plan: 'Zapllo Tasks', timeAgo: '3 hours ago' },
+    { name: 'Ritika Dutta', plan: 'Money Saver Bundle', timeAgo: '1 week ago' },
+    { name: 'Sanjay Kaur', plan: 'Zapllo Payroll', timeAgo: '15 minutes ago' },
+    { name: 'Tanvi Luthra', plan: 'Zapllo Tasks', timeAgo: '12 hours ago' },
+    { name: 'Abhishek Joshi', plan: 'Money Saver Bundle', timeAgo: '45 minutes ago' },
+    { name: 'Rekha Mahajan', plan: 'Zapllo Payroll', timeAgo: '30 minutes ago' },
+    { name: 'Yash Goel', plan: 'Zapllo Tasks', timeAgo: '1 hour ago' },
+    { name: 'Karan Oberoi', plan: 'Money Saver Bundle', timeAgo: '2 hours ago' },
+];
+
 
 
 export default function SpecialOfferCheckout() {
@@ -29,6 +84,56 @@ export default function SpecialOfferCheckout() {
         // Clear interval on component unmount
         return () => clearInterval(timer);
     }, []);
+
+
+    useEffect(() => {
+        let index = 0;
+        const interval = setInterval(() => {
+            const data = mockData[index];
+            toast(
+                <div className="">
+                    <div className="flex gap-2 items-center">
+                        <div className="flex m-auto items-center">
+                            <Avatar className="h-6 w-6 rounded-full flex  bg-[#815BF5] items-center">
+                                {/* <AvatarImage className='h-6 w-6 ml-1 ' src={`/icons/${category.name.toLowerCase()}.png`} /> */}
+                                <AvatarFallback className="bg-[#815BF5]">
+                                    <h1 className="text-sm text-white">
+                                        {`${data.name}`.slice(0, 1)}
+                                        {/* {`${user.lastName}`.slice(0, 1)} */}
+                                    </h1>
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
+                        <div className="text-white text-sm">
+                            <strong>{data.name}</strong> just purchased {' '}
+                        </div>
+                    </div>
+                    <div>
+                        <strong className="text-white text-md ml-8 ">{`${data.plan}`}</strong>
+                    </div>
+                    <div className="flex items-center gap-2  ml-8 ">
+                        <span className="text-[#787CA5] text-sm">{data.timeAgo}</span>
+
+                    </div>
+                </div>
+                ,
+                {
+                    position: 'bottom-left', // Specify the position
+                    duration: 10000, // Optional: Longer duration if needed
+                    style: {
+                        background: '#0B0D26',
+                        borderColor: 'gray',
+
+                    }
+                },
+            );
+            index = (index + 1) % mockData.length; // Loop through the mock data
+        }, 5000); // Show toast every 10 seconds
+
+        return () => clearInterval(interval); // Clear interval on unmount
+    }, []);
+
+
 
     // Format the time as MM:SS
     const formatTime = (time: any) => {
@@ -55,7 +160,7 @@ export default function SpecialOfferCheckout() {
             {/* Run Your Business */}
 
             <div className="  bg-[#05071E]">
-              
+
                 <div className="z-10 flex items-center justify-center">
                     <div
                         className={cn(

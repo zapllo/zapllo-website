@@ -10,14 +10,70 @@ import Image from "next/image";
 import Testimonials2 from "@/components/globals/testimonials2";
 import { useEffect, useState } from "react";
 import MultiStepForm from "@/components/forms/checkoutForm";
-import { Clock } from "lucide-react";
+import { BellRingIcon, Clock } from "lucide-react";
 import TaskDelegationCard from "@/components/cards/checkoutCards";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const golos = Golos_Text({ subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle' | 'Zapllo Payroll';
+
+
+const mockData = [
+    { name: 'Neha Sharma', plan: 'Money Saver Bundle', timeAgo: '1 hour ago' },
+    { name: 'Rohan Mehta', plan: 'Zapllo Payroll', timeAgo: '30 minutes ago' },
+    { name: 'Priya Verma', plan: 'Zapllo Tasks', timeAgo: '10 minutes ago' },
+    { name: 'Amitabh Chatterjee', plan: 'Money Saver Bundle', timeAgo: '5 minutes ago' },
+    { name: 'Sneha Kapoor', plan: 'Zapllo Payroll', timeAgo: '3 hours ago' },
+    { name: 'Kunal Joshi', plan: 'Zapllo Tasks', timeAgo: '6 hours ago' },
+    { name: 'Anjali Singh', plan: 'Money Saver Bundle', timeAgo: '15 minutes ago' },
+    { name: 'Rahul Gupta', plan: 'Zapllo Tasks', timeAgo: '7 hours ago' },
+    { name: 'Pooja Mishra', plan: 'Zapllo Payroll', timeAgo: '1 day ago' },
+    { name: 'Siddharth Desai', plan: 'Zapllo Tasks', timeAgo: '20 minutes ago' },
+    { name: 'Nisha Patel', plan: 'Money Saver Bundle', timeAgo: '2 days ago' },
+    { name: 'Arjun Iyer', plan: 'Zapllo Payroll', timeAgo: '3 hours ago' },
+    { name: 'Meera Rao', plan: 'Zapllo Tasks', timeAgo: '50 minutes ago' },
+    { name: 'Vikram Nair', plan: 'Money Saver Bundle', timeAgo: '30 seconds ago' },
+    { name: 'Aarti Kulkarni', plan: 'Zapllo Tasks', timeAgo: '4 hours ago' },
+    { name: 'Gaurav Dixit', plan: 'Zapllo Payroll', timeAgo: '1 week ago' },
+    { name: 'Swati Bhattacharya', plan: 'Money Saver Bundle', timeAgo: '10 days ago' },
+    { name: 'Deepak Kumar', plan: 'Zapllo Tasks', timeAgo: '5 hours ago' },
+    { name: 'Komal Jain', plan: 'Zapllo Payroll', timeAgo: '3 days ago' },
+    { name: 'Rajesh Khanna', plan: 'Zapllo Tasks', timeAgo: '1 month ago' },
+    { name: 'Asha Reddy', plan: 'Money Saver Bundle', timeAgo: '2 weeks ago' },
+    { name: 'Ishita Roy', plan: 'Zapllo Payroll', timeAgo: '3 months ago' },
+    { name: 'Prateek Agarwal', plan: 'Zapllo Tasks', timeAgo: '8 minutes ago' },
+    { name: 'Shweta Malhotra', plan: 'Money Saver Bundle', timeAgo: '12 minutes ago' },
+    { name: 'Tarun Bhatia', plan: 'Zapllo Payroll', timeAgo: '1 year ago' },
+    { name: 'Nidhi Tripathi', plan: 'Zapllo Tasks', timeAgo: '40 minutes ago' },
+    { name: 'Harsh Pandey', plan: 'Money Saver Bundle', timeAgo: '1 second ago' },
+    { name: 'Kriti Tiwari', plan: 'Zapllo Payroll', timeAgo: '16 minutes ago' },
+    { name: 'Ravi Chauhan', plan: 'Zapllo Tasks', timeAgo: '2 hours ago' },
+    { name: 'Ankita Bose', plan: 'Money Saver Bundle', timeAgo: '10 hours ago' },
+    { name: 'Suresh Shetty', plan: 'Zapllo Payroll', timeAgo: '1 hour ago' },
+    { name: 'Neeraj Mathur', plan: 'Zapllo Tasks', timeAgo: '2 days ago' },
+    { name: 'Kavita Menon', plan: 'Money Saver Bundle', timeAgo: '6 hours ago' },
+    { name: 'Manoj Jadhav', plan: 'Zapllo Payroll', timeAgo: '7 days ago' },
+    { name: 'Divya Nambiar', plan: 'Zapllo Tasks', timeAgo: '5 minutes ago' },
+    { name: 'Ashok Thakur', plan: 'Money Saver Bundle', timeAgo: '2 months ago' },
+    { name: 'Piyush Arora', plan: 'Zapllo Payroll', timeAgo: '4 minutes ago' },
+    { name: 'Simran Gill', plan: 'Zapllo Tasks', timeAgo: '2 weeks ago' },
+    { name: 'Mohit Bansal', plan: 'Money Saver Bundle', timeAgo: '30 minutes ago' },
+    { name: 'Alok Banerjee', plan: 'Zapllo Payroll', timeAgo: '10 seconds ago' },
+    { name: 'Jyoti Sinha', plan: 'Zapllo Tasks', timeAgo: '3 hours ago' },
+    { name: 'Ritika Dutta', plan: 'Money Saver Bundle', timeAgo: '1 week ago' },
+    { name: 'Sanjay Kaur', plan: 'Zapllo Payroll', timeAgo: '15 minutes ago' },
+    { name: 'Tanvi Luthra', plan: 'Zapllo Tasks', timeAgo: '12 hours ago' },
+    { name: 'Abhishek Joshi', plan: 'Money Saver Bundle', timeAgo: '45 minutes ago' },
+    { name: 'Rekha Mahajan', plan: 'Zapllo Payroll', timeAgo: '30 minutes ago' },
+    { name: 'Yash Goel', plan: 'Zapllo Tasks', timeAgo: '1 hour ago' },
+    { name: 'Karan Oberoi', plan: 'Money Saver Bundle', timeAgo: '2 hours ago' },
+];
+
 
 
 export default function Home() {
@@ -28,6 +84,53 @@ export default function Home() {
     }>({ showCheckout: false, selectedPlan: 'Zapllo Money Saver Bundle' });
 
     const router = useRouter();
+
+    useEffect(() => {
+        let index = 0;
+        const interval = setInterval(() => {
+            const data = mockData[index];
+            toast(
+                <div className="">
+                    <div className="flex gap-2 items-center">
+                        <div className="flex m-auto items-center">
+                            <Avatar className="h-6 w-6 rounded-full flex  bg-[#815BF5] items-center">
+                                {/* <AvatarImage className='h-6 w-6 ml-1 ' src={`/icons/${category.name.toLowerCase()}.png`} /> */}
+                                <AvatarFallback className="bg-[#815BF5]">
+                                    <h1 className="text-sm text-white">
+                                        {`${data.name}`.slice(0, 1)}
+                                        {/* {`${user.lastName}`.slice(0, 1)} */}
+                                    </h1>
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
+                        <div className="text-white text-sm">
+                            <strong>{data.name}</strong> just purchased {' '}
+                        </div>
+                    </div>
+                    <div>
+                        <strong className="text-white text-md ml-8 ">{`${data.plan}`}</strong>
+                    </div>
+                    <div className="flex items-center gap-2  ml-8 ">
+                        <span className="text-[#787CA5] text-sm">{data.timeAgo}</span>
+
+                    </div>
+                </div>
+                ,
+                {
+                    position: 'bottom-left', // Specify the position
+                    duration: 10000, // Optional: Longer duration if needed
+                    style: {
+                        background: '#0B0D26',
+                        borderColor: 'gray',
+
+                    }
+                },
+            );
+            index = (index + 1) % mockData.length; // Loop through the mock data
+        }, 5000); // Show toast every 10 seconds
+
+        return () => clearInterval(interval); // Clear interval on unmount
+    }, []);
 
     const openCheckoutWithPlan = (plan: PlanKeys) => {
         router.push(`/special-offer-checkout?selectedPlan=${plan}`);
@@ -488,7 +591,7 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                     >
-                        ZaplloTask
+                        Zapllo Tasks
                     </h2>
 
                     {/* Task Delegation App Title */}
@@ -519,12 +622,12 @@ export default function Home() {
                 <div>
                     <div className="container mx-auto flex flex-col md:flex-row items-center gap-12 py-16">
                         {/* Left Side Image */}
-                        <div className="bg-[#0A0D28] p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
+                        <div className="p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/book.png"
+                                src="/mockups/whatsappp.png"
                                 alt="Book Cover Placeholder"
-                                className="w-full h-auto"
+                                className="w-full h-full scale-[180%]"
                             />
                         </div>
 
@@ -627,13 +730,13 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                         style={{
-                            width: "164px",
+                          
                             height: "41px",
                             lineHeight: "40.83px",
                             textAlign: "left",
                         }}
                     >
-                        ZaplloTask
+                        Zapllo Payroll
                     </h2>
 
                     {/* Task Delegation App Title */}
@@ -642,11 +745,10 @@ export default function Home() {
                         style={{
                             fontSize: "46px",
                             lineHeight: "58.7px",
-                            width: "451px",
-                            height: "59px",
+                          
                         }}
                     >
-                        Task Delegation App
+                       Attendance Tracking App
                     </h1>
 
                     {/* Subtitle Text */}
@@ -664,12 +766,12 @@ export default function Home() {
                 <div>
                     <div className="container mx-auto flex flex-col md:flex-row items-center gap-12 py-16">
                         {/* Left Side Image */}
-                        <div className="bg-[#0A0D28] p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
+                        <div className=" p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/book.png"
+                                src="/mockups/attendance.png"
                                 alt="Book Cover Placeholder"
-                                className="w-full h-auto"
+                                className="w-full h-full scale-[180%]"
                             />
                         </div>
 
@@ -779,13 +881,13 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                         style={{
-                            width: "164px",
+                           
                             height: "41px",
                             lineHeight: "40.83px",
                             textAlign: "left",
                         }}
                     >
-                        ZaplloTask
+                        Zapllo Payroll
                     </h2>
 
                     {/* Task Delegation App Title */}
@@ -794,11 +896,10 @@ export default function Home() {
                         style={{
                             fontSize: "46px",
                             lineHeight: "58.7px",
-                            width: "451px",
-                            height: "59px",
+                          
                         }}
                     >
-                        Task Delegation App
+                        Leave Management App
                     </h1>
 
                     {/* Subtitle Text */}
@@ -816,12 +917,12 @@ export default function Home() {
                 <div>
                     <div className="container mx-auto flex flex-col md:flex-row items-center gap-12 py-16">
                         {/* Left Side Image */}
-                        <div className="bg-[#0A0D28] p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
+                        <div className=" p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/book.png"
+                                src="/mockups/attendance.png"
                                 alt="Book Cover Placeholder"
-                                className="w-full h-auto"
+                                className="w-full h-full scale-[180%]"
                             />
                         </div>
 
@@ -931,13 +1032,13 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                         style={{
-                            width: "164px",
+                          
                             height: "41px",
                             lineHeight: "40.83px",
                             textAlign: "left",
                         }}
                     >
-                        ZaplloTask
+                        Zapllo WABA
                     </h2>
 
                     {/* Task Delegation App Title */}
@@ -946,11 +1047,11 @@ export default function Home() {
                         style={{
                             fontSize: "46px",
                             lineHeight: "58.7px",
-                            width: "451px",
+
                             height: "59px",
                         }}
                     >
-                        Task Delegation App
+                        Get Official WhatsApp API
                     </h1>
 
                     {/* Subtitle Text */}
@@ -968,12 +1069,12 @@ export default function Home() {
                 <div>
                     <div className="container mx-auto flex flex-col md:flex-row items-center gap-12 py-16">
                         {/* Left Side Image */}
-                        <div className="bg-[#0A0D28] p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
+                        <div className=" p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/book.png"
+                                src="/mockups/task.png"
                                 alt="Book Cover Placeholder"
-                                className="w-full h-auto"
+                                className="w-full h-full scale-[180%]"
                             />
                         </div>
 

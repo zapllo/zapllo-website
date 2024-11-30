@@ -120,7 +120,7 @@ export default function ChecklistPage({ }) {
             <div className="flex-1 p-4">
                 <div className="ml-48 border-l  scrollbar-   -mt-32 max-w-8xl mx-auto">
                     <div className="gap-2 flex mb-6 w-full">
-                        <div className="-mt-2 h-[650px]  overflow-y-scroll scrollbar-hide  w-full">
+                        <div className="-mt-2 h-full max-h-screen  overflow-y-scroll scrollbar-  w-full">
                             <div className="p-4 w-full ">
                                 {showConfetti &&
                                     <div className=''>
