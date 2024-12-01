@@ -25,7 +25,6 @@ export function middleware(request: NextRequest) {
             return response;
         }
     }
-
     // Validate JWT expiration if a token exists
     if (token) {
         try {

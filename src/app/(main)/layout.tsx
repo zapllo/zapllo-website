@@ -7,7 +7,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { formatDistanceToNow, intervalToDuration } from "date-fns";
-import { XIcon } from "lucide-react";
+import { X, XIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ const Layout = (props: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(true);
+  const [isVisible2, setIsVisible2] = useState(true);
   const [isPro, setIsPro] = useState(false);
   const [userExceed, setUserExceed] = useState(false);
   const [isTrialExpired, setIsTrialExpired] = useState(false);
@@ -26,9 +27,24 @@ const Layout = (props: Props) => {
   const [userLoading, setUserLoading] = useState<boolean | null>(false);
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
   const [subscriptionExpires, setSubscriptionExpires] = useState<Date | null>(null);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchActiveAnnouncements = async () => {
+      try {
+        const response = await axios.get("/api/announcements");
+        setAnnouncements(response.data.attachments);
+      } catch (error) {
+        console.error("Error fetching active announcements:", error);
+      }
+    };
+
+    fetchActiveAnnouncements();
+  }, []);
 
 
   const handleClose = () => setIsVisible(false);
+  const handleAnnouncementClose = () => setIsVisible2(false);
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -156,7 +172,7 @@ const Layout = (props: Props) => {
             </h1>
             {/* <p>{timeMessage}</p> */}
             <p className="mt-4">
-             You have created more users than your purchased plan, upgrade to more users or Contact Admin.
+              You have created more users than your purchased plan, upgrade to more users or Contact Admin.
             </p>
           </div>
         </div>
@@ -171,8 +187,41 @@ const Layout = (props: Props) => {
 
   return (
     <div>
+      {isVisible2 && (
+        <div>
+          {announcements.map((announcement) => (
+            <div>
+              {announcement && (
+
+                <div style={{ background: "linear-gradient(90deg, #7451F8, #F57E57)" }} className="p-2  flex fixed top-0 w-full justify-center z-[100] gap-2  border">
+
+                  <div className="flex gap-2 justify-center w-full items-center">
+                    <div>
+                      <h1 className="text-center  flex text-white text-xs">
+                        <strong className="text-white">{announcement.announcementName}</strong>
+                      </h1>
+                    </div>
+                    <div>
+                      <Link href={announcement.buttonLink}>
+                        <Button className="h-5 rounded dark:bg-white w-fit px-2 font-bold py-3  text-xs text-black">
+                          {announcement.buttonName}
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                  <button onClick={handleAnnouncementClose} className="ml-auto text-white">
+                    <X className="h-4 rounded-full" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {isVisible && !isPro && !isSubscriptionActive && (
-        <div className="p-2 flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border">
+        <div className={`p-2 ${isVisible2 ? "mt-10" : ""} flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border`}>
+
           <div className="flex gap-2 justify-center w-full">
             <h1 className="text-center mt-1 flex text-white text-xs">
               {isTrialExpired ? (
@@ -196,7 +245,7 @@ const Layout = (props: Props) => {
       )}
       <div
         className={`flex overflow-hidden ${isVisible && !isPro && !isSubscriptionActive ? "mt-10" : ""
-          } dark:bg-[#04061E] scrollbar-hide h-full w-full`}
+          }  ${isVisible2 && isVisible ? "mt-20" : !isVisible && isVisible2 ? "mt-10" : !isVisible && !isVisible2 ? "" : ""} dark:bg-[#04061E] scrollbar-hide h-full w-full`}
       >
         <MenuOptions />
         <div className="w-full overflow-hidden h-screen">
