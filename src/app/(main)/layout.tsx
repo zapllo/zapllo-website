@@ -190,7 +190,7 @@ const Layout = (props: Props) => {
       {isVisible2 && (
         <div>
           {announcements.map((announcement) => (
-            <div>
+            <div key={announcement._id}>
               {announcement && (
 
                 <div style={{ background: "linear-gradient(90deg, #7451F8, #F57E57)" }} className="p-2  flex fixed top-0 w-full justify-center z-[100] gap-2  border">
