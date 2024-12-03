@@ -18,12 +18,13 @@ const Layout = (props: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(true);
-  const [isVisible2, setIsVisible2] = useState(true);
+  const [isVisible2, setIsVisible2] = useState(false);
   const [isPro, setIsPro] = useState(false);
   const [userExceed, setUserExceed] = useState(false);
   const [isTrialExpired, setIsTrialExpired] = useState(false);
   const [trialExpires, setTrialExpires] = useState<Date | null>(null);
   const [timeMessage, setTimeMessage] = useState("");
+  const [noAnnouncement, setNoAnnouncement] = useState(false);
   const [userLoading, setUserLoading] = useState<boolean | null>(false);
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
   const [subscriptionExpires, setSubscriptionExpires] = useState<Date | null>(null);
@@ -33,7 +34,10 @@ const Layout = (props: Props) => {
     const fetchActiveAnnouncements = async () => {
       try {
         const response = await axios.get("/api/announcements");
-        setAnnouncements(response.data.attachments);
+        const fetchedAnnouncements = response.data.attachments; // Assuming `attachments` is the correct field
+        setAnnouncements(fetchedAnnouncements);
+        setIsVisible2(fetchedAnnouncements.length > 0);
+        setNoAnnouncement(fetchedAnnouncements.length === 0); // Update `noAnnouncement` based on the length
       } catch (error) {
         console.error("Error fetching active announcements:", error);
       }
@@ -184,7 +188,7 @@ const Layout = (props: Props) => {
       </div>
     );
   }
-
+  console.log(noAnnouncement, 'no announcement?')
   return (
     <div>
       {isVisible2 && (
@@ -220,7 +224,7 @@ const Layout = (props: Props) => {
       )}
 
       {isVisible && !isPro && !isSubscriptionActive && (
-        <div className={`p-2 ${isVisible2 ? "mt-10" : ""} flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border`}>
+        <div className={`p-2 ${isVisible2 ? "mt-10" : "mt-0"} flex fixed top-0 w-full justify-center z-[100] gap-2 bg-[#37384B] border`}>
 
           <div className="flex gap-2 justify-center w-full">
             <h1 className="text-center mt-1 flex text-white text-xs">

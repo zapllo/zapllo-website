@@ -77,13 +77,24 @@ const mockData = [
 
 
 export default function Home() {
-    const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(45 * 60); // 15 minutes in seconds
     const [checkoutData, setCheckoutData] = useState<{
         showCheckout: boolean;
         selectedPlan: PlanKeys;
     }>({ showCheckout: false, selectedPlan: 'Zapllo Money Saver Bundle' });
 
     const router = useRouter();
+
+    const [countdown, setCountdown] = useState(20);
+
+    useEffect(() => {
+        const intervalDuration = (45 * 60) / (20 - 3); // Interval duration in seconds
+        const interval = setInterval(() => {
+            setCountdown((prev) => (prev > 3 ? prev - 1 : 3)); // Decrease countdown until it reaches 3
+        }, intervalDuration * 1000); // Convert to milliseconds
+
+        return () => clearInterval(interval); // Cleanup interval on unmount
+    }, []);
 
     useEffect(() => {
         let index = 0;
@@ -159,7 +170,7 @@ export default function Home() {
             <Image
                 src="/mask.png"
                 height={1000}
-                className=" absolute overflow-hidden -mt-40 w-full "
+                className=" absolute overflow-hidden -mt-56 w-full "
                 width={1000}
                 alt="Background mask for zapllo automation"
             />
@@ -168,18 +179,17 @@ export default function Home() {
 
             <div className="w-full py-2 bg-gradient-to-r from-[#815BF5] via-[#9D5DF0] to-[#FC8929] flex items-center justify-center mt-32 ">
                 <p className="text-white text-lg font-medium mr-4">
-                    Use Code <span className="font-bold">&quot;FREEDOM&quot;</span> to Get
-                    Flat OFF
+                    Limited Time Offer Just For Today. Grab the Deal!
                 </p>
                 <div className="bg-white items-center text-[#05071E] flex gap-1 font-semibold px-4 py-1 rounded-md">
-                    <Clock className="h-4" />  {formatTime(timeLeft)}
+                    {countdown} Seats Left
                 </div>
             </div>
 
             {/* Run Your Business */}
 
             <div className="  bg-[#05071E]">
-                <div className="mb-4 mt-12">
+                <div className="mb-4 mt-12 ">
                     <h1 className="text-center  text-4xl font-semibold text-green-500">Zapllo Freedom Sale</h1>
                     <div
                         className={cn(
@@ -191,13 +201,27 @@ export default function Home() {
                                 `inline animate- text-8xl text-centera  font-bold bg-gradient-to-r from-[#815BF5] via-[#AD64D0] to-[#FC8929]  bg-clip-text text-transparent`
                             )}
                         >
-                            Up To 50% Off For 1 year
+                            Up To 60% Off For 1 year
                         </span>
+                    </div>
+                    <div className="absolute 2xl:right-72 mt-2 right-56 ">
+                        <img src="/icons/arrow.png" className="h-16" />
+                    </div>
+                    <div className="absolute 2xl:right-36 mt-16 right-16 ">
+                        <img src="/icons/offer.png" />
+                        <h1 className="text-white text-xl -mt-28 ml-20 ">Use Code</h1>
+                        <span className="font-bold text-white text-3xl -mt-28 ml-12">&quot;FREEDOM&quot;</span>
+                        {/* <Clock className="h-4" /> */}
+                        <h1 className="text-white text-2xl  ml-[90px] ">
+                            {formatTime(timeLeft)}
+                        </h1>
+
                     </div>
                     <div className="w-full flex justify-center mt-6 p-2 ">
                         <p className="text-center w-1/2 text-[#676B93] ">Lock in our best-ever price and get access to every new feature, For an year. This
                             one-time Offer ends soon. Act now before it&apos;s gone for good!</p>
                     </div>
+
                     <div className="w-full flex cursor-pointer  justify-center mt-8">
                         <a href="#cards">
                             <div
@@ -207,8 +231,11 @@ export default function Home() {
                             >
                                 Yes, Tell me More!
                             </div></a>
+
                     </div>
+
                 </div>
+
                 <div className="z-10 flex items-center justify-center">
                     <div
                         className={cn(
@@ -730,7 +757,7 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                         style={{
-                          
+
                             height: "41px",
                             lineHeight: "40.83px",
                             textAlign: "left",
@@ -745,10 +772,10 @@ export default function Home() {
                         style={{
                             fontSize: "46px",
                             lineHeight: "58.7px",
-                          
+
                         }}
                     >
-                       Attendance Tracking App
+                        Attendance Tracking App
                     </h1>
 
                     {/* Subtitle Text */}
@@ -881,7 +908,7 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                         style={{
-                           
+
                             height: "41px",
                             lineHeight: "40.83px",
                             textAlign: "left",
@@ -896,7 +923,7 @@ export default function Home() {
                         style={{
                             fontSize: "46px",
                             lineHeight: "58.7px",
-                          
+
                         }}
                     >
                         Leave Management App
@@ -1032,7 +1059,7 @@ export default function Home() {
                     <h2
                         className="font-spaceGrotesk font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#815BF5] to-[#FC8929]"
                         style={{
-                          
+
                             height: "41px",
                             lineHeight: "40.83px",
                             textAlign: "left",

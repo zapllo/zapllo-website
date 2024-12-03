@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
     try {
         await connectDB();
-        const attachments = await Announcement.find().lean();
+        const attachments = await Announcement.find({ isActive: true }).lean();
 
         return NextResponse.json({ success: true, attachments });
     } catch (error) {
