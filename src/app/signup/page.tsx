@@ -139,13 +139,17 @@ export default function SignupPage() {
           return;
         }
 
-        // Otherwise, submit both user and organization data
-        await axios.post("/api/users/signup", {
+
+        // Submit user and organization data
+        const response = await axios.post("/api/users/signup", {
           ...user,
           ...organization,
         });
-        toast.success("Signup successful! Redirecting to login...");
-        router.push("/login"); // Redirect after signup
+
+        if (response.status === 200) {
+          toast.success("Signup successful! Redirecting...");
+          router.push("/dashboard"); // Redirect to dashboard
+        }
       }
     } catch (error: any) {
       if (
@@ -176,16 +180,16 @@ export default function SignupPage() {
   return (
     <>
       <div
-        
+
         className="relative flex bg-[#04071F] items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
         <div className="z-10 bg-[#04071F]">
           <Meteors number={30} />
         </div>
         {/* <Toaster /> */} {/* Sonner toaster for notifications */}
         <div
-        onKeyDown={handleKeyDown} // Listen for keydown events here
-        tabIndex={0} // Ensure the div is focusable for key events
-        className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+          onKeyDown={handleKeyDown} // Listen for keydown events here
+          tabIndex={0} // Ensure the div is focusable for key events
+          className="max-w-md w-full mt-4 z-[100] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           {showOrganizationForm ? (
             <ArrowLeft
               onClick={() => setShowOrganizationForm(false)}

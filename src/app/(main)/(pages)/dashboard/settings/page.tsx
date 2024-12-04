@@ -285,7 +285,7 @@ export default function Page() {
                 <div>
                   <input
                     type="text"
-                    className="px-4 py-2 w-full bg-[#0B0D29] focus:outline-[#815BF5]  border rounded outline-none"
+                    className="px-4 py-2 w-full bg-[#0B0D29] focus-within:border-[#815BF5]  border rounded outline-none"
                     value={organizationName}
                     onChange={(e: any) => setOrganizationName(e.target.value)}
                   />
@@ -309,7 +309,7 @@ export default function Page() {
                 </div>
                 <div>
                   <textarea
-                    className="px-4 py-2 mt-2 w-full bg-[#0B0D29] focus:outline-[#815BF5]  border rounded outline-none"
+                    className="px-4 py-2 mt-2 w-full bg-[#0B0D29] focus-within:border-[#815BF5]  border rounded outline-none"
                     value={description}
                     onChange={(e: any) => setDescription(e.target.value)}
                   />
@@ -561,7 +561,7 @@ export default function Page() {
                 WA Channel ID
               </label>
               <input type="text"
-                className="w-full text-sm focus:outline-[#815BF5] p-2 border bg-transparent outline-none rounded" />
+                className="w-full text-sm focus-within:border-[#815BF5] p-2 border bg-transparent outline-none rounded" />
               <span className=" text-xs px-2">Get Your Channel ID From here -
                 <a className="text-blue-400 hover:underline" href="http://waba.zapllo.com">http://waba.zapllo.com/</a>
               </span>

@@ -39,7 +39,7 @@ export interface IUser extends Document {
     forgotPasswordTokenExpiry: Date | null;
     verifyToken: string | null;
     verifyTokenExpiry: Date | null;
-    checklistProgress: boolean[];
+    checklistProgress: mongoose.Types.ObjectId[];
     faceDescriptors: number[][]; // An array of face descriptors (each descriptor is an array of numbers)
     imageUrls: { type: [String], default: [] };
     country: string;
@@ -84,7 +84,12 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     forgotPasswordTokenExpiry: { type: Date, default: null },
     verifyToken: { type: String, default: null },
     verifyTokenExpiry: { type: Date, default: null },
-    checklistProgress: { type: [Boolean], default: Array(9).fill(false) },
+    checklistProgress: {
+        type: [mongoose.Schema.Types.ObjectId], // Array of references to checklist items
+        default: [],
+        ref: "checklistItems",
+    },
+
     faceDescriptors: {
         type: [[Number]], // A 2D array to store multiple face descriptors for each user
         default: [],

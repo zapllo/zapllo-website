@@ -678,7 +678,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
                 name="leaveReason"
                 value={formData.leaveReason}
                 onChange={handleInputChange}
-                className="w-full focus:outline-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
+                className="w-full focus-within:border-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
               />
             </div>
 

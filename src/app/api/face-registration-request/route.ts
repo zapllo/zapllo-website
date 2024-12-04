@@ -32,10 +32,22 @@ const extractS3Key = (url: string) => {
     return urlParts.slice(3).join('/'); // Removes the bucket and region parts of the URL
 };
 
+// Maximum file size in bytes (50 MB)
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
 // POST: Create a new face registration request and process face descriptors
 export async function POST(request: NextRequest) {
     try {
         await connectDB(); // Ensure connection to the database
+
+        // Validate Content-Length for request size
+        const contentLength = request.headers.get('content-length');
+        if (contentLength && parseInt(contentLength, 10) > MAX_FILE_SIZE) {
+            return NextResponse.json(
+                { success: false, message: 'Payload size exceeds 50 MB limit.' },
+                { status: 413 }
+            );
+        }
 
         const { imageUrls } = await request.json();
 
@@ -66,7 +78,7 @@ export async function POST(request: NextRequest) {
 
         // Check access to the object using the S3 client
         const s3Data = await s3Client.send(getObjectCommand);
-        console.log("S3 Object Accessible:", s3Data);
+        console.log('S3 Object Accessible:', s3Data);
 
         // Prepare Rekognition parameters
         const rekognitionParams = {
@@ -79,7 +91,7 @@ export async function POST(request: NextRequest) {
             Attributes: [Attribute.ALL],
         };
 
-        console.log("Extracted S3 Key:", extractS3Key(imageUrls[0]));
+        console.log('Extracted S3 Key:', extractS3Key(imageUrls[0]));
 
         // Call AWS Rekognition to detect faces
         const detectFacesCommand = new DetectFacesCommand(rekognitionParams);
@@ -114,6 +126,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
+// GET: Retrieve face registration requests for an organization
 export async function GET(request: NextRequest) {
     try {
         await connectDB(); // Ensure connection to the database
@@ -133,6 +146,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ success: true, requests: faceRequests }, { status: 200 });
     } catch (error: any) {
+        console.error('Error:', error);
         return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
 }

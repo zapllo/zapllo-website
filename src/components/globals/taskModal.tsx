@@ -874,7 +874,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-xs  outline-none focus:outline-[#815BF5] bg-transparent border-2 mt-1 rounded px-3 py-2"
+                className="w-full text-xs  outline-none focus-within:border-[#815BF5] bg-transparent border-2 mt-1 rounded px-3 py-2"
               />
             </div>
             <div className="">
@@ -884,7 +884,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 placeholder="Task Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="text-xs w-full focus:outline-[#815BF5]  outline-none  bg-transparent border-2    mt-1 rounded px-3 py-3"
+                className="text-xs w-full focus-within:border-[#815BF5]  outline-none  bg-transparent border-2    mt-1 rounded px-3 py-3"
               ></textarea>
             </div>
           </div>
@@ -1274,7 +1274,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                       onChange={(e) =>
                         handleLinkInputChange(index, e.target.value)
                       }
-                      className="w-full outline-none focus:outline-[#815BF5] border-[#505356] bg-transparent border rounded px-3 py-2 mr-2"
+                      className="w-full outline-none focus-within:border-[#815BF5] border-[#505356] bg-transparent border rounded px-3 py-2 mr-2"
                     />
                     <Button
                       type="button"
@@ -1417,7 +1417,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                       type="number"
                       value={reminderValue}
                       onChange={(e) => setReminderValue(Number(e.target.value))}
-                      className=" p-2 w-24 focus:outline-[#815BF5] border bg-transparent outline-none  bg-[#1A1C20] rounded h-full"
+                      className=" p-2 w-24 focus-within:border-[#815BF5] border bg-transparent outline-none  bg-[#1A1C20] rounded h-full"
                       placeholder="Enter value"
                     />
 

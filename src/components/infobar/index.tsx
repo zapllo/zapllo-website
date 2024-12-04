@@ -143,6 +143,8 @@ const InfoBar = (props: Props) => {
       return "Ticket Details";
     } else if (pathName === "/dashboard/profile") {
       return "My Profile";
+    } else if (pathName === "/dashboard/integrations") {
+      return "Integrations";
     } else if (pathName === "/intranet") {
       return "Intranet";
     } else if (pathName === "/help/tutorials") {

@@ -188,7 +188,7 @@ const IntranetPage: React.FC = () => {
                     value={linkUrl}
                     onChange={(e) => setLinkUrl(e.target.value)}
                     required
-                    className="  px-4 focus:outline-[#815BF5]  block text-sm w-full  bg-transparent outline-none p-2 border rounded-md"
+                    className="  px-4 focus-within:border-[#815BF5]  block text-sm w-full  bg-transparent outline-none p-2 border rounded-md"
                   // className="w-full h-12 px-4 bg-transparent text-white  rounded-md border-0 outline-none"
                   />
                 </div>
@@ -201,7 +201,7 @@ const IntranetPage: React.FC = () => {
                     placeholder="Description"
                     onChange={(e) => setDescription(e.target.value)}
                     required
-                    className=" w-full focus:outline-[#815BF5] h-24 px-4  block text-sm bg-transparent outline-none  p-2 border rounded-md"
+                    className=" w-full focus-within:border-[#815BF5] h-24 px-4  block text-sm bg-transparent outline-none  p-2 border rounded-md"
                   />
                 </div>
 
@@ -214,7 +214,7 @@ const IntranetPage: React.FC = () => {
                     onChange={(e) => setLinkName(e.target.value)}
                     required
                     placeholder="Link Name"
-                    className="w-full px-4 focus:outline-[#815BF5] bg-transparent text-sm outline-none block  p-2 border rounded-md"
+                    className="w-full px-4 focus-within:border-[#815BF5] bg-transparent text-sm outline-none block  p-2 border rounded-md"
                   />
                 </div>
 

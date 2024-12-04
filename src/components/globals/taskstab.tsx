@@ -1318,7 +1318,7 @@ export default function TasksTab({
                                     onChange={(e) =>
                                       setSearchQuery(e.target.value)
                                     }
-                                    className="px-3 py-2 border text-xs focus:outline-[#815BF5] outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
+                                    className="px-3 py-2 border text-xs focus-within:border-[#815BF5] outline-none text-[#8A8A8A] ml-32 bg-transparent rounded-md "
                                   />
                                 </div>
                                 <div className="grid w-[75%] ml-56 gap-4">
@@ -1497,7 +1497,7 @@ export default function TasksTab({
                                     onChange={(e) =>
                                       setSearchQuery(e.target.value)
                                     }
-                                    className="px-3 py-2 text-xs ml-32 border focus:outline-[#815BF5] outline-none text-[#8A8A8A]  bg-transparent rounded-md "
+                                    className="px-3 py-2 text-xs ml-32 border focus-within:border-[#815BF5] outline-none text-[#8A8A8A]  bg-transparent rounded-md "
                                   />
                                 </div>
                                 <div className="grid gap-4 ml-56 w-[75%]">
@@ -1570,7 +1570,7 @@ export default function TasksTab({
                                       onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                       }
-                                      className="px-3 py-2 text-xs focus:outline-[#815BF5] ml-32 border outline-none text-[#8A8A8A] bg-transparent rounded-md"
+                                      className="px-3 py-2 text-xs focus-within:border-[#815BF5] ml-32 border outline-none text-[#8A8A8A] bg-transparent rounded-md"
                                     />
                                   </div>
                                   <div className="grid gap-4 ml-56 w-[75%]">
@@ -1659,7 +1659,7 @@ export default function TasksTab({
                                     onChange={(e) =>
                                       setSearchQuery(e.target.value)
                                     }
-                                    className="px-3 py-2 border text-xs outline-none focus:outline-[#815BF5] text-[#8A8A8A] ml-32 bg-transparent rounded-md "
+                                    className="px-3 py-2 border text-xs outline-none focus-within:border-[#815BF5] text-[#8A8A8A] ml-32 bg-transparent rounded-md "
                                   />
                                   {/* // Add this block below the search input in MyTasks, DelegatedTasks, and AllTasks */}
                                 </div>
@@ -1853,7 +1853,7 @@ export default function TasksTab({
                                       onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                       }
-                                      className="px-3 py-2 text-xs border focus:outline-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                      className="px-3 py-2 text-xs border focus-within:border-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
                                   </div>
                                   <Button
@@ -2276,7 +2276,7 @@ export default function TasksTab({
                                       onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                       }
-                                      className="px-3 py-2 text-xs border focus:outline-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                      className="px-3 py-2 text-xs border focus-within:border-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
                                   </div>
                                   <Button
@@ -2699,7 +2699,7 @@ export default function TasksTab({
                                       onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                       }
-                                      className="px-3 py-2 border text-xs focus:outline-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                      className="px-3 py-2 border text-xs focus-within:border-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
                                   </div>
 

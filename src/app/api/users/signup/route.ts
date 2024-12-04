@@ -9,6 +9,8 @@ import { getDataFromToken } from "@/helper/getDataFromToken";
 import Leave from "@/models/leaveTypeModel";
 import { Types } from "mongoose";
 import Order from "@/models/orderModel";
+import jwt from "jsonwebtoken"; // Add this import if not already present
+
 
 connectDB();
 
@@ -362,13 +364,35 @@ export async function POST(request: NextRequest) {
     if (newOrganizationId && savedUser._id) {
       await initializeLeaveBalancesForNewUser(savedUser._id.toString(), newOrganizationId);
     }
+    // Create token data
+    const tokenData = {
+      id: savedUser._id,
+      email: savedUser.email,
+    };
 
-    return NextResponse.json({
-      message: "User created successfully",
+    // Generate the JWT token
+    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, { expiresIn: "1d" });
+
+    // Add the token as an HTTP-only cookie to the response
+    const response = NextResponse.json({
+      message: "Signup successful",
       success: true,
       user: savedUser,
       organization: savedOrganization,
     });
+
+    // Set the token as an HTTP-only cookie
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: true, // Ensure HTTPS in production
+      sameSite: "strict",
+      maxAge: 15 * 24 * 60 * 60, // 15 days in seconds
+      path: "/",
+    });
+
+    // Return the response
+    return response;
+    
   } catch (error: any) {
     console.error("Error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

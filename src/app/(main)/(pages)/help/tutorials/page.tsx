@@ -95,14 +95,14 @@ export default function Tutorials() {
             <div className="p-4">
                 <div className="mb-6 flex flex-wrap justify-center items-center gap-4">
                     {/* Search Bar */}
-                    <div className=" flex items-center px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
+                    <div className=" flex items-center w-full ml-24 px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
                         <FaSearch className="text-gray-400" />
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={handleSearch}
                             placeholder="Search Tutorials"
-                            className="text-sm bg-transparent  text-white  focus:outline-none"
+                            className="text-sm w-64 bg-transparent  text-white  focus:outline-none"
                         />
                     </div>
                     {/* Category Dropdown */}

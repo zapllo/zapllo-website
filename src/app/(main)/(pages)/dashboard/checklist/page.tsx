@@ -7,84 +7,74 @@ import ChecklistSidebar from '@/components/sidebar/checklistSidebar';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Confetti from 'react-confetti'; // Import confetti
+import { VideoIcon } from 'lucide-react';
+import { String } from 'aws-sdk/clients/cloudsearch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-const objectives = [
-    '1. Add all your employees as Team members or Managers to that Task app. Go to My Team to manage users.',
-    '2. Connect your own WhatsApp number to send notifications & reminders from your company’s number. Raise a ticket for further support on this.',
-    '3. Set Daily Reminder Time and Weekly Offs. Go to Settings > General and click on Notifications and Reminder.',
-    '4. Enable/Disable WhatsApp and email notifications according to your requirement.',
-    '5. Create at least 5 Task Categories. Go to Settings > Categories to manage them.',
-    '6. Delegate your first task and update its status. Check your Email and WhatsApp for the notifications.',
-    '7. Try the Voice Note feature while assigning a task.',
-    '8. Add attachments/photos while assigning a task.',
-    '9. Add Task Reminders: Set up reminders to alert you before a task’s deadline.',
-    '10. Create Daily/Weekly/Monthly/Periodically/Custom repeating tasks.',
-    '11. Attach the image/attachment/voice note while updating the task for more clarity about the task.',
-    '12. Reopen the task if the user closes the task without completing it.',
-    '13. Analyze team member performance in a single dashboard.',
-];
+// Define types for ChecklistItem and Progress
+interface ChecklistItem {
+    _id: string;
+    text: string;
+    tutorialLink?: string;
+}
 
 export default function ChecklistPage({ }) {
-    const [progress, setProgress] = useState<boolean[]>([]);
+    const [progress, setProgress] = useState<String[]>([]);
     const [userId, setUserId] = useState("");
-    const [showConfetti, setShowConfetti] = useState(false); // State for confetti
+    const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]); // Array of ChecklistItem
+    const [showConfetti, setShowConfetti] = useState(false);
+
+
+    console.log(progress, 'progress')
 
     useEffect(() => {
-        const getUserDetails = async () => {
+        const fetchChecklistItems = async () => {
             try {
-                const userRes = await axios.get('/api/users/me');
-                setUserId(userRes.data.data._id);
+                const res = await axios.get("/api/checklist/get");
+                setChecklistItems(res.data.checklistItems);
+                // Fetch user progress
+                const progressRes = await axios.get('/api/get-checklist-progress');
+                setProgress(progressRes.data.progress || []);
             } catch (error) {
-                console.error('Error fetching user details or trial status:', error);
-            }
-        }
-        getUserDetails();
-    }, []);
-
-    useEffect(() => {
-        const fetchProgress = async () => {
-            try {
-                const res = await fetch(`/api/get-checklist-progress?userId=${userId}`);
-                const data = await res.json();
-                setProgress(data.progress);
-            } catch (error) {
-                console.error('Error fetching checklist progress:', error);
+                console.error("Error fetching checklist items:", error);
             }
         };
 
-        if (userId) {
-            fetchProgress();
-        }
-    }, [userId]);
+        fetchChecklistItems();
 
-    const handleObjectiveChange = async (index: number, isCompleted: boolean) => {
-        const updatedProgress = [...progress];
-        updatedProgress[index] = isCompleted;
+    }, []);
+
+    const handleObjectiveChange = async (itemId: string, isCompleted: boolean) => {
+        const updatedProgress = isCompleted
+            ? [...progress, itemId]
+            : progress.filter((id) => id !== itemId);
 
         setProgress(updatedProgress);
 
         if (isCompleted) {
-            setShowConfetti(true); // Show confetti on completion
-            setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 3 seconds
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 5000);
         }
 
         try {
-            await axios.patch('/api/update-checklist-progress', {
-                userId,
-                objectiveIndex: index,
+            await axios.patch("/api/update-checklist-progress", {
+                checklistItemId: itemId,
                 isCompleted,
             });
         } catch (error) {
-            console.error('Error updating checklist progress:', error);
+            console.error("Error updating checklist progress:", error);
         }
     };
 
+    // Calculate the progress percentage
     const calculateProgress = () => {
-        if (!progress || progress.length === 0) return 0;
-        const completedCount = progress.filter(Boolean).length;
-        const progressPercentage = (completedCount / objectives.length) * 100;
-        return Math.round(progressPercentage); // Round to the nearest integer
+        if (!checklistItems.length) return 0;
+        const completedCount = checklistItems.filter((item) => progress.includes(item._id)).length;
+        const progressPercentage = (completedCount / checklistItems.length) * 100;
+        return Math.round(progressPercentage);
     };
+
 
     const [isTrialExpired, setIsTrialExpired] = useState(false);
 
@@ -123,30 +113,39 @@ export default function ChecklistPage({ }) {
                         <div className="-mt-2 h-full max-h-screen  overflow-y-scroll scrollbar-  w-full">
                             <div className="p-4 w-full ">
                                 {showConfetti &&
-                                    <div className=''>
-                                        <Confetti />
+                                    <div className=' flex items-center m-auto -ml-56 absolute h-screen w-screen'>
+                                        <DotLottieReact
+                                            src="/lottie/confetti.lottie"
+                                            autoplay
+                                        />
                                     </div>
                                 } {/* Render confetti if needed */}
                                 <div className='border border-[#E0E0E066] mt-20  rounded-2xl p-4 w-full'>
                                     <h1 className="text-font-bold mb-4">Checklist Progress</h1>
                                     <Progress value={calculateProgress()} className='mb-4' />
                                 </div>
-                                <div className="space-y-2 mt-4  mb-12   text-center">
-                                    {objectives.map((objective, index) => (
-                                        <div key={index} className="flex items-center text-xs border p-2 space-x-2">
-                                            <input
-                                                type="checkbox"
-                                                id={`objective-${index}`}
-                                                checked={progress[index] || false}
-                                                onChange={() => handleObjectiveChange(index, !progress[index])}
-                                                className="form-checkbox cursor-pointer h-4 w-4 text-blue-500"
-                                            />
-                                            <label
-                                                htmlFor={`objective-${index}`}
-                                                className={` ${progress[index] ? 'line-through text-gray-500' : 'text-white -800'}`}
-                                            >
-                                                {objective}
-                                            </label>
+                                <div className="space-y-2 mt-4 w-full   mb-12 ">
+                                    {checklistItems.map((item, index) => (
+                                        <div key={item._id} className="w-full border p-2 rounded flex items-center justify-between">
+                                            <div className='flex w-full items-center gap-2'>
+                                                <Checkbox
+                                                    checked={progress.includes(item._id)}
+                                                    onCheckedChange={(checked) =>
+                                                        handleObjectiveChange(item._id, !!checked)
+                                                    }
+                                                />
+                                                <span>{index + 1}.</span> {/* Add serial number */}
+
+                                                <label className='text-sm overflow-hidden'>{item.text}</label>
+                                            </div>
+
+                                            {item.tutorialLink && (
+                                                <div className='h-8 w-8 rounded-full border text-muted-foreground hover:text-white  cursor-pointer bg-transparent hover:bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  flex items-center justify-center  '>
+                                                    <a className='hover:text-white' href={item.tutorialLink} target="_blank" rel="noopener noreferrer">
+                                                        <VideoIcon className=' hover:text-white h-5 w-5' />
+                                                    </a>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -158,3 +157,6 @@ export default function ChecklistPage({ }) {
         </div>
     );
 }
+
+
+

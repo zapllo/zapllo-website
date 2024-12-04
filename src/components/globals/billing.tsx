@@ -894,7 +894,7 @@ export default function Billing() {
                                                     <input
                                                         id="rechargeAmount"
                                                         type="number"
-                                                        className="border p-2 rounded focus:outline-[#815BF5] outline-none w-full"
+                                                        className="border p-2 rounded focus-within:border-[#815BF5] outline-none w-full"
                                                         value={rechargeAmount}
                                                         onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
                                                     />

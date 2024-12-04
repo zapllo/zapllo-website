@@ -25,11 +25,41 @@ const unitMapping: Record<LeaveUnit, number> = {
 const formatDate = (dateInput: string | Date): string => {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
     const optionsDate: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: '2-digit' };
-    const formattedDate = new Intl.DateTimeFormat('en-GB', optionsDate).format(date);
-    return formattedDate;
+    return new Intl.DateTimeFormat('en-GB', optionsDate).format(date);
 };
 
-// Helper function to send WhatsApp notification
+// Helper function to fetch non-deductible days
+async function getNonDeductibleDaysInRange(
+    startDate: Date,
+    endDate: Date,
+    organization: mongoose.Types.ObjectId,
+    includeHolidays: boolean,
+    includeWeekOffs: boolean
+) {
+    const nonDeductibleDays: Date[] = [];
+
+    if (includeHolidays) {
+        const holidays = await Holiday.find({
+            organization,
+            holidayDate: { $gte: startDate, $lte: endDate },
+        }).exec();
+        nonDeductibleDays.push(...holidays.map((holiday) => holiday.holidayDate));
+    }
+
+    if (includeWeekOffs) {
+        let current = new Date(startDate);
+        while (current <= endDate) {
+            if (isWeekend(current)) {
+                nonDeductibleDays.push(new Date(current));
+            }
+            current.setDate(current.getDate() + 1);
+        }
+    }
+
+    return nonDeductibleDays;
+}
+
+// Helper function to send WhatsApp notifications
 const sendLeaveWebhookNotification = async (
     leave: any,
     reportingManager: any,
@@ -41,7 +71,7 @@ const sendLeaveWebhookNotification = async (
     const payload = {
         phoneNumber,
         country,
-        templateName: "leaverequest", // Change this to the correct template name
+        templateName: 'leaverequest', // Change this to the correct template name
         bodyVariables: [
             reportingManager.firstName, // Reporting Manager's first name
             user.firstName, // User's first name
@@ -53,86 +83,39 @@ const sendLeaveWebhookNotification = async (
         ],
     };
 
-    console.log("Sending WhatsApp payload:", payload);
-
     try {
-        const response = await fetch("https://zapllo.com/api/webhook", {
-            method: "POST",
+        const response = await fetch('https://zapllo.com/api/webhook', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             const responseData = await response.json();
-            console.error("Webhook API error:", responseData);
-            throw new Error(`Webhook API error, response data: ${JSON.stringify(responseData)}`);
+            throw new Error(`Webhook API error: ${JSON.stringify(responseData)}`);
         }
-
-        console.log("Leave Webhook notification sent successfully:", payload);
-    } catch (error) {
-        console.error("Error sending leave webhook notification:", error);
+    } catch (error: any) {
+        console.error('Error sending leave webhook notification:', error.message);
     }
 };
 
-
-// Function to get holidays and weekends in the leave range if applicable
-async function getNonDeductibleDaysInRange(startDate: Date, endDate: Date, organization: mongoose.Types.ObjectId, includeHolidays: boolean, includeWeekOffs: boolean) {
-    let nonDeductibleDays: Date[] = [];
-
-    if (includeHolidays) {
-        console.log('Fetching holidays for the organization...');
-        const holidays = await Holiday.find({ organization, holidayDate: { $gte: startDate, $lte: endDate } });
-        nonDeductibleDays = holidays.map(holiday => holiday.holidayDate);
-        console.log('Holidays:', nonDeductibleDays);
-    }
-
-    if (includeWeekOffs) {
-        let current = new Date(startDate);
-        while (current <= endDate) {
-            if (isWeekend(current)) {
-                nonDeductibleDays.push(new Date(current));
-            }
-            current.setDate(current.getDate() + 1);
-        }
-        console.log('Non-deductible weekends:', nonDeductibleDays);
-    }
-
-    return nonDeductibleDays;
-}
-
+// POST: Create a leave request
 export async function POST(request: NextRequest) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
-        console.log('Processing leave creation...');
         const userId = await getDataFromToken(request);
         const body = await request.json();
-        console.log('Request body:', body);
 
-        // Fetch the user applying for the leave
-        const user = await User.findById(userId);
-        if (!user) {
-            console.error('User not found');
-            return NextResponse.json({ success: false, error: 'User not found' });
-        }
+        const user = await User.findById(userId).populate('leaveBalances.leaveType').session(session);
+        if (!user) throw new Error('User not found.');
+        if (!user.organization) throw new Error('User is not associated with an organization.');
 
-        console.log('User found:', user.firstName, user.lastName);
-
-        if (!user.organization || !(user.organization instanceof mongoose.Types.ObjectId)) {
-            console.error('Invalid or missing organization');
-            return NextResponse.json({ success: false, error: 'Invalid or missing organization for the user.' });
-        }
-
-        await user.populate({
-            path: 'leaveBalances.leaveType',
-            model: 'leaveTypes',
-        });
-
-        const leaveType = await LeaveType.findById(body.leaveType);
-        if (!leaveType) {
-            console.error('Leave type not found');
-            return NextResponse.json({ success: false, error: 'Leave type not found' });
-        }
+        const leaveType = await LeaveType.findById(body.leaveType).session(session);
+        if (!leaveType) throw new Error('Leave type not found.');
 
         const nonDeductibleDays = await getNonDeductibleDaysInRange(
             new Date(body.fromDate),
@@ -143,25 +126,23 @@ export async function POST(request: NextRequest) {
         );
 
         let totalAppliedDays = 0;
-
         for (const leaveDay of body.leaveDays) {
-            if (!nonDeductibleDays.some(day => isSameDay(day, new Date(leaveDay.date)))) {
+            if (!nonDeductibleDays.some((day) => isSameDay(day, new Date(leaveDay.date)))) {
                 totalAppliedDays += unitMapping[leaveDay.unit as LeaveUnit];
             }
         }
-
-        console.log('Total applied days:', totalAppliedDays);
 
         const userLeaveBalance = user.leaveBalances.find(
             (balance) => String(balance.leaveType?._id || balance.leaveType) === String(body.leaveType)
         );
 
         if (!userLeaveBalance || userLeaveBalance.balance < totalAppliedDays) {
-            console.error('Insufficient leave balance');
-            return NextResponse.json({ success: false, error: 'Insufficient leave balance' });
+            throw new Error('Insufficient leave balance.');
         }
 
-        // Create and save the leave
+        userLeaveBalance.balance -= totalAppliedDays; // Deduct applied days
+        await user.save({ session });
+
         const newLeave = new Leave({
             user: userId,
             leaveType: body.leaveType,
@@ -175,12 +156,10 @@ export async function POST(request: NextRequest) {
             status: 'Pending',
         });
 
-        const savedLeave = await newLeave.save();
-        console.log('Leave created successfully:', savedLeave._id);
+        const savedLeave = await newLeave.save({ session });
 
-        // Immediately return the response for quick UI updates
-        const responsePayload = { success: true, leave: savedLeave };
-        const response = NextResponse.json(responsePayload);
+        await session.commitTransaction();
+        session.endSession();
 
         // Background notification processing
         (async () => {
@@ -247,24 +226,25 @@ export async function POST(request: NextRequest) {
                 console.error('Error in background notification processing:', error.message);
             }
         })();
-        return response;
+        return NextResponse.json({ success: true, leave: savedLeave });
     } catch (error: any) {
+        await session.abortTransaction();
+        session.endSession();
         console.error('Error during leave creation:', error.message);
         return NextResponse.json({ success: false, error: error.message });
     }
 }
 
+// GET: Fetch user leaves
 export async function GET(request: NextRequest) {
     try {
         const userId = await getDataFromToken(request);
-
-        // Fetch all leaves for the logged-in user and populate leaveType
         const userLeaves = await Leave.find({ user: userId })
             .populate({ path: 'leaveType', model: 'leaveTypes' })
             .populate({ path: 'user', model: 'users', select: 'firstName lastName _id' })
             .populate({ path: 'approvedBy', model: 'users', select: 'firstName lastName _id' })
             .populate({ path: 'rejectedBy', model: 'users', select: 'firstName lastName _id' })
-            .sort({ createdAt: -1 }) // Sort by createdAt in descending order (latest entries first)
+            .sort({ createdAt: -1 });
 
         if (!userLeaves || userLeaves.length === 0) {
             return NextResponse.json({ success: false, error: 'No leaves found for this user' });
@@ -272,7 +252,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ success: true, leaves: userLeaves });
     } catch (error: any) {
-        console.log('Error fetching user leaves:', error.message);
+        console.error('Error fetching user leaves:', error.message);
         return NextResponse.json({ success: false, error: error.message });
     }
 }

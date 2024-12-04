@@ -73,7 +73,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onHolidayCreated }) => {
             value={holidayName}
             onChange={(e) => setHolidayName(e.target.value)}
             required
-            className="w-full focus:outline-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
+            className="w-full focus-within:border-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
           />
         </div>
 

@@ -17,21 +17,24 @@ const rekognitionClient = new AWS.Rekognition({
 // Function to extract S3 object key from URL
 const extractS3Key = (url: string) => {
     const urlParts = url.split('/');
-    return urlParts.slice(3).join('/'); // This removes the bucket and region parts of the URL
+    return urlParts.slice(3).join('/'); // Removes bucket and region parts of the URL
 };
 
-// Handle face recognition login
+// POST: Handle face recognition login
 export async function POST(request: NextRequest) {
     try {
         // Extract userId from the token
         const userId = await getDataFromToken(request);
 
-        // Parse the request body (expecting imageUrl, lat, lng)
+        // Parse the request body
         const { imageUrl, lat, lng, action } = await request.json();
 
-        // Validate imageUrl and lat/lng
-        if (!imageUrl || !lat || !lng) {
-            return NextResponse.json({ success: false, error: 'Image URL or location data missing' });
+        // Validate inputs
+        if (!imageUrl || !lat || !lng || !action) {
+            return NextResponse.json(
+                { success: false, error: 'Image URL, location, or action missing' },
+                { status: 400 }
+            );
         }
 
         // Find the approved face registration request for the user
@@ -40,9 +43,11 @@ export async function POST(request: NextRequest) {
             status: 'approved',
         });
 
-        // If no approved registration is found, return an error
         if (!faceRegistration || faceRegistration.imageUrls.length === 0) {
-            return NextResponse.json({ success: false, error: 'No approved face registrations found for this user' });
+            return NextResponse.json(
+                { success: false, error: 'No approved face registrations found for this user' },
+                { status: 404 }
+            );
         }
 
         let matchFound = false;
@@ -69,7 +74,7 @@ export async function POST(request: NextRequest) {
             const compareData = await rekognitionClient.compareFaces(compareParams).promise();
 
             if (compareData.FaceMatches && compareData.FaceMatches.length > 0) {
-                const confidence = compareData.FaceMatches[0]?.Similarity; // Ensure confidence is defined
+                const confidence = compareData.FaceMatches[0]?.Similarity;
                 if (confidence !== undefined && confidence >= 90) {
                     matchFound = true;
                     matchConfidence = confidence;
@@ -89,14 +94,16 @@ export async function POST(request: NextRequest) {
                 action,
                 timestamp,
             };
+
             // Set loginTime or logoutTime based on the action
             if (action === 'login') {
                 loginEntryData.loginTime = timestamp.toISOString();
             } else if (action === 'logout') {
                 loginEntryData.logoutTime = timestamp.toISOString();
             }
-            const loginEntry = new LoginEntry(loginEntryData);
 
+            // Save the login entry
+            const loginEntry = new LoginEntry(loginEntryData);
             await loginEntry.save();
 
             return NextResponse.json({
@@ -109,11 +116,14 @@ export async function POST(request: NextRequest) {
         } else {
             return NextResponse.json({
                 success: false,
-                error: 'No matching face found. Please ensure you are facing the camera clearly and retry.'
+                error: 'No matching face found. Please ensure you are facing the camera clearly and retry.',
             });
         }
     } catch (error) {
         console.error('Error:', error);
-        return NextResponse.json({ success: false, error: 'Server error' });
+        return NextResponse.json(
+            { success: false, error: 'Server error occurred while processing the request.' },
+            { status: 500 }
+        );
     }
 }

@@ -59,7 +59,7 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
           ref={ref}
           className={cn(
-            "grid gap-4  bg-[#0B0D29] h-fit m-auto overflow-y-scroll scrollbar-hide z-[100] shadow-lg sm:rounded-lg",
+            "grid gap-4  bg-[#0B0D29] border h-fit m-auto overflow-y-scroll scrollbar-hide z-[100] shadow-lg sm:rounded-lg",
             className
           )}
           {...props}

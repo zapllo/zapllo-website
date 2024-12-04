@@ -1831,7 +1831,7 @@ export default function MyAttendance() {
                   value={regularizationRemarks}
                   onChange={(e) => setRegularizationRemarks(e.target.value)}
                   required
-                  className="w-full focus:outline-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
+                  className="w-full focus-within:border-[#815BF5] text-sm p-2 border bg-transparent outline-none rounded"
                   rows={3}
                 ></textarea>
               </div>

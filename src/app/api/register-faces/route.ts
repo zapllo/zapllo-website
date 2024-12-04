@@ -31,10 +31,20 @@ const extractS3Key = (url: string) => {
     const urlParts = url.split('/');
     return urlParts.slice(3).join('/'); // Removes the bucket and region parts of the URL
 };
+// Maximum file size in bytes (50 MB)
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 // Handle face recognition and updating MongoDB
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
+        // Validate content length
+        const contentLength = request.headers.get('content-length');
+        if (contentLength && parseInt(contentLength, 10) > MAX_FILE_SIZE) {
+            return NextResponse.json({
+                success: false,
+                error: 'File size exceeds the 50 MB limit.',
+            });
+        }
         // Parse the request body (expecting userId and imageUrls)
         const { userId, imageUrls } = await request.json();
 

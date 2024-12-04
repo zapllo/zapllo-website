@@ -248,7 +248,6 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         }
 
         // Determine and set leave status based on counts
-        // Determine and set leave status based on counts
         if (approvedDaysCount === leave.leaveDays.length) {
             leave.status = 'Approved';
             leave.approvedBy = approvedBy;

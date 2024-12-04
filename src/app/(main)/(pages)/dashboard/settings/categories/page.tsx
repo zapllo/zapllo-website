@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface Category {
   _id: string;
@@ -82,6 +83,16 @@ const Categories: React.FC = () => {
         setCategories([...categories, response.data.data]);
         fetchCategories();
         setNewCategory("");
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Category created successfully</h1>
+        </div>);
         setLoading(false);
       } else {
         console.error("Error creating category:", response.data.error);
@@ -107,6 +118,16 @@ const Categories: React.FC = () => {
           )
         );
         setEditingCategoryId(null);
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Category updated successfully</h1>
+        </div>);
         setEditCategoryName("");
       } else {
         console.error("Error updating category:", response.data.error);
@@ -227,6 +248,8 @@ const Categories: React.FC = () => {
     }
   };
 
+
+
   return (
     <div className="p-4 h-screen overflow-y-scroll scrollbar-hide ">
       {/* <h1 className='text- text-xl font-medium bg-[#0A0D28]   py-2 rounded px-2'>Category</h1> */}
@@ -241,7 +264,7 @@ const Categories: React.FC = () => {
                 placeholder="Add New Category"
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full focus:outline-[#815BF5] outline-none text-xs text-white bg-[#0A0D28] border rounded px-3 py-2"
+                className="w-full focus-within:border-[#815BF5] outline-none text-xs text-white bg-[#0A0D28] border rounded px-3 py-2"
               />
             </div>
             <div className="mt-4">
@@ -275,7 +298,7 @@ const Categories: React.FC = () => {
                   <Button className="flex gap-2 mt-4 h-fit mb-4 bg-[#815BF5] hover:bg-[#5e38d0]">
                     <Plus className="h-4" />
                     <h1 className="text-xs font-medium">
-                      Add Suggested Categories
+                      {loadingAI ? <Loader /> : "Add Suggested Categories"}
                     </h1>
                   </Button>
                 </div>
@@ -307,6 +330,8 @@ const Categories: React.FC = () => {
                 </div>
               </div>
               {loadingAI && <Loader />}{" "}
+
+
               {/* Show loader while fetching AI categories */}
               <div className="grid grid-cols-3 gap-4 mt-6 ">
                 {suggestedCategories.map((category, index) => (
@@ -347,7 +372,7 @@ const Categories: React.FC = () => {
           </Dialog>
         </div>
       )}
- 
+
       <div
         className={`${loading
           ? "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -366,7 +391,7 @@ const Categories: React.FC = () => {
             placeholder="Search Categories"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className=" outline-none focus:outline-[#815BF5] text-xs text-white bg-[#0B0D29] border rounded px-4 py-2 mx-4"
+            className=" outline-none focus-within:border-[#815BF5] text-xs text-white bg-[#0B0D29] border rounded px-4 py-2 mx-4"
           />
         </div>
       </div>
@@ -385,28 +410,29 @@ const Categories: React.FC = () => {
                   <div
                     className=""
                   >
-                    <DialogTitle className="mb-2">Update Category</DialogTitle>
+                    <div className="flex justify-between mb-4 items-center">
+                      <DialogTitle className=" text-md">Update Category</DialogTitle>
+                      <DialogClose asChild>
+                        <CrossCircledIcon onClick={() => setEditingCategoryId(null)} className="scale-150 cursor-pointer  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+
+                      </DialogClose>
+                    </div>
+
                     <input
                       type="text"
                       value={editCategoryName}
                       onChange={(e) => setEditCategoryName(e.target.value)}
-                      className="w-full focus:outline-[#815BF5] text-white outline-none bg-transparent border rounded px-3 py-2"
+                      className="w-full text-sm focus-within:border-[#815BF5] text-white outline-none bg-transparent border rounded px-3 py-2"
                     />
                     <div className="flex gap-2 mt-4">
                       <button
                         onClick={() => handleEditCategory(cat._id)}
-                        className="bg-[#007A5A] hover:bg-[#007A5A] px-3 py-2 text-white rounded"
+                        className="bg-[#007A5A] hover:bg-[#007A5A] text-sm w-full px-3 py-2 text-white rounded"
                       >
                         Save
                       </button>
-                      <DialogClose asChild>
-                        <button
-                          onClick={() => setEditingCategoryId(null)}
-                          className="px-3 py-2 bg-secondary text-white rounded"
-                        >
-                          Cancel
-                        </button>
-                      </DialogClose>
+
+
                     </div>
                   </div>
                 </DialogContent>

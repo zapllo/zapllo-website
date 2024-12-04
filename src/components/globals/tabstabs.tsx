@@ -470,7 +470,7 @@ export default function TeamTabs() {
                 <div className="flex flex-col gap-4">
                   <input
                     placeholder="First Name"
-                    className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.firstName}
                     onChange={(e) =>
@@ -479,7 +479,7 @@ export default function TeamTabs() {
                   />
                   <input
                     placeholder="Last Name"
-                    className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.lastName}
                     onChange={(e) =>
@@ -488,7 +488,7 @@ export default function TeamTabs() {
                   />
                   <input
                     placeholder="Email"
-                    className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.email}
                     onChange={(e) => {
@@ -513,13 +513,13 @@ export default function TeamTabs() {
                     <input
                       placeholder="WhatsApp Number"
                       value={newMember.whatsappNo}
-                      className="py-2 px-2 focus:outline-[#815BF5] text-xs w-full bg-transparent border rounded-r outline-none"
+                      className="py-2 px-2 focus-within:border-[#815BF5] text-xs w-full bg-transparent border rounded-r outline-none"
                       onChange={(e) => setNewMember({ ...newMember, whatsappNo: e.target.value })}
                     />
                   </div>
                   <input
                     placeholder="Password"
-                    className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
 
                     value={newMember.password}
                     onChange={(e) =>
@@ -627,7 +627,7 @@ export default function TeamTabs() {
             placeholder="Search Team Member"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="py-1 focus:outline-[#815BF5] text-sm px-4 outline-none border rounded bg-transparent"
+            className="py-1 focus-within:border-[#815BF5] text-sm px-4 outline-none border rounded bg-transparent"
           />
         </div>
         <div className="flex justify-center -ml-96">
@@ -760,7 +760,7 @@ export default function TeamTabs() {
             <input
               placeholder="First Name"
               value={editedUser.firstName}
-              className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+              className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
               onChange={(e) =>
                 setEditedUser({ ...editedUser, firstName: e.target.value })
               }
@@ -768,19 +768,19 @@ export default function TeamTabs() {
             <input
               placeholder="Last Name"
               value={editedUser.lastName}
-              className="py-2 px-2 focus:outline-[#815BF5] text-xs  border bg-transparent rounded outline-none"
+              className="py-2 px-2 focus-within:border-[#815BF5] text-xs  border bg-transparent rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
             />
             <input
               placeholder="Email"
               value={editedUser.email}
-              className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+              className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
             />
             <input
               placeholder="Password"
               value={editedUser.password}
-              className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded outline-none"
+              className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
               onChange={(e) => setEditedUser({ ...editedUser, password: e.target.value })}
             />
             <select
@@ -823,7 +823,7 @@ export default function TeamTabs() {
               <input
                 placeholder="WhatsApp Number"
                 value={editedUser.whatsappNo}
-                className="py-2 px-2 focus:outline-[#815BF5] text-xs bg-transparent border rounded-r w-full outline-none"
+                className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded-r w-full outline-none"
                 onChange={(e) => setEditedUser({ ...editedUser, whatsappNo: e.target.value })}
               />
             </div>
