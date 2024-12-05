@@ -695,19 +695,17 @@ export default function RegisterFace() {
             onOpenChange={() => setImageModalUrl(null)}
           >
 
-            <DialogContent className="  z-[100]   flex justify-center items-center">
-              <div className="bg-[#] z-[100] relative p-6 max-w-2xl rounded-lg">
+            <DialogContent className=" p-6 ">
+              <div className='flex items-center justify-between'>
+                <h1 className='text-white text-md'>Uploaded Face</h1>
+              <CrossCircledIcon onClick={() => setImageModalUrl(null)} className='scale-150 cursor-pointer  hover:bg-[#ffffff]  rounded-full hover:text-[#815BF5]' />
+              </div>
+              <div className="bg-[#] object-contain h-64 z-[100] relative p-6 max-w-2xl rounded-lg">
                 <img
                   src={imageModalUrl}
                   alt="Face Preview"
-                  className="w-full h-auto rounded"
+                  className="w-full h-full object-contain rounded-lg"
                 />
-                <button
-                  onClick={() => setImageModalUrl(null)}
-                  className="mt-4 text-red-500"
-                >
-                  Close
-                </button>
               </div>
             </DialogContent>
           </Dialog>
