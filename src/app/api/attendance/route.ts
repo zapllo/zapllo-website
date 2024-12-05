@@ -10,7 +10,6 @@ import { eachDayOfInterval, isWeekend, startOfMonth, endOfMonth } from 'date-fns
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-
     await connectDB();
 
     // Get logged-in user
@@ -25,9 +24,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: 'User not found or no organization found' }, { status: 404 });
     }
 
-    // Use req.nextUrl to access search parameters
+    const { role } = loggedInUser;
     const searchParams = req.nextUrl.searchParams;
-
     const date = searchParams.get('date'); // Expecting format like "2024-09"
 
     if (!date || !/^\d{4}-\d{2}$/.test(date)) {
@@ -39,33 +37,7 @@ export async function GET(req: NextRequest) {
         const startDate = new Date(`${date}-01T00:00:00Z`);
         const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1));
 
-        // Get all users in the organization
-        const orgUsers = await User.find({ organization: loggedInUser.organization }).select('_id');
-
-        const orgUserIds = orgUsers.map(user => user._id);
-
-        // Generate all days in the month
         const allDays = eachDayOfInterval({ start: startDate, end: new Date(endDate.getTime() - 1) });
-
-        // Fetch login entries for the month
-        const loginEntries = await LoginEntry.find({
-            userId: { $in: orgUserIds },
-            timestamp: {
-                $gte: startDate,
-                $lt: endDate,
-            },
-        }).lean();
-
-        // Fetch leaves for the month
-        const leaveEntries = await Leave.find({
-            user: { $in: orgUserIds },
-            status: 'Approved',
-            $or: [
-                { fromDate: { $gte: startDate, $lt: endDate } },  // Leave starts within the month
-                { toDate: { $gte: startDate, $lt: endDate } },    // Leave ends within the month
-                { fromDate: { $lt: startDate }, toDate: { $gte: endDate } }, // Leave spans the entire month
-            ],
-        }).lean();
 
         // Fetch holidays for the month
         const holidays = await Holiday.find({
@@ -76,85 +48,127 @@ export async function GET(req: NextRequest) {
             },
         }).lean();
 
-        // Create a map of holidays for quick lookup
-        const holidayDates = new Set(holidays.map(holiday => holiday.holidayDate.toISOString().split('T')[0]));
+        // Map holidays for quick lookup
+        const holidayDates = new Set(holidays.map((holiday) => holiday.holidayDate.toISOString().split('T')[0]));
 
-        // Initialize the report data structure
-        const report = [];
+        if (role === 'member') {
+            // Fetch data for the logged-in user only
+            const loginEntries = await LoginEntry.find({
+                userId,
+                timestamp: {
+                    $gte: startDate,
+                    $lt: endDate,
+                },
+            }).lean();
 
-        // For each day, calculate counts
-        for (const day of allDays) {
-            const dayString = day.toISOString().split('T')[0];
+            const leaveEntries = await Leave.find({
+                user: userId,
+                status: 'Approved',
+                $or: [
+                    { fromDate: { $gte: startDate, $lt: endDate } },
+                    { toDate: { $gte: startDate, $lt: endDate } },
+                    { fromDate: { $lt: startDate }, toDate: { $gte: endDate } },
+                ],
+            }).lean();
 
-            // Skip weekends if necessary
-            if (isWeekend(day)) continue; // Uncomment if you want to exclude weekends
+            const report = allDays.map((day) => {
+                const dayString = day.toISOString().split('T')[0];
+                const isHoliday = holidayDates.has(dayString);
+                const isPresent = loginEntries.some(
+                    (entry) => new Date(entry.timestamp).toISOString().split('T')[0] === dayString
+                );
+                const isOnLeave = leaveEntries.some(
+                    (leave) =>
+                        new Date(leave.fromDate) <= day &&
+                        new Date(leave.toDate) >= day
+                );
 
-            const isHoliday = holidayDates.has(dayString);
-
-            let presentCount = 0;
-            let leaveCount = 0;
-            let absentCount = 0;
-            let totalEmployees = orgUserIds.length;
-
-            // If it's a holiday, all employees are on holiday
-            if (isHoliday) {
-                // You can choose to set counts accordingly or skip processing
-                report.push({
+                return {
                     date: dayString,
                     day: day.toLocaleDateString('en-US', { weekday: 'short' }),
-                    present: 0,
-                    leave: 0,
-                    absent: 0,
-                    holiday: totalEmployees,
-                    total: totalEmployees,
-                });
-                continue;
-            }
-
-            // Create sets for quick lookup
-            const usersPresent = new Set<string>();
-            const usersOnLeave = new Set<string>();
-
-            // Find users who have login entries on this day
-            for (const entry of loginEntries) {
-                const entryDate = new Date(entry.timestamp).toISOString().split('T')[0];
-                if (entryDate === dayString) {
-                    usersPresent.add(entry.userId.toString());
-                }
-            }
-
-            // Find users who are on leave on this day
-            for (const leave of leaveEntries) {
-                const fromDate = new Date(leave.fromDate);
-                const toDate = new Date(leave.toDate);
-                if (day >= fromDate && day <= toDate) {
-                    usersOnLeave.add(leave.user.toString());
-                }
-            }
-
-            presentCount = usersPresent.size;
-            leaveCount = usersOnLeave.size;
-
-            absentCount = totalEmployees - presentCount - leaveCount;
-
-            report.push({
-                date: dayString,
-                day: day.toLocaleDateString('en-US', { weekday: 'short' }),
-                present: presentCount,
-                leave: leaveCount,
-                absent: absentCount,
-                holiday: 0,
-                total: totalEmployees,
+                    present: isPresent ? 1 : 0,
+                    leave: isOnLeave ? 1 : 0,
+                    absent: !isPresent && !isOnLeave && !isHoliday ? 1 : 0,
+                    holiday: isHoliday ? 1 : 0,
+                    total: 1,
+                };
             });
-        }
 
-        return NextResponse.json({
-            monthlyReport: report,
-            leaves: leaveEntries,
-            holidays,
-        });
+            return NextResponse.json({
+                monthlyReport: report,
+                leaves: leaveEntries,
+                holidays,
+            });
+        } else if (role === 'orgAdmin' || role === 'manager') {
+            // Fetch data for all users in the organization
+            const orgUsers = await User.find({ organization: loggedInUser.organization }).select('_id');
+            const orgUserIds = orgUsers.map((user) => user._id);
+
+            const loginEntries = await LoginEntry.find({
+                userId: { $in: orgUserIds },
+                timestamp: {
+                    $gte: startDate,
+                    $lt: endDate,
+                },
+            }).lean();
+
+            const leaveEntries = await Leave.find({
+                user: { $in: orgUserIds },
+                status: 'Approved',
+                $or: [
+                    { fromDate: { $gte: startDate, $lt: endDate } },
+                    { toDate: { $gte: startDate, $lt: endDate } },
+                    { fromDate: { $lt: startDate }, toDate: { $gte: endDate } },
+                ],
+            }).lean();
+
+            const report = allDays.map((day) => {
+                const dayString = day.toISOString().split('T')[0];
+                const isHoliday = holidayDates.has(dayString);
+
+                const usersPresent = new Set();
+                const usersOnLeave = new Set();
+
+                // Calculate present and leave counts
+                loginEntries.forEach((entry) => {
+                    if (new Date(entry.timestamp).toISOString().split('T')[0] === dayString) {
+                        usersPresent.add(entry.userId.toString());
+                    }
+                });
+
+                leaveEntries.forEach((leave) => {
+                    if (new Date(leave.fromDate) <= day && new Date(leave.toDate) >= day) {
+                        usersOnLeave.add(leave.user.toString());
+                    }
+                });
+
+                const presentCount = usersPresent.size;
+                const leaveCount = usersOnLeave.size;
+                const totalEmployees = orgUserIds.length;
+                const absentCount = totalEmployees - presentCount - leaveCount;
+
+                return {
+                    date: dayString,
+                    day: day.toLocaleDateString('en-US', { weekday: 'short' }),
+                    present: presentCount,
+                    leave: leaveCount,
+                    absent: absentCount,
+                    holiday: isHoliday ? totalEmployees : 0,
+                    total: totalEmployees,
+                };
+            });
+
+            return NextResponse.json({
+                monthlyReport: report,
+                leaves: leaveEntries,
+                holidays,
+            });
+        } else {
+            return NextResponse.json({ message: 'Access denied' }, { status: 403 });
+        }
     } catch (error) {
         console.error('Error fetching attendance data:', error);
         return NextResponse.json({ message: 'Error fetching attendance data' }, { status: 500 });
     }
 }
+

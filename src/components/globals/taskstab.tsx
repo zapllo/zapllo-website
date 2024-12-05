@@ -184,6 +184,7 @@ export default function TasksTab({
   const [taskStatusFilter, setTaskStatusFilter] = useState<string>("pending");
 
   const [selectedUserId, setSelectedUserId] = useState<User | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   // Handlers to open date pickers
   const openStartDatePicker = () => setDatePickerType("start");
@@ -194,6 +195,9 @@ export default function TasksTab({
 
   const handleClearSelection = () => {
     setSelectedUserId(null);
+  };
+  const handleClearCategory = () => {
+    setSelectedCategory(null);
   };
 
   const handleCustomApply = () => {
@@ -483,6 +487,10 @@ export default function TasksTab({
     // Filter by selected user if applied
     if (selectedUserId && selectedUserId._id) {
       if (task.assignedUser?._id !== selectedUserId._id) return false;
+    }
+    // Filter by selected user if applied
+    if (selectedCategory && selectedCategory._id) {
+      if (task.category?._id !== selectedCategory._id) return false;
     }
 
     // Apply "Assigned To" filter
@@ -1518,7 +1526,11 @@ export default function TasksTab({
                                       return (
                                         <Card
                                           key={category._id}
-                                          className="p-4 flex bg-transparent flex-col gap-2"
+                                          onClick={() => {
+                                            setActiveTab("allTasks");
+                                            setSelectedCategory(category);
+                                          }}
+                                          className="p-4 flex cursor-pointer bg-transparent flex-col gap-2"
                                         >
                                           <div className="flex gap-2">
                                             <TagsIcon className="h-5" />
@@ -1607,7 +1619,11 @@ export default function TasksTab({
                                         return (
                                           <Card
                                             key={category._id}
-                                            className="p-4 flex bg-transparent flex-col gap-2"
+                                            onClick={() => {
+                                              setActiveTab("allTasks");
+                                              setSelectedCategory(category);
+                                            }}
+                                            className="p-4 cursor-pointer flex bg-transparent flex-col gap-2"
                                           >
                                             <div className="flex gap-2">
                                               <TagsIcon className="h-5" />
@@ -1734,7 +1750,11 @@ export default function TasksTab({
                                       return (
                                         <Card
                                           key={user._id}
-                                          className="p-4 flex bg-[#] flex-col  gap-2"
+                                          onClick={() => {
+                                            setActiveTab("allTasks"); // Switch to the "All Tasks" tab
+                                            setSelectedUserId(user); // Set the selected user ID
+                                          }}
+                                          className="p-4 cursor-pointer flex bg-[#] flex-col  gap-2"
                                         >
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#815BF5] -400">
@@ -1853,12 +1873,12 @@ export default function TasksTab({
                                       onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                       }
-                                      className="px-3 py-2 text-xs border focus-within:border-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
+                                      className="px-3 mt-2 py-2 text-xs border focus-within:border-[#815BF5] outline-none text-[#8A8A8A] ml-auto bg-transparent rounded-md w-"
                                     />
                                   </div>
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] hover:bg-[#007A5A] h-8 mt-2 text-sm"
+                                    className="bg-[#007A5A] mt-4 hover:bg-[#007A5A] h-8  text-sm"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>
@@ -2738,6 +2758,23 @@ export default function TasksTab({
                                     </div>
                                   )}
                                 </div>
+                                <div>
+                                  {selectedCategory && (
+                                    <div className="flex border px-2 py-1 gap-2">
+                                      <h1>
+                                        Category: {" "}
+                                        <span className="ml-1">{selectedCategory.name}</span>
+                                      </h1>
+                                      <button
+                                        onClick={handleClearCategory}
+                                        className="text-red-500 hover:text-red-700  "
+                                        aria-label="Clear Selection"
+                                      >
+                                        <X className="h-4" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                                 {categoryFilter.length > 0 && (
                                   <div className="flex border px-2 py-1 gap-2">
                                     <h3>Categories:</h3>
@@ -3383,6 +3420,6 @@ export default function TasksTab({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

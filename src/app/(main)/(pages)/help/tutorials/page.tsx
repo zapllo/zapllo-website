@@ -102,7 +102,7 @@ export default function Tutorials() {
                             value={searchQuery}
                             onChange={handleSearch}
                             placeholder="Search Tutorials"
-                            className="text-sm w-64 bg-transparent  text-white  focus:outline-none"
+                            className="text-sm w-full bg-transparent  text-white  focus:outline-none"
                         />
                     </div>
                     {/* Category Dropdown */}
