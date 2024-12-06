@@ -12,8 +12,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
+
+// Define types for ChecklistItem and Progress
+interface ChecklistItem {
+  _id: string;
+  text: string;
+  tutorialLink?: string;
+}
+
+
 const DashboardPage = () => {
-  const [progress, setProgress] = useState<boolean[]>([]);
+  const [progress, setProgress] = useState<String[]>([]);
   const [userId, setUserId] = useState("");
   const [leavesTrialExpires, setLeavesTrialExpires] = useState(Date());
   const [attendanceTrialExpires, setAttendanceTrialExpires] = useState(Date());
@@ -28,6 +37,8 @@ const DashboardPage = () => {
   const [attendanceRemainingTime, setAttendanceRemainingTime] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Global loading state
   const [isFreeTrialLoading, setFreeTrialLoading] = useState(true);
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]); // Array of ChecklistItem
+
 
   useEffect(() => {
     if (leavesTrialExpires) {
@@ -85,27 +96,29 @@ const DashboardPage = () => {
   }, [router]);
 
   useEffect(() => {
-    const fetchProgress = async () => {
-      try {
-        const res = await fetch(`/api/get-checklist-progress?userId=${userId}`);
-        const data = await res.json();
-        setProgress(data.progress);
-      } catch (error) {
-        console.error("Error fetching checklist progress:", error);
-      }
+    const fetchChecklistItems = async () => {
+        try {
+            const res = await axios.get("/api/checklist/get");
+            setChecklistItems(res.data.checklistItems);
+            // Fetch user progress
+            const progressRes = await axios.get('/api/get-checklist-progress');
+            setProgress(progressRes.data.progress || []);
+        } catch (error) {
+            console.error("Error fetching checklist items:", error);
+        }
     };
 
-    if (userId) {
-      fetchProgress();
-    }
-  }, [userId]);
+    fetchChecklistItems();
+
+}, []);
 
   const calculateProgress = () => {
-    if (!progress || progress.length === 0) return 0;
-    const completedCount = progress.filter(Boolean).length;
-    const progressPercentage = (completedCount / progress.length) * 100;
-    return Math.round(progressPercentage); // Round to the nearest integer
-  };
+    if (!checklistItems.length) return 0;
+    const completedCount = checklistItems.filter((item) => progress.includes(item._id)).length;
+    const progressPercentage = (completedCount / checklistItems.length) * 100;
+    return Math.round(progressPercentage);
+};
+  
 
   const fetchTrialStatus = async () => {
     const response = await axios.get("/api/organization/getById");
@@ -136,7 +149,7 @@ const DashboardPage = () => {
     setIsTaskPlanEligible(isTaskPlanEligible); // Track task plan eligibility
     setIsLoading(false); // Data fetched, stop showing the global loader
   };
-
+console.log(progress, 'progress')
 
   useEffect(() => {
     fetchTrialStatus();
@@ -158,6 +171,8 @@ const DashboardPage = () => {
       setFreeTrialLoading(false);
     }
   };
+
+  console.log('progresss calculated', calculateProgress())
 
   return (
 
@@ -224,7 +239,7 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo Tasks</h1>
               <p className='text-xs font-medium'>Delegate one time and recurring task to your team</p>
               <div className="pt-2">
-                 {(isTaskAccess || isTaskPlanEligible) ? (
+                {(isTaskAccess || isTaskPlanEligible) ? (
                   <Link href="/dashboard/tasks">
                     <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
                       Go To Task Management
@@ -267,7 +282,7 @@ const DashboardPage = () => {
                 Manage your Employee Leaves & Holidays
               </p>
               <div className="">
-                { isLeaveAcess ? (
+                {isLeaveAcess ? (
                   isPlanEligible ? (
                     <Link href="/attendance/my-leaves">
                       <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
@@ -395,7 +410,7 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo WABA</h1>
               <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
               <div className='pt-2'>
-                <Link href='https://app.zapllo.com/signup'>
+                <Link href='https://waba.zapllo.com/signup'>
                   <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5]  text-xs' >Go To WhatsApp API</Button>
                 </Link>
               </div>
@@ -412,8 +427,8 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo CRM</h1>
               <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
               <div className='pt-2'>
- 
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
@@ -428,8 +443,8 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo Events</h1>
               <p className='text-xs font-medium'>Live Q&A Classes and Weekly Business Growth Sessions</p>
               <div className='pt-2'>
-                
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
@@ -444,8 +459,8 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo Workflows</h1>
               <p className='text-xs font-medium'>Automate, Integrate & Connect anything effortlessly</p>
               <div className='pt-2'>
- 
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
@@ -460,14 +475,14 @@ const DashboardPage = () => {
               <h1 className='text-lg font-medium'>Zapllo AI Assistant</h1>
               <p className='text-xs font-medium'>Upgrade your experience by 10X with our proprietory AI Technology</p>
               <div className='pt-2'>
- 
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
         </div>
       </div >
-      
+
     </div >
   );
 };

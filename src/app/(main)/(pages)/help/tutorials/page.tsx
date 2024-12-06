@@ -5,6 +5,7 @@ import axios from "axios";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
+import { VideoIcon } from "lucide-react";
 
 const categories = [
     "All",
@@ -95,31 +96,33 @@ export default function Tutorials() {
             <div className="p-4">
                 <div className="mb-6 flex flex-wrap justify-center items-center gap-4">
                     {/* Search Bar */}
-                    <div className=" flex items-center w-full ml-24 px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
-                        <FaSearch className="text-gray-400" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={handleSearch}
-                            placeholder="Search Tutorials"
-                            className="text-sm w-full bg-transparent  text-white  focus:outline-none"
-                        />
-                    </div>
+
                     {/* Category Dropdown */}
                     <div className="flex items-center justify-between w-full">
                         <h1 className="ml-24 text-lg font-bold text-center">{selectedCategory}</h1>
-
-                        <select
-                            value={selectedCategory}
-                            onChange={handleCategoryChange}
-                            className="px-4 py-2 border border-gray-700 text-sm bg-[#0B0D29] text-white rounded focus:outline-none"
-                        >
-                            {categories.map((category) => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="flex gap-2">
+                            <select
+                                value={selectedCategory}
+                                onChange={handleCategoryChange}
+                                className="px-4 py-2 border border-gray-700 text-sm bg-[#0B0D29] text-white rounded focus:outline-none"
+                            >
+                                {categories.map((category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className=" flex items-center w-full px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
+                                <FaSearch className="text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={handleSearch}
+                                    placeholder="Search Tutorials"
+                                    className="text-sm w-full bg-transparent  text-white  focus:outline-none"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -128,15 +131,22 @@ export default function Tutorials() {
                         filteredTutorials.map((tutorial) => (
                             <div
                                 key={tutorial._id}
-                                className="border hover:border-[#815BF5] rounded w-56 text-white cursor-pointer hover:shadow-lg transition"
+                                className="border hover:border-[#815BF5] rounded-lg  w-56 text-white cursor-pointer hover:shadow-lg transition"
                                 onClick={() => handleTutorialClick(tutorial._id)}
                             >
                                 <img
                                     src={tutorial.thumbnail}
                                     alt={tutorial.title}
-                                    className="w-56 object-cover rounded rounded-b-none"
+                                    className="w-56 h-24 object-cover rounded-lg rounded-b-none"
                                 />
-                                <h3 className="mt-2 p-2 text-sm rounded-2xl">{tutorial.title}</h3>
+                                <div className="flex gap-2 mt-2 p-2 h-12 text-sm rounded-2xl items-center">
+                                    <div         onClick={() => handleTutorialClick(tutorial._id)} className='h-6 w-6 rounded-full border border-gray-400 text-muted-foreground hover:text-white  cursor-pointer bg-transparent hover:bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  flex items-center justify-center  '>
+
+                                        <VideoIcon className=' hover:text-white h-4 w-4' />
+
+                                    </div>
+                                    <h3 className="text-md ">{tutorial.title}</h3>
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -147,7 +157,7 @@ export default function Tutorials() {
                                 className="h-56"
                                 autoplay
                             />
-No Tutorials Found
+                            No Tutorials Found
                         </div>
                     )}
                 </div>

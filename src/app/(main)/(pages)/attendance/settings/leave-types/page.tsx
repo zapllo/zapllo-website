@@ -500,7 +500,12 @@ const LeaveTypes: React.FC = () => {
         leaveTypes.length === 0 ? (
           <div className="">
             <div className="flex w-full mt-12 justify-center">
-              <img src="/animations/emptylist.gif" className="h-40 " />
+              <DotLottieReact
+                src="/lottie/empty.lottie"
+                loop
+                className="h-56"
+                autoplay
+              />
             </div>
             <h1 className="text-center  text-md font-semibold ">No Leave Types Found</h1>
             <p className="text-center text-xs p-2">

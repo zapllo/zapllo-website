@@ -110,13 +110,14 @@ export default function ChecklistPage({ }) {
             <div className="flex-1 p-4">
                 <div className="ml-48 border-l  scrollbar-   -mt-32 max-w-8xl mx-auto">
                     <div className="gap-2 flex mb-6 w-full">
-                        <div className="-mt-2 h-full max-h-screen  overflow-y-scroll scrollbar-  w-full">
+                        <div className=" h-full max-h-screen  overflow-y-scroll scrollbar-thin scrollbar-thumb-[#815BF5] hover:scrollbar-thumb-[#815BF5] active:scrollbar-thumb-[#815BF5] scrollbar-track-gray-800    w-full">
                             <div className="p-4 w-full ">
                                 {showConfetti &&
-                                    <div className=' flex items-center m-auto -ml-56 absolute h-screen w-screen'>
+                                    <div className=' flex items-center m-auto h-72 right-0 absolute justify-end  '>
                                         <DotLottieReact
                                             src="/lottie/confetti.lottie"
                                             autoplay
+                                            
                                         />
                                     </div>
                                 } {/* Render confetti if needed */}

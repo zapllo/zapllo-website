@@ -524,9 +524,15 @@ export default function TasksTab({
     }
 
     // Apply active tab filter
-    if (activeTab === "myTasks" && task.assignedUser?._id !== currentUser?._id) return false;
-    if (activeTab === "delegatedTasks" && !((task.user._id === currentUser?._id && task.assignedUser?._id !== currentUser?._id) || task.assignedUser?._id === currentUser?._id)) return false;
-    if (activeTab === "allTasks") return true;
+    if (activeTab === "myTasks") {
+      if (task.assignedUser?._id !== currentUser?._id) return false;
+    } else if (activeTab === "delegatedTasks") {
+      // Only include tasks where the logged-in user is the creator
+      if (task.user._id !== currentUser?._id) return false;
+    } else if (activeTab === "allTasks") {
+      // All tasks are included
+      return true;
+    }
 
     // Apply search query filter
     if (searchQuery) {
@@ -1073,6 +1079,68 @@ export default function TasksTab({
     setImageOrVideo(null);
   };
 
+  const getRemainingTime = (
+    date: Date | string,
+    isCompleted = false
+  ): { text: string; isPast: boolean } => {
+    const now = new Date();
+    const targetDate = new Date(date);
+    const diff = targetDate.getTime() - now.getTime();
+  
+    const isPast = diff < 0;
+    const absDiff = Math.abs(diff);
+  
+    const diffInMinutes = Math.floor(absDiff / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+  
+    if (isCompleted) {
+      // Logic for completed tasks
+      if (diffInDays >= 1) {
+        return {
+          text: `Completed ${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`,
+          isPast: true,
+        };
+      }
+  
+      if (diffInHours >= 1) {
+        return {
+          text: `Completed ${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`,
+          isPast: true,
+        };
+      }
+  
+      return {
+        text: `Completed ${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`,
+        isPast: true,
+      };
+    }
+  
+    // Logic for pending or overdue tasks
+    if (diffInDays >= 1) {
+      return {
+        text: `${diffInDays} day${diffInDays > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
+        isPast,
+      };
+    }
+  
+    if (diffInHours >= 1) {
+      return {
+        text: `${isPast ? "Overdue " : ""}${diffInHours} hour${diffInHours > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
+        isPast,
+      };
+    }
+  
+    return {
+      text: `${isPast ? "Overdue " : ""}${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
+      isPast,
+    };
+  };
+  
+
+
+
+
   return (
     <div className="flex  overflow-x-hidden w-screen ">
       <div>
@@ -1530,7 +1598,7 @@ export default function TasksTab({
                                             setActiveTab("allTasks");
                                             setSelectedCategory(category);
                                           }}
-                                          className="p-4 flex cursor-pointer bg-transparent flex-col gap-2"
+                                          className="p-4 flex hover:border-[#815BF5] cursor-pointer bg-transparent flex-col gap-2"
                                         >
                                           <div className="flex gap-2">
                                             <TagsIcon className="h-5" />
@@ -1623,7 +1691,7 @@ export default function TasksTab({
                                               setActiveTab("allTasks");
                                               setSelectedCategory(category);
                                             }}
-                                            className="p-4 cursor-pointer flex bg-transparent flex-col gap-2"
+                                            className="p-4 cursor-pointer hover:border-[#815BF5] flex bg-transparent flex-col gap-2"
                                           >
                                             <div className="flex gap-2">
                                               <TagsIcon className="h-5" />
@@ -1754,7 +1822,7 @@ export default function TasksTab({
                                             setActiveTab("allTasks"); // Switch to the "All Tasks" tab
                                             setSelectedUserId(user); // Set the selected user ID
                                           }}
-                                          className="p-4 cursor-pointer flex bg-[#] flex-col  gap-2"
+                                          className="p-4 cursor-pointer hover:border-[#815BF5] flex bg-[#] flex-col  gap-2"
                                         >
                                           <div className="flex gap-2 justify-start">
                                             <div className="h-7 w-7 rounded-full bg-[#815BF5] -400">
@@ -2060,7 +2128,7 @@ export default function TasksTab({
                                             <IconClock className="h-5" />
                                             <h1
                                               className={`mt-[1.5px]  ${new Date(task.dueDate) < new Date()
-                                                ? "text-red-400"
+                                                ? "text-red-500"
                                                 : "text-green-500"
                                                 }`}
                                             >
@@ -2117,6 +2185,31 @@ export default function TasksTab({
                                       </div>
                                       <div className="">
                                         <div className="flex ">
+                                        <div className="relative">
+                                            {(() => {
+                                              if (task.completionDate) {
+                                                // Use `getRemainingTime` with `isCompleted` for completed tasks
+                                                const { text } = getRemainingTime(task.completionDate, true);
+                                                return (
+                                                  <p className="text-[10px] text-green-500 whitespace-nowrap mt-2 flex absolute ml-14">
+                                                    {text}
+                                                  </p>
+                                                );
+                                              } else {
+                                                // Use default logic for due dates
+                                                const { text, isPast } = getRemainingTime(task.dueDate);
+                                                return (
+                                                  <p
+                                                    className={`text-[10px] whitespace-nowrap mt-2 flex absolute ${isPast ? "text-red-500 ml-28" : "text-green-500 ml-32"
+                                                      }`}
+                                                  >
+                                                    {text}
+                                                  </p>
+                                                );
+                                              }
+                                            })()}
+                                          </div>
+
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             {task.status === "Completed" ? (
                                               <>
@@ -2126,7 +2219,7 @@ export default function TasksTab({
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:border-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-4 h-6 py-3 px-2 bg-transparent hover:border-blue-500 hover:bg-transparent rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
                                                   <h1 className="text-xs">
@@ -2138,9 +2231,9 @@ export default function TasksTab({
                                                   onClick={() =>
                                                     handleDelete(task._id)
                                                   }
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:bg-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-4 px-2 hover:bg-transparent py-3 bg-transparent h-6 rounded hover:border-red-500 border-gray-600 w-fit"
                                                 >
-                                                  <Trash className="h-4 rounded-full text-red-400" />
+                                                  <Trash className="h-4 rounded-full text-red-500" />
                                                   <h1 className="text-xs">
                                                     Delete
                                                   </h1>
@@ -2156,7 +2249,7 @@ export default function TasksTab({
                                                     );
                                                     setIsDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-4 h-6 py-3 px-2 bg-transparent hover:bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
                                                   <h1 className="text-xs">
@@ -2173,7 +2266,7 @@ export default function TasksTab({
                                                       true
                                                     );
                                                   }}
-                                                  className="border mt-2 px-2 py-3 bg-transparent hover:bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-4 px-2 py-3 bg-transparent hover:bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
                                                   <h1 className="text-xs">
@@ -2488,7 +2581,7 @@ export default function TasksTab({
                                             <IconClock className="h-5" />
                                             <h1
                                               className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
-                                                ? "text-red-400"
+                                                ? "text-red-500"
                                                 : "text-[#E0E0E0]"
                                                 }`}
                                             >
@@ -2545,6 +2638,30 @@ export default function TasksTab({
                                       </div>
                                       <div className="">
                                         <div className="flex ">
+                                        <div className="relative">
+                                            {(() => {
+                                              if (task.completionDate) {
+                                                // Use `getRemainingTime` with `isCompleted` for completed tasks
+                                                const { text } = getRemainingTime(task.completionDate, true);
+                                                return (
+                                                  <p className="text-[10px] text-green-500 whitespace-nowrap mt-2 flex absolute ml-14">
+                                                    {text}
+                                                  </p>
+                                                );
+                                              } else {
+                                                // Use default logic for due dates
+                                                const { text, isPast } = getRemainingTime(task.dueDate);
+                                                return (
+                                                  <p
+                                                    className={`text-[10px] whitespace-nowrap mt-2 flex absolute ${isPast ? "text-red-500 ml-28" : "text-green-500 ml-32"
+                                                      }`}
+                                                  >
+                                                    {text}
+                                                  </p>
+                                                );
+                                              }
+                                            })()}
+                                          </div>
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             {task.status === "Completed" ? (
                                               <>
@@ -2554,7 +2671,7 @@ export default function TasksTab({
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:border-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-4 h-6 py-3 px-2 bg-transparent hover:border-blue-500 hover:bg-transparent rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
                                                   <h1 className="text-xs">
@@ -2566,9 +2683,9 @@ export default function TasksTab({
                                                   onClick={() =>
                                                     handleDelete(task._id)
                                                   }
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-4 px-2 py-3 bg-transparent h-6 rounded hover:border-red-500 hover:bg-transparent border-gray-600 w-fit"
                                                 >
-                                                  <Trash className="h-4 rounded-full text-red-400" />
+                                                  <Trash className="h-4 rounded-full text-red-500" />
                                                   <h1 className="text-xs">
                                                     Delete
                                                   </h1>
@@ -2584,7 +2701,7 @@ export default function TasksTab({
                                                     );
                                                     setIsDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 hover:bg-transparent bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-4 h-6 py-3 px-2 hover:bg-transparent bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
                                                   <h1 className="text-xs">
@@ -2601,7 +2718,7 @@ export default function TasksTab({
                                                       true
                                                     );
                                                   }}
-                                                  className="border mt-2 px-2 py-3 hover:bg-transparent bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-4 px-2 py-3 hover:bg-transparent bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
                                                   <h1 className="text-xs">
@@ -2942,7 +3059,7 @@ export default function TasksTab({
                                             <IconClock className="h-5" />
                                             <h1
                                               className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
-                                                ? "text-red-400"
+                                                ? "text-red-500"
                                                 : "text-[#007A5A]"
                                                 }`}
                                             >
@@ -2999,6 +3116,30 @@ export default function TasksTab({
                                       </div>
                                       <div className="">
                                         <div className="flex ">
+                                        <div className="relative">
+                                            {(() => {
+                                              if (task.completionDate) {
+                                                // Use `getRemainingTime` with `isCompleted` for completed tasks
+                                                const { text } = getRemainingTime(task.completionDate, true);
+                                                return (
+                                                  <p className="text-[10px] text-green-500 whitespace-nowrap mt-2 flex absolute ml-14">
+                                                    {text}
+                                                  </p>
+                                                );
+                                              } else {
+                                                // Use default logic for due dates
+                                                const { text, isPast } = getRemainingTime(task.dueDate);
+                                                return (
+                                                  <p
+                                                    className={`text-[10px] whitespace-nowrap mt-2 flex absolute ${isPast ? "text-red-500 ml-28" : "text-green-500 ml-32"
+                                                      }`}
+                                                  >
+                                                    {text}
+                                                  </p>
+                                                );
+                                              }
+                                            })()}
+                                          </div>
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             {task.status === "Completed" ? (
                                               <>
@@ -3008,7 +3149,7 @@ export default function TasksTab({
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 bg-transparent hover:border-[#007A5A] rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-4 h-6 py-3 px-2 bg-transparent hover:border-blue-500 hover:bg-transparent rounded border-gray-600 w-fit"
                                                 >
                                                   <Repeat className="h-4 w-4 text-blue-400" />
                                                   <h1 className="text-xs">
@@ -3020,9 +3161,9 @@ export default function TasksTab({
                                                   onClick={() =>
                                                     handleDelete(task._id)
                                                   }
-                                                  className="border mt-2 px-2 py-3 bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
+                                                  className="border mt-4 px-2 py-3 bg-transparent h-6 rounded hover:border-red-500 hover:bg-transparent border-gray-600 w-fit"
                                                 >
-                                                  <Trash className="h-4 rounded-full text-red-400" />
+                                                  <Trash className="h-4 rounded-full text-red-500" />
                                                   <h1 className="text-xs">
                                                     Delete
                                                   </h1>
@@ -3038,7 +3179,7 @@ export default function TasksTab({
                                                     );
                                                     setIsDialogOpen(true);
                                                   }}
-                                                  className="gap-2 border mt-2 h-6 py-3 px-2 hover:bg-transparent bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
+                                                  className="gap-2 border mt-4 h-6 py-3 px-2 hover:bg-transparent bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
                                                 >
                                                   <Play className="h-4 w-4 text-orange-400" />
                                                   <h1 className="text-xs">
@@ -3055,7 +3196,7 @@ export default function TasksTab({
                                                       true
                                                     );
                                                   }}
-                                                  className="border mt-2 px-2 py-3 hover:bg-transparent bg-transparent h-6 rounded hover:border-[#017a5b] border-gray-600 w-fit"
+                                                  className="border mt-4 px-2 py-3 hover:bg-transparent bg-transparent h-6 rounded hover:border-[#017a5b] border-gray-600 w-fit"
                                                 >
                                                   <CheckCircle className="h-4 rounded-full text-green-400" />
                                                   <h1 className="text-xs">

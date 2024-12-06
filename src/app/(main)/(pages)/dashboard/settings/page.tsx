@@ -347,40 +347,17 @@ export default function Page() {
           </div>
         </div>
       )}
-      {/* <h1 className='p-4 text-xl font-medium'>My Account Information</h1>
-            <Link href='/dashboard/settings/changePassword'>
-                <div className='px-4 border py-2 flex -ml-4'>
-                    <img src='/icons/eyes.png' className='h-9 ml-3' />
-                    <h1 className='ml-4 mt-1'>Change Password</h1>
-                </div>
-            </Link>
-            <h1 className='p-4 text-xl font-medium'>Support</h1>
-            <Link href='/dashboard/settings/Tutorials'>
-                <div className='px-4 border py-2 flex -ml-4'>
-                    <img src='/icons/video.png' className='h-9 ml-3' />
-                    <h1 className='ml-4 mt-1'>Tutorials</h1>
-                </div>
-            </Link>
-            <Link href='/dashboard/settings/myTickets'>
-                <div className='px-4 border py-2 flex -ml-4'>
-                    <img src='/icons/ticket.png' className='h-9 ml-3' />
-                    <h1 className='ml-4 mt-1'>My Tickets</h1>
-                </div>
-            </Link>
-            <Link href='/dashboard/settings/RaiseTicket'>
-                <div className='px-4 border py-2 flex -ml-4'>
-                    <PlusCircle className='ml-4 '/>
-                    <h1 className='ml-4 mt-1'>Raise a Ticket</h1>
-                </div>
-            </Link> */}
-      <div className=" mt-4 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
-        <h1 className="text-sm">WhatsApp Integration</h1>
-      </div>
-      <div onClick={() => setWabaOpen(true)} className="mb-2  mt-2 flex   px-4 py-4  decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  ">
-        <h1 className=" text-xs text-start w-full">Connect your WABA Number</h1>
-        <ChevronRight className="h-4" />
-      </div>
-
+      {role === "orgAdmin" && (
+        <div>
+          <div className=" mt-4 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
+            <h1 className="text-sm">WhatsApp Integration</h1>
+          </div>
+          <div onClick={() => setWabaOpen(true)} className="mb-2  mt-2 flex   px-4 py-4  decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  ">
+            <h1 className=" text-xs text-start w-full">Connect your WABA Number</h1>
+            <ChevronRight className="h-4" />
+          </div>
+        </div>
+      )}
       <div className=" mt-6 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
         <h1 className="text-sm">Task App Settings</h1>
       </div>

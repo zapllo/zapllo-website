@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { CrossCircledIcon } from '@radix-ui/react-icons';
+import { Cross2Icon, CrossCircledIcon } from '@radix-ui/react-icons';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 
 interface FilterModalProps {
     isOpen: boolean;
@@ -54,7 +55,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
         switch (activeSection) {
             case 'Category':
                 return (
-                    <div>
+                    <div className='-mt-4'>
                         <input
                             type="text"
                             placeholder="Search categories"
@@ -93,7 +94,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                 );
             case 'Assigned By':
                 return (
-                    <div>
+                    <div className='-mt-4'>
                         <input
                             type="text"
                             placeholder="Search users"
@@ -133,7 +134,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                 );
             case 'Frequency':
                 return (
-                    <div>
+                    <div className='-mt-4'>
                         <input
                             type="text"
                             placeholder="Search frequency"
@@ -169,7 +170,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                 );
             case 'Priority':
                 return (
-                    <div>
+                    <div className='-mt-4 '>
                         <input
                             type="text"
                             placeholder="Search priority"
@@ -213,74 +214,59 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
     ];
 
     return (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
-            <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 transition-opacity">
-                    <div className="absolute inset-0 bg-black opacity-75"></div>
-                </div>
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
-                &#8203;
-                <div className="inline-block align-bottom  z-[60] h-[450px] bg-[#0B0D29]  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-xl sm:w-full ">
-                    <div className='flex border-b items-center  py-4  w-full justify-between px-6'>
-                        <div>
-                            <h3 className="text-lg leading-6  font-medium  text-white ">Filter Tasks</h3>
-
-                        </div>
-                        <CrossCircledIcon
-                            onClick={closeModal}
-                            className="scale-150  cursor-pointer hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]"
-                        />
+        <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
+            <DialogContent className='h-fit '>
+                <DialogHeader>
+                    <div className="flex justify-between items-center border-b py-4 px-6">
+                        <DialogTitle className="text-lg text-white">Filter Tasks</DialogTitle>
+                        <DialogClose className="text-white hover:text-[#815BF5]">
+                            <CrossCircledIcon className="scale-150 cursor-pointer" />
+                        </DialogClose>
                     </div>
-                    <div>
-
-                        <div className="flex">
-
-                            <div className=" border-r h-[400px]  ">
-                                <ul className='space-y-2 mt-2  '>
-                                    {sections.map((section) => (
-                                        <li
-                                            key={section.name}
-                                            className={`cursor-pointer text-sm px-12 p-3 w-full flex items-center ${activeSection === section.name ? 'bg-[#282D32] ' : ''}`}
-                                            onClick={() => {
-                                                setActiveSection(section.name);
-                                                setSearchTerm('');
-                                            }}
-                                        >
-                                            <img src={section.imgSrc} alt={section.name} className="mr-2 h-4" />
-                                            {section.name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            <div className="w-[60%] p-6  overflow-y-auto scrollbar-hide" style={{ maxHeight: '400px' }}>
-                                {renderContent()}
-
-                            </div>
-
-
-                        </div>
-                        <div className=" -mt-24 sm:flex px-6 gap-6 sm:flex-row-reverse">
-                            <button
-                                type="button"
-                                className="inline-flex justify-center  rounded-md border border-transparent px-4 py-2 bg-[#017a5b] text-base leading-6 font-medium text-white shadow-sm hover:bg-[#017a5b] focus:outline-none focus:border-[#017a5b] focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-                                onClick={handleApplyFilters}
-                            >
-                                Apply Filters
-                            </button>
-                            <button
-                                type="button"
-                                className="inline-flex justify-center w- gap-2  rounded-md border border- px-4 py-2 bg-transparent  text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-                                onClick={handleClearFilters}
-                            >
-                                <img src='/icons/clear.png' />    Clear
-                            </button>
-                        </div>
+                </DialogHeader>
+                <div className="flex">
+                    <div className="border-r h-[300px]   -mt-4">
+                        <ul className="space-y-2 mt-2">
+                            {sections.map((section) => (
+                                <li
+                                    key={section.name}
+                                    className={`cursor-pointer text-sm px-12 p-3 w-full flex items-center ${activeSection === section.name ? 'bg-[#282D32]' : ''
+                                        }`}
+                                    onClick={() => {
+                                        setActiveSection(section.name);
+                                        setSearchTerm('');
+                                    }}
+                                >
+                                    <img src={section.imgSrc} alt={section.name} className="mr-2 h-4" />
+                                    {section.name}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-
+                    <div className="w-[60%] p-6 overflow-y-auto scrollbar-hide" style={{ maxHeight: '400px' }}>
+                        {renderContent()}
+                    </div>
                 </div>
-            </div>
-        </div>
+                <DialogFooter>
+                    <div className="flex justify-between px-6 space-x-4 py-4">
+                        <button
+                            type="button"
+                            className="inline-flex justify-center text-xs rounded-md border px-4 py-2 bg-[#017a5b] text-white hover:bg-[#017a5b]"
+                            onClick={handleApplyFilters}
+                        >
+                            Apply Filters
+                        </button>
+                        <button
+                            type="button"
+                            className="inline-flex justify-center text-xs rounded-md border px-4 py-2 bg-transparent text-white hover:bg-red-500"
+                            onClick={handleClearFilters}
+                        >
+                            Clear
+                        </button>
+                    </div>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 
