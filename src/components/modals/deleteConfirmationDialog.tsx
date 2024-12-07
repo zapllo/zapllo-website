@@ -1,7 +1,7 @@
 'use client'
 
 import * as Dialog from '@radix-ui/react-dialog';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { Cross2Icon, CrossCircledIcon } from '@radix-ui/react-icons';
 
 interface DeleteConfirmationDialogProps {
     isOpen: boolean;
@@ -42,7 +42,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
                     </div>
                     <Dialog.Close asChild>
                         <button className="absolute top-2.5 right-2.5 p-1.5">
-                            <Cross2Icon />
+                        <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                         </button>
                     </Dialog.Close>
                 </Dialog.Content>

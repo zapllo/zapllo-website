@@ -121,13 +121,13 @@ export default function ChecklistPage({ }) {
                                         />
                                     </div>
                                 } {/* Render confetti if needed */}
-                                <div className='border border-[#E0E0E066] mt-20  rounded-2xl p-4 w-full'>
+                                <div className='border  mt-20  rounded-2xl p-4 w-full'>
                                     <h1 className="text-font-bold mb-4">Checklist Progress</h1>
                                     <Progress value={calculateProgress()} className='mb-4' />
                                 </div>
-                                <div className="space-y-2 mt-4 w-full   mb-12 ">
+                                <div className="space-y-2 mt-4 w-full border  mb-12 ">
                                     {checklistItems.map((item, index) => (
-                                        <div key={item._id} className="w-full border p-2 rounded flex items-center justify-between">
+                                        <div key={item._id} className="w-full border-b p-2 rounded flex items-center justify-between">
                                             <div className='flex w-full items-center gap-2'>
                                                 <Checkbox
                                                     checked={progress.includes(item._id)}
@@ -137,7 +137,7 @@ export default function ChecklistPage({ }) {
                                                 />
                                                 <span>{index + 1}.</span> {/* Add serial number */}
 
-                                                <label className='text-sm overflow-hidden'>{item.text}</label>
+                                                <label className='text-[16px] overflow-hidden'>{item.text}</label>
                                             </div>
 
                                             {item.tutorialLink && (

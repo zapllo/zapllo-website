@@ -76,6 +76,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogOverlay,
@@ -101,7 +102,6 @@ import { DelegatedTasksSummary } from "./delegatedTasksSummary";
 import TaskDetails from "./taskDetails";
 import TaskSidebar from "../sidebar/taskSidebar";
 import TaskTabs from "../sidebar/taskSidebar";
-import { DialogClose } from "@radix-ui/react-dialog";
 import CustomAudioPlayer from "./customAudioPlayer";
 import Loader from "../ui/loader";
 import DeleteConfirmationDialog from "../modals/deleteConfirmationDialog";
@@ -405,9 +405,9 @@ export default function TasksTab({
         break;
       case "thisWeek":
         startDate = new Date(startOfToday);
-        startDate.setDate(startOfToday.getDate() - startOfToday.getDay());
+        startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of the current week (Sunday)
         endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 7);
+        endDate.setDate(startDate.getDate() + 7); // End of the current week (Saturday)
         break;
       case "lastWeek":
         startDate = new Date(startOfToday);
@@ -764,7 +764,7 @@ export default function TasksTab({
       fileUrl, // URL of the uploaded file
       userName: `${currentUser.firstName} `,
     };
-
+    console.log(requestBody, 'req body update task')
     try {
       const response = await fetch("/api/tasks/update", {
         method: "PATCH",
@@ -778,6 +778,18 @@ export default function TasksTab({
 
       if (response.ok) {
         onTaskUpdate(); // Call the callback function to update the task
+        setSelectedTask(null);
+
+        toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+          <div className="w-full flex  justify-center">
+            <DotLottieReact
+              src="/lottie/tick.lottie"
+              loop
+              autoplay
+            />
+          </div>
+          <h1 className="text-black text-center font-medium text-lg">Task Updated successfully</h1>
+        </div>);
         setFiles([]); // Reset files
         setFilePreviews([]); // Reset file previews
         setIsDialogOpen(false);
@@ -835,7 +847,9 @@ export default function TasksTab({
     return `${day}-${month}-${year}`;
   };
 
-  const handleDelete = async (taskId: string) => { };
+  const handleDelete = async (taskId: string) => {
+
+  };
 
   const handleEditClick = () => {
     setTaskToEdit(selectedTask);
@@ -1086,14 +1100,14 @@ export default function TasksTab({
     const now = new Date();
     const targetDate = new Date(date);
     const diff = targetDate.getTime() - now.getTime();
-  
+
     const isPast = diff < 0;
     const absDiff = Math.abs(diff);
-  
+
     const diffInMinutes = Math.floor(absDiff / (1000 * 60));
     const diffInHours = Math.floor(diffInMinutes / 60);
     const diffInDays = Math.floor(diffInHours / 24);
-  
+
     if (isCompleted) {
       // Logic for completed tasks
       if (diffInDays >= 1) {
@@ -1102,41 +1116,41 @@ export default function TasksTab({
           isPast: true,
         };
       }
-  
+
       if (diffInHours >= 1) {
         return {
           text: `Completed ${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`,
           isPast: true,
         };
       }
-  
+
       return {
         text: `Completed ${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`,
         isPast: true,
       };
     }
-  
+
     // Logic for pending or overdue tasks
     if (diffInDays >= 1) {
       return {
-        text: `${diffInDays} day${diffInDays > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
+        text: `${isPast ? "Overdue " : ""}${diffInDays} day${diffInDays > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
         isPast,
       };
     }
-  
+
     if (diffInHours >= 1) {
       return {
         text: `${isPast ? "Overdue " : ""}${diffInHours} hour${diffInHours > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
         isPast,
       };
     }
-  
+
     return {
       text: `${isPast ? "Overdue " : ""}${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ${isPast ? "ago" : "from now"}`,
       isPast,
     };
   };
-  
+
 
 
 
@@ -1327,7 +1341,7 @@ export default function TasksTab({
                       </div>
                       <div>
                         {activeTab === "all" ? (
-                          <div className="flex mt-4 -ml-48 flex-col ">
+                          <div className="flex mt-8 -ml-48 flex-col ">
                             <div className=" ml-20 w-full flex justify-center text-xs gap-4">
                               {/* <TaskSummary completedTasks={completedTasks} inProgressTasks={inProgressTasks} overdueTasks={overdueTasks} pendingTasks={pendingTasks} delayedTasks={delayedTasks} inTimeTasks={inTimeTasks} />
                                */}
@@ -2185,9 +2199,9 @@ export default function TasksTab({
                                       </div>
                                       <div className="">
                                         <div className="flex ">
-                                        <div className="relative">
+                                          <div className="relative">
                                             {(() => {
-                                              if (task.completionDate) {
+                                              if (task.completionDate && task.status !== "Pending") {
                                                 // Use `getRemainingTime` with `isCompleted` for completed tasks
                                                 const { text } = getRemainingTime(task.completionDate, true);
                                                 return (
@@ -2210,12 +2224,14 @@ export default function TasksTab({
                                             })()}
                                           </div>
 
+
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             {task.status === "Completed" ? (
                                               <>
                                                 {/* Reopen Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
@@ -2228,9 +2244,10 @@ export default function TasksTab({
                                                 </Button>
                                                 {/* Delete Button */}
                                                 <Button
-                                                  onClick={() =>
-                                                    handleDelete(task._id)
-                                                  }
+                                                  onClick={(e) => {
+                                                    e.stopPropagation(); // Prevent event propagation
+                                                    handleDeleteClick(task._id);
+                                                  }}
                                                   className="border mt-4 px-2 hover:bg-transparent py-3 bg-transparent h-6 rounded hover:border-red-500 border-gray-600 w-fit"
                                                 >
                                                   <Trash className="h-4 rounded-full text-red-500" />
@@ -2244,9 +2261,8 @@ export default function TasksTab({
                                                 {/* In Progress Button */}
                                                 <Button
                                                   onClick={() => {
-                                                    setStatusToUpdate(
-                                                      "In Progress"
-                                                    );
+
+                                                    setStatusToUpdate("In Progress");
                                                     setIsDialogOpen(true);
                                                   }}
                                                   className="gap-2 border mt-4 h-6 py-3 px-2 bg-transparent hover:bg-transparent hover:border-orange-400 rounded border-gray-600 w-fit"
@@ -2259,12 +2275,9 @@ export default function TasksTab({
                                                 {/* Completed Button */}
                                                 <Button
                                                   onClick={() => {
-                                                    setStatusToUpdate(
-                                                      "Completed"
-                                                    );
-                                                    setIsCompleteDialogOpen(
-                                                      true
-                                                    );
+
+                                                    setStatusToUpdate("Completed");
+                                                    setIsCompleteDialogOpen(true);
                                                   }}
                                                   className="border mt-4 px-2 py-3 bg-transparent hover:bg-transparent h-6 rounded hover:border-[#007A5A] border-gray-600 w-fit"
                                                 >
@@ -2638,9 +2651,9 @@ export default function TasksTab({
                                       </div>
                                       <div className="">
                                         <div className="flex ">
-                                        <div className="relative">
+                                          <div className="relative">
                                             {(() => {
-                                              if (task.completionDate) {
+                                              if (task.completionDate && task.status !== "Pending") {
                                                 // Use `getRemainingTime` with `isCompleted` for completed tasks
                                                 const { text } = getRemainingTime(task.completionDate, true);
                                                 return (
@@ -2662,12 +2675,14 @@ export default function TasksTab({
                                               }
                                             })()}
                                           </div>
+
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             {task.status === "Completed" ? (
                                               <>
                                                 {/* Reopen Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
@@ -2680,9 +2695,10 @@ export default function TasksTab({
                                                 </Button>
                                                 {/* Delete Button */}
                                                 <Button
-                                                  onClick={() =>
-                                                    handleDelete(task._id)
-                                                  }
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteClick(task._id)
+                                                  }}
                                                   className="border mt-4 px-2 py-3 bg-transparent h-6 rounded hover:border-red-500 hover:bg-transparent border-gray-600 w-fit"
                                                 >
                                                   <Trash className="h-4 rounded-full text-red-500" />
@@ -2696,6 +2712,7 @@ export default function TasksTab({
                                                 {/* In Progress Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate(
                                                       "In Progress"
                                                     );
@@ -2711,6 +2728,7 @@ export default function TasksTab({
                                                 {/* Completed Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate(
                                                       "Completed"
                                                     );
@@ -3116,9 +3134,9 @@ export default function TasksTab({
                                       </div>
                                       <div className="">
                                         <div className="flex ">
-                                        <div className="relative">
+                                          <div className="relative">
                                             {(() => {
-                                              if (task.completionDate) {
+                                              if (task.completionDate && task.status !== "Pending") {
                                                 // Use `getRemainingTime` with `isCompleted` for completed tasks
                                                 const { text } = getRemainingTime(task.completionDate, true);
                                                 return (
@@ -3140,12 +3158,14 @@ export default function TasksTab({
                                               }
                                             })()}
                                           </div>
+
                                           <div className="gap-2 w-1/2 mt-4 mb-4 flex">
                                             {task.status === "Completed" ? (
                                               <>
                                                 {/* Reopen Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate("Reopen");
                                                     setIsReopenDialogOpen(true);
                                                   }}
@@ -3158,9 +3178,10 @@ export default function TasksTab({
                                                 </Button>
                                                 {/* Delete Button */}
                                                 <Button
-                                                  onClick={() =>
-                                                    handleDelete(task._id)
-                                                  }
+                                                  onClick={() => {
+
+                                                    handleDeleteClick(task._id);
+                                                  }}
                                                   className="border mt-4 px-2 py-3 bg-transparent h-6 rounded hover:border-red-500 hover:bg-transparent border-gray-600 w-fit"
                                                 >
                                                   <Trash className="h-4 rounded-full text-red-500" />
@@ -3174,6 +3195,7 @@ export default function TasksTab({
                                                 {/* In Progress Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate(
                                                       "In Progress"
                                                     );
@@ -3189,6 +3211,7 @@ export default function TasksTab({
                                                 {/* Completed Button */}
                                                 <Button
                                                   onClick={() => {
+
                                                     setStatusToUpdate(
                                                       "Completed"
                                                     );
@@ -3287,19 +3310,19 @@ export default function TasksTab({
 
                       {isCompleteDialogOpen && (
                         <Dialog open={isCompleteDialogOpen}>
-                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21] z-[100] rounded-lg p-6 mx-auto max-w-2xl">
+                          <DialogContent className=" z-[100] rounded-lg p-6 mx-auto max-w-2xl">
                             <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">
+                              <DialogTitle className="">
                                 Task Update
                               </DialogTitle>
                               <DialogClose
                                 onClick={() => setIsCompleteDialogOpen(false)}
                               >
-                                X
+                                <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
+
                               </DialogClose>
                             </div>
-                            <p className="text-xs -mt-2">
+                            <p className="text-sm -mt-2">
                               Please add a note before marking the task as
                               completed
                             </p>
@@ -3308,7 +3331,7 @@ export default function TasksTab({
                               <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
+                                className="border-gray-600 focus:border-[#815bf5] bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
                               />
 
                               <div className="flex mb-4  mt-4 gap-4">
@@ -3380,19 +3403,19 @@ export default function TasksTab({
 
                       {isDialogOpen && (
                         <Dialog open={isDialogOpen}>
-                          <DialogOverlay className="fixed inset-0 z-[100] bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg z-[100] p-6 mx-auto  max-w-2xl ">
+                          {/* <DialogOverlay className="fixed inset-0 z-[100] bg-black bg-opacity-50" /> */}
+                          <DialogContent className=" rounded-lg z-[100] p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">
+                              <DialogTitle className="">
                                 Task Update
                               </DialogTitle>
                               <DialogClose
                                 onClick={() => setIsDialogOpen(false)}
                               >
-                                X
+                                <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                               </DialogClose>
                             </div>
-                            <p className="text-xs -mt-2">
+                            <p className="text-sm -mt-2">
                               Please add a note before marking the task as in
                               progress
                             </p>
@@ -3401,7 +3424,7 @@ export default function TasksTab({
                               <div
                                 ref={editorRef}
                                 contentEditable
-                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
+                                className="border-gray-600 focus:border-[#815bf5] bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
                                 onInput={(e) => {
                                   const target = e.target as HTMLDivElement;
                                   setComment(target.innerHTML);
@@ -3472,19 +3495,19 @@ export default function TasksTab({
 
                       {isReopenDialogOpen && (
                         <Dialog open={isReopenDialogOpen}>
-                          <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
-                          <DialogContent className="bg-[#1A1D21]  rounded-lg z-[100] p-6 mx-auto  max-w-2xl ">
+                          {/* <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" /> */}
+                          <DialogContent className="  rounded-lg z-[100] p-6 mx-auto  max-w-2xl ">
                             <div className="flex justify-between w-full">
-                              <DialogTitle className="text-sm">
+                              <DialogTitle className="">
                                 Task Update
                               </DialogTitle>
                               <DialogClose
                                 onClick={() => setIsReopenDialogOpen(false)}
                               >
-                                X
+                                <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                               </DialogClose>
                             </div>
-                            <p className="text-xs -mt-2">
+                            <p className="text-sm -mt-2">
                               Please add a note before marking the task as
                               Reopen
                             </p>
@@ -3493,7 +3516,7 @@ export default function TasksTab({
                               <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 bg-[#121212] border rounded outline-none px-2 py-2 w-full mt-2"
+                                className="border-gray-600 focus:border-[#815bf5] bg-[#121212] border rounded outline-none px-2 py-2 w-full mt-2"
                               />
 
                               <div className="flex mb-4  mt-4 gap-4">

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
 import Loader from "@/components/ui/loader";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -24,7 +25,16 @@ const ChangePassword = () => {
         newPassword,
       });
       setMessage(response.data.message);
-      toast.success(response.data.message);
+      toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+        <div className="w-full flex  justify-center">
+          <DotLottieReact
+            src="/lottie/tick.lottie"
+            loop
+            autoplay
+          />
+        </div>
+        <h1 className="text-black text-center font-medium text-lg">Password changed successfully</h1>
+      </div>);
       setCurrentPassword("");
       setNewPassword("");
       setLoading(false);
@@ -36,16 +46,16 @@ const ChangePassword = () => {
   return (
     <Card className="p-6  bg-transparent m-6 s">
       <CardTitle className="text-start">Change Your Password</CardTitle>
-                  {/* <Toaster /> */}
-      <form onSubmit={handleSubmit}>
-        <div className="mt-4">
+      {/* <Toaster /> */}
+      <form className="space-y-2" onSubmit={handleSubmit}>
+        <div className="mt-4 ">
           {/* <Label htmlFor="currentPassword">Current Password</Label> */}
           <input
 
             id="currentPassword"
             value={currentPassword}
             placeholder="Current Password"
-            className="mt-2 p-2 w-full text-xs rounded outline-none bg-transparent border"
+            className="mt-2 p-2 w-full focus:border-[#815bf5] text-xs rounded outline-none bg-transparent border"
             onChange={(e) => setCurrentPassword(e.target.value)}
             required
           />
@@ -56,13 +66,13 @@ const ChangePassword = () => {
 
             id="newPassword"
             value={newPassword}
-            className="mt-2 p-2 w-full text-xs rounded outline-none bg-transparent border"
+            className="mt-2 p-2 w-full focus:border-[#815bf5] mb-4  text-xs rounded outline-none bg-transparent border"
             placeholder="New Password"
             onChange={(e) => setNewPassword(e.target.value)}
             required
           />
         </div>
-        <Button className="mt-4 bg-[#017a5b] text-xs hover:bg-[#017a5b]" type="submit">
+        <Button className="mt-8 bg-[#017a5b] text-xs hover:bg-[#017a5b]" type="submit">
           {loading ? <Loader /> : "Change Password"}
         </Button>
         {/* {message && <p>{message}</p>} */}

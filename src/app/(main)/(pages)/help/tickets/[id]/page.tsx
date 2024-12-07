@@ -130,15 +130,15 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                     </Link>
                                     {ticket && (
                                         <>
-                                            <div className=' border p-4 rounded'>
+                                            <div className=' border p-4 rounded-xl'>
                                                 <div className="relative max-w-full w-full h-full max-h-32">
                                                     <div
                                                         className={`flex border border-[#E0E0E066] px-2 py-1 rounded absolute right-0 ${ticket.status === 'Pending'
                                                             ? 'bg-red-500'
                                                             : ticket.status === 'In Resolution'
-                                                                ? 'bg-yellow-500'
+                                                                ? 'bg-blue-500'
                                                                 : ticket.status === 'Closed'
-                                                                    ? 'bg-gray-700'
+                                                                    ? 'bg-green-700'
                                                                     : ticket.status === 'Cancelled'
                                                                         ? 'bg-red-800'
                                                                         : ''
@@ -236,8 +236,8 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                 )}
                                             </div>
 
-                                            <div className='  pb-12  rounded '>
-                                                <div className='border rounded p-4'>
+                                            <div className='  pb-12  rounded-xl '>
+                                                <div className='border rounded-xl p-4'>
                                                     <h1 className='uppercase font-bold'>Reply</h1>
                                                     <form onSubmit={handleCommentSubmit} className='mt-4'>
                                                         <textarea
@@ -245,7 +245,7 @@ export default function TicketDetails({ params }: { params: { id: string } }) {
                                                             onChange={handleCommentChange}
                                                             placeholder='Type your comment here'
                                                             rows={4}
-                                                            className='w-full p-2 border bg-[#0B0D29] outline-none  rounded'
+                                                            className='w-full focus:border-[#815bf5] p-2 border bg-[#0B0D29] outline-none  rounded'
                                                         />
 
                                                         <input

@@ -22,7 +22,7 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
           {...props}
         >
           <ProgressPrimitive.Indicator
-            className="h-full w-full flex-1 bg-[#007A5A] z-[0]  transition-all"
+            className="h-full w-full flex-1  bg-gradient-to-l from-[#815BF5] via-[#FC8929] to-[#FC8929] z-[0]  transition-all"
             style={{ transform: `translateX(-${100 - clampedValue}%)` }}
           />
         </ProgressPrimitive.Root>

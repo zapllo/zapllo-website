@@ -240,14 +240,12 @@ export default function Tickets() {
                         open={isDialogOpen}
                         onOpenChange={setIsDialogOpen}
                       >
-                        <div className="flex mb-2 gap-2 justify-between">
-                          <h1 className="text-md m font-medium">
-                            Support Tickets
-                          </h1>
+                        <div className="flex mb-2 gap-2 items-center justify-between w-full">
+                          <h1 className="text-lg">Support Tickets</h1>
                           <div className="">
                             <DialogTrigger asChild>
-                              <Button className="bg-[#017a5b] h-7 rounded n text-xs hover:bg-[#017a5b]">
-                                Raise A Ticket
+                              <Button className="bg-transparent border  bg-[#017a5b] hover:bg-[#12614d] border-[#017a5b] text-[#ffffff]  px-4 py-1 rounded" >
+                                Raise a Ticket
                               </Button>
                             </DialogTrigger>
                           </div>
@@ -468,98 +466,101 @@ export default function Tickets() {
 
                               {/* Submit Ticket button */}
                               <div className="flex justify-center">
-                                {isSubmitting ? (
-                                  <Loader />
-                                ) : (
-                                  <Button
-                                    onClick={handleSubmit}
-                                    className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
-                                  >
-                                    Submit Ticket
-                                  </Button>
-                                )}
+
+                                <Button
+                                  onClick={handleSubmit}
+                                  className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded"
+                                >
+                                  {isSubmitting ? <Loader /> : "Submit Ticket"}
+                                </Button>
+
                               </div>
                             </form>
                           </div>
                         </DialogContent>
                       </Dialog>
                     </div>
-                    <table className="min-w-full divide-y 0">
-                      <thead className="bg-[#0A0D28] text-white">
-                        <tr>
-                          {/* <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
+                    <div className="bg-[#0B0D29] text-sm w-full rounded-2xl  border overflow-hidden">
+                      <table className="w-full">
+                        <thead className="bg-[#0B0D29] ">
+                          <tr className=" ">
+                            {/* <th scope='col' className='px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider'>
                                                         Category
                                                     </th> */}
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider"
-                          >
-                            Subject
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider"
-                          >
-                            Status
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider"
-                          >
-                            Created At
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-white -500 uppercase tracking-wider"
-                          >
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-[#0B0D29] divide-y">
-                        {tickets.map((ticket) => (
-                          <tr key={ticket._id}>
-                            {/* <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white -900'>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-400 -500 uppercase tracking-wider"
+                            >
+                              Subject
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-400 -500 uppercase tracking-wider"
+                            >
+                              Status
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-400 -500 uppercase tracking-wider"
+                            >
+                              Created At
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-400 -500 uppercase tracking-wider"
+                            >
+                              Action
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-[#0B0D29] divide-y">
+                          {tickets.map((ticket) => (
+                            <tr key={ticket._id}>
+                              {/* <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-white -900'>
                                                             {ticket.category}
                                                         </td> */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white -500">
-                              {ticket.subject}
-                            </td>
-                            <td
-                              className={`px-6 py-4 whitespace-nowrap text-sm   -500 ${ticket.status === "Pending"
-                                ? "text-red-800"
-                                : ticket.status === "In Resolution"
-                                  ? "text-blue-400"
-                                  : ticket.status === "Closed"
-                                    ? "text-green-700"
-                                    : "text-yellow-400"
-                                }`}
-                            >
-                              {ticket.status}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white -500">
-                              {new Date(ticket.createdAt).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex gap-2 items-center">
-                                <div
-                                  onClick={() => handleViewDetails(ticket)}
-                                  className="text-[#] -600 cursor-pointer hover:text-[#007A5A] -900"
-                                >
-                                  <Eye className="h-5 w-5" />
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-white -500">
+                                {ticket.subject}
+                              </td>
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap  text-sm   -500 ${ticket.status === "Pending"
+                                  ? "text-red-500"
+                                  : ticket.status === "In Resolution"
+                                    ? "text-blue-400"
+                                    : ticket.status === "Closed"
+                                      ? "text-green-500"
+                                      : "text-yellow-500"
+                                  }`}
+                              >
+                                <div className="border w-fit px-2 bg-gray-800 rounded-full flex items-center">
+                                  {ticket.status}
+
                                 </div>
-                                <div
-                                  onClick={() => handleOpenDeleteDialog(ticket)}
-                                  className="text-red-500 cursor-pointer hover:text-red-800"
-                                >
-                                  <Trash2 className="h-5 w-5" />
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-white -500">
+                                {new Date(ticket.createdAt).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div className="flex gap-2 items-center">
+                                  <div
+                                    onClick={() => handleViewDetails(ticket)}
+                                    className="text-[#] -600 cursor-pointer hover:text-[#815bf5] -900"
+                                  >
+                                    <Eye className="h-5 w-5" />
+                                  </div>
+                                  <div
+                                    onClick={() => handleOpenDeleteDialog(ticket)}
+                                    className="text-red-500 cursor-pointer hover:text-red-800"
+                                  >
+                                    <Trash2 className="h-5 w-5" />
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   <DeleteConfirmationDialog

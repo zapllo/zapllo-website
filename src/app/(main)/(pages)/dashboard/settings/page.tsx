@@ -271,7 +271,7 @@ export default function Page() {
         <div>
           {loading ? <Loader /> : ""}
           <div className=" mt-2 bg- p-2 px-4 border bg-[#0A0D28] text-lg rounded-xl ">
-            <h1 className="text-sm">Organization Details</h1>
+            <h1 className="text-sm text-muted-foreground">Organization Details</h1>
           </div>
           <div className=" text-xs grid grid-cols-1 text- p-2 gap-2 py-2">
             <div className="grid-cols-2 grid gap-2 p-2">
@@ -335,7 +335,7 @@ export default function Page() {
               <div className="mt-2">
                 <button
                   onClick={handleUpdateOrganization}
-                  className="mt-4 px-4 py-2 ml-auto bg-[#007A5A] hover:bg-[#007A5A] text-white rounded"
+                  className="mt-4 px-4 py-2 ml-auto bg-[#007A5A] hover:bg-[#0c4f3e] text-white rounded"
                 >
                   {loading ? <Loader /> : "Update Organization "}
                 </button>
@@ -350,7 +350,7 @@ export default function Page() {
       {role === "orgAdmin" && (
         <div>
           <div className=" mt-4 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
-            <h1 className="text-sm">WhatsApp Integration</h1>
+            <h1 className="text-sm text-muted-foreground">WhatsApp Integration</h1>
           </div>
           <div onClick={() => setWabaOpen(true)} className="mb-2  mt-2 flex   px-4 py-4  decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  ">
             <h1 className=" text-xs text-start w-full">Connect your WABA Number</h1>
@@ -359,7 +359,7 @@ export default function Page() {
         </div>
       )}
       <div className=" mt-6 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
-        <h1 className="text-sm">Task App Settings</h1>
+        <h1 className="text-sm text-muted-foreground">Task App Settings</h1>
       </div>
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DialogTrigger className="w-full  items-center mt-2  flex justify-">
