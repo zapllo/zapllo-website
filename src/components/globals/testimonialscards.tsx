@@ -18,58 +18,58 @@ export function TestimonialCards() {
 const testimonials = [
     {
         quote:
-            "We are now associated with Zapllo for about 2 years now. Highly recommended",
-        name: "Emily Haile",
-        title: "Director, Talent & Operations",
-        image: 'emily.png'
+            "Using Task Delegation App has made managing my team stress-free. Tasks are completed on time, and the app’s features ensure nothing is ever missed.",
+        name: "Komal Jain",
+        title: "Chemical Manufacturing",
+        image: '/people/female1.jpg',
     },
     {
         quote:
-            "I am stunned how automation and AI saved us from putting multiple hours per day on customer onboarding. Deep is magic at developing amazing automations. No doubt he is the best. Highly recommended.",
-        name: "Gar Lee",
-        title: "Customer Success Daily.Ai",
-        image: 'lee.png'
+            "Zapllo has transformed the way we manage tasks. Everyone stays accountable, and the streamlined system has made performance reviews so much easier.",
+        name: "Tarun Bhatia",
+        title: "Real Estate",
+        image: '/people/man1.jpg',
     },
     {
         quote:
-            "Shubhodeep is one of our best partners. We have been associated with Zapllo for about 9 months now. They have completely transformed our company operations and internal workflow. Highly recommended.",
-        name: "Steve Migley",
-        title: "VP Operations RENU Therapy",
-        image: 'steve.png',
+            "Since adopting Zapllo, my team’s productivity has skyrocketed. The visual dashboard and notifications make staying on top of tasks effortless.",
+        name: "Harsh Pandey",
+        title: "Digital Marketing Agency",
+        image: '/people/man2.jpg',
     },
     {
         quote:
-            "Can't really give Zapllo anything less than 10 out of 10. They are the best when it comes to Automation, Gen AI and creating amazing Notion Dashboards.",
-        name: "Brennan Townlley",
-        title: "CEO Collaboration.Ai",
-        image: 'collab.png',
+            "Zapllo is an incredible tool for managing projects. Assigning tasks is effortless, and the voice commands save a ton of time. A must-have for any business.",
+        name: "Suresh Shetty",
+        title: "IT Services",
+        image: '/people/man3.jpg',
     },
     {
         quote:
-            "Deep is amazing and he is an amazing coach when it comes to Business Automaitons.",
-        name: "Mike Roberts",
-        title: "CEO BeSpoke Media",
-        image: 'mike.png',
+            "Task delegation has never been easier. With audio notes and detailed dashboards, I always know the progress of my team’s tasks. Zapllo is a fantastic tool!",
+        name: "Kavita Menon",
+        title: "Pharma Manufacturer",
+        image: '/people/female2.jpg',
     },
     {
         quote:
-            "I am happy that we found Deep at the first place. I am really grateful to this man for saving us in bad times and helping us getting things tidy for our eCom Business. Very highly recommended.",
-        name: "Bill Bachand",
-        title: "CEO RENU Therapy",
-        image: 'bill.png',
+            "Zapllo feels like mission control for our operations. Communication is seamless, and the automation features make it an essential tool for our team.",
+        name: "Yash Goyal",
+        title: "Garments Manufacturing",
+        image: '/people/man4.jpg',
     },
     {
         quote:
-            "Never thought how Automation and Notion Systems can enhance a business workflow to such amazing levels.",
-        name: "Russ Gaskin",
-        title: "CEO WeAreCoCreative",
-        image: 'russ.png',
+            "The app has significantly improved accountability in my team. Tasks are executed on time, and I no longer need to follow up constantly. Highly recommended!",
+        name: "Karan Oberoi",
+        title: "Jewellery Manufacturer",
+        image: '/people/man5.jpg',
     },
     {
         quote:
-            "Deep has been amazing developing and streamlining our workflow at TTA. Highly recommended.",
-        name: "Dimitriy Azarenko",
-        title: "Co-Founder Top Tier Authentics",
-        image: 'dima.png',
+            "Zapllo has streamlined our workflow like never before. From task tracking to automation, it has made our operations smooth and efficient.",
+        name: "Rohan Mehta",
+        title: "Garments Manufacturing",
+        image: '/people/man6.jpg',
     },
 ];

@@ -122,7 +122,7 @@ const HolidayManager: React.FC = () => {
 
 
 
- 
+
 
 
   return (
@@ -133,14 +133,15 @@ const HolidayManager: React.FC = () => {
       {/* Dialog Root */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         {currentUserRole === "orgAdmin" && (
-          <div className="flex justify-start ml-5">
+          <div className="flex justify-between items-center mx-11 ml-5">
+            <h1 className="font-semibold">Upcoming Holidays</h1>
             <DialogTrigger asChild>
               <Button
                 size="sm"
-                className="w-fit flex gap-2 hover:bg-gradient-to-r from-[#815BF5] to-[#FC8929] hover:border-none border-[#A58DE8] border bg-transparent  rounded-2xl px-6"
+                className="w-fit  flex gap-2 hover:bg-[#0f5140] bg-[#017a5b] px-4"
                 onClick={() => setIsModalOpen(true)}
               >
-                <PlusCircledIcon className="h-4 w-4" /> Add New Holiday
+               Add New Holiday
               </Button>
             </DialogTrigger>
           </div>
@@ -151,6 +152,7 @@ const HolidayManager: React.FC = () => {
         <DialogContent className=" z-[100]  flex items-center justify-center">
           <div className="bg-[#0b0d29] w-full max-w-lg overflow-y-scroll scrollbar-hide h-fit max-h-[600px]  shadow-lg   rounded-lg">
             <div className="flex border-b py-2  w-full justify-between">
+
               <DialogTitle className="text-md   px-6 py-2 font-medium">
                 Add New Holiday
               </DialogTitle>
@@ -170,45 +172,47 @@ const HolidayManager: React.FC = () => {
       {/* Holiday List */}
       <div className="mt-6">
         <div className="container mx-auto p-6">
-          <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3>
+          {/* <h3 className="text-sm font-bold mb-4">Upcoming Holidays</h3> */}
           {/* <Toaster /> */}
           {holidays.length > 0 ? (
-            <table className="w-full rounded table-auto border-collapse border">
-              <thead className='bg-[#0B0D29]  '>
-                <tr>
-                  <th className="px-4 text-xs text-start py-2">Name</th>
-                  <th className="px-4 text-xs text-start py-2">Date</th>
-                  {userRole === 'orgAdmin' && <th className="text-xs text-start px-4 py-2">Actions</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {holidays.map((holiday) => (
-                  <tr className='border-t' key={holiday._id}>
-                    <td className="px-4 text-xs py-2">{holiday.holidayName}</td>
-                    <td className="px-4 text-xs py-2">
-                      {new Date(holiday.holidayDate).toLocaleDateString()}
-                    </td>
-                    {userRole === 'orgAdmin' && (
-                      <td className="px-4 py-2">
-                        <button
-                          onClick={() => handleEditClick(holiday)}
-                          className="text-blue-500 hover:text-blue-700 mr-2"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(holiday)} // Trigger delete confirmation modal
-                          disabled={isDeleting === holiday._id}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
-                    )}
+            <div className="bg-[#0B0D29] text-sm w-full rounded-2xl  border overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-[#0B0D29] ">
+                  <tr>
+                    <th className="px-4 text-gray-400 text-xs text-start py-2">Name</th>
+                    <th className="px-4 text-gray-400 text-xs text-start py-2">Date</th>
+                    {userRole === 'orgAdmin' && <th className="text-xs text-start px-4 py-2">Actions</th>}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {holidays.map((holiday) => (
+                    <tr className='border-t' key={holiday._id}>
+                      <td className="px-4 text-xs py-2">{holiday.holidayName}</td>
+                      <td className="px-4 text-xs py-2">
+                        {new Date(holiday.holidayDate).toLocaleDateString("en-GB")}
+                      </td>
+                      {userRole === 'orgAdmin' && (
+                        <td className="px-4 py-2">
+                          <button
+                            onClick={() => handleEditClick(holiday)}
+                            className="text-blue-500 hover:text-blue-700 mr-2"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(holiday)} // Trigger delete confirmation modal
+                            disabled={isDeleting === holiday._id}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (<div className='flex w-full justify-center '>
             < div className="mt-8 ml-4">
               <DotLottieReact

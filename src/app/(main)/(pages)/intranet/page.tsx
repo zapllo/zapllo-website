@@ -129,20 +129,8 @@ const IntranetPage: React.FC = () => {
           <div className=" px-2 py-4">
             <div className="flex items-center justify-center">
 
-              <div className="flex items-center space-x-4">
-                <DialogTrigger asChild>
-                  {/* <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
-                New Links
-              </button> */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-transparent border font-semibold hover:bg-[#017a5b] border-[#017a5b] text-[#ffffff]  px-4 py-1 rounded"
-
-                  >
-                    New Link </Button>
-                </DialogTrigger>
-                <select
+              <div className="flex items-center justify-end w-full space-x-4">
+              <select
                   className="p-2 px-4  bg-[#0B0D29] border  outline-none h-[35px] rounded-sm text-xs border-gray-700 "
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
@@ -154,6 +142,19 @@ const IntranetPage: React.FC = () => {
                     </option>
                   ))}
                 </select>
+                <DialogTrigger asChild>
+                  {/* <button className="px-4 py-2 bg-[#017A5B] text-xs text-white rounded hover:bg-[#017A5B]">
+                New Links
+              </button> */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border font-semibold hover:bg-[#145d4a] bg-[#017a5b] text-[#ffffff]  px-4 py-1 rounded"
+
+                  >
+                    New Link </Button>
+                </DialogTrigger>
+               
 
               </div>
               {/* <input
@@ -188,7 +189,7 @@ const IntranetPage: React.FC = () => {
                     value={linkUrl}
                     onChange={(e) => setLinkUrl(e.target.value)}
                     required
-                    className="  px-4 focus-within:border-[#815BF5]  block text-sm w-full  bg-transparent outline-none p-2 border rounded-md"
+                    className="  px-4 focus-within:border-[#815BF5]  block text-xs w-full  bg-transparent outline-none p-2 border rounded-md"
                   // className="w-full h-12 px-4 bg-transparent text-white  rounded-md border-0 outline-none"
                   />
                 </div>
@@ -201,7 +202,7 @@ const IntranetPage: React.FC = () => {
                     placeholder="Description"
                     onChange={(e) => setDescription(e.target.value)}
                     required
-                    className=" w-full focus-within:border-[#815BF5] h-24 px-4  block text-sm bg-transparent outline-none  p-2 border rounded-md"
+                    className=" w-full focus-within:border-[#815BF5] h-24 px-4  block text-xs bg-transparent outline-none  p-2 border rounded-md"
                   />
                 </div>
 
@@ -214,7 +215,7 @@ const IntranetPage: React.FC = () => {
                     onChange={(e) => setLinkName(e.target.value)}
                     required
                     placeholder="Link Name"
-                    className="w-full px-4 focus-within:border-[#815BF5] bg-transparent text-sm outline-none block  p-2 border rounded-md"
+                    className="w-full px-4 focus-within:border-[#815BF5] bg-transparent text-xs outline-none block  p-2 border rounded-md"
                   />
                 </div>
 
@@ -238,7 +239,7 @@ const IntranetPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="bg-[#815BF5] w-full  mt-2 py-2 mb-4 text-sm cursor-pointer  text-white rounded-md"
+                  className="bg-[#815BF5] w-full  mt-2 py-2 mb-4 text-xs cursor-pointer  text-white rounded-md"
                 >
                   {loading ? <Loader /> : "Submit Now"}
                 </button>

@@ -101,6 +101,16 @@ export default function Tutorials() {
                     <div className="flex items-center justify-between w-full">
                         <h1 className="ml-24 text-lg font-bold text-center">{selectedCategory}</h1>
                         <div className="flex gap-2">
+                        <div className=" flex items-center w-full px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
+                                <FaSearch className="text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={handleSearch}
+                                    placeholder="Search Tutorials"
+                                    className="text-sm w-full bg-transparent  text-white  focus:outline-none"
+                                />
+                            </div>
                             <select
                                 value={selectedCategory}
                                 onChange={handleCategoryChange}
@@ -112,16 +122,7 @@ export default function Tutorials() {
                                     </option>
                                 ))}
                             </select>
-                            <div className=" flex items-center w-full px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
-                                <FaSearch className="text-gray-400" />
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={handleSearch}
-                                    placeholder="Search Tutorials"
-                                    className="text-sm w-full bg-transparent  text-white  focus:outline-none"
-                                />
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -131,15 +132,15 @@ export default function Tutorials() {
                         filteredTutorials.map((tutorial) => (
                             <div
                                 key={tutorial._id}
-                                className="border hover:border-[#815BF5] rounded-lg  w-56 text-white cursor-pointer hover:shadow-lg transition"
+                                className="border hover:border-[#815BF5] rounded-lg  w-64 text-white cursor-pointer hover:shadow-lg transition"
                                 onClick={() => handleTutorialClick(tutorial._id)}
                             >
                                 <img
                                     src={tutorial.thumbnail}
                                     alt={tutorial.title}
-                                    className="w-56 h-24 object-cover rounded-lg rounded-b-none"
+                                    className="w-64 h-36 object-cover rounded-lg rounded-b-none"
                                 />
-                                <div className="flex gap-2 mt-2 p-2 h-12 text-sm rounded-2xl items-center">
+                                <div className="flex gap-2  mt-2 p-4 h-fit text-sm rounded-2xl items-center">
                                     <div         onClick={() => handleTutorialClick(tutorial._id)} className='h-6 w-6 rounded-full border border-gray-400 text-muted-foreground hover:text-white  cursor-pointer bg-transparent hover:bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  flex items-center justify-center  '>
 
                                         <VideoIcon className=' hover:text-white h-4 w-4' />

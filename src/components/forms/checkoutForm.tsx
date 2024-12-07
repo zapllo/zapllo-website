@@ -8,7 +8,7 @@ import { Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle' | 'Zapllo Payroll';
+type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle';
 
 interface Country {
     code: CountryCode;
@@ -28,14 +28,14 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
         whatsappNo: '',
         selectedPlan,
         subscribedUserCount: 20, // Changed from quantity to subscribedUserCount
-        discountCode: 'FREEDOMSALE',
+        discountCode: 'NY2025',
     });
 
 
     const plans: Record<PlanKeys, number> = {
         'Zapllo Tasks': 2000,
         'Zapllo Money Saver Bundle': 3000,
-        'Zapllo Payroll': 1000,
+        // 'Zapllo Payroll': 1000,
     };
 
     // Validation function
@@ -55,11 +55,36 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [discount, setDiscount] = useState(0);
     const [discountedPrice, setDiscountedPrice] = useState(0);
+    const [walletBonus, setWalletBonus] = useState(0);
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [countries, setCountries] = useState<Country[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
+
+
+   // Update Wallet Bonus based on the plan and subscribed user count
+useEffect(() => {
+    const calculateWalletBonus = () => {
+        const baseUsers = 20;
+        const increment = (formData.subscribedUserCount - baseUsers) / 5;
+
+        if (formData.selectedPlan === "Zapllo Tasks") {
+            const baseBonus = 4000; // Bonus for 20 users
+            const additionalBonus = increment > 0 ? increment * 1000 : 0; // ₹1000 for every 5 users above 20
+            setWalletBonus(baseBonus + additionalBonus);
+        } else if (formData.selectedPlan === "Zapllo Money Saver Bundle") {
+            const baseBonus = 10000; // Bonus for 20 users
+            const additionalBonus = increment > 0 ? increment * 2500 : 0; // ₹2500 for every 5 users above 20
+            setWalletBonus(baseBonus + additionalBonus);
+        } else {
+            setWalletBonus(0);
+        }
+    };
+
+    calculateWalletBonus();
+}, [formData.selectedPlan, formData.subscribedUserCount]);
+
 
 
     useEffect(() => {
@@ -262,7 +287,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 placeholder="First Name"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                className="p-3 bg-transparent focus:border-[#815bf5] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <input
                                 type="text"
@@ -270,7 +295,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 placeholder="Last Name"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                className="p-3 bg-transparent focus:border-[#815bf5] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <input
                                 type="text"
@@ -278,7 +303,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 placeholder="Company Name"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                className="p-3 bg-transparent focus:border-[#815bf5] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <select
                                 name="industry"
@@ -308,7 +333,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 placeholder="Email ID"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="p-3 bg-transparent border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                className="p-3 bg-transparent focus:border-[#815bf5] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                             />
                             <div className="flex relative">
                                 <div className="flex w-36  items-center border-[#424882] border border-r-0 rounded-2xl rounded-r-none p-3 relative">
@@ -332,7 +357,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                                 placeholder="Search Country"
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="p-2 mb-2 w-full text-white outline-none border rounded"
+                                                className="p-2 focus:border-[#815bf5] mb-2 w-full text-white outline-none border rounded"
                                             />
                                             {filteredCountries.map((country) => (
                                                 <div
@@ -353,7 +378,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                     placeholder="Mobile Number"
                                     value={formData.whatsappNo}
                                     onChange={handlePhoneChange}
-                                    className="p-3 bg-transparent border-[#424882] border rounded-l-none rounded-2xl placeholder:text-[#676B93] text-white focus:outline-none w-full"
+                                    className="p-3 bg-transparent focus:border-[#815bf5] border-[#424882] border rounded-l-none rounded-2xl placeholder:text-[#676B93] text-white focus:outline-none w-full"
                                 />
                             </div>
                         </div>
@@ -362,7 +387,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                             <div
                                 onClick={nextStep}
                                 className={cn(
-                                    `group rounded-full border border-black/5 transition-all ease-in text-base w-fit px-24 py-2 text-white cursor-pointer dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#815BF5] to-[#5E29FF] dark:hover:bg-blue-800`,
+                                    `group rounded-full border border-black/5 transition-all ease-in text-base w-fit px-24 py-2 text-white cursor-pointer dark:border-white/5 dark:hover:text-white bg-[#815bf5] hover:bg-primary`,
                                     { 'opacity-50 cursor-not-allowed': !isStep1Valid }
                                 )}
                             >
@@ -377,7 +402,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
             {
                 step === 2 && (
                     <div>
-                        <div className="grid grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-2 gap-4 mb-6">
                             {Object.keys(plans).map((plan) => (
                                 <label
                                     key={plan}
@@ -413,8 +438,8 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                     <div className="text-sm text-gray-400">
                                         {plan === 'Zapllo Money Saver Bundle' ? (
                                             <>
-                                                <h1 className='px-6 text-[#676B93]'>
-                                                    Includes Task Delegation, CRM, Leave & Attendance
+                                                <h1 className='px-6 text-balance text-muted-foreground'>
+                                                    Includes Task Delegation App, Zapllo Payroll (Leave & Attendance), WhatsApp Marketing & Automation Software
                                                 </h1>
                                                 <div className='px-4 mt-4'>
                                                     <h1 className='text-white  text-lg font-semibold'>
@@ -455,8 +480,8 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                             </>
                                         ) : plan === 'Zapllo Tasks' ? (
                                             <>
-                                                <h1 className='px-6 text-[#676B93]'>
-                                                    Includes Task Delegation Only
+                                                <h1 className='px-6 text-muted-foreground'>
+                                                    Includes Task Delegation App
                                                 </h1>
                                                 <div className='px-4 mt-4'>
                                                     <h1 className='text-white  text-lg font-semibold'>
@@ -496,50 +521,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                                 <br />
 
                                             </>
-                                        ) :
-                                            <>
-                                                <h1 className='px-6 text-[#676B93]'>
-                                                    Includes Zapllo Payroll Only
-                                                </h1>
-                                                <div className='px-4 mt-4'>
-                                                    <h1 className='text-white  text-lg font-semibold'>
-                                                        <p className='relative inline-block'>                                             <span className=' text-gray-200 -500'>₹{plans[plan as PlanKeys] * 2 - 1}</span>
-                                                            <span className="absolute inset-0 bg-red-500 h-[2px] top-1/2 w-14 -ml-[2px] transform -translate-y-1/2"></span>
-                                                        </p>
-
-                                                        <span
-                                                            className="ml-2 text-lg"
-                                                            style={{
-                                                                fontSize: "16px",
-                                                                fontWeight: "400",
-                                                                lineHeight: "24px",
-                                                                color: "#676B93",
-                                                            }}
-                                                        >
-                                                            /  user / year
-                                                        </span>
-                                                    </h1>
-                                                    <h1 className='text-white mt-2  text-2xl font-semibold'>
-                                                        <p className='relative inline-block'>                                             <span className=' text-white -500'>₹{plans[plan as PlanKeys] - 1}</span>
-
-                                                        </p>
-
-                                                        <span
-                                                            className="ml-2 text-sm"
-                                                            style={{
-
-
-                                                                color: "#676B93",
-                                                            }}
-                                                        >
-                                                            /  user / year
-                                                        </span>
-                                                    </h1>
-                                                </div>
-                                                <br />
-
-                                            </>
-                                        }
+                                        ) :""}
                                     </div>
                                 </label>
                             ))}
@@ -554,7 +536,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                     onChange={handleSubscribedUserCountChange}
                                     className="p-3 w-full bg-[#0A0D28] border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                                 >
-                                    {[...Array(20).keys()].map((num) => (
+                                    {[...Array(40).keys()].map((num) => (
                                         <option key={(num + 1) * 5} value={(num + 1) * 5}>{(num + 1) * 5}</option>
                                     ))}
                                 </select>
@@ -568,7 +550,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                     disabled
                                     value={formData.discountCode}
                                     onChange={handleChange}
-                                    className="p-3 bg-transparent w-full border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
+                                    className="p-3 bg-transparent focus:border-[#815bf5] w-full border-[#424882]  border rounded-2xl placeholder:text-[#676B93] text-[#ffffff] focus:outline-none"
                                 />
                             </div>
                         </div>
@@ -594,12 +576,12 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                     <Info className='text-gray-400' /> <h1 className='text-xl '>One Time Fast Action Bonus</h1>
                                 </div>
                                 <h1 className='text-sm text-muted-foreground'>Get 10% Additional Bonus when you purchase <span className='text-red-400'>20 or more users</span>. Bonus will be added to your subscription wallet that can be redeemed for purchasing more users, <span className='text-orange-400'>receiving AI Tokens </span>, upcoming apps and renewals.</h1>
-                                <p className='mt-2 text-sm text-start'>Your Wallet Bonus: ₹ 10,000</p>
+                                <p>Your Wallet Bonus: ₹{walletBonus.toLocaleString()}</p>
                             </div>
                         </div>
                         <div className='flex items-center mt-4'>
                             <div className=''>
-                                <button onClick={prevStep} className="bg-[#121212] border border-primary w-full px-24 py-2  rounded-full text-white font-semibold ">
+                                <button onClick={prevStep} className="bg-[#121212] hover:border-white border border-primary w-full px-24 py-2  rounded-full text-white font-semibold ">
                                     Back
                                 </button>
                             </div>
@@ -608,7 +590,7 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                                 <div
                                     onClick={handlePayment}
                                     className={cn(
-                                        "group rounded-full border border-black/5  transition-all ease-in  text-base w-fit px-24 hover: py-2 text-white  cursor-pointer  dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#815BF5] to-[#5E29FF] dark:hover:bg-blue-800",
+                                        "group rounded-full border border-black/5  transition-all ease-in  text-base w-fit px-24 hover: py-2 text-white  cursor-pointer  dark:border-white/5 dark:hover:text-white hover:bg-primary bg-[#815bf5]",
                                     )}
                                 >
 

@@ -190,7 +190,7 @@ export default function Home() {
 
             <div className="  bg-[#05071E]">
                 <div className="mb-4 mt-12 ">
-                    <h1 className="text-center  text-4xl font-semibold text-green-500">Zapllo Freedom Sale</h1>
+                    <h1 className="text-center  text-4xl font-semibold text-green-500">Zapllo New Year Sale</h1>
                     <div
                         className={cn(
                             "group mt-6  relative mx-auto flex max-w-fit flex-row items-center justify-center rounded-2xl  px-4 py-1.5 md:text-3xl font-medium   ",
@@ -210,7 +210,7 @@ export default function Home() {
                     <div className="absolute 2xl:right-36 mt-16 right-16 ">
                         <img src="/icons/offer.png" />
                         <h1 className="text-white text-xl -mt-28 ml-20 ">Use Code</h1>
-                        <span className="font-bold text-white text-3xl -mt-28 ml-12">&quot;FREEDOM&quot;</span>
+                        <span className="font-bold text-white text-3xl -mt-28 ml-14">&quot;NY2025&quot;</span>
                         {/* <Clock className="h-4" /> */}
                         <h1 className="text-white text-2xl  ml-[90px] ">
                             {formatTime(timeLeft)}
@@ -218,7 +218,7 @@ export default function Home() {
 
                     </div>
                     <div className="w-full flex justify-center mt-6 p-2 ">
-                        <p className="text-center w-1/2 text-[#676B93] ">Lock in our best-ever price and get access to every new feature, For an year. This
+                        <p className="text-center w-1/2 text-muted-foreground ">Lock in our best-ever price and get access to every new feature, For an year. This
                             one-time Offer ends soon. Act now before it&apos;s gone for good!</p>
                     </div>
 
@@ -248,7 +248,7 @@ export default function Home() {
                                 `inline animate-  text-center md:text-3xl  font-bold bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  bg-clip-text text-transparent`
                             )}
                         >
-                            Run your Business on Autopilot
+                            Run your Business on Autopilot <span className='text-white'>🚀</span>
                         </span>
                     </div>
                 </div>
@@ -262,7 +262,7 @@ export default function Home() {
 
                 <div id="cards" className="flex justify-center ">
                     <p
-                        className={`max-w-[1000px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-[#676B93] ${golos.className}`}
+                        className={`max-w-[1000px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-muted-foreground ${golos.className}`}
                     >
                         Single Application to Manage Entire Team&apos;s Tasks, Leads,
                         Leaves, and Attendance with WhatsApp Integration!
@@ -328,8 +328,10 @@ export default function Home() {
 
                         <ul className="mt-4 space-y-3">
                             {[
-                                "AutomateTask - Task Delegation App",
-                                "AutomateWA - Official WhatsApp API & Marketing Software",
+                                "Zapllo Tasks - Task Delegation App",
+                                "Zapllo Intranet",
+                                "Zapllo AI - Proprietory AI Technology"
+
 
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
@@ -342,9 +344,9 @@ export default function Home() {
                                 </li>
                             ))}
                             {[
-                                "AutomateCRM - Leads Management App",
-                                "AutomateAttendance - Attendance Tracking App",
-                                "AutomateLeaves - Leave Management App",
+                                "Zapllo WABA - Official WhatsApp API & Marketing Software",
+                                "Zapllo Payroll - Attendance Tracking App",
+                                "Zapllo Payroll - Leave Management App",
 
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
@@ -372,7 +374,7 @@ export default function Home() {
                         <p className="text-center mt-2   text-green-400" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
                             Today&apos;s Offer - ₹1999 per user per year
                         </p>
-                        <button onClick={() => openCheckoutWithPlan('Zapllo Tasks')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold   transition-colors">
+                        <button onClick={() => openCheckoutWithPlan('Zapllo Tasks')} className="mt-6 hover:shadow hover:shadow-white w-full py-2 border-2 border-primary rounded-full font-semibold   transition-colors">
                             Get Task Delegation App
                         </button>
                     </div>
@@ -403,7 +405,7 @@ export default function Home() {
 
                             {/* Description */}
                             <p className="mt-2 text-[#05071E]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
-                                2X Your Revenue & Sales Team Performance
+                                10X Your Team&apos;s Productivity
                             </p>
 
                             {/* Divider Line */}
@@ -412,11 +414,14 @@ export default function Home() {
                             {/* Feature List */}
                             <ul className="mt-4 space-y-3">
                                 {[
-                                    "AutomateTask - Task Delegation App",
-                                    "AutomateCRM - Leads Management App",
-                                    "AutomateAttendance - Attendance Tracking App",
-                                    "AutomateLeaves - Leave Management App",
-                                    "AutomateWA - Official WhatsApp API & Marketing Software",
+                                    "Zapllo Tasks - Task Delegation App",
+                                    "Zapllo Payroll - Attendance Tracking App",
+                                    "Zapllo Payroll - Leave Management App",
+                                    "Zapllo Intranet",
+                                    "Zapllo AI - Proprietory AI Technology",
+                                    "Zapllo WABA - Official WhatsApp API & Marketing Software",
+
+
                                 ].map((item, index) => (
                                     <li key={index} className="flex gap-2 items-center">
                                         <img src="/icons/tick.png" />
@@ -436,13 +441,13 @@ export default function Home() {
                                 Today&apos;s Offer - ₹5999 per user per year
                             </p>
                             <p className="text-center mt-2   text-green-600" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
-                                Zapllo Freedom Offer - ₹2999 per user per year
+                                Zapllo New Year Offer - ₹2999 per user per year
                             </p>
 
 
                             {/* CTA Button */}
                             <button
-                                className="mt-8 w-full py-3 rounded-full font-semibold text-white"
+                                className="mt-8 w-full py-3 hover:shadow-[rgba(6,_24,_44,_0.4)_0px_0px_0px_2px,_rgba(6,_24,_44,_0.65)_0px_4px_6px_-1px,_rgba(255,_255,_255,_0.08)_0px_1px_0px_inset] rounded-full font-semibold text-white"
                                 onClick={() => openCheckoutWithPlan('Zapllo Money Saver Bundle')}
                                 style={{
                                     background: "radial-gradient(51.84% 97.12% at 50% 100%, #A587FF 0%, #5E29FF 100%)",
@@ -465,7 +470,7 @@ export default function Home() {
                             className=" text-lg mt-4"
 
                         >
-                            Zapllo Payroll
+                            Zapllo Double Dhamaka
                         </h2>
                         <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
                             ₹2000
@@ -498,7 +503,7 @@ export default function Home() {
                                 lineHeight: "24px",
                             }}
                         >
-                            Tasks, Leave & Attendance + CRM
+                            Leave & Attendance + Intranet
                         </p>
 
                         <div
@@ -511,8 +516,10 @@ export default function Home() {
 
                         <ul className="mt-4 space-y-3">
                             {[
-                                "AutomateCRM - Leads Management App",
-                                "AutomateWA - Official WhatsApp API & Marketing Software",
+                                "Zapllo Payroll - Attendance Tracking App",
+                                "Zapllo Payroll - Leave Management App",
+                                "Zapllo Intranet",
+                                "Zapllo AI - Proprietory AI Technology",
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
                                     <img src="/icons/tick.png" />
@@ -524,9 +531,8 @@ export default function Home() {
                                 </li>
                             ))}
                             {[
-                                "AutomateTask - Task Delegation App",
-                                "AutomateAttendance - Attendance Tracking App",
-                                "AutomateLeaves - Leave Management App",
+                                "Zapllo Tasks - Task Delegation App",
+                                "Zapllo WABA - Official WhatsApp API & Marketing Software",
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
                                     <img src="/icons/crosss.png" />
@@ -562,12 +568,19 @@ export default function Home() {
                             Today&apos;s Offer - ₹999 per user per year
                         </p>
 
-                        <button onClick={() => openCheckoutWithPlan('Zapllo Payroll')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold transition-colors">
+                        <button onClick={() => openCheckoutWithPlan('Zapllo Payroll')} className="mt-6 hover:shadow hover:shadow-white w-full py-2 border-2 border-primary rounded-full font-semibold transition-colors">
                             Get Payroll App
                         </button>
                     </div>
                 </div>
             </div>
+
+
+            <div className="flex justify-center mt-12 w-full">
+                <img src='/branding/container.png' className="w-[70%]" />
+            </div>
+
+
 
             {/* <img src="light.png" className="-mt-72 h-96 w-[50%]" /> */}
 
@@ -643,7 +656,7 @@ export default function Home() {
                             width: "1004px",
                         }}
                     >
-                        Save 4 hours per day for each team member
+                        Save 5 hours per day for each team member
                     </p>
                 </div>
                 <div>
@@ -787,7 +800,7 @@ export default function Home() {
                             width: "1004px",
                         }}
                     >
-                        Save 4 hours per day for each team member
+                        Save 5 hours per day for each team member
                     </p>
                 </div>
                 <div>
@@ -938,7 +951,7 @@ export default function Home() {
                             width: "1004px",
                         }}
                     >
-                        Save 4 hours per day for each team member
+                        Save 5 hours per day for each team member
                     </p>
                 </div>
                 <div>
@@ -1090,7 +1103,7 @@ export default function Home() {
                             width: "1004px",
                         }}
                     >
-                        Save 4 hours per day for each team member
+                        Save 5 hours per day for each team member
                     </p>
                 </div>
                 <div>
@@ -1301,8 +1314,10 @@ export default function Home() {
 
                         <ul className="mt-4 space-y-3">
                             {[
-                                "AutomateTask - Task Delegation App",
-                                "AutomateWA - Official WhatsApp API & Marketing Software",
+                                "Zapllo Tasks - Task Delegation App",
+                                "Zapllo Intranet",
+                                "Zapllo AI - Proprietory AI Technology"
+
 
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
@@ -1315,9 +1330,9 @@ export default function Home() {
                                 </li>
                             ))}
                             {[
-                                "AutomateCRM - Leads Management App",
-                                "AutomateAttendance - Attendance Tracking App",
-                                "AutomateLeaves - Leave Management App",
+                                "Zapllo WABA - Official WhatsApp API & Marketing Software",
+                                "Zapllo Payroll - Attendance Tracking App",
+                                "Zapllo Payroll - Leave Management App",
 
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
@@ -1345,7 +1360,7 @@ export default function Home() {
                         <p className="text-center mt-2   text-green-400" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
                             Today&apos;s Offer - ₹1999 per user per year
                         </p>
-                        <button onClick={() => openCheckoutWithPlan('Zapllo Tasks')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold   transition-colors">
+                        <button onClick={() => openCheckoutWithPlan('Zapllo Tasks')} className="mt-6 hover:shadow hover:shadow-white w-full py-2 border-2 border-primary rounded-full font-semibold   transition-colors">
                             Get Task Delegation App
                         </button>
                     </div>
@@ -1376,7 +1391,7 @@ export default function Home() {
 
                             {/* Description */}
                             <p className="mt-2 text-[#05071E]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
-                                2X Your Revenue & Sales Team Performance
+                                10X Your Team&apos;s Productivity
                             </p>
 
                             {/* Divider Line */}
@@ -1385,11 +1400,14 @@ export default function Home() {
                             {/* Feature List */}
                             <ul className="mt-4 space-y-3">
                                 {[
-                                    "AutomateTask - Task Delegation App",
-                                    "AutomateCRM - Leads Management App",
-                                    "AutomateAttendance - Attendance Tracking App",
-                                    "AutomateLeaves - Leave Management App",
-                                    "AutomateWA - Official WhatsApp API & Marketing Software",
+                                    "Zapllo Tasks - Task Delegation App",
+                                    "Zapllo Payroll - Attendance Tracking App",
+                                    "Zapllo Payroll - Leave Management App",
+                                    "Zapllo Intranet",
+                                    "Zapllo AI - Proprietory AI Technology",
+                                    "Zapllo WABA - Official WhatsApp API & Marketing Software",
+
+
                                 ].map((item, index) => (
                                     <li key={index} className="flex gap-2 items-center">
                                         <img src="/icons/tick.png" />
@@ -1409,13 +1427,13 @@ export default function Home() {
                                 Today&apos;s Offer - ₹5999 per user per year
                             </p>
                             <p className="text-center mt-2   text-green-600" style={{ fontSize: "15px", fontWeight: "400", lineHeight: "24px" }}>
-                                Zapllo Freedom Offer - ₹2999 per user per year
+                                Zapllo New Year Offer - ₹2999 per user per year
                             </p>
 
 
                             {/* CTA Button */}
                             <button
-                                className="mt-8 w-full py-3 rounded-full font-semibold text-white"
+                                className="mt-8 w-full py-3 hover:shadow-[rgba(6,_24,_44,_0.4)_0px_0px_0px_2px,_rgba(6,_24,_44,_0.65)_0px_4px_6px_-1px,_rgba(255,_255,_255,_0.08)_0px_1px_0px_inset] rounded-full font-semibold text-white"
                                 onClick={() => openCheckoutWithPlan('Zapllo Money Saver Bundle')}
                                 style={{
                                     background: "radial-gradient(51.84% 97.12% at 50% 100%, #A587FF 0%, #5E29FF 100%)",
@@ -1438,7 +1456,7 @@ export default function Home() {
                             className=" text-lg mt-4"
 
                         >
-                            Zapllo Payroll
+                            Zapllo Double Dhamaka
                         </h2>
                         <p className="text- mt-2 line-through text-[#F13535]" style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px" }}>
                             ₹2000
@@ -1471,7 +1489,7 @@ export default function Home() {
                                 lineHeight: "24px",
                             }}
                         >
-                            Tasks, Leave & Attendance + CRM
+                            Leave & Attendance + Intranet
                         </p>
 
                         <div
@@ -1484,8 +1502,10 @@ export default function Home() {
 
                         <ul className="mt-4 space-y-3">
                             {[
-                                "AutomateCRM - Leads Management App",
-                                "AutomateWA - Official WhatsApp API & Marketing Software",
+                                "Zapllo Payroll - Attendance Tracking App",
+                                "Zapllo Payroll - Leave Management App",
+                                "Zapllo Intranet",
+                                "Zapllo AI - Proprietory AI Technology",
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
                                     <img src="/icons/tick.png" />
@@ -1497,9 +1517,8 @@ export default function Home() {
                                 </li>
                             ))}
                             {[
-                                "AutomateTask - Task Delegation App",
-                                "AutomateAttendance - Attendance Tracking App",
-                                "AutomateLeaves - Leave Management App",
+                                "Zapllo Tasks - Task Delegation App",
+                                "Zapllo WABA - Official WhatsApp API & Marketing Software",
                             ].map((item, index) => (
                                 <li key={index} className="flex gap-2 items-center">
                                     <img src="/icons/crosss.png" />
@@ -1535,12 +1554,13 @@ export default function Home() {
                             Today&apos;s Offer - ₹999 per user per year
                         </p>
 
-                        <button onClick={() => openCheckoutWithPlan('Zapllo Payroll')} className="mt-6 w-full py-2 border-2 border-primary rounded-full font-semibold transition-colors">
+                        <button onClick={() => openCheckoutWithPlan('Zapllo Payroll')} className="mt-6 hover:shadow hover:shadow-white w-full py-2 border-2 border-primary rounded-full font-semibold transition-colors">
                             Get Payroll App
                         </button>
                     </div>
                 </div>
             </div>
+
 
 
             <div className="flex bg-[#04061E]  mt-56 justify-center">

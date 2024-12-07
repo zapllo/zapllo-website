@@ -5,22 +5,12 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail, SendEmailOptions } from "@/lib/sendEmail"; // Assuming you have this function
 import Category from "@/models/categoryModel";
+import { RepeatType, Status } from "@/types/enums";
+
 
 connectDB();
 // Define the RepeatType enum
-export enum RepeatType {
-    Weekly = "Weekly",
-    Monthly = "Monthly",
-    Daily = "Daily",
-}
 
-// Define the Status enum
-export enum Status {
-    Pending = "Pending",
-    Completed = "Completed",
-    InProgress = "In Progress",
-    Reopen = "Reopen",
-}
 
 
 

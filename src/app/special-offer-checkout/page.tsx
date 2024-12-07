@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const golos = Golos_Text({ subsets: ["latin"] });
 
 
-type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle' | 'Zapllo Payroll';
+type PlanKeys = 'Zapllo Tasks' | 'Zapllo Money Saver Bundle';
 
 
 const mockData = [
@@ -74,7 +74,7 @@ const mockData = [
 export default function SpecialOfferCheckout() {
     const searchParams = useSearchParams();
     const selectedPlan = searchParams.get('selectedPlan') || 'Zapllo Money Saver Bundle';
-    const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(45 * 60); // 15 minutes in seconds
     // Countdown timer effect
     useEffect(() => {
         const timer = setInterval(() => {
@@ -83,6 +83,18 @@ export default function SpecialOfferCheckout() {
 
         // Clear interval on component unmount
         return () => clearInterval(timer);
+    }, []);
+
+
+    const [countdown, setCountdown] = useState(20);
+
+    useEffect(() => {
+        const intervalDuration = (45 * 60) / (20 - 3); // Interval duration in seconds
+        const interval = setInterval(() => {
+            setCountdown((prev) => (prev > 3 ? prev - 1 : 3)); // Decrease countdown until it reaches 3
+        }, intervalDuration * 1000); // Convert to milliseconds
+
+        return () => clearInterval(interval); // Cleanup interval on unmount
     }, []);
 
 
@@ -149,18 +161,26 @@ export default function SpecialOfferCheckout() {
 
             <div className="w-full py-2 bg-gradient-to-r from-[#815BF5] via-[#9D5DF0] to-[#FC8929] flex items-center justify-center mt-32 ">
                 <p className="text-white text-lg font-medium mr-4">
-                    Use Code <span className="font-bold">&quot;FREEDOM&quot;</span> to Get
-                    Flat OFF
+                    Limited Time Offer Just For Today. Grab the Deal!
                 </p>
                 <div className="bg-white items-center text-[#05071E] flex gap-1 font-semibold px-4 py-1 rounded-md">
-                    <Clock className="h-4" />  {formatTime(timeLeft)}
+                    {countdown} Seats Left
                 </div>
             </div>
 
             {/* Run Your Business */}
 
             <div className="  bg-[#05071E]">
+                <div className="absolute 2xl:right-36 mt-4 right-16 ">
+                    <img src="/icons/offer.png" />
+                    <h1 className="text-white text-xl -mt-28 ml-20 ">Use Code</h1>
+                    <span className="font-bold text-white text-3xl -mt-28 ml-14">&quot;NY2025&quot;</span>
+                    {/* <Clock className="h-4" /> */}
+                    <h1 className="text-white text-2xl  ml-[90px] ">
+                        {formatTime(timeLeft)}
+                    </h1>
 
+                </div>
                 <div className="z-10 flex items-center justify-center">
                     <div
                         className={cn(
@@ -173,7 +193,7 @@ export default function SpecialOfferCheckout() {
                                 `inline animate-  text-center md:text-3xl  font-bold bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  bg-clip-text text-transparent`
                             )}
                         >
-                            Run your Business on Autopilot
+                            Run your Business on Autopilot <span className="text-white">🚀</span>
                         </span>
                     </div>
                 </div>
@@ -229,7 +249,7 @@ export default function SpecialOfferCheckout() {
                 <MultiStepForm selectedPlan={selectedPlan as PlanKeys} />
             </div>
             <div className="flex justify-center mb-24 w-full">
-                <div className="grid grid-cols-3 gap-8">
+                <div className="grid grid-cols-3 mx-12 gap-8">
                     <TaskDelegationCard
                         title="Zapllo Tasks"
                         features={[
@@ -237,27 +257,48 @@ export default function SpecialOfferCheckout() {
                             "Team Performance Report",
                             "Links Management for your Team",
                             "Email Notifications",
-                            "Save more than 4 hours per day"
-                        ]}
-                    />
-                    <TaskDelegationCard
-                        title="Zapllo Money Saver Bundle"
-                        features={[
-                            "Automate Task Management",
-                            "Official WhatsApp API Integration",
-                            "Enhanced CRM Features",
-                            "24/7 Support",
-                            "Increased Productivity"
+                            "WhatsApp Notifications",
+                            "Automatic WhatsApp Reminders",
+                            "Automatic Email Reminders",
+                            "Repeated Tasks",
+                            "Zapllo AI -Proprietory AI Technology",
+                            "File Uploads",
+                            "Delegate Tasks with Voice Notes",
+                            "Task Wise Reminders",
+                            "Daily Task & Team Reports",
+                            "Save more than 4 hours per day",
                         ]}
                     />
                     <TaskDelegationCard
                         title="Zapllo Payroll"
                         features={[
-                            "Payroll Automation",
-                            "Attendance Tracking",
-                            "Leave Management",
-                            "Detailed Reporting",
-                            "Reduce HR Overhead"
+                            "Easy Attendance Marking using Geo location & Face recognition feature",
+                            "Easy Leave application",
+                            "Attendance & Leave Tracking",
+                            "Reports / Dashboards",
+                            "WhatsApp & Email Notifications",
+                            "Automatic WhatsApp Reminders",
+                            "Automatic Email Reminders",
+                            "Zapllo AI -Proprietory AI Technology",
+                            "Approval Process",
+                            "Regularization Process (Apply for past date attendance)",
+                            "Multiple login & Logouts",
+                            "Customer Leave Types",
+                        ]}
+                    />
+                    <TaskDelegationCard
+                        title="WhatsApp Marketing & Automation Software"
+                        features={[
+                            "Official WhatsApp API (₹20K)",
+                            "WhatsApp Live Chat (₹20K)",
+                            "WhatsApp CRM (₹20K)",
+                            "1 Year Subscription",
+                            "Up to 10 Lakh Contacts In CRM",
+                            "WhatsApp Marketing Checklist (₹10K)",
+                            "WA Chat Support (₹10K)",
+                            "Weekly Live Classes (₹20K)",
+                            "No-Markup on Conversation (Priceless)",
+                            "Total Value worth NR 1 Lakh",
                         ]}
                     />
                 </div>

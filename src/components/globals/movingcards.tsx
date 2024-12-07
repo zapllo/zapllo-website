@@ -98,7 +98,7 @@ export const MovingCards = ({
                                 className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
                             ></div>
                             <div className="flex mb-6  gap-4">
-                                <img src={item.image} className="h-20" />
+                                <img src={item.image} className="h-20 w-20 object-cover rounded-full" />
                                 <span className=" text-lg leading-[1.6] text-white -400 font-normal">
                                     {item.name}
                                     <br />
