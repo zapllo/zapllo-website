@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import Confetti from 'react-confetti'; // Import confetti
 import { VideoIcon } from 'lucide-react';
 import { String } from 'aws-sdk/clients/cloudsearch';
-import { Checkbox } from '@/components/ui/checkbox';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // Define types for ChecklistItem and Progress
@@ -117,7 +116,7 @@ export default function ChecklistPage({ }) {
                                         <DotLottieReact
                                             src="/lottie/confetti.lottie"
                                             autoplay
-                                            
+
                                         />
                                     </div>
                                 } {/* Render confetti if needed */}
@@ -129,11 +128,13 @@ export default function ChecklistPage({ }) {
                                     {checklistItems.map((item, index) => (
                                         <div key={item._id} className="w-full border-b p-2 rounded flex items-center justify-between">
                                             <div className='flex w-full items-center gap-2'>
-                                                <Checkbox
+                                                <input
+                                                    type="checkbox"
                                                     checked={progress.includes(item._id)}
-                                                    onCheckedChange={(checked) =>
-                                                        handleObjectiveChange(item._id, !!checked)
+                                                    onChange={(e) =>
+                                                        handleObjectiveChange(item._id, e.target.checked)
                                                     }
+                                                    className="cursor-pointer"
                                                 />
                                                 <span>{index + 1}.</span> {/* Add serial number */}
 

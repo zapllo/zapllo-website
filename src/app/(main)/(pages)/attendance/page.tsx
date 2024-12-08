@@ -503,46 +503,48 @@ const AttendanceDashboard: React.FC = () => {
                   Absent : {dailyabsentCount}
                 </div>
               </div>
-              <table className="table- border w-full border-collapse">
-                <thead className='bg-[#0A0D28] rounded'>
-                  <tr className="text-xs border-t ">
-                    <th className=" px-4 py-2 text-left">Name</th>
-                    <th className=" px-4 py-2 text-left">Status</th>
-                    <th className=" px-4 py-2 text-left">Login Time</th>
-                    <th className=" px-4 py-2 text-left">Logout Time</th>
-                    <th className=" px-4 py-2 text-left">Total Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dailyReport?.map((entry, index) => (
-                    <tr key={index} className='border-t'>
-                      <td className="px-4 text-xs py-2">{entry.user}</td>
-                      <td
-                        className={`px-4 text-xs py-2 ${entry.status === 'Present'
-                          ? 'text-green-600'
-                          : entry.status === 'On Leave'
-                            ? 'text-yellow-600'
-                            : 'text-red-600'
-                          }`}
-                      >
-                        {entry.status}
-                      </td>
-                      <td className="text-xs px-4 py-2">
-                        {entry.loginTime !== 'N/A' && !isNaN(new Date(entry.loginTime).getTime())
-                          ? format(new Date(entry.loginTime), 'hh:mm a')
-                          : 'N/A'}
-
-                      </td>
-                      <td className="text-xs px-4 py-2">
-                        {entry.logoutTime !== 'N/A' && !isNaN(new Date(entry.logoutTime).getTime())
-                          ? format(new Date(entry.logoutTime), 'hh:mm a')
-                          : 'N/A'}
-                      </td>
-                      <td className="text-xs px-4 py-2">{entry.totalDuration}</td>
+              <div className=' border rounded-xl w-full '>
+                <table className="table- bg-[#0A0D28] rounded-xl w-full ">
+                  <thead className=' rounded-xl'>
+                    <tr className="text-xs   rounded-xl ">
+                      <th className=" px-4 text-muted-foreground py-2 text-left">Name</th>
+                      <th className=" px-4 py-2 text-left text-muted-foreground">Status</th>
+                      <th className=" px-4 py-2 text-left text-muted-foreground">Login Time</th>
+                      <th className=" px-4 py-2 text-left text-muted-foreground">Logout Time</th>
+                      <th className=" px-4 py-2  text-muted-foreground text-left">Total Duration</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {dailyReport?.map((entry, index) => (
+                      <tr key={index} className='border-t'>
+                        <td className="px-4 text-xs py-2">{entry.user}</td>
+                        <td
+                          className={`px-4 text-xs py-2 ${entry.status === 'Present'
+                            ? 'text-green-600'
+                            : entry.status === 'On Leave'
+                              ? 'text-yellow-600'
+                              : 'text-red-600'
+                            }`}
+                        >
+                          {entry.status}
+                        </td>
+                        <td className="text-xs px-4 py-2">
+                          {entry.loginTime !== 'N/A' && !isNaN(new Date(entry.loginTime).getTime())
+                            ? format(new Date(entry.loginTime), 'hh:mm a')
+                            : 'N/A'}
+
+                        </td>
+                        <td className="text-xs px-4 py-2">
+                          {entry.logoutTime !== 'N/A' && !isNaN(new Date(entry.logoutTime).getTime())
+                            ? format(new Date(entry.logoutTime), 'hh:mm a')
+                            : 'N/A'}
+                        </td>
+                        <td className="text-xs px-4 py-2">{entry.totalDuration}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div className="flex-1 border b  shadow-md rounded-3xl p-6">
@@ -567,28 +569,30 @@ const AttendanceDashboard: React.FC = () => {
                 <span className="border text-xs text-green-400  p-2 rounded">Week Offs: {weekOffs}</span>
                 <span className="border text-xs text-red-500  p-2 rounded">Holidays: {holidaysCumulative}</span>
               </div>
-              <table className="table-auto border  w-full border-collapse">
-                <thead className='bg-[#0A0D28] rounded'>
-                  <tr className="0 text-xs">
-                    <th className=" px-4 py-2 text-left">Name</th>
-                    <th className=" px-4 py-2 text-left">Present</th>
-                    <th className=" px-4 py-2 text-left">Leave</th>
-                    <th className=" px-4 py-2 text-left">Absent</th>
-                    <th className=" px-4 py-2 text-left">Reporting Manager</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report?.map((entry, index) => (
-                    <tr className='text-xs border-t' key={index}>
-                      <td className=" px-4 py-2">{entry.user}</td>
-                      <td className=" px-4 py-2 text-center">{entry.present}</td>
-                      <td className=" px-4 py-2 text-center">{entry.leave}</td>
-                      <td className=" px-4 py-2 text-center">{entry.absent}</td>
-                      <td className=" px-4 py-2">{entry.reportingManager || "Not Assigned"}</td>
+              <div className=' border bg-[#0A0D28] rounded-xl w-full '>
+                <table className="table-  rounded-xl w-full ">
+                  <thead className=' rounded'>
+                    <tr className="text-muted-foreground text-xs">
+                      <th className=" px-4 py-2 text-left">Name</th>
+                      <th className=" px-4 py-2 text-left">Present</th>
+                      <th className=" px-4 py-2 text-left">Leave</th>
+                      <th className=" px-4 py-2 text-left">Absent</th>
+                      <th className=" px-4 py-2 text-left">Reporting Manager</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {report?.map((entry, index) => (
+                      <tr className='text-xs border-t' key={index}>
+                        <td className=" px-4 py-2">{entry.user}</td>
+                        <td className=" px-4 py-2 text-center">{entry.present}</td>
+                        <td className=" px-4 py-2 text-center">{entry.leave}</td>
+                        <td className=" px-4 py-2 text-center">{entry.absent}</td>
+                        <td className=" px-4 py-2">{entry.reportingManager || "Not Assigned"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -605,37 +609,39 @@ const AttendanceDashboard: React.FC = () => {
       {disallowedRoles.includes(role) && (
         <div className="relative mt-2 mb-12">
           <div className="h-full rounded-md">
-            <table className="w-full border-collapse border">
-              <thead className='bg-[#0A0D28]'>
-                <tr>
-                  <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
-                  <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
-                  <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
-                  <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
-                  <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthlyReport.map((day, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="px-4 py-2 text-xs">
-                      {format(new Date(day.date), 'dd MMM yyyy')}
-                    </td>
-                    <td className="px-4 py-2 text-xs">{day.day}</td>
-                    <td className="px-4 py-2 text-start">
-                      <input type="checkbox" className='text-[#017a5b]' checked={!!day.present} readOnly />
-                    </td>
-                    <td className="px-4 py-2 text-start">
-                      <input type="checkbox" checked={!!day.leave} readOnly />
-                    </td>
-                    <td className="px-4 py-2 text-start">
-                      <input type="checkbox" checked={!!day.holiday} readOnly />
-                    </td>
+            <div className='bg-[#0A0D28] border rounded-xl w-full '>
+              <table className="table-  rounded-xl w-full ">
+                <thead className='border-b text-muted-foreground'>
+                  <tr>
+                    <th className="rounded-l text-sm font-medium text-start p-2 w-24 px-4">Date</th>
+                    <th className="text-sm text-start font-medium w-24 p-2 px-4">Day</th>
+                    <th className="text-sm text-start w-24 font-medium p-2 px-4">Present</th>
+                    <th className="text-sm text-start w-24 font-medium p-2 px-4">Leave</th>
+                    <th className="text-sm text-start w-24 font-medium p-2 px-4">Holiday</th>
                   </tr>
-                ))}
+                </thead>
+                <tbody>
+                  {monthlyReport.map((day, index) => (
+                    <tr key={index} className="border-b">
+                      <td className="px-4 py-2 text-xs">
+                        {format(new Date(day.date), 'dd MMM yyyy')}
+                      </td>
+                      <td className="px-4 py-2 text-xs">{day.day}</td>
+                      <td className="px-4 py-2 text-start">
+                        <input type="checkbox" className='text-[#017a5b]' checked={!!day.present} readOnly />
+                      </td>
+                      <td className="px-4 py-2 text-start">
+                        <input type="checkbox" checked={!!day.leave} readOnly />
+                      </td>
+                      <td className="px-4 py-2 text-start">
+                        <input type="checkbox" checked={!!day.holiday} readOnly />
+                      </td>
+                    </tr>
+                  ))}
 
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -692,32 +698,34 @@ const AttendanceDashboard: React.FC = () => {
       {allowedRoles.includes(role) && (
         <div className="relative mt-2 mb-12">
           <div className="h-full  rounded-md">
-            <table className="w-full text-end border-collapse border">
-              <thead className='bg-[#0A0D28]'>
-                <th className="rounded-l text-sm font-medium text-end p-2 w-24 px-4">Date</th>
-                <th className="text-sm text-end font-medium w-24 p-2 px-4">Day</th>
-                <th className="text-sm text-end w-24 font-medium p-2 px-4">Present</th>
-                <th className="text-sm text-end w-24 font-medium p-2 px-4">Leave</th>
-                <th className="text-sm text-end w-24 font-medium p-2 px-4">Absent</th>
-                <th className="text-sm text-end w-24 font-medium p-2 px-4">Holiday</th>
-                <th className="text-sm w-24 text-end rounded-r font-medium p-2 px-4">Total</th>
-              </thead>
-              <tbody>
-                {monthlyReport.map((day, index) => (
-                  <tr key={index} className="border-b text-end">
-                    <td className="px-4 py-2 text-xs">
-                      {format(new Date(day.date), 'dd MMM yyyy')}
-                    </td>
-                    <td className="px-4 py-2 text-end text-xs">{day.day}</td>
-                    <td className="px-4 py-2 text-end text-xs">{day.present}</td>
-                    <td className="px-4 py-2 text-end text-xs">{day.leave}</td>
-                    <td className="px-4 py-2 text-end  text-xs">{day.absent}</td>
-                    <td className="px-4 py-2 text-end text-xs">{day.holiday}</td>
-                    <td className="px-4 py-2 text-end text-xs">{day.total}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className='bg-[#0A0D28] border rounded-xl w-full '>
+              <table className="table-  rounded-xl w-full ">
+                <thead className='border-b text-muted-foreground'>
+                  <th className="rounded-l text-sm font-medium text-end p-2 w-24 px-4">Date</th>
+                  <th className="text-sm text-end font-medium w-24 p-2 px-4">Day</th>
+                  <th className="text-sm text-end w-24 font-medium p-2 px-4">Present</th>
+                  <th className="text-sm text-end w-24 font-medium p-2 px-4">Leave</th>
+                  <th className="text-sm text-end w-24 font-medium p-2 px-4">Absent</th>
+                  <th className="text-sm text-end w-24 font-medium p-2 px-4">Holiday</th>
+                  <th className="text-sm w-24 text-end rounded-r font-medium p-2 px-4">Total</th>
+                </thead>
+                <tbody>
+                  {monthlyReport.map((day, index) => (
+                    <tr key={index} className="border-b text-end">
+                      <td className="px-4 py-2 text-xs">
+                        {format(new Date(day.date), 'dd MMM yyyy')}
+                      </td>
+                      <td className="px-4 py-2 text-end text-xs">{day.day}</td>
+                      <td className="px-4 py-2 text-end text-xs">{day.present}</td>
+                      <td className="px-4 py-2 text-end text-xs">{day.leave}</td>
+                      <td className="px-4 py-2 text-end  text-xs">{day.absent}</td>
+                      <td className="px-4 py-2 text-end text-xs">{day.holiday}</td>
+                      <td className="px-4 py-2 text-end text-xs">{day.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
 
