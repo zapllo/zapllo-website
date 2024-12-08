@@ -191,7 +191,7 @@ console.log(progress, 'progress')
               </div>
               <div className='flex justify-start mt-3'>
                 <Link href='/dashboard/checklist' >
-                  <Button className='bg-[#815BF5] mt-12 hover:bg-[#815BF5]'>
+                  <Button className='bg-[#815BF5] mt-12 hover:bg-[#5f31e9]'>
                     Checklist
                   </Button>
                 </Link>
@@ -203,9 +203,9 @@ console.log(progress, 'progress')
           <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
             <div className='w-full p'>
               <h1 className='px-4 text-lg font-medium'>Tutorials </h1>
-              <h1 className='px-4 py-4 text-sm'>Learn how to to get best out of our business workspace </h1>
+              <h1 className='px-4 py-4 text-sm text-muted-foreground'>Learn how to to get best out of our business workspace </h1>
               <Link href='/help/tutorials'>
-                <Button className='bg-white text-black ml-4  hover:bg-white mt-6' >Go To Tutorials</Button></Link>
+                <Button className='bg-white hover:bg-gray-300 text-black ml-4   mt-6' >Go To Tutorials</Button></Link>
               <img src='/animations/tutorials.png' className='absolute h-48 ml-[45%] -mt-[150px]' />
             </div>
           </div>
@@ -215,10 +215,10 @@ console.log(progress, 'progress')
             <div className='p-4  w-full mx-4 rounded-xl  border border-[#E0E0E066]'>
               <div className='w-full m'>
                 <h1 className='text-lg font-medium flex gap-2'><Megaphone /> Events </h1>
-                <p className='text-sm py-2'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
+                <p className='text-sm py-2 text-muted-foreground'>We are bringing Live Classes to help you grow your business. Check out all our events to get the best out of our business workspace. </p>
                 <div className="flex justify-start ">
                   <Link href="/help/events">
-                    <Button className="bg-white text-black mt-4 text-sm hover:bg-white ">
+                    <Button className="bg-white text-black mt-4 text-sm hover:bg-gray-300 ">
                       Go To Events
                     </Button>
                   </Link>
@@ -241,7 +241,7 @@ console.log(progress, 'progress')
               <div className="pt-2">
                 {(isTaskAccess || isTaskPlanEligible) ? (
                   <Link href="/dashboard/tasks">
-                    <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                    <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
                       Go To Task Management
                     </Button>
                   </Link>
@@ -265,7 +265,7 @@ console.log(progress, 'progress')
               <p className='text-xs font-medium'>Manage all your Important Company Links</p>
               <div className='pt-2'>
                 <Link href='/intranet'>
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5]  text-xs' >Go To Intranet</Button>
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#5f31e9]  text-xs' >Go To Intranet</Button>
                 </Link>
               </div>
             </div>
@@ -285,7 +285,7 @@ console.log(progress, 'progress')
                 {isLeaveAcess ? (
                   isPlanEligible ? (
                     <Link href="/attendance/my-leaves">
-                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                      <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
                         Go To Leaves
                       </Button>
                     </Link>
@@ -295,7 +295,7 @@ console.log(progress, 'progress')
                         Free Trial Expires {leavesRemainingTime}
                       </p>
                       <Link href="/attendance/my-leaves">
-                        <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                        <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
                           Go To Leaves
                         </Button>
                       </Link>
@@ -303,7 +303,7 @@ console.log(progress, 'progress')
                   ) : (
                     <Button
                       onClick={() => startTrial("leaves")}
-                      className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs"
+                      className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs"
                     >
                       {isFreeTrialLoading ? (
                         <span>Start trial</span>
@@ -323,8 +323,8 @@ console.log(progress, 'progress')
                   </Button>
                 ) : (
                   <Link href="/attendance/my-leaves">
-                    <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
-                      Go To Leaves
+                    <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
+                      Go To Attendance
                     </Button>
                   </Link>
                 )}
@@ -352,9 +352,9 @@ console.log(progress, 'progress')
               <div className="">
                 {isLeaveAcess ? (
                   isPlanEligible ? (
-                    <Link href="/attendance/my-leaves">
-                      <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
-                        Go To Leaves
+                    <Link href="/attendance/my-attendance">
+                      <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
+                        Go To Attendance
                       </Button>
                     </Link>
                   ) : leavesTrialExpires ? (
@@ -362,9 +362,9 @@ console.log(progress, 'progress')
                       <p className="text-xs text-red-600 py-2">
                         Free Trial Expires {leavesRemainingTime}
                       </p>
-                      <Link href="/attendance/my-leaves">
-                        <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
-                          Go To Leaves
+                      <Link href="/attendance/my-attendance">
+                        <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
+                          Go To Attendance
                         </Button>
                       </Link>
                     </>
@@ -391,7 +391,7 @@ console.log(progress, 'progress')
                   </Button>
                 ) : (
                   <Link href="/attendance/my-leaves">
-                    <Button className="bg-[#815BF5] py-1 hover:bg-[#815BF5] text-xs">
+                    <Button className="bg-[#815BF5] py-1 hover:bg-[#5f31e9] text-xs">
                       Go To Leaves
                     </Button>
                   </Link>
@@ -411,7 +411,7 @@ console.log(progress, 'progress')
               <p className='text-xs font-medium'>Get the Official Whatsapp API</p>
               <div className='pt-2'>
                 <Link href='https://waba.zapllo.com/signup'>
-                  <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5]  text-xs' >Go To WhatsApp API</Button>
+                  <Button className='bg-[#815BF5] py-1 hover:bg-[#5f31e9]  text-xs' >Go To WhatsApp API</Button>
                 </Link>
               </div>
             </div>
@@ -421,14 +421,14 @@ console.log(progress, 'progress')
           <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/crmm.png' className=' h-6  ml-[10px]   object-cover' />
+                <img src='/icons/crm.png' className=' h-6  ml-[10px]   object-cover' />
 
               </div>
               <h1 className='text-lg font-medium'>Zapllo CRM</h1>
               <p className='text-xs font-medium'>Track, Convert & Assign Leads to your Sales Team</p>
               <div className='pt-2'>
 
-                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#5f31e9] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
@@ -437,14 +437,14 @@ console.log(progress, 'progress')
           <div className='p-4 w-full border border-[#E0E0E066] bg-[]  m-4  text-white items-center flex justify-start rounded-xl '>
             <div className=' font-bold text-xl space-y-1'>
               <div className='rounded-full flex items-center h-12 border-[#E0E0E066] border w-12'>
-                <img src='/icons/Zapllo attendance.png' className=' h-6  ml-[10px]   object-cover' />
+                <img src='/icons/events.png' className=' h-6  ml-[12px]   object-cover' />
 
               </div>
               <h1 className='text-lg font-medium'>Zapllo Events</h1>
               <p className='text-xs font-medium'>Live Q&A Classes and Weekly Business Growth Sessions</p>
               <div className='pt-2'>
 
-                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#5f31e9] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>
@@ -476,7 +476,7 @@ console.log(progress, 'progress')
               <p className='text-xs font-medium'>Upgrade your experience by 10X with our proprietory AI Technology</p>
               <div className='pt-2'>
 
-                <Button className='bg-[#815BF5] py-1 hover:bg-[#815BF5] opacity-50 text-xs' >Coming Soon</Button>
+                <Button className='bg-[#815BF5] py-1 hover:bg-[#5f31e9] opacity-50 text-xs' >Coming Soon</Button>
               </div>
             </div>
           </div>

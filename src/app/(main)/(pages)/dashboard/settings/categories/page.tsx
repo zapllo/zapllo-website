@@ -382,9 +382,9 @@ const Categories: React.FC = () => {
         {loading ? <Loader /> : ""}
       </div>
 
-      <div className="flex justify-start rounded items-center bg-[#0A0D28] w-full mt-4">
+      <div className="flex justify-start rounded items-center border bg-[#0A0D28] w-full mt-4">
         {/* <Label>Search Categories</Label> */}
-        <h1 className="text-start text-sm font-medium  p-4">Categories</h1>
+        <h1 className="text-start text- font-medium  p-4">Categories</h1>
         <div className=" ml-auto">
           <input
             type="text"

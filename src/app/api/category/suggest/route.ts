@@ -1,3 +1,6 @@
+import { getDataFromToken } from '@/helper/getDataFromToken';
+import User from '@/models/userModel';
+import Organization from '@/models/organizationModel';
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
@@ -12,9 +15,27 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Industry is required' }, { status: 400 });
         }
 
-        // Construct the AI prompt to get task-related categories for a company based on industry
-        const prompt = `Suggest 15 task-related business categories for a company in the ${industry} industry. Ensure an even mix of single-word and multi-word categories. Examples could include HR, Operations, Project Management, Client Support, and Automation.`;
+        // Extract user ID from the authentication token
+        const userId = await getDataFromToken(req);
 
+        // Find the authenticated user in the database based on the user ID
+        const authenticatedUser = await User.findById(userId);
+        if (!authenticatedUser) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        // Fetch the user's organization description
+        const organization = await Organization.findById(authenticatedUser.organization);
+        if (!organization || !organization.description) {
+            return NextResponse.json({ error: "Organization or description not found" }, { status: 404 });
+        }
+
+        // Construct the AI prompt to get task-related categories
+        const prompt = `Suggest 15 task-related business categories for a company in the ${industry} industry. 
+The company's focus is: "${organization.description}". 
+Ensure an even mix of single-word and multi-word categories. Examples could include HR, Operations, Project Management, Client Support, and Automation.`;
+
+        // Call OpenAI API to get suggestions
         const response = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo', // Chat model
             messages: [{ role: 'system', content: prompt }],

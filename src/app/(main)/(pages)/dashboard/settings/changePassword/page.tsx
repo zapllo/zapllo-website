@@ -72,7 +72,7 @@ const ChangePassword = () => {
             required
           />
         </div>
-        <Button className="mt-8 bg-[#017a5b] text-xs hover:bg-[#017a5b]" type="submit">
+        <Button className="mt-8 bg-[#017a5b] hover:bg-[#12614d] text-xs" type="submit">
           {loading ? <Loader /> : "Change Password"}
         </Button>
         {/* {message && <p>{message}</p>} */}

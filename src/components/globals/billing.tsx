@@ -1007,7 +1007,7 @@ export default function Billing() {
                                                     </div>
                                                 )}
                                                 <div className=''>
-                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                    {/* <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1> */}
                                                 </div>
                                                 <div className="flex justify-center py-2 w-full">
 
@@ -1071,7 +1071,7 @@ export default function Billing() {
                                                     </div>
                                                 )}
                                                 <div className=''>
-                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                    {/* <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1> */}
                                                 </div>
                                                 <div className="flex justify-center py-2 w-full">
 
@@ -1135,7 +1135,7 @@ export default function Billing() {
                                                     </div>
                                                 )}
                                                 <div className=''>
-                                                    <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1>
+                                                    {/* <h1 className='mt-4 text-[#9296bf]'>Manage your Tasks like a pro</h1> */}
                                                 </div>
                                                 <div className="flex justify-center py-2 w-full">
 
@@ -1225,19 +1225,23 @@ export default function Billing() {
                                                 </CardHeader>
                                                 <div className="mt-4 ">
                                                     <CardContent className="bg-transparent">
-                                                    <h1 className='p-4 text-blue-400 text-md'>Task Delegation App</h1>
+                                                    <h1 className='p-4 text-blue-400 text-lg'>Task Delegation App</h1>
                                                         <ul className="list-disc space-y-2 w-full items-center text-sm">
                                                             {[
-                                                                "Delegate Unlimited Tasks",
-                                                                "Team Performance Report",
-                                                                "Links Management for your Team",
-                                                                "Email Notification",
-                                                                "Whatsapp Notification",
-                                                                "Repeated Tasks",
-                                                                "File Uploads",
-                                                                "Delegate Tasks with Voice Notes",
-                                                                "Task wise Reminders",
-                                                                "Save more than 5 hours per day per employee"
+                                                                 "Delegate Unlimited Tasks",
+                                                                 "Team Performance Report",
+                                                                 "Links Management for your Team",
+                                                                 "Email Notifications",
+                                                                 "WhatsApp Notifications",
+                                                                 "Automatic WhatsApp Reminders",
+                                                                 "Automatic Email Reminders",
+                                                                 "Repeated Tasks",
+                                                                 "Zapllo AI -Proprietory AI Technology",
+                                                                 "File Uploads",
+                                                                 "Delegate Tasks with Voice Notes",
+                                                                 "Task Wise Reminders",
+                                                                 "Daily Task & Team Reports",
+                                                                 "Save more than 4 hours per day",
 
                                                             ].map((item, index) => (
                                                                 <li key={index} className="flex gap-2 items-center">
@@ -1264,7 +1268,7 @@ export default function Billing() {
                                                         <h1 className="text-md absolute right-0 bottom-0 text-[#646783] italic">/ Per User Per Year</h1>
                                                     </CardDescription>
                                                     <div>
-                                                        <h1 className='mt-4 text-[#9296bf]'>Make sure Employees get to work on time</h1>
+                                                        <h1 className='mt-4 text-[#9296bf]'>10X Your Team&apos;s Productivity</h1>
                                                     </div>
                                                     {displayedPlan === 'Money Saver Bundle' && (
                                                         <div>
@@ -1302,17 +1306,21 @@ export default function Billing() {
                                                 </CardHeader>
                                                 <div className=" mt-4">
                                                     <CardContent className="bg-transparent">
-                                                    <h1 className='p-4 text-blue-400 text-md'>Zapllo Payroll (Leave & Attendance App)</h1>
+                                                    <h1 className='p-4 text-blue-400 text-lg whitespace-nowrap'>Zapllo Payroll (Leave & Attendance App)</h1>
                                                         <ul className="list-disc space-y-2  w-full items-center text-sm">
                                                             {[
-                                                                "Geo-Location & Face Recognition Feature",
-                                                                "Easy Leave Application",
-                                                                "Attendance & leave Tracking",
+                                                                "Easy Attendance Marking using Geo location & Face recognition feature",
+                                                                "Easy Leave application",
+                                                                "Attendance & Leave Tracking",
+                                                                "Reports / Dashboards",
+                                                                "WhatsApp & Email Notifications",
+                                                                "Automatic WhatsApp Reminders",
+                                                                "Automatic Email Reminders",
+                                                                "Zapllo AI -Proprietory AI Technology",
                                                                 "Approval Process",
                                                                 "Regularization Process (Apply for past date attendance)",
-                                                                "Repeated Tasks",
-                                                                "Define your own leave types",
-                                                                "Reports/Dashboard",
+                                                                "Multiple login & Logouts",
+                                                                "Customer Leave Types",
 
 
                                                             ].map((item, index) => (
@@ -1326,19 +1334,23 @@ export default function Billing() {
                                                                 </li>
                                                             ))}
                                                         </ul>
-                                                        <h1 className='p-4 text-blue-400 text-md'>Task Delegation App</h1>
+                                                        <h1 className='p-4 text-blue-400 text-lg whitespace-nowrap'>Task Delegation App</h1>
                                                         <ul className="list-disc space-y-2  w-full items-center text-sm">
                                                             {[
                                                                  "Delegate Unlimited Tasks",
                                                                  "Team Performance Report",
                                                                  "Links Management for your Team",
-                                                                 "Email Notification",
-                                                                 "Whatsapp Notification",
+                                                                 "Email Notifications",
+                                                                 "WhatsApp Notifications",
+                                                                 "Automatic WhatsApp Reminders",
+                                                                 "Automatic Email Reminders",
                                                                  "Repeated Tasks",
+                                                                 "Zapllo AI -Proprietory AI Technology",
                                                                  "File Uploads",
                                                                  "Delegate Tasks with Voice Notes",
-                                                                 "Task wise Reminders",
-                                                                 "Save more than 5 hours per day per employee"
+                                                                 "Task Wise Reminders",
+                                                                 "Daily Task & Team Reports",
+                                                                 "Save more than 4 hours per day",
 
 
                                                             ].map((item, index) => (

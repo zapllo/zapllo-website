@@ -8,7 +8,7 @@ import { FaSearch } from "react-icons/fa";
 import { VideoIcon } from "lucide-react";
 
 const categories = [
-    "All",
+    "All Tutorials",
     "Task Delegation App",
     "Leave and Attendance App",
     "Zapllo WABA",
@@ -18,7 +18,7 @@ export default function Tutorials() {
     const [tutorials, setTutorials] = useState<any[]>([]);
     const [filteredTutorials, setFilteredTutorials] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [selectedCategory, setSelectedCategory] = useState<string>("Task Delegation App");
+    const [selectedCategory, setSelectedCategory] = useState<string>("All Tutorials");
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -54,7 +54,7 @@ export default function Tutorials() {
     };
 
     const filterByCategory = (category: string, tutorialList: any[]) => {
-        if (category === "All") {
+        if (category === "All Tutorials") {
             setFilteredTutorials(
                 tutorialList.filter((tutorial) =>
                     tutorial.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -92,7 +92,7 @@ export default function Tutorials() {
     }
 
     return (
-        <div className="h-fit max-h-screen scrollbar-hide overflow-y-scroll">
+        <div className="h-fit max-h-screen mt-4 scrollbar-hide  overflow-y-scroll">
             <div className="p-4">
                 <div className="mb-6 flex flex-wrap justify-center items-center gap-4">
                     {/* Search Bar */}
@@ -127,25 +127,21 @@ export default function Tutorials() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-4 2xl:grid-cols-5 ml-24 gap-4">
+                <div className="grid grid-cols-1 mt-12  lg:grid-cols-4 mb-12 2xl:grid-cols-5 ml-24 gap-4">
                     {filteredTutorials.length > 0 ? (
                         filteredTutorials.map((tutorial) => (
                             <div
                                 key={tutorial._id}
-                                className="border hover:border-[#815BF5] rounded-lg  w-64 text-white cursor-pointer hover:shadow-lg transition"
+                                className="border-2 hover:border-[#815BF5] rounded-lg  w-full text-white cursor-pointer hover:shadow-lg transition"
                                 onClick={() => handleTutorialClick(tutorial._id)}
                             >
                                 <img
                                     src={tutorial.thumbnail}
                                     alt={tutorial.title}
-                                    className="w-64 h-36 object-cover rounded-lg rounded-b-none"
+                                    className="w-full h-36 object-cover rounded-lg rounded-b-none"
                                 />
                                 <div className="flex gap-2  mt-2 p-4 h-fit text-sm rounded-2xl items-center">
-                                    <div         onClick={() => handleTutorialClick(tutorial._id)} className='h-6 w-6 rounded-full border border-gray-400 text-muted-foreground hover:text-white  cursor-pointer bg-transparent hover:bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  flex items-center justify-center  '>
-
-                                        <VideoIcon className=' hover:text-white h-4 w-4' />
-
-                                    </div>
+                                   
                                     <h3 className="text-md ">{tutorial.title}</h3>
                                 </div>
                             </div>

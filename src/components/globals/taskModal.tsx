@@ -56,6 +56,7 @@ import {
   X,
   AlarmClock,
   Bell,
+  Trash2,
 } from "lucide-react";
 import {
   Dialog,
@@ -867,24 +868,24 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         <form className="text-sm space-y-2 overflow-y-scroll px-8 py-4 scrollbar-hide h-full max-h-4xl">
           <div className="grid grid-cols-1 gap-2">
             <div className="">
-              {/* <Label htmlFor="title" className="block text-[#D0D3D3] text-xs font-semibold">Title</Label> */}
+              <h1 className="block absolute bg-[#0B0D29] px-1 ml-2 -mt-1 bg- text-muted-foreground text-xs font-semibold">Task Title</h1>
               <input
                 type="text"
-                placeholder="Task Title"
+                // placeholder="Task Title"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-xs  outline-none focus-within:border-[#815BF5] bg-transparent border-2 mt-1 rounded px-3 py-2"
+                className="w-full text-xs  outline-none focus-within:border-[#815BF5] bg-transparent border mt-1 rounded px-3 py-2"
               />
             </div>
-            <div className="">
-              {/* <Label htmlFor="description" className="block text-xs font-semibold">Description</Label> */}
+            <div className="mt-1">
+              <h1 className="block absolute bg-[#0B0D29] px-1 ml-2 -mt-1 bg- text-muted-foreground text-xs font-semibold"> Description</h1>
               <textarea
                 id="description"
-                placeholder="Task Description"
+                // placeholder="Task Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="text-xs w-full focus-within:border-[#815BF5]  outline-none  bg-transparent border-2    mt-1 rounded px-3 py-3"
+                className="text-xs w-full focus-within:border-[#815BF5]  outline-none  bg-transparent border    mt-1 rounded px-3 py-3"
               ></textarea>
             </div>
           </div>
@@ -1247,7 +1248,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
           <div className="flex items-center   justify-end space-x-4">
             <Switch
               id="assign-more-tasks"
-              className="scale-125 mt-2 "
+              className="scale-125  "
               checked={assignMoreTasks}
               onCheckedChange={handleCheckboxChange}
             />
@@ -1265,7 +1266,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
               </div>
               <DialogDescription>Attach Links to the Task.</DialogDescription>
               <div className="mb-4">
-                <Label className="block font-semibold mb-2">Links</Label>
+                {/* <Label className="block font-semibold mb-2">Links</Label> */}
                 {linkInputs.map((link, index) => (
                   <div key={index} className="flex gap-2 items-center mb-2">
                     <input
@@ -1279,9 +1280,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     <Button
                       type="button"
                       onClick={() => removeLinkInputField(index)}
-                      className="bg-red-500 hover:bg-red-500 text-white rounded"
+                      className=" text-white bg-transparent hover:bg-transparent rounded"
                     >
-                      Remove
+                      <Trash2 className="text-red-500 hover:text-red-800" />
                     </Button>
                   </div>
                 ))}
@@ -1298,7 +1299,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                   <Button
                     type="button"
                     onClick={handleSaveLinks}
-                    className="bg-[#017a5b] text-white hover:bg-[#017a5b] px-4 py-2 rounded"
+                    className="bg-[#017a5b] text-white hover:bg-[#15624f] px-4 py-2 rounded"
                   >
                     Save Links
                   </Button>
@@ -1362,7 +1363,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 )}
               </div>
               <Button
-                className="bg-[#017a5b] hover:bg-[#017a5b]"
+                className="bg-[#017a5b] hover:bg-[#15624f]"
                 onClick={() => setIsAttachmentModalOpen(false)}
               >
                 Save Attachments
@@ -1444,7 +1445,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                     <button
                       onClick={addReminder}
                       // className="bg-green-500 rounded-full flex items-center justify-center h-full"
-                      className="bg-[#017A5B] hover:bg-[#017A5B] rounded-full h-10 w-10 flex items-center justify-center"
+                      className="bg-[#017A5B] hover:bg-[#15624f] rounded-full h-10 w-10 flex items-center justify-center"
                     >
                       <Plus className="text-white" />
                     </button>
@@ -1565,7 +1566,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 <div className="mt-4 flex justify-center">
                   <Button
                     onClick={handleSaveReminders}
-                    className="bg-[#017A5B]  hover:bg-[#017A5B] text-white"
+                    className="bg-[#017A5B]  hover:bg-[#15624f] text-white"
                   >
                     Save Reminders
                   </Button>
@@ -1768,7 +1769,7 @@ const UserSelectPopup: React.FC<UserSelectPopupProps> = ({
     >
       <input
         placeholder="Search user"
-        className="h-8 text-xs px-4 text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
+        className="h-8 text-xs px-4 focus:border-[#815bf5] text-white w-full bg-[#292d33] gray-600 border rounded outline-none mb-2"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -1945,8 +1946,8 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({
       className="absolute bg-[#0B0D29] text-black border mt-2 rounded shadow-md p-4 w-[45%] z-50"
     >
       <input
-        placeholder=" Search Categories..."
-        className="h-8 text-xs px-4 text-white w-full bg-[#282D32] -800 border rounded outline-none mb-2"
+        placeholder=" Search Categories"
+        className="h-8 text-xs px-4 text-white focus:border-[#815bf5] w-full bg-[#282D32] -800 border rounded outline-none mb-2"
         value={searchCategoryQuery}
         onChange={(e) => setSearchCategoryQuery(e.target.value)}
       />
@@ -2003,12 +2004,12 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({
                 placeholder="Create Category"
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                className="px-4 outline-none py-2 border text-white rounded w-full"
+                className="px-4 outline-none focus:border-[#815bf5] py-2 border text-white rounded w-full"
               />
 
               <div
                 onClick={handleCreateCategory}
-                className="bg-[#007A5A] p-2  cursor-pointer rounded-full ml-4"
+                className="bg-[#007A5A] hover:bg-[#15624f] p-2  cursor-pointer rounded-full ml-4"
               >
                 <Plus className="text-white" />
               </div>

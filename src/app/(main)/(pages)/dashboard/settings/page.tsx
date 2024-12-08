@@ -275,11 +275,11 @@ export default function Page() {
           </div>
           <div className=" text-xs grid grid-cols-1 text- p-2 gap-2 py-2">
             <div className="grid-cols-2 grid gap-2 p-2">
-              <div className="">
-                <h1 className="mt-2">Company Name</h1>
-                <h1 className="mt-6">Industry</h1>
-                <h1 className="mt-6">Company Description</h1>
-                <h1 className="mt-8">Team Size</h1>
+              <div className="space-y-8 mt-2">
+                <h1 className="">Company Name</h1>
+                <h1 className="">Industry</h1>
+                <h1 className="">Company Description</h1>
+                <h1 className="">Team Size</h1>
               </div>
               <div className="">
                 <div>
@@ -352,7 +352,7 @@ export default function Page() {
           <div className=" mt-4 bg-[#0A0D28] p-2 px-4 border rounded-xl ">
             <h1 className="text-sm text-muted-foreground">WhatsApp Integration</h1>
           </div>
-          <div onClick={() => setWabaOpen(true)} className="mb-2  mt-2 flex   px-4 py-4  decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  ">
+          <div onClick={() => setWabaOpen(true)} className="mb-2  mt-2 flex   px-4 py-4  ' cursor-pointer ' underline-offset-4  m border-b w-full  ">
             <h1 className=" text-xs text-start w-full">Connect your WABA Number</h1>
             <ChevronRight className="h-4" />
           </div>
@@ -363,7 +363,7 @@ export default function Page() {
       </div>
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DialogTrigger className="w-full  items-center mt-2  flex justify-">
-          <div className="mb-2  px-4 decoration-[#815af5] hover:underline underline-offset-4 py-4  m border-b w-full  ">
+          <div className="mb-2  px-4 ' ' underline-offset-4 py-4  m border-b w-full  ">
             <h1 className=" text-xs text-start w-full">Notifications & Reminders</h1>
           </div>
           <ChevronRight className="h-4 -ml-10" />
@@ -540,7 +540,7 @@ export default function Page() {
               <input type="text"
                 className="w-full text-sm focus-within:border-[#815BF5] p-2 border bg-transparent outline-none rounded" />
               <span className=" text-xs px-2">Get Your Channel ID From here -
-                <a className="text-blue-400 hover:underline" href="http://waba.zapllo.com">http://waba.zapllo.com/</a>
+                <a className="text-blue-400 '" href="http://waba.zapllo.com">http://waba.zapllo.com/</a>
               </span>
               <Button className="bg-[#815BF5] w-full text-sm cursor-pointer  text-white px-4 mt-6  py-2 rounded">
                 Save
@@ -549,7 +549,7 @@ export default function Page() {
           </div>
         </DialogContent>
       </Dialog>
-      <div className="mb-24   px-4 decoration-[#815af5] cursor-pointer hover:underline underline-offset-4  m border-b w-full  py-2">
+      <div className="mb-24   px-4 ' cursor-pointer ' underline-offset-4  m border-b w-full  py-2">
         <h1 className=" text-xs text-start w-full">Export Tasks (Coming Soon)</h1>
       </div>
 

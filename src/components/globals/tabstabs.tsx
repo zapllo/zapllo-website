@@ -30,6 +30,7 @@ import UserCountry from "./userCountry";
 import { Switch } from "../ui/switch";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { FaSearch } from "react-icons/fa";
 
 interface User {
   _id: string;
@@ -432,7 +433,7 @@ export default function TeamTabs() {
             <select
               value={selectedReportingManager}
               onChange={handleReportingManagerChange}
-              className="block bg-[#04061E] border-[#]  border-2 w-full px-3 py-1  rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
+              className="block bg-[#04061E] border-[#] h-8  border-2 w-full px-3 py-1  rounded-md shadow-sm text-xs focus:outline-none focus:ring-primary-500 focus:border-primary-500 "
             >
               <option value="">Reporting Manager</option>
               {users.map((user) => (
@@ -444,8 +445,8 @@ export default function TeamTabs() {
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               {loggedInUserRole === "orgAdmin" && (
                 <DialogTrigger asChild>
-                  <Button size="sm" className="ml-4 bg-[#04061E] border hover:bg-[#] gap-2" onClick={() => setIsModalOpen(true)}>
-                    <Plus className="h-5" />  Add Member </Button>
+                  <Button size="sm" className="ml-4 bg-[#017a5b] hover:bg-[#15624f] border gap-2" onClick={() => setIsModalOpen(true)}>
+                    Add Member </Button>
                 </DialogTrigger>
               )}
               <DialogContent className="p-6 m-auto  overflow-y-scroll scrollbar-hide z-[100]">
@@ -621,17 +622,19 @@ export default function TeamTabs() {
             </Dialog>
           </div>
         </div>
-        <div className="mb-4 flex ml-56 mt-4">
+
+        <div className=" flex items-center w-1/4 ml-48 mb-6 px-4 focus-within:border-[#815bf5] rounded border py-2 gap-3 bg-[#0B0D29]">
+          <FaSearch className="text-gray-400" />
           <input
             type="text"
             placeholder="Search Team Member"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="py-1 focus-within:border-[#815BF5] text-sm px-4 outline-none border rounded bg-transparent"
+            className="text-sm w-full bg-transparent  text-white  focus:outline-none"
           />
         </div>
-        <div className="flex justify-center -ml-96">
-          <div className="flex gap-2">
+        <div className="flex justify-center  -ml-96">
+          <div className="flex items-center gap-1 bg-gray-800 p-2 rounded-2xl" >
             <Users2Icon className="h-4" />
             <h1 className="text-sm"> {filteredUsers.length} Members</h1>
           </div>
@@ -644,7 +647,7 @@ export default function TeamTabs() {
             })
             .map((user) => (
               <div key={user._id}>
-                <Card key={user.firstName} className="flex rounded bg-[#] border cursor-pointer items-center justify-between w-full p-2">
+                <Card key={user.firstName} className="flex rounded-xl bg-[#] border cursor-pointer items-center justify-between w-full p-2">
                   <div className="items-center flex gap-4">
                     <div className="flex gap-2">
                       <Avatar className="scale-75">
@@ -690,7 +693,7 @@ export default function TeamTabs() {
                       className={`w-fit px-4 py-1 rounded text-xs ${user.role === "orgAdmin"
                         ? "bg-[#B4173B]"
                         : user.role === "manager"
-                          ? "bg-orange-500"
+                          ? "bg-blue-600"
                           : user.role === "member"
                             ? "bg-[#007A5A]"
                             : "bg-gray-500"

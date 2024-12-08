@@ -170,7 +170,7 @@ export default function Home() {
             <Image
                 src="/mask.png"
                 height={1000}
-                className=" absolute overflow-hidden -mt-56 w-full "
+                className=" absolute overflow-hidden -mt-96  w-full "
                 width={1000}
                 alt="Background mask for zapllo automation"
             />

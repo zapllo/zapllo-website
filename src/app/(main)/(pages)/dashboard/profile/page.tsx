@@ -210,7 +210,7 @@ export default function Profile({ }: Props) {
   return (
     <div className="mt-16">
       <div className="flex justify-center w-full p-2">
-        <div className="flex cursor-pointer bg-transparent border border-lg w-fit rounded text-xs px-4 py-2 items-center justify-center">
+        <div className="flex cursor-pointer bg-transparent border border-lg  w-fit rounded-xl text-xs px-4 py-2 items-center justify-center">
           <div className="flex items-center text-[#E0E0E0] gap-4">
             {/* Dialog to open Modal */}
                         {/* <Toaster /> */}
@@ -320,7 +320,7 @@ export default function Profile({ }: Props) {
         {/* Account Information */}
         <div>
           <div className="border bg-[#0A0D28] rounded-lg p-2 mt-2 h-10">
-            <h1 className="text-sm">My Account Information</h1>
+            <h1 className="text-sm text-muted-foreground">My Account Information</h1>
           </div>
           <Link href="/dashboard/settings/changePassword">
             <div className="border-b p-2 mt-2 h-10">
@@ -332,7 +332,7 @@ export default function Profile({ }: Props) {
         {/* Support and Logout */}
         <div className="py-4">
           <div className="border bg-[#0A0D28] rounded-lg p-2 mt-2 h-10">
-            <h1 className="text-sm">Support</h1>
+            <h1 className="text-sm text-muted-foreground">Support</h1>
           </div>
           <Link href="/help/tutorials">
             <div className="border-b p-2 mt-2 h-10">
@@ -349,10 +349,10 @@ export default function Profile({ }: Props) {
               <h1 className="text-sm">Raise a Ticket</h1>
             </div>
           </Link>
-          <div className="flex justify-center">
+          <div className="flex mt-4 justify-center">
             <div
               onClick={logout}
-              className="border cursor-pointer w-fit bg-red-700 px-8 mt-4 py-2 rounded-lg"
+              className="border cursor-pointer w-fit bg-red-700 hover:bg-red-900 px-8 mt-4 py-2 rounded-lg"
             >
               <h1 className="text-sm">Logout</h1>
             </div>

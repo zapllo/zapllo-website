@@ -391,7 +391,7 @@ export default function Tickets() {
                                   id="subject"
                                   value={subject}
                                   onChange={(e) => setSubject(e.target.value)}
-                                  className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                                  className="w-full focus:border-[#815bf5] text-sm p-2 border bg-transparent outline-none rounded"
                                 />
                               </div>
 
@@ -410,7 +410,7 @@ export default function Tickets() {
                                   onChange={(e) =>
                                     setDescription(e.target.value)
                                   }
-                                  className="w-full text-sm p-2 border bg-transparent outline-none rounded"
+                                  className="w-full focus:border-[#815bf5] text-sm p-2 border bg-transparent outline-none rounded"
                                 />
                               </div>
 
