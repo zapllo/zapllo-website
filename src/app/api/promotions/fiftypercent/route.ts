@@ -61,6 +61,15 @@ export async function GET(request: NextRequest) {
                 { new: true } // Return the updated document
             );
 
+            console.log("Query conditions:", {
+                role: "orgAdmin",
+                createdAt: { $lte: oneHourAgo },
+                promotionNotification: false,
+            });
+            console.log("One hour ago timestamp:", oneHourAgo);
+
+
+            console.log(admin, 'admin?')
             if (!admin) {
                 break; // No more pending notifications
             }
