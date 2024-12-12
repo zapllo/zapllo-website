@@ -33,7 +33,7 @@ export default function Footer() {
             <Separator className=' w-[95%] flex mt-12' />
             <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
                 <div className='Zapllo my-8  '>
-                    <img src='logo.png' className='h-6' />
+                    <img src='/logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
                         <Link href='/Templates'>
                             <h1>TEMPLATE</h1>
@@ -49,12 +49,12 @@ export default function Footer() {
                         </Link>
                     </div>
                     <div className='flex gap-3 mt-6'>
-                        <img src="twitter.png" alt="" className='h-8' />
-                        <img src="facebook.png" alt="" className='h-8' />
-                        <img src="instagram.png" alt="" className='h-8' />
+                        <img src="/twitter.png" alt="" className='h-8' />
+                        <img src="/facebook.png" alt="" className='h-8' />
+                        <img src="/instagram.png" alt="" className='h-8' />
                     </div>
-                    <div className='flex -ml-5 md:gap-4 mt-8'>
-                        <Link
+                    <div className='flex w-full justify-start -ml-14 mt-8'>
+                        {/* <Link
                             href="/dashboard"
                             className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] "
                         >
@@ -66,23 +66,23 @@ export default function Footer() {
                                     Get Started
                                 </h1>
                             </ShineBorder>
-                        </Link>
+                        </Link> */}
                         <LetsCall />
                     </div>
                 </div>
                 <div className='empty rectangle hidden lg:block '>
                     <motion.div className='-ml-12' initial="hidden" animate="visible" variants={gearVariant}>
 
-                        <img src='shards.png' className='absolute -mt-40  h-56' />
+                        <img src='/shards.png' className='absolute -mt-40  h-56' />
 
                     </motion.div>
-                    <img src='gear.png' className='h-[100%]' />
+                    <img src='/gear.png' className='h-[100%]' />
                 </div>
                 <div className=' overflow-visible my-8  '>
                     <div className='flex gap-6'>
                         {/* <img src='at.png' className='h-full' /> */}
 
-                        <img src='at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   h-20' />
+                        <img src='/at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   h-20' />
 
                         <div>
                             <h1 className='text-lg   font-bold'>Subscribe to Zapllo Insider</h1>

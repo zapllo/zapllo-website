@@ -13,13 +13,12 @@ export default function PayrollFeatures({ }: Props) {
                     </span> </h1>
                 </div>
                 <h1 className='font-bold text-center mb-4 text-2xl mt-4'>Simplify your Leave & Attendance Management</h1>
-                <div className='grid grid-cols-2 max-w-4xl gap-4'>
+                <div className='grid grid-cols-2 max-w-5xl gap-4'>
                     <div className='bg-[#0A0D28] rounded-xl'>
                         <PayrollFaq />
-
                     </div>
-                    <div className='bg-[#0A0D28] rounded-xl'>
-                        <img src='/product/face.png' className='rounded-xl' />
+                    <div className='bg-[#0A0D28]  relative rounded-xl'>
+                        <img src='/product/face.png' className='rounded-xl ' />
                     </div>
                 </div>
             </div>

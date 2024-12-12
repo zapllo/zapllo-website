@@ -3,10 +3,10 @@ import ChecklistItem from "@/models/checklistModel";
 import { NextRequest, NextResponse } from "next/server";
 
 
+connectDB();
 
 export async function GET() {
     try {
-        await connectDB();
         const checklistItems = await ChecklistItem.find();
         return NextResponse.json({ checklistItems },
             {

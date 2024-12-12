@@ -1,0 +1,161 @@
+import React from 'react'
+import PayrollFaq from './Faq'
+import SaveMore from './save'
+
+type Props = {}
+
+export default function TaskFeatures({ }: Props) {
+    return (
+        <div className='w-full flex justify-center'>
+            <div className='mb-16 max-w-5xl w-full mt-20 '>
+                <div className='flex justify-center'>
+                    <h1 className='text-center  text-2xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
+                        Zapllo Tasks App Features
+                    </span> </h1>
+                </div>
+                <h1 className='font-bold text-center mb-4 text-2xl mt-4'>
+                    How Zapllo Tasks App saves 4 hours of each Employee?
+                </h1>
+                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
+                    <div className=' h-[648px] relative rounded-xl'>
+                        <img src='/product/tasks.png' className='rounded-xl h-full object-cover' />
+                    </div>
+                    <div className='mt-12 rounded-xl'>
+                        <h1 className='text-3xl font-medium'>Effortless Task Delegation</h1>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/assigned.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Task Assignment
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Assign tasks with deadlines and priorities, allow assigners to choose frequency, and ensure efficient completion and management.
+                        </p>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/time.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Recurring Tasks-Daily, Weekly& Monthly
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Set up recurring tasks that need to be done on a periodic basis.
+                        </p>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/progress.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Task Assignment
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Assign tasks with deadlines and priorities, allow assigners to choose frequency, and ensure efficient completion and management.
+                        </p>
+                    </div>
+                </div>
+                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
+                    <div className='mt-12 rounded-xl'>
+                        <h1 className='text-3xl font-medium'>Task Tracking & MIS Reports</h1>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/assigned.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Department wise Dashboard
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Get real-time updates on tasks, including completion notifications and milestone achievements.
+                        </p>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/time.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Employee Performance
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Analyze employee performance with MIS scores, fostering responsibility and accountability.
+                        </p>
+
+
+                    </div>
+                    <div className=' h-[648px] relative rounded-xl'>
+                        <img src='/product/performance.png' className='rounded-xl h-full object-cover' />
+                    </div>
+                </div>
+                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
+                    <div className=' h-[648px] -ml-14  relative rounded-xl'>
+                        <img src='/product/reminders.png' className='rounded-xl h-full w-full object-cover' />
+                    </div>
+                    <div className='mt-24 rounded-xl'>
+                        <h1 className='text-3xl font-medium'>WhatsApp & Email Reminders</h1>
+                        <div className='flex gap-4  mt-4 items-center'>
+                            <img src='/product/icons/bell.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Instant WhatsApp & Email Reminders
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Automated reminders and notifications about tasks and deliverables.
+                        </p>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/time.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Daily Reminders on WhatsApp
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Employees get Daily Reminder for pending Tasks which pushes them to complete on time
+                        </p>
+
+                    </div>
+
+
+                </div>
+                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
+                    <div>
+                        <h1 className='text-3xl font-medium'>Say GoodBye to Miscommunications</h1>
+                        <div className='flex gap-4  mt-8 items-center'>
+                            <img src='/product/icons/audio.png' className='h-12 ' />
+                            <h1 className='text-2xl font-medium '>
+                                Audio Notes
+                            </h1>
+                        </div>
+                        <p className='mt-4 max-w-md text-muted-foreground'>
+                            While assigning tasks, you can add audio note to explain in detail about how to perform a specific tasks or what to avoid.
+                        </p>
+                        <div className='flex gap-4  mt-8 items-center'>
+                            <img src='/product/icons/attachments.png' className='h-12 ' />
+                            <h1 className='text-2xl font-medium '>
+                                Attachments
+                            </h1>
+                        </div>
+                        <p className='mt-4 max-w-md text-muted-foreground'>
+                            Every team leader and manager will be able to assign, modify and delete KRAs to each team member.
+                        </p>
+                        <div className='flex gap-4  mt-8 items-center'>
+                            <img src='/product/icons/reminders.png' className='h-12 ' />
+                            <h1 className='text-2xl font-medium '>
+                                Reminders
+                            </h1>
+                        </div>
+                        <p className='mt-4 max-w-md text-muted-foreground'>
+                            Every team leader and manager will be able to assign, modify and delete KRAs to each team member.
+                        </p>
+                        <div className='flex gap-4  mt-8 items-center'>
+                            <img src='/product/icons/export.png' className='h-12 ' />
+                            <h1 className='text-2xl font-medium '>
+                                Upload
+                            </h1>
+                        </div>
+                        <p className='mt-4 max-w-md text-muted-foreground'>
+                            Every team leader and manager will be able to assign, modify and delete KRAs to each team member.
+                        </p>
+                    </div>
+                    <div className=' h-[648px] -ml-14  relative rounded-xl'>
+                        <img src='/product/tasks.png' className='rounded-xl h-full w-full object-cover' />
+                    </div>
+                </div>
+                <SaveMore />
+
+            </div>
+
+        </div>
+    )
+};
