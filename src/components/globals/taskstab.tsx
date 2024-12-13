@@ -111,6 +111,7 @@ import { ClearIcon } from "@mui/x-date-pickers/icons";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Task, TasksTabProps, User, Category, DateFilter, DateRange, TaskStatusCounts } from "@/types/tasksTab";
 import MainLoader from "../loaders/loader";
+import { cn } from "@/lib/utils";
 
 export default function TasksTab({
   tasks,
@@ -142,7 +143,7 @@ export default function TasksTab({
   // State variables for filters
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [repeatFilter, setRepeatFilter] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState<boolean | null>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [userLoading, setUserLoading] = useState<boolean | null>(false);
   const [isPro, setIsPro] = useState<boolean | null>(null);
   const [assignedUserFilter, setAssignedUserFilter] = useState<string | null>(
@@ -154,7 +155,9 @@ export default function TasksTab({
   const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
   const [isReopenDialogOpen, setIsReopenDialogOpen] = useState(false);
   const [statusToUpdate, setStatusToUpdate] = useState<string | null>(null);
-  const [comment, setComment] = useState<string>("");
+  const [comment, setComment] = useState<string>(" ");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const router = useRouter();
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [assignedByFilter, setAssignedByFilter] = useState<string[]>([]);
@@ -182,6 +185,7 @@ export default function TasksTab({
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
   // Add this state to the component
   const [taskStatusFilter, setTaskStatusFilter] = useState<string>("pending");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [selectedUserId, setSelectedUserId] = useState<User | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -245,8 +249,8 @@ export default function TasksTab({
       await axios.delete("/api/tasks/delete", {
         data: { id: selectedTask?._id },
       });
-      setIsDeleteDialogOpen(false);
       setSelectedTask(null);
+      setIsDeleteDialogOpen(false);
       await onTaskUpdate();
       // Optionally, handle success (e.g., show a message, update state)
       console.log("Task deleted successfully");
@@ -386,6 +390,7 @@ export default function TasksTab({
   };
 
 
+
   const getDateRange = (filter: DateFilter) => {
     const today = new Date();
     const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -438,13 +443,14 @@ export default function TasksTab({
         endDate = new Date(today.getFullYear() + 1, 0, 1);
         break;
       case "allTime":
-        startDate = new Date(0);
-        endDate = new Date();
+        startDate = new Date(0); // Earliest possible date
+        endDate = new Date(8640000000000000); // Far future date (max safe timestamp)
         break;
+
       case "custom":
         if (customStartDate && customEndDate) {
-          startDate = new Date(customStartDate);
-          endDate = new Date(customEndDate);
+          startDate = customStartDate;
+          endDate = customEndDate;
         } else {
           console.error("Custom dates are not defined");
           startDate = new Date();
@@ -729,8 +735,17 @@ export default function TasksTab({
     fetchCategories();
   }, []);
 
+
+  console.log(categories, 'categories?')
+
   const handleUpdateTaskStatus = async () => {
-    setLoading(true);
+    setIsSubmitted(true);
+    if (!comment.trim()) {
+      setErrorMessage("Please add a comment before updating the task.");
+      return; // Exit the function if the comment is not provided
+    }
+
+
     let fileUrl = [];
     if (files && files.length > 0) {
       // Upload files to S3 and get the URLs
@@ -738,6 +753,8 @@ export default function TasksTab({
       files.forEach((file) => formData.append("files", file));
 
       try {
+        setLoading(true);
+
         const s3Response = await fetch("/api/upload", {
           method: "POST",
           body: formData,
@@ -791,6 +808,7 @@ export default function TasksTab({
           <h1 className="text-black text-center font-medium text-lg">Task Updated successfully</h1>
         </div>);
         setFiles([]); // Reset files
+        setIsSubmitted(false);
         setFilePreviews([]); // Reset file previews
         setIsDialogOpen(false);
         setIsCompleteDialogOpen(false);
@@ -2245,7 +2263,7 @@ export default function TasksTab({
                                                 {/* Delete Button */}
                                                 <Button
                                                   onClick={(e) => {
-                                                    e.stopPropagation(); // Prevent event propagation
+
                                                     handleDeleteClick(task._id);
                                                   }}
                                                   className="border mt-4 px-2 hover:bg-transparent py-3 bg-transparent h-6 rounded hover:border-red-500 border-gray-600 w-fit"
@@ -2595,7 +2613,7 @@ export default function TasksTab({
                                             <h1
                                               className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
                                                 ? "text-red-500"
-                                                : "text-[#E0E0E0]"
+                                                : "text-green-500"
                                                 }`}
                                             >
                                               {formatTaskDate(task.dueDate)}
@@ -2696,7 +2714,6 @@ export default function TasksTab({
                                                 {/* Delete Button */}
                                                 <Button
                                                   onClick={(e) => {
-                                                    e.stopPropagation();
                                                     handleDeleteClick(task._id)
                                                   }}
                                                   className="border mt-4 px-2 py-3 bg-transparent h-6 rounded hover:border-red-500 hover:bg-transparent border-gray-600 w-fit"
@@ -3078,7 +3095,7 @@ export default function TasksTab({
                                             <h1
                                               className={`mt-[1.5px] ${new Date(task.dueDate) < new Date()
                                                 ? "text-red-500"
-                                                : "text-[#007A5A]"
+                                                : "text-green-500"
                                                 }`}
                                             >
                                               {formatTaskDate(task?.dueDate)}
@@ -3316,7 +3333,10 @@ export default function TasksTab({
                                 Task Update
                               </DialogTitle>
                               <DialogClose
-                                onClick={() => setIsCompleteDialogOpen(false)}
+                                onClick={() => {
+                                  setIsCompleteDialogOpen(false);
+                                  setIsSubmitted(false); // Reset isSubmitted to false
+                                }}
                               >
                                 <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
 
@@ -3327,13 +3347,24 @@ export default function TasksTab({
                               completed
                             </p>
                             <div className="mt-2">
-                              <Label className="text-sm">Comment</Label>
-                              <textarea
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 focus:border-[#815bf5] bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
-                              />
-
+                              <div className="relative">
+                                <Label className="absolute bg-[#0b0d29] !text-muted-foreground ml-2 text-xs -mt-2 px-1">Comment</Label>
+                                <textarea
+                                  value={comment}
+                                  onChange={(e) => {
+                                    setComment(e.target.value);
+                                    if (e.target.value.trim() !== "") {
+                                      setErrorMessage(""); // Clear the error message if comment is not empty
+                                    }
+                                    if (e.target.value.trim() == "") {
+                                      setErrorMessage("Please add a commment before updating the task ")
+                                    }
+                                  }}
+                                  className={`py-2 px-2 h-24 w-full focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !comment.trim() ? "border-red-500" : ""
+                                    }`}
+                                />
+                                <h1 className="text-xs text-red-500">{errorMessage}</h1>
+                              </div>
                               <div className="flex mb-4  mt-4 gap-4">
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
@@ -3382,11 +3413,16 @@ export default function TasksTab({
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
                               <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
+                                onClick={!loading ? handleUpdateTaskStatus : undefined} // Prevent multiple clicks
+                                className={cn(
+                                  "w-full text-white bg-[#007A5A]",
+                                  !loading ? "hover:bg-[#007A5A]" : "opacity-50 cursor-not-allowed"
+                                )}
+                                disabled={loading} // Disable button when loading
                               >
                                 {loading ? <Loader /> : "Update Task"}
                               </Button>
+
                             </div>
                           </DialogContent>
                         </Dialog>
@@ -3410,7 +3446,10 @@ export default function TasksTab({
                                 Task Update
                               </DialogTitle>
                               <DialogClose
-                                onClick={() => setIsDialogOpen(false)}
+                                onClick={() => {
+                                  setIsDialogOpen(false);
+                                  setIsSubmitted(false); // Reset isSubmitted to false
+                                }}
                               >
                                 <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                               </DialogClose>
@@ -3420,17 +3459,24 @@ export default function TasksTab({
                               progress
                             </p>
                             <div className="mt-2">
-                              <Label className="text-sm">Comment</Label>
-                              <div
-                                ref={editorRef}
-                                contentEditable
-                                className="border-gray-600 focus:border-[#815bf5] bg-[#121212] border rounded outline-none px-2 py-2 h-24 w-full mt-2"
-                                onInput={(e) => {
-                                  const target = e.target as HTMLDivElement;
-                                  setComment(target.innerHTML);
-                                }}
-                              ></div>
-
+                              <div className="relative">
+                                <Label className="absolute bg-[#0b0d29] !text-muted-foreground ml-2 text-xs -mt-2 px-1">Comment</Label>
+                                <textarea
+                                  value={comment}
+                                  onChange={(e) => {
+                                    setComment(e.target.value);
+                                    if (e.target.value.trim() !== "") {
+                                      setErrorMessage(""); // Clear the error message if comment is not empty
+                                    }
+                                    if (e.target.value.trim() == "") {
+                                      setErrorMessage("Please add a commment before updating the task ")
+                                    }
+                                  }}
+                                  className={`py-2 px-2 h-24 w-full focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !comment.trim() ? "border-red-500" : ""
+                                    }`}
+                                />
+                                <h1 className="text-xs text-red-500">{errorMessage}</h1>
+                              </div>
                               <div className="flex mb-4  mt-4 gap-4">
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
@@ -3449,8 +3495,33 @@ export default function TasksTab({
                                   onChange={handleImageOrVideoUpload}
                                 />
                               </div>
-
-                              {/* <img src="/icons/image.png" alt="image icon" /> */}
+                              <div className="file-previews">
+                                {filePreviews.map((preview, index) => (
+                                  <div
+                                    key={index}
+                                    className="file-preview-item relative inline-block"
+                                  >
+                                    {files[index].type.startsWith("image/") ? (
+                                      <img
+                                        src={preview}
+                                        alt={`Preview ${index}`}
+                                        className="w-28 h-28 object-cover rounded-lg"
+                                      />
+                                    ) : (
+                                      <div className="file-info p-2 w-56 text-sm text-gray-700 bg-gray-200 rounded-lg">
+                                        {files[index].name}
+                                      </div>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveFile(index)}
+                                      className="absolute top-2 right-1 bg-red-600 text-white rounded-full p-1"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                             <div className="file-previews">
                               {filePreviews.map((preview, index) => (
@@ -3481,8 +3552,12 @@ export default function TasksTab({
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
                               <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
+                                onClick={!loading ? handleUpdateTaskStatus : undefined} // Prevent multiple clicks
+                                className={cn(
+                                  "w-full text-white bg-[#007A5A]",
+                                  !loading ? "hover:bg-[#007A5A]" : "opacity-50 cursor-not-allowed"
+                                )}
+                                disabled={loading} // Disable button when loading
                               >
                                 {loading ? <Loader /> : "Update Task"}
                               </Button>
@@ -3502,7 +3577,10 @@ export default function TasksTab({
                                 Task Update
                               </DialogTitle>
                               <DialogClose
-                                onClick={() => setIsReopenDialogOpen(false)}
+                                onClick={() => {
+                                  setIsReopenDialogOpen(false);
+                                  setIsSubmitted(false); // Reset isSubmitted to false
+                                }}
                               >
                                 <CrossCircledIcon className="scale-150  hover:bg-[#ffffff] rounded-full hover:text-[#815BF5]" />
                               </DialogClose>
@@ -3512,13 +3590,24 @@ export default function TasksTab({
                               Reopen
                             </p>
                             <div className="mt-2">
-                              <Label className="text-sm">Comment</Label>
-                              <textarea
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                className="border-gray-600 focus:border-[#815bf5] bg-[#121212] border rounded outline-none px-2 py-2 w-full mt-2"
-                              />
-
+                              <div className="relative">
+                                <Label className="absolute bg-[#0b0d29] !text-muted-foreground ml-2 text-xs -mt-2 px-1">Comment</Label>
+                                <textarea
+                                  value={comment}
+                                  onChange={(e) => {
+                                    setComment(e.target.value);
+                                    if (e.target.value.trim() !== "") {
+                                      setErrorMessage(""); // Clear the error message if comment is not empty
+                                    }
+                                    if (e.target.value.trim() == "" && isSubmitted) {
+                                      setErrorMessage("Please add a commment before updating the task ")
+                                    }
+                                  }}
+                                  className={`py-2 px-2 h-24 w-full focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !comment.trim() ? "border-red-500" : ""
+                                    }`}
+                                />
+                                <h1 className="text-xs text-red-500">{errorMessage}</h1>
+                              </div>
                               <div className="flex mb-4  mt-4 gap-4">
                                 <div
                                   className="h-8 w-8 rounded-full items-center text-center border cursor-pointer hover:shadow-white shadow-sm bg-[#282D32]"
@@ -3567,8 +3656,12 @@ export default function TasksTab({
                             </div>
                             <div className="mt-4 flex justify-end space-x-2">
                               <Button
-                                onClick={handleUpdateTaskStatus}
-                                className="w-full text-white hover:bg-[#007A5A] bg-[#007A5A]"
+                                onClick={!loading ? handleUpdateTaskStatus : undefined} // Prevent multiple clicks
+                                className={cn(
+                                  "w-full text-white bg-[#007A5A]",
+                                  !loading ? "hover:bg-[#007A5A]" : "opacity-50 cursor-not-allowed"
+                                )}
+                                disabled={loading} // Disable button when loading
                               >
                                 {loading ? <Loader /> : "Update Task"}
                               </Button>

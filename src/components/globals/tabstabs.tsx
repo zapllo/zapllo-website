@@ -74,6 +74,7 @@ export default function TeamTabs() {
 
 
   const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User>();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loggedInUserRole, setLoggedInUserRole] = useState("");
@@ -103,6 +104,7 @@ export default function TeamTabs() {
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
 
   const handleCountrySelect = (countryCode: any) => {
@@ -141,6 +143,16 @@ export default function TeamTabs() {
     return managerNames;
   };
 
+
+  const isFormValid =
+    newMember.firstName.trim() &&
+    newMember.lastName.trim() &&
+    newMember.email.trim() &&
+    newMember.password.trim() &&
+    newMember.role &&
+    (newMember.role === "orgAdmin" || selectedManager); // Check selectedManager only if the role is not orgAdmin
+
+
   const fetchUsers = async () => {
     try {
       const response = await fetch("/api/users/organization");
@@ -168,6 +180,7 @@ export default function TeamTabs() {
   useEffect(() => {
     const getUserDetails = async () => {
       const res = await axios.get("/api/users/me");
+      setCurrentUser(res.data.data);
       setLoggedInUserRole(res.data.data.role);
     };
     getUserDetails();
@@ -208,6 +221,8 @@ export default function TeamTabs() {
 
   const handleCreateUser = async () => {
     setLoading(true); // Start loader
+    setIsSubmitted(true); // Mark form as submitted
+
     try {
       setErrorMessage(""); // Clear any existing error message
       const response = await axios.post("/api/users/signup", {
@@ -239,7 +254,7 @@ export default function TeamTabs() {
           country: 'IN',
           isTaskAccess: false,
           isLeaveAccess: false,
-        });
+        }); 
         setSelectedManager("");
         toast(<div className=" w-full mb-6 gap-2 m-auto  ">
           <div className="w-full flex  justify-center">
@@ -256,7 +271,7 @@ export default function TeamTabs() {
     } catch (error: any) {
       console.error("Error creating user:", error);
       if (error.response && error.response.data && error.response.data.error) {
-        setErrorMessage(error.response.data.error); // Display specific server error message
+
         // Specific handling for subscription limit
         if (error.response.data.error === "User limit reached for the current plan.") {
           // alert(error.response.data.error);
@@ -398,6 +413,20 @@ export default function TeamTabs() {
   };
 
   const openDeleteDialog = (user: User) => {
+
+    if (user._id === currentUser?._id) {
+      toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+        <div className="w-full flex  justify-center">
+          <DotLottieReact
+            src="/lottie/error.lottie"
+            loop
+            autoplay
+          />
+        </div>
+        <h1 className="text-black text-center font-medium text-lg">You cannot delete yourself</h1>
+      </div>);
+      return;
+    }
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
   };
@@ -471,8 +500,8 @@ export default function TeamTabs() {
                 <div className="flex flex-col gap-4">
                   <input
                     placeholder="First Name"
-                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
-
+                    className={`py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.firstName.trim() ? "border-red-500" : ""
+                      }`}
                     value={newMember.firstName}
                     onChange={(e) =>
                       setNewMember({ ...newMember, firstName: e.target.value })
@@ -480,8 +509,8 @@ export default function TeamTabs() {
                   />
                   <input
                     placeholder="Last Name"
-                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
-
+                    className={`py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.lastName.trim() ? "border-red-500" : ""
+                      }`}
                     value={newMember.lastName}
                     onChange={(e) =>
                       setNewMember({ ...newMember, lastName: e.target.value })
@@ -489,8 +518,8 @@ export default function TeamTabs() {
                   />
                   <input
                     placeholder="Email"
-                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
-
+                    className={`py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.email.trim() ? "border-red-500" : ""
+                      }`}
                     value={newMember.email}
                     onChange={(e) => {
                       setNewMember({ ...newMember, email: e.target.value });
@@ -514,14 +543,15 @@ export default function TeamTabs() {
                     <input
                       placeholder="WhatsApp Number"
                       value={newMember.whatsappNo}
-                      className="py-2 px-2 focus-within:border-[#815BF5] text-xs w-full bg-transparent border rounded-r outline-none"
+                      className={`py-2 px-2 w-full focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.whatsappNo.trim() ? "border-red-500" : ""
+                        }`}
                       onChange={(e) => setNewMember({ ...newMember, whatsappNo: e.target.value })}
                     />
                   </div>
                   <input
                     placeholder="Password"
-                    className="py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none"
-
+                    className={`py-2 px-2  focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.password.trim() ? "border-red-500" : ""
+                      }`}
                     value={newMember.password}
                     onChange={(e) =>
                       setNewMember({ ...newMember, password: e.target.value })

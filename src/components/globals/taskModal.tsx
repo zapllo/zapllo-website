@@ -169,7 +169,27 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
   const [recordingTime, setRecordingTime] = useState(0);
   const controls = useAnimation();
 
-  // Working On Reminder Module
+
+  // Working On Field Validations
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    dueDate: "",
+    dueTime: "",
+    assignedUser: "",
+    category: "",
+  });
+
+  // Focus states for dynamic labels
+  const [focusedInput, setFocusedInput] = useState({
+    title: false,
+    description: false,
+    dueDate: false,
+    dueTime: false,
+    assignedUser: false,
+    category: false,
+  });
+
 
   // Reminder state and handlers
   const [reminders, setReminders] = useState<Reminder[]>([]); // State to store reminders
@@ -565,9 +585,63 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     return combinedDate;
   };
 
+  // Validation function
+  const validateInputs = () => {
+    const newErrors = {
+      title: "",
+      description: "",
+      dueDate: "",
+      dueTime: "",
+      assignedUser: "",
+      category: "",
+    };
+    let isValid = true;
+
+    if (!title) {
+      newErrors.title = "Task title is required";
+      isValid = false;
+    }
+    if (!description) {
+      newErrors.description = "Task description is required";
+      isValid = false;
+    }
+    if (!dueDate) {
+      newErrors.dueDate = "Due date is required";
+      isValid = false;
+    }
+    if (!dueTime) {
+      newErrors.dueTime = "Due time is required";
+      isValid = false;
+    }
+    if (!assignedUser) {
+      newErrors.assignedUser = "User assignment is required";
+      isValid = false;
+    }
+    if (!category) {
+      newErrors.category = "Task category is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  // Input change handler
+  const handleInputChange = (field: string, value: string) => {
+    if (field === "title") setTitle(value);
+    if (field === "description") setDescription(value);
+    if (field === "dueDate") setDueDate(value as unknown as Date);
+    if (field === "dueTime") setDueTime(value);
+    if (field === "assignedUser") setAssignedUser(value);
+    if (field === "category") setCategory(value);
+
+    setErrors((prev) => ({ ...prev, [field]: "" })); // Clear error on input change
+  };
+
 
   const handleAssignTask = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateInputs()) return;
     if (!dueDate || !dueTime) {
       toast.error("Due date and time are required.");
       return;
@@ -698,9 +772,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
         console.error("Error assigning task:", result.error);
         toast(<div className=" w-full mb-6 gap-2 m-auto  ">
           <div className="w-full flex   justify-center">
-            <img src="/animations/wrong.gif" alt="Custom Icon" className=" h-36" />
+            <DotLottieReact
+              src="/lottie/error.lottie"
+              loop
+              autoplay
+            />
           </div>
-          <h1 className="text-black text-center font-medium text-lg">Task Creation Failed</h1>
+          <h1 className="text-black text-center font-medium text-lg">Task creation Failed</h1>
         </div>);
       }
     } catch (error: any) {
@@ -797,33 +875,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
     setIsTimePickerOpen(false); // Close the time picker modal after saving
   };
 
-  const handleSubmit = async () => {
-    let fileUrls = [];
-    if (files && files.length > 0) {
-      // Upload files to S3 and get the URLs
-      const formData = new FormData();
-      files.forEach((file) => formData.append("files", file));
 
-      try {
-        const s3Response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (s3Response.ok) {
-          const s3Data = await s3Response.json();
-          console.log("S3 Data:", s3Data); // Log the response from S3
-          fileUrls = s3Data.fileUrls;
-        } else {
-          console.error("Failed to upload files to S3");
-          return;
-        }
-      } catch (error) {
-        console.error("Error uploading files:", error);
-        return;
-      }
-    }
-  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
@@ -874,8 +926,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 // placeholder="Task Title"
                 id="title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-xs  outline-none focus-within:border-[#815BF5] bg-transparent border mt-1 rounded px-3 py-2"
+                onFocus={() => setFocusedInput({ ...focusedInput, title: true })}
+                onBlur={() => setFocusedInput({ ...focusedInput, title: false })}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                className={cn(errors.title ? "border-red-500" : "", "w-full text-xs  outline-none focus-within:border-[#815BF5] bg-transparent border mt-1 rounded px-3 py-2")}
               />
             </div>
             <div className="mt-1">
@@ -884,8 +938,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
                 id="description"
                 // placeholder="Task Description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="text-xs w-full focus-within:border-[#815BF5]  outline-none  bg-transparent border    mt-1 rounded px-3 py-3"
+                onFocus={() => setFocusedInput({ ...focusedInput, description: true })}
+                onBlur={() => setFocusedInput({ ...focusedInput, description: false })}
+                onChange={(e) => handleInputChange("description", e.target.value)}
+                className={cn(errors.description ? "border-red-500" : "", "text-xs w-full focus-within:border-[#815BF5]  outline-none  bg-transparent border    mt-1 rounded px-3 py-3")}
               ></textarea>
             </div>
           </div>
@@ -1599,10 +1655,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ closeModal }) => {
             <Button
               type="button"
               onClick={handleAssignTask}
-              className="bg-[#815BF5] hover:bg-[#815BF5]  selection:-500 text-white px-4 py-2 w-full mt-2 mb-2 rounded"
+              className="bg-[#815BF5] hover:bg-[#5f31e9]  selection:-500 text-white px-4 py-2 w-full mt-2 mb-2 rounded"
             >
               {" "}
-              {loading ? <Loader /> : "Assign Task →"}
+              {loading ? <Loader /> : "Assign Task "}
             </Button>
             {/* <Button type="button" onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</Button> */}
           </div>
@@ -1953,7 +2009,7 @@ const CategorySelectPopup: React.FC<CategorySelectPopupProps> = ({
       />
       <div>
         {categories.length === 0 ? (
-          <div>No categories found.</div>
+          <div className="text-white p-2">No categories found</div>
         ) : (
           <div className="w-full text-sm text-white max-h-40 overflow-y-scroll scrollbar-hide">
             {filteredCategories.map((categorys) => (

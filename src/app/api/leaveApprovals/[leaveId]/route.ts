@@ -238,6 +238,27 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
                     }
                     return day;
                 });
+                // **Balance Deduction Logic**
+                if (leave.status === 'Approved' || leave.status === 'Partially Approved') {
+                    const leaveBalance = user.leaveBalances.find((b: { leaveType: { _id: { equals: (arg0: mongoose.Types.ObjectId) => any; }; }; }) => {
+                        // Ensure leaveType is populated
+                        if (b.leaveType && leave.leaveType && b.leaveType._id && leave.leaveType._id) {
+                            return b.leaveType._id.equals(leave.leaveType._id);
+                        }
+                        return false;
+                    });
+
+                    if (leaveBalance) {
+                        leaveBalance.balance -= approvedFor;
+                        if (leaveBalance.balance < 0) {
+                            leaveBalance.balance = 0;
+                        }
+                        await user.save();
+                        console.log('User leave balance updated.');
+                    } else {
+                        console.error('User does not have a leave balance entry for this leave type.');
+                    }
+                }
             } catch (approvalError) {
                 console.error('Error updating leave days:', approvalError);
                 return NextResponse.json({ success: false, error: 'Error updating leave days' });
@@ -261,28 +282,8 @@ export async function POST(request: NextRequest, { params }: { params: { leaveId
         }
 
         await leave.save();
-        console.log('Leave saved after approval.');
-        // **Balance Deduction Logic**
-        if (leave.status === 'Approved' || leave.status === 'Partially Approved') {
-            const leaveBalance = user.leaveBalances.find((b: { leaveType: { _id: { equals: (arg0: mongoose.Types.ObjectId) => any; }; }; }) => {
-                // Ensure leaveType is populated
-                if (b.leaveType && leave.leaveType && b.leaveType._id && leave.leaveType._id) {
-                    return b.leaveType._id.equals(leave.leaveType._id);
-                }
-                return false;
-            });
+        console.log('Leave saved after approval. ', approvedFor, '<--- approved for');
 
-            if (leaveBalance) {
-                leaveBalance.balance -= approvedFor;
-                if (leaveBalance.balance < 0) {
-                    leaveBalance.balance = 0;
-                }
-                await user.save();
-                console.log('User leave balance updated.');
-            } else {
-                console.error('User does not have a leave balance entry for this leave type.');
-            }
-        }
 
         // **Send the response back to the client immediately**
         console.log('Sending response back to the client.');

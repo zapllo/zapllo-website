@@ -338,9 +338,9 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
         description: task.description || "",
         priority: task.priority || "Medium",
         category: task.category?._id || "",
-        categoryName: task.category.name,
-        assignedUser: task.assignedUser._id || "",
-        assignedUserFirstName: task.assignedUser.firstName,
+        categoryName: task.category?.name,
+        assignedUser: task.assignedUser?._id || "",
+        assignedUserFirstName: task.assignedUser?.firstName,
         repeat: task.repeat || false,
         repeatType: task.repeatType || "Daily",
         dueDate: task.dueDate ? new Date(task.dueDate) : new Date(),
@@ -895,12 +895,16 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
               open={isDatePickerOpen}
               onOpenChange={setIsDatePickerOpen}
             >
-              <DialogContent className="scale-75 z-[100] ">
-                <CustomDatePicker
-                  selectedDate={formData.dueDate ?? new Date()}
-                  onDateChange={handleDateChange}
-                  onCloseDialog={() => setIsDatePickerOpen(false)}
-                />
+              <DialogContent className=" z-[100]  scale-90 flex justify-center ">
+                <div className=" z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                  <div className="w-full flex mb-4 justify-between">
+                    <CustomDatePicker
+                      selectedDate={formData.dueDate ?? new Date()}
+                      onDateChange={handleDateChange}
+                      onCloseDialog={() => setIsDatePickerOpen(false)}
+                    />
+                  </div>
+                </div>
               </DialogContent>
             </Dialog>
           )}
@@ -911,17 +915,21 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
             open={isTimePickerOpen}
             onOpenChange={setIsTimePickerOpen}
           >
-            <DialogContent className="scale-75 z-[100]">
-              <CustomTimePicker
-                selectedTime={dueTime} // Pass the selected time
-                onTimeChange={(newTime) => setDueTime(newTime)} // Update dueTime when time changes
-                onCancel={() => setIsTimePickerOpen(false)}
-                onAccept={handleUpdateDateTime}
-                onBackToDatePicker={() => {
-                  setIsTimePickerOpen(false); // Close the time picker
-                  setIsDatePickerOpen(true); // Reopen the date picker
-                }}
-              />
+            <DialogContent className="z-[100] scale-90 flex justify-center ">
+              <div className="z-[20] rounded-lg  scale-[80%] max-w-4xl flex justify-center items-center w-full relative">
+                <div className="w-full flex mb-4 justify-between">
+                  <CustomTimePicker
+                    selectedTime={dueTime} // Pass the selected time
+                    onTimeChange={(newTime) => setDueTime(newTime)} // Update dueTime when time changes
+                    onCancel={() => setIsTimePickerOpen(false)}
+                    onAccept={handleUpdateDateTime}
+                    onBackToDatePicker={() => {
+                      setIsTimePickerOpen(false); // Close the time picker
+                      setIsDatePickerOpen(true); // Reopen the date picker
+                    }}
+                  />
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
         )}

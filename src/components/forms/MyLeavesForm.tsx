@@ -727,7 +727,7 @@ const MyLeaveForm: React.FC<LeaveFormProps> = ({ leaveTypes, onClose }) => {
             {/* Audio Wave  */}
 
             <div
-              className={` ${recording ? `w-full ` : "hidden"
+              className={` ${recording ? `w-full  ` : "hidden"
                 } border rounded border-dashed border-[#815BF5] px-4 py-2  bg-black flex justify-center`}
             >
               <canvas

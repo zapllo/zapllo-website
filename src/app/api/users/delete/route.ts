@@ -19,6 +19,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { userIdToDelete } = await request.json();
+    if (userIdToDelete === userId) {
+      return NextResponse.json(
+        { error: "You cannot delete yourself" },
+        { status: 400 }
+      );
+    }
 
     const userToDelete = await User.findById(userIdToDelete);
 

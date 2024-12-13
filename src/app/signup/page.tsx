@@ -17,6 +17,7 @@ import Loader from "@/components/ui/loader";
 import { AsYouType, CountryCode, getCountryCallingCode } from 'libphonenumber-js';
 import { getData as getCountryData } from 'country-list';
 import Flag from "react-world-flags";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface Country {
   code: CountryCode;
@@ -49,6 +50,26 @@ export default function SignupPage() {
     description: "",
     categories: [],
     country: "IN", // Initialize country
+  });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    companyName: "",
+    description: "",
+    whatsappNo: "",
+  });
+  const [focusedInput, setFocusedInput] = useState({
+    email: false,
+    password: false,
+    confirmPassword: false,
+    firstName: false,
+    lastName: false,
+    companyName: false,
+    description: false,
+    whatsappNo: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -112,42 +133,30 @@ export default function SignupPage() {
 
 
   const onSignup = async () => {
-    setLoading(true);
-
-    // Password validation
-    if (user.password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
-      setLoading(false);
-      return;
-    }
-
-    if (user.password !== user.confirmPassword) {
-      toast.error("Passwords do not match.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      if (!showOrganizationForm) {
-        // If organization form is not shown, show it
+      setLoading(true);
+      if (!showOrganizationForm && user.firstName &&
+        user.lastName &&
+        user.email &&
+        user.whatsappNo &&
+        user.password &&
+        user.confirmPassword &&
+        organization.country && user.password === user.confirmPassword) {
         setShowOrganizationForm(true);
       } else {
-        // Ensure country is selected
-        if (!organization.country) {
-          toast.error("Please select a country.");
-          setLoading(false);
-          return;
-        }
-
-
-        // Submit user and organization data
-        const response = await axios.post("/api/users/signup", {
-          ...user,
-          ...organization,
-        });
-
+        if (!validateInputs()) return;
+        const response = await axios.post("/api/users/signup", { ...user, ...organization });
         if (response.status === 200) {
-          toast.success("Signup successful! Redirecting...");
+          toast(<div className=" w-full mb-6 gap-2 m-auto  ">
+            <div className="w-full flex  justify-center">
+              <DotLottieReact
+                src="/lottie/tick.lottie"
+                loop
+                autoplay
+              />
+            </div>
+            <h1 className="text-black text-center font-medium text-lg">Signup successful! Redirecting to the Dashboard</h1>
+          </div>);
           router.push("/dashboard"); // Redirect to dashboard
         }
       }
@@ -176,6 +185,79 @@ export default function SignupPage() {
       onSignup();
     }
   };
+
+
+  const validateInputs = () => {
+    const newErrors = { email: "", password: "", confirmPassword: "", firstName: "", lastName: "", companyName: "", description: "", whatsappNo: "" };
+    let isValid = true;
+
+    if (!user.firstName) {
+      newErrors.firstName = "First name is required";
+      isValid = false;
+    }
+
+    if (!user.lastName) {
+      newErrors.lastName = "Last name is required";
+      isValid = false;
+    }
+
+    if (!user.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(user.email)) {
+      newErrors.email = "Invalid email address";
+      isValid = false;
+    }
+
+    if (!user.password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (user.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+      isValid = false;
+    }
+
+    if (user.password !== user.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+      isValid = false;
+    }
+    if (!user.whatsappNo) {
+      newErrors.whatsappNo = "WhatsApp Number is required";
+      isValid = false;
+    } else if (user.whatsappNo.length < 10) {
+      newErrors.password = "Invalid WhatsApp Number";
+      isValid = false;
+    }
+
+    if (showOrganizationForm) {
+      if (!organization.companyName) {
+        newErrors.companyName = "Company name is required";
+        isValid = false;
+      }
+      if (!organization.description) {
+        newErrors.description = "Description is required";
+        isValid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+
+  const handleInputChange = (field: string, value: string, isOrganization = false) => {
+    if (isOrganization) {
+      setOrganization((prev) => ({ ...prev, [field]: value }));
+    } else {
+      setUser((prev) => ({ ...prev, [field]: value }));
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
+
 
   return (
     <>
@@ -208,21 +290,27 @@ export default function SignupPage() {
             <div className="my-8">
               {/* Organization Form */}
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101]  text-[#D4D4D4]">
+                <LabelInputContainer className="relative">
+
+                  <label
+                    htmlFor="companyName"
+                    className={cn(
+                      "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                      focusedInput.companyName || organization.companyName ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                    )}
+                  >
                     Company Name
-                  </h1>
-                  <Input
+                  </label>
+
+                  <input
                     id="companyName"
-                    type="text"
                     value={organization.companyName}
-                    onChange={(e) =>
-                      setOrganization({
-                        ...organization,
-                        companyName: e.target.value,
-                      })
-                    }
+                    onFocus={() => setFocusedInput({ ...focusedInput, companyName: true })}
+                    onBlur={() => setFocusedInput({ ...focusedInput, companyName: false })}
+                    onChange={(e) => handleInputChange("companyName", e.target.value, true)}
+                    className={cn(errors.companyName ? "border-red-500" : "", "border p-2 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                   />
+                  {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
                 </LabelInputContainer>
               </div>
               <LabelInputContainer className="mb-4">
@@ -235,7 +323,7 @@ export default function SignupPage() {
                       industry: e.target.value,
                     })
                   }
-                  className="input py-3 px-2 text-white text-sm outline-none rounded-md border"
+                  className="input py-3  px-2 bg-black text-white text-sm outline-none rounded-md border"
                 >
                   <option value="" className=" text-[#787CA5]" disabled>
                     Select Industry
@@ -269,9 +357,9 @@ export default function SignupPage() {
                       teamSize: e.target.value,
                     })
                   }
-                  className="input py-3 px-2 border outline-none rounded-md text-sm"
+                  className="input py-3 px-2 border  bg-black outline-none rounded-md text-sm"
                 >
-                  <option value="" disabled>
+                  <option value="" className="text-[#787CA5]" disabled>
                     Select Team Size
                   </option>
                   <option value="1-10">1-10</option>
@@ -281,22 +369,26 @@ export default function SignupPage() {
                   <option value="51+">51+</option>
                 </select>
               </LabelInputContainer>
-              <LabelInputContainer className="mb-8">
-                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
-                  Company Description
-                </h1>
+              <LabelInputContainer className="relative mb-4">
+
+                <label
+                  htmlFor="description"
+                  className={cn(
+                    "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                    focusedInput.description || organization.description ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                  )}
+                >
+                  Description
+                </label>
                 <Textarea
                   id="description"
                   value={organization.description}
-                  onChange={(e) =>
-                    setOrganization({
-                      ...organization,
-                      description: e.target.value,
-                    })
-                  }
-                  // placeholder="Describe your company..."
-                  className="w-full h-24 p-2 border rounded-md"
+                  onFocus={() => setFocusedInput({ ...focusedInput, description: true })}
+                  onBlur={() => setFocusedInput({ ...focusedInput, description: false })}
+                  onChange={(e) => handleInputChange("description", e.target.value, true)}
+                  className={cn(errors.description ? "border-red-500" : "", "border p-2 h-24 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                 />
+                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
               </LabelInputContainer>
               <LabelInputContainer className="mb-8">
                 <Label htmlFor="categories">
@@ -331,7 +423,7 @@ export default function SignupPage() {
               </LabelInputContainer> */}
 
               <button
-                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                className="bg-[#815bf5] p-2 w-full border rounded-lg hover:bg-[#5f31e9]"
                 type="button"
                 onClick={onSignup}
                 disabled={loading}
@@ -339,8 +431,8 @@ export default function SignupPage() {
                 {loading
                   ? <Loader />
                   : showOrganizationForm
-                    ? "Sign up →"
-                    : "Sign up →"}
+                    ? "Sign up "
+                    : "Sign up "}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">
@@ -383,59 +475,88 @@ export default function SignupPage() {
             <div className="my-8">
               {/* User Signup Form */}
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
-                    First name
-                  </h1>
-                  <Input
+                <LabelInputContainer className="relative">
+                  <label
+                    htmlFor="firstName"
+                    className={cn(
+                      "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                      focusedInput.firstName || user.firstName ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                    )}
+                  >
+                    First Name
+                  </label>
+                  <input
                     id="firstName"
                     type="text"
-                    className="text-white"
+                    className={cn(errors.firstName ? "border-red-500" : "", "border p-2 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                     value={user.firstName}
-                    onChange={(e) =>
-                      setUser({ ...user, firstName: e.target.value })
-                    }
-                    placeholder="Ben"
+                    onFocus={() => setFocusedInput({ ...focusedInput, firstName: true })}
+                    onBlur={() => setFocusedInput({ ...focusedInput, firstName: false })}
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
                   />
                 </LabelInputContainer>
-                <LabelInputContainer>
-                  <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
-                    Last name
-                  </h1>
-                  <Input
+                <LabelInputContainer className="relative">
+                  <label
+                    htmlFor="lastName"
+                    className={cn(
+                      "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                      focusedInput.lastName || user.lastName ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                    )}
+                  >
+                    Last Name
+                  </label>
+                  <input
                     id="lastName"
                     type="text"
+                    className={cn(errors.lastName ? "border-red-500" : "", "border p-2 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                     value={user.lastName}
-                    onChange={(e) =>
-                      setUser({ ...user, lastName: e.target.value })
-                    }
-                    placeholder="Richards"
+                    onFocus={() => setFocusedInput({ ...focusedInput, lastName: true })}
+                    onBlur={() => setFocusedInput({ ...focusedInput, lastName: false })}
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
                   />
                 </LabelInputContainer>
               </div>
-              <LabelInputContainer className="mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
-                  Email address
-                </h1>
-                <Input
+              <LabelInputContainer className="mb-4 relative">
+                <label
+                  htmlFor="email"
+                  className={cn(
+                    "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                    focusedInput.email || user.email ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                  )}
+                >
+                  Email Address
+                </label>
+                <input
                   id="email"
-                  type="email"
+                  type="text"
+                  className={cn(errors.email ? "border-red-500" : "", "border p-2 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                   value={user.email}
-                  onChange={(e) => setUser({ ...user, email: e.target.value })}
-                  placeholder="example@gmail.com"
+                  onFocus={() => setFocusedInput({ ...focusedInput, email: true })}
+                  onBlur={() => setFocusedInput({ ...focusedInput, email: false })}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                 />
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">Password</h1>
-                <Input
+                <label
+                  htmlFor="password"
+                  className={cn(
+                    "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                    focusedInput.password || user.password ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                  )}
+                >
+                  Password
+                </label>
+                <input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  className={cn(errors.password ? "border-red-500" : "", "border p-2 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                   value={user.password}
-                  onChange={(e) =>
-                    setUser({ ...user, password: e.target.value })
-                  }
+                  onFocus={() => setFocusedInput({ ...focusedInput, password: true })}
+                  onBlur={() => setFocusedInput({ ...focusedInput, password: false })}
+                  onChange={(e) => handleInputChange("password", e.target.value)}
                 // placeholder="••••••••"
                 />
+
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={togglePasswordVisibility}
@@ -444,18 +565,26 @@ export default function SignupPage() {
                 </div>
               </LabelInputContainer>
               <LabelInputContainer className="relative mb-4">
-                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
+                <label
+                  htmlFor="confirmPassword"
+                  className={cn(
+                    "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                    focusedInput.confirmPassword || user.confirmPassword ? "top-[-2px]  px-1 scale-90" : "top-5 left-2"
+                  )}
+                >
                   Confirm Password
-                </h1>
-                <Input
+                </label>
+                <input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
+                  className={cn(errors.confirmPassword ? "border-red-500" : "", "border p-2 bg-transparent rounded-lg outline-none focus:border-[#815bf5]")}
                   value={user.confirmPassword}
-                  onChange={(e) =>
-                    setUser({ ...user, confirmPassword: e.target.value })
-                  }
+                  onFocus={() => setFocusedInput({ ...focusedInput, confirmPassword: true })}
+                  onBlur={() => setFocusedInput({ ...focusedInput, confirmPassword: false })}
+                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                 // placeholder="••••••••"
                 />
+
                 <div
                   className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   onClick={toggleConfirmPasswordVisibility}
@@ -469,28 +598,28 @@ export default function SignupPage() {
               </LabelInputContainer>
               <div className="flex  relative mb-2">
                 <div onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex w-full  items-center cursor-pointer bg-[#04071f]  border rounded  p-3 relative"
+                  className="flex w-full  items-center cursor-pointer bg-[#]  border rounded  p-3 relative"
 
                 >
                   <Flag code={selectedCountry} className="w-6 h-4 mr-2" />
-                  <button className="bg-[#04071f] text-white w-full text-left text-sm focus:outline-none">
+                  <button className="bg-[#] text-white w-full text-left text-sm focus:outline-none">
                     {countries.find(country => country.code === selectedCountry)?.name || "Select Country"}
                   </button>
                 </div>
 
                 {isDropdownOpen && (
-                  <div className="absolute left-0 top-full  w-full max-h-60 overflow-y-auto bg-black p-2 border  rounded z-50">
+                  <div className="absolute left-0 top-full  w-full max-h-60 overflow-y-scroll scrollbar-thin scrollbar-thumb-[#815BF5] hover:scrollbar-thumb-[#815BF5] active:scrollbar-thumb-[#815BF5] scrollbar-track-gray-800    bg-black p-2 border  rounded z-50">
                     <input
                       type="text"
                       placeholder="Search Country"
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
-                      className="p-2 mb-2 w-full text-sm text-white outline-none border rounded"
+                      className="p-2 mb-2  w-full text-xs focus:border-[#815bf5] text-white outline-none border rounded"
                     />
                     {filteredCountries.map(country => (
                       <div
                         key={country.code}
-                        className="flex items-center p-2 text-sm cursor-pointer hover:bg-[#04061E] text-white"
+                        className="flex items-center p-2 text-sm cursor-pointer hover:bg-[#FC8929]  text-white"
                         onClick={() => handleCountryChange(country.code)}
                       >
                         <Flag code={country.code} className="w-6 h-4 mr-2" />
@@ -501,35 +630,41 @@ export default function SignupPage() {
                 )}
               </div>
 
-              <LabelInputContainer className="mb-8">
-                <h1 className="text-xs absolute ml-2 bg-[#000101] text-[#D4D4D4]">
-                  Whatsapp No
-                </h1>
+              <LabelInputContainer className="mb-8 relative">
+                <label
+                  htmlFor="whatsappNo"
+                  className={cn(
+                    "text-xs absolute ml-2 bg-tra transition-all duration-300 bg-[#000000] text-[#D4D4D4]",
+                    focusedInput.whatsappNo || user.whatsappNo ? "top-[-2px]  px-1 left-2 scale-90" : "top-5 left-10"
+                  )}
+                >
+                  WhatsApp No
+                </label>
                 <div className="flex  ">
-                  <span className="py-3 h-10 px-2  bg-[#0A0D28] text-[#D4D4D4] rounded-l   text-xs">{countryCode}</span>
-                  <Input
+                  <span className="py-3 h- px-2 border bg-[#] text-[#D4D4D4] rounded-lg rounded-r-none  text-xs">{countryCode}</span>
+                  <input
                     id="whatsappNo"
                     type="text"
-                    className="w-[350px] -ml-1"
                     value={user.whatsappNo}
-                    onChange={(e) =>
-                      setUser({ ...user, whatsappNo: e.target.value })
-                    }
+                    className={cn(errors.whatsappNo ? "border-red-500" : "", "border w-[350px] p-2 bg-transparent rounded-lg rounded-l-none outline-none focus:border-[#815bf5]")}
+                    onFocus={() => setFocusedInput({ ...focusedInput, whatsappNo: true })}
+                    onBlur={() => setFocusedInput({ ...focusedInput, whatsappNo: false })}
+                    onChange={(e) => handleInputChange("whatsappNo", e.target.value)}
                   />
                 </div>
-              </LabelInputContainer>
+                <p className="text-xs text-red-500">{errors.confirmPassword}</p>
 
-              <button
-                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-                type="button"
+              </LabelInputContainer>
+                 <button
+                            className="bg-zinc-800 p-2 w-full border rounded-lg hover:bg-zinc-900"
                 onClick={onSignup}
                 disabled={loading}
               >
                 {loading
                   ? <Loader />
                   : showOrganizationForm
-                    ? "Sign up →"
-                    : "Next →"}
+                    ? "Sign up "
+                    : "Next "}
                 <BottomGradient />
               </button>
               <div className="p-4 flex justify-center">

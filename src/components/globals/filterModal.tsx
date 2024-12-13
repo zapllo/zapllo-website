@@ -25,6 +25,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
     const [activeSection, setActiveSection] = useState<string>('Category');
     const [searchTerm, setSearchTerm] = useState<string>('');
 
+
     const toggleSelection = (selectedItems: string[], setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
         if (selectedItems.includes(item)) {
             setSelectedItems(selectedItems.filter(i => i !== item));
@@ -102,7 +103,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="grid grid-cols-1 h-[200px] overflow-y-scroll scrollbar-hide gap-2">
+                        <div className="grid grid-cols-1 overflow-y-scroll scrollbar-hide gap-2">
                             {users.filter(user => (`${user.firstName} ${user.lastName}`).toLowerCase().includes(lowercasedSearchTerm)).map(user => (
                                 <label key={user._id} className='flex justify-between cursor-pointer'>
                                     <div className='flex items-center'>

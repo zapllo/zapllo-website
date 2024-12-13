@@ -65,7 +65,7 @@ export function middleware(request: NextRequest) {
 // Specify the paths for which this middleware should be executed
 export const config = {
     matcher: [
-        '/dashboard',
+        '/dashboard/:path*',
         '/attendance/:path*',
         '/intranet/:path*',
         '/help/:path*',

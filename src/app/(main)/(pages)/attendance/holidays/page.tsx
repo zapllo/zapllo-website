@@ -50,7 +50,9 @@ const HolidayManager: React.FC = () => {
   const fetchUserRole = async () => {
     try {
       const response = await axios.get('/api/users/me');
-      setCurrentUserRole(response.data.data.role); // Assuming role is in response.data.data.role
+      // console.log(response.data.data.role, 'what is response from role?')
+      setCurrentUserRole(response.data.data.role)
+      setUserRole(response.data.data.role); // Assuming role is in response.data.data.role
     } catch (error) {
       console.error('Error fetching user role:', error);
     }
@@ -101,6 +103,9 @@ const HolidayManager: React.FC = () => {
     fetchUserRole(); // Fetch user role
   }, []);
 
+
+
+  console.log(userRole, 'user role');
   if (isLoading) {
     return <Loader />;
   }
@@ -141,7 +146,7 @@ const HolidayManager: React.FC = () => {
                 className="w-fit  flex gap-2 hover:bg-[#0f5140] bg-[#017a5b] px-4"
                 onClick={() => setIsModalOpen(true)}
               >
-               Add New Holiday
+                Add New Holiday
               </Button>
             </DialogTrigger>
           </div>
