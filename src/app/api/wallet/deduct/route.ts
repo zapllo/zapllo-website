@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import User from '@/models/userModel'; // Update with the correct path to your User model
+import Organization from '@/models/organizationModel'; // Import the Organization model
 import connectDB from '@/lib/db';
 
 export async function POST(req: NextRequest) {
@@ -24,16 +25,31 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        if (user.credits < amount) {
+        if (!user.organization) {
             return NextResponse.json(
-                { success: false, message: 'Insufficient credits.' },
+                { success: false, message: 'User is not associated with an organization.' },
                 { status: 400 }
             );
         }
 
-        // Deduct the credits
-        user.credits -= amount;
-        await user.save();
+        const organization = await Organization.findById(user.organization);
+        if (!organization) {
+            return NextResponse.json(
+                { success: false, message: 'Organization not found.' },
+                { status: 404 }
+            );
+        }
+
+        if (organization.credits < amount) {
+            return NextResponse.json(
+                { success: false, message: 'Insufficient organization credits.' },
+                { status: 400 }
+            );
+        }
+
+        // Deduct the credits from the organization
+        organization.credits -= amount;
+        await organization.save();
 
         return NextResponse.json({ success: true, message: 'Credits deducted successfully.' });
     } catch (error) {

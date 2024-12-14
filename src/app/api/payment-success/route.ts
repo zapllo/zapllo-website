@@ -69,6 +69,11 @@ export async function POST(request: NextRequest) {
 
     let creditedAmount = 0; // Initialize creditedAmount to zero
 
+    const user = await User.findById(userId);
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     if (planName === 'Recharge') {
       // GST rate (18%)
       const gstRate = 0.18;
@@ -79,9 +84,9 @@ export async function POST(request: NextRequest) {
       // Calculate the net credited amount after deducting Razorpay's fee
       creditedAmount = amountWithoutGST;
 
-      // Update the user's credits
-      await User.findByIdAndUpdate(
-        userId,
+      // Update the organization's credits instead of the user's
+      await Organization.findByIdAndUpdate(
+        user.organization,
         {
           $inc: { credits: creditedAmount },
         },
@@ -90,17 +95,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the user document with subscription details
-    const user = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       userId,
       {
         $set: { isPro: true, subscribedPlan: planName },
       },
       { new: true }
     );
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
 
     if (user.organization) {
       const subscriptionExpires = new Date();
@@ -128,9 +129,7 @@ export async function POST(request: NextRequest) {
         } else {
           organizationUpdate.userExceed = false;
         }
-
       }
-
 
       await Organization.updateOne(
         { _id: user.organization },

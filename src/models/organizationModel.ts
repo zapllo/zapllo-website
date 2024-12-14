@@ -52,6 +52,7 @@ const organizationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  credits: { type: Number, default: 0 },
   subscribedPlan: {
     type: String, // e.g., "Basic", "Standard", "Premium"
   },
@@ -65,7 +66,7 @@ const organizationSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  
+
   leavesTrialExpires: {
     type: Date,
   },

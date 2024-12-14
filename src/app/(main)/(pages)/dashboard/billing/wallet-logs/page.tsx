@@ -38,9 +38,30 @@ export default function WalletLogs({ }: Props) {
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [rechargeGstNumber, setRechargeGstNumber] = useState('');
   const [rechargeModalStep, setRechargeModalStep] = useState(1);
+  const [orgCredits, setOrgCredits] = useState<number>(0); // State for subscribed user  
 
   const router = useRouter();
 
+  const getUserDetails = async () => {
+    const res = await axios.get('/api/users/me');
+    setCurrentUser(res.data.data);
+
+    const response = await axios.get('/api/organization/getById');
+    console.log(response.data.data); // Log the organization data
+    const organization = response.data.data;
+    console.log(organization, 'organization')
+    if (organization) {
+
+      setOrgCredits(organization.credits);
+
+    }
+
+
+  };
+
+  useEffect(() => {
+    getUserDetails();
+  }, []);
 
   const handleRechargeClick = () => {
     setIsRechargeDialogOpen(true);
@@ -226,7 +247,7 @@ export default function WalletLogs({ }: Props) {
                     <CardTitle className="text-sm font-medium">Current Balance</CardTitle>
                     <WalletCards />
                   </div>
-                  <h1 className='text-xl'>₹{currentUser?.credits}</h1>
+                  <h1 className='text-xl'>₹{orgCredits}</h1>
                   <div className="flex mt-4 items-center gap-2">
                     <Button
                       size="sm"

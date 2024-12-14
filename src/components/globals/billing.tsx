@@ -32,6 +32,7 @@ export default function Billing() {
     const [gstNumber, setGstNumber] = useState('');
     const [rechargeGstNumber, setRechargeGstNumber] = useState('');
     const [subscribedUserCount, setSubscribedUserCount] = useState<number>(0); // State for subscribed user  
+    const [orgCredits, setOrgCredits] = useState<number>(0); // State for subscribed user  
     const [additionalUserCount, setAdditionalUserCount] = useState<number | null>(null);
     const [totalUserCount, setTotalUserCount] = useState<number>(0); // Total after adding
     const [renewsOn, setRenewsOn] = useState<any>();
@@ -52,6 +53,7 @@ export default function Billing() {
         console.log(organization, 'organization')
         if (organization) {
             setDisplayedPlan(organization.subscribedPlan);
+            setOrgCredits(organization.credits);
             setSubscribedUserCount(organization.subscribedUserCount);
             setTotalUserCount(organization.subscribedUserCount);
         }
@@ -70,7 +72,7 @@ export default function Billing() {
 
     const calculatePaymentDetails = (planCost: number, count: number) => {
         const subtotal = planCost * count;
-        const discount = Math.min(currentUser?.credits || 0, subtotal);
+        const discount = Math.min(orgCredits || 0, subtotal);
         const payableExclGST = Math.max(0, subtotal - discount);
         const gst = payableExclGST * 0.18;
         const total = payableExclGST + gst;
@@ -655,7 +657,7 @@ export default function Billing() {
                                                                 <Wallet />
                                                             </div>
                                                             <div>
-                                                                <CardTitle className="text-xl font-medium">                                                                <h1>₹{currentUser?.credits}</h1>
+                                                                <CardTitle className="text-xl font-medium">                                                                <h1>₹{orgCredits}</h1>
                                                                 </CardTitle>
                                                                 <h1 className='text-[#676B93]'>Current Balance</h1>
                                                             </div>
@@ -759,12 +761,12 @@ export default function Billing() {
                                                     INR {userCount * plans[selectedPlan]}
                                                 </div>
                                                 <div>
-                                                    <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits || 0, plans[selectedPlan] * userCount)}</h1></div>
+                                                    <h1>Total Discount Applicable = ₹{Math.min(orgCredits || 0, plans[selectedPlan] * userCount)}</h1></div>
                                                 <div>
-                                                    Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits))}
+                                                    Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * userCount - (orgCredits))}
                                                 </div>
-                                                <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
-                                                <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * userCount - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
+                                                <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * userCount - (orgCredits || 0))) * 0.18).toFixed(2)}</div>
+                                                <div>Total Payable: ₹{(Math.max(0, plans[selectedPlan] * userCount - (orgCredits || 0)) * 1.18).toFixed(2)}</div>
                                                 <div className="mt-4">
                                                     <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
                                                     <input
@@ -846,12 +848,12 @@ export default function Billing() {
                                                     ₹ {(additionalUserCount ?? 0) * plans[selectedPlan]}
                                                 </div>
                                                 <div>
-                                                    <h1>Total Discount Applicable = ₹{Math.min(currentUser?.credits)}</h1></div>
+                                                    <h1>Total Discount Applicable = ₹{Math.min(orgCredits)}</h1></div>
                                                 <div>
-                                                    Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (currentUser?.credits || 0))}
+                                                    Payable (excluding GST): ₹{Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (orgCredits || 0))}
                                                 </div>
-                                                <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (currentUser?.credits || 0))) * 0.18).toFixed(2)}</div>
-                                                <div> Total Payable: ₹{(Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (currentUser?.credits || 0)) * 1.18).toFixed(2)}</div>
+                                                <div>GST (18%): ₹{((Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (orgCredits || 0))) * 0.18).toFixed(2)}</div>
+                                                <div> Total Payable: ₹{(Math.max(0, plans[selectedPlan] * (additionalUserCount ?? 0) - (orgCredits || 0)) * 1.18).toFixed(2)}</div>
 
                                                 <div className="mt-4">
                                                     <label htmlFor="gstNumber" className="block mb-2">Enter GST Number (Optional):</label>
@@ -1225,23 +1227,23 @@ export default function Billing() {
                                                 </CardHeader>
                                                 <div className="mt-4 ">
                                                     <CardContent className="bg-transparent">
-                                                    <h1 className='p-4 text-blue-400 text-lg'>Task Delegation App</h1>
+                                                        <h1 className='p-4 text-blue-400 text-lg'>Task Delegation App</h1>
                                                         <ul className="list-disc space-y-2 w-full items-center text-sm">
                                                             {[
-                                                                 "Delegate Unlimited Tasks",
-                                                                 "Team Performance Report",
-                                                                 "Links Management for your Team",
-                                                                 "Email Notifications",
-                                                                 "WhatsApp Notifications",
-                                                                 "Automatic WhatsApp Reminders",
-                                                                 "Automatic Email Reminders",
-                                                                 "Repeated Tasks",
-                                                                 "Zapllo AI -Proprietory AI Technology",
-                                                                 "File Uploads",
-                                                                 "Delegate Tasks with Voice Notes",
-                                                                 "Task Wise Reminders",
-                                                                 "Daily Task & Team Reports",
-                                                                 "Save more than 4 hours per day",
+                                                                "Delegate Unlimited Tasks",
+                                                                "Team Performance Report",
+                                                                "Links Management for your Team",
+                                                                "Email Notifications",
+                                                                "WhatsApp Notifications",
+                                                                "Automatic WhatsApp Reminders",
+                                                                "Automatic Email Reminders",
+                                                                "Repeated Tasks",
+                                                                "Zapllo AI -Proprietory AI Technology",
+                                                                "File Uploads",
+                                                                "Delegate Tasks with Voice Notes",
+                                                                "Task Wise Reminders",
+                                                                "Daily Task & Team Reports",
+                                                                "Save more than 4 hours per day",
 
                                                             ].map((item, index) => (
                                                                 <li key={index} className="flex gap-2 items-center">
@@ -1306,7 +1308,7 @@ export default function Billing() {
                                                 </CardHeader>
                                                 <div className=" mt-4">
                                                     <CardContent className="bg-transparent">
-                                                    <h1 className='p-4 text-blue-400 text-lg whitespace-nowrap'>Zapllo Payroll (Leave & Attendance App)</h1>
+                                                        <h1 className='p-4 text-blue-400 text-lg whitespace-nowrap'>Zapllo Payroll (Leave & Attendance App)</h1>
                                                         <ul className="list-disc space-y-2  w-full items-center text-sm">
                                                             {[
                                                                 "Easy Attendance Marking using Geo location & Face recognition feature",
@@ -1337,20 +1339,20 @@ export default function Billing() {
                                                         <h1 className='p-4 text-blue-400 text-lg whitespace-nowrap'>Task Delegation App</h1>
                                                         <ul className="list-disc space-y-2  w-full items-center text-sm">
                                                             {[
-                                                                 "Delegate Unlimited Tasks",
-                                                                 "Team Performance Report",
-                                                                 "Links Management for your Team",
-                                                                 "Email Notifications",
-                                                                 "WhatsApp Notifications",
-                                                                 "Automatic WhatsApp Reminders",
-                                                                 "Automatic Email Reminders",
-                                                                 "Repeated Tasks",
-                                                                 "Zapllo AI -Proprietory AI Technology",
-                                                                 "File Uploads",
-                                                                 "Delegate Tasks with Voice Notes",
-                                                                 "Task Wise Reminders",
-                                                                 "Daily Task & Team Reports",
-                                                                 "Save more than 4 hours per day",
+                                                                "Delegate Unlimited Tasks",
+                                                                "Team Performance Report",
+                                                                "Links Management for your Team",
+                                                                "Email Notifications",
+                                                                "WhatsApp Notifications",
+                                                                "Automatic WhatsApp Reminders",
+                                                                "Automatic Email Reminders",
+                                                                "Repeated Tasks",
+                                                                "Zapllo AI -Proprietory AI Technology",
+                                                                "File Uploads",
+                                                                "Delegate Tasks with Voice Notes",
+                                                                "Task Wise Reminders",
+                                                                "Daily Task & Team Reports",
+                                                                "Save more than 4 hours per day",
 
 
                                                             ].map((item, index) => (
