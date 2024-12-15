@@ -15,7 +15,7 @@ const AccordionItem2 = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <AccordionPrimitive.Item
         ref={ref}
-        className={cn("border-b w-[500px]  rounded-xl  bg-[#0A0D28] px-6 py-2", className)}
+        className={cn(" w-[500px]  rounded-2xl  bg-[#0A0D28] px-6 py-2", className)}
         {...props}
     />
 ))
@@ -23,19 +23,19 @@ AccordionItem2.displayName = "AccordionItem"
 
 const AccordionTrigger2 = React.forwardRef<
     React.ElementRef<typeof AccordionPrimitive.Trigger>,
-    React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+    React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> & { iconSrc?: string }
+>(({ className, children, iconSrc, ...props }, ref) => (
     <AccordionPrimitive.Header className="flex">
         <AccordionPrimitive.Trigger
             ref={ref}
             className={cn(
-                "flex flex-1 items-center justify-between  py-4 text-[18px]  md:text-lg md:text- text-start  font-medium transition-all hover:underline [&[data-state=open]>div>svg]:rotate-90",
+                "flex flex-1 items-center justify-between  py-4 text-[18px]  md:text-lg md:text- text-start  font-medium transition-all hover: [&[data-state=open]>div>svg]:rotate-90",
                 className
             )}
             {...props}
         >
             <div className="flex gap-4 items-center">
-                <img src='/product/faceicon.png' className="h-5" />
+                {iconSrc && <img src={iconSrc} className="h-5" alt="icon" />}
                 {children}
             </div>
             <div className="ml-4  ">
@@ -54,7 +54,7 @@ const AccordionContent2 = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
     <AccordionPrimitive.Content
         ref={ref}
-        className="overflow-hidden text-[#676B93] mt-2 text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+        className="overflow-hidden   n text-[#676B93] mt-2 text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
         {...props}
     >
         <div className={cn("pb-4 pt-0", className)}>{children}</div>

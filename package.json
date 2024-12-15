@@ -37,6 +37,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@react-google-maps/api": "^2.20.3",
     "@sendgrid/mail": "^8.1.3",
+    "@sentry/nextjs": "8",
     "@tabler/icons-react": "^3.3.0",
     "@tensorflow/tfjs": "^4.21.0",
     "@types/bcryptjs": "^2.4.6",

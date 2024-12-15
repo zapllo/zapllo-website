@@ -6,20 +6,17 @@ type Props = {}
 
 export default function SaveMore({ }: Props) {
     return (
-        <div className='justify-center mx-12  flex '>
-            <div className='grid grid-cols-2 gap-6  mt-4 justify-center items-center '>
+        <div className='justify-center mx-20  flex '>
+            <div className='grid grid-cols-2   mt-4 justify-center items-center '>
                 <div className='w-full'>
-                    <img src="/product/save.png" className='w-[90%] ' />
+                    <img src="/product/save.png" className='w-[487px] ' />
                 </div>
                 <div className="max-w-3xl w-full">
                     <h1 className="text-3xl font-semibold">
                         Start saving money and start investing in growth
                     </h1>
                     <p className="text-sm max-w-lg text-muted-foreground mt-4">
-                        Unlock the Power of LEAVE & ATTENDANCE TRACKER APP
-                        with WhatsApp Reminders & IOX Team Productivity. Unlock the Power of LEAVE & ATTENDANCE TRACKER APP
-                        with WhatsApp Reminders & IOX Team Productivity. Unlock the Power of LEAVE & ATTENDANCE TRACKER APP
-                        with WhatsApp Reminders & IOX Team Productivity
+                        Unlock the Power of LEAVE & ATTENDANCE TRACKER APP with WhatsApp Reminders & 10X Team Productivity🚀
                     </p>
                     <div className="w-[110%] flex gap-4 mt-8 ">
                         <div className="z-10    min-h-[10rem]   items-center ">
@@ -35,7 +32,7 @@ export default function SaveMore({ }: Props) {
                                             <div className="m ">
 
                                             </div>
-                                            <h1 className=" text-md">
+                                            <h1 className=" text-sm">
                                                 Join Live Master Classes
                                             </h1>
                                         </span>
@@ -46,7 +43,9 @@ export default function SaveMore({ }: Props) {
 
                         </div>
                         <div className=''>
-                            <button className='bg-gradient-to-b text-lg from-[#1C1F3E]  to-[#010313] border px-4 py-2 rounded-3xl text-[#815BF5]'>Create Your Free Account </button>
+                            <Link href='/signup'>
+                                <button className='bg-gradient-to-b text-sm from-[#1C1F3E]  to-[#010313] border px-4 py-2 rounded-3xl text-[#815BF5]'>Create Your Free Account </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

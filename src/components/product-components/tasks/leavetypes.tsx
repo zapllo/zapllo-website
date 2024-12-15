@@ -16,10 +16,10 @@ export default function SettingUp3({ }: Props) {
                     <div>
                         <div className=' rounded-xl'>
                             {/* <PayrollFaq /> */}
-                            <img src='/product/icons/notifications.png' className='rounded-xl h-16' />
+                            <img src='/product/icons/notifications.png' className='rounded-xl h-20' />
                         </div>
-                        <h1 className='text-2xl mt-4'>Team will receive Notifications</h1>
-                        <p className='text-muted-foreground w-full max-w-lg mt-4 text-sm'>Instant WhatsApp alerts about new tasks on
+                        <h1 className='text-3xl font-bold mt-4'>Team will receive Notifications</h1>
+                        <p className='text-muted-foreground w-full max-w-lg mt-4 text-'>Instant WhatsApp alerts about new tasks on
                         their mobile devices.</p>
                      
                     </div>

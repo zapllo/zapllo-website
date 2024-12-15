@@ -81,19 +81,19 @@ export const FloatingNav = ({
                                                 Zapllo Payroll
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-ai">
+                                            <Link href="#">
                                                 <p className="p-2 text-sm mt-2 flex gap-1  hover:bg-[#815bf5]   rounded-md">
                                                     {/* <img src="/branding/ai.png" className="w-28" />   */}
                                                     Zapllo AI Assistant
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-crm">
+                                            <Link href="#">
                                                 <p className="p-2 mt-2  text-sm flex gap-1  hover:bg-[#815bf5]   rounded-md">
                                                 {/* <img src="/branding/crm.png" className="w-28" />   */}
                                                  Zapllo CRM (Coming Soon)
                                                 </p>
                                             </Link>
-                                            <Link href="/products/zapllo-invoice">
+                                            <Link href="#">
                                                 <p className="p-2 mt-2  text-sm flex gap-1 hover:bg-[#815bf5] rounded-md">
                                                 {/* <img src="/branding/invoice.png" className="w-32" />   */}
                                                  Zapllo Invoice (Coming Soon)

@@ -22,22 +22,26 @@ export default function TasksHero() {
 
                     <span
                         className={cn(
-                            `inline animate- text-md text-center md:text-xl text-muted-foreground`,
+                            `inline animate- text- text-center md:text-lg text-muted-foreground`,
                         )}
                     >
-                        Are you frustrated with employees taking random leaves, coming in late & going early? Then, you&apos;re at the right place!
+                        Are you a Chief Followup Officer wasting 4 hours per day in delegating work & frustrated with delayed work?
                     </span>
                 </AnimatedGradientText>
 
             </div>
             <div className='flex justify-center'>
-                <h1 className='text-center text-xl  bg-clip-text    md:text-5xl mt-4   mx-4 max-w-5xl'><span className='bg-gradient-to-r from-[#815BF5] bg-clip-text text-transparent font-semibold   to-[#FC8929]'>Zapllo Tasks App
-                </span> - Manage your Team in 10 mins a day</h1>
+                <h1 className='text-center text-xl  bg-clip-text    md:text-5xl mt-4   mx-4 max-w-5xl'><span className='bg-gradient-to-r from-[#815BF5] bg-clip-text text-transparent font-semibold   to-[#FC8929]'>Task Delegation App <br />
+                </span>
 
+                </h1>
             </div>
-
+            <div className='flex justify-center'>
+                <span className='mt-4 text-center text-4xl'>  Manage your Team in just 10 mins a day </span>
+            </div>
             <div className='flex justify-center '>
-                <p className={`max-w-[1000px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-muted-foreground ${golos.className}`}>Effortless Task Delegation, Automated WhatsApp reminders Realtime Dept & Employee Performance Reportsl</p>
+                <p className={`max-w-[900px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-muted-foreground ${golos.className}`}>Effortless Task Delegation, Automated WhatsApp reminders Realtime Dept & Employee Performance Reports 📊
+                </p>
             </div>
             <div className='flex -mt-8 justify-center'>
                 <MasterClass />

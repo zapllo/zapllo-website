@@ -13,7 +13,7 @@ export default function TaskFeatures({ }: Props) {
                         Zapllo Tasks App Features
                     </span> </h1>
                 </div>
-                <h1 className='font-bold text-center mb-4 text-2xl mt-4'>
+                <h1 className='font-bold text-center mb-4 text-3xl mt-4'>
                     How Zapllo Tasks App saves 4 hours of each Employee?
                 </h1>
                 <div className='grid grid-cols-2 max-w-5xl   gap-4'>
@@ -21,7 +21,7 @@ export default function TaskFeatures({ }: Props) {
                         <img src='/product/tasks.png' className='rounded-xl h-full object-cover' />
                     </div>
                     <div className='mt-12 rounded-xl'>
-                        <h1 className='text-3xl font-medium'>Effortless Task Delegation</h1>
+                        <h1 className='text-3xl font-bold'>Effortless Task Delegation</h1>
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/assigned.png' className='h-12 ' />
                             <h1 className='text-xl'>
@@ -34,7 +34,7 @@ export default function TaskFeatures({ }: Props) {
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/time.png' className='h-12 ' />
                             <h1 className='text-xl'>
-                                Recurring Tasks-Daily, Weekly& Monthly
+                                Recurring Tasks-Daily, Weekly & Monthly
                             </h1>
                         </div>
                         <p className='text-muted-foreground mt-4 text-sm'>
@@ -43,17 +43,18 @@ export default function TaskFeatures({ }: Props) {
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/progress.png' className='h-12 ' />
                             <h1 className='text-xl'>
-                                Task Assignment
+                                Task Progress Updation
+
                             </h1>
                         </div>
                         <p className='text-muted-foreground mt-4 text-sm'>
-                            Assign tasks with deadlines and priorities, allow assigners to choose frequency, and ensure efficient completion and management.
+                            Teammates stay updated on tasks and report progress to ensure assigners are kept informed.
                         </p>
                     </div>
                 </div>
                 <div className='grid grid-cols-2 max-w-5xl   gap-4'>
                     <div className='mt-12 rounded-xl'>
-                        <h1 className='text-3xl font-medium'>Task Tracking & MIS Reports</h1>
+                        <h1 className='text-3xl font-bold'>Task Tracking & MIS Reports</h1>
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/assigned.png' className='h-12 ' />
                             <h1 className='text-xl'>
@@ -84,7 +85,7 @@ export default function TaskFeatures({ }: Props) {
                         <img src='/product/reminders.png' className='rounded-xl h-full w-full object-cover' />
                     </div>
                     <div className='mt-24 rounded-xl'>
-                        <h1 className='text-3xl font-medium'>WhatsApp & Email Reminders</h1>
+                        <h1 className='text-3xl font-bold'>Notifications & Reminders                        </h1>
                         <div className='flex gap-4  mt-4 items-center'>
                             <img src='/product/icons/bell.png' className='h-12 ' />
                             <h1 className='text-xl'>
@@ -103,6 +104,15 @@ export default function TaskFeatures({ }: Props) {
                         <p className='text-muted-foreground mt-4 text-sm'>
                             Employees get Daily Reminder for pending Tasks which pushes them to complete on time
                         </p>
+                        <div className='flex gap-4 mt-4 items-center'>
+                            <img src='/product/icons/time.png' className='h-12 ' />
+                            <h1 className='text-xl'>
+                                Notification Subscriptions
+                            </h1>
+                        </div>
+                        <p className='text-muted-foreground mt-4 text-sm'>
+                            Admin and manager can subscribe to any task and get notifications about that tasks.
+                        </p>
 
                     </div>
 
@@ -110,7 +120,7 @@ export default function TaskFeatures({ }: Props) {
                 </div>
                 <div className='grid grid-cols-2 max-w-5xl   gap-4'>
                     <div>
-                        <h1 className='text-3xl font-medium'>Say GoodBye to Miscommunications</h1>
+                        <h1 className='text-3xl font-bold'>Say GoodBye to Miscommunications</h1>
                         <div className='flex gap-4  mt-8 items-center'>
                             <img src='/product/icons/audio.png' className='h-12 ' />
                             <h1 className='text-2xl font-medium '>
@@ -123,7 +133,7 @@ export default function TaskFeatures({ }: Props) {
                         <div className='flex gap-4  mt-8 items-center'>
                             <img src='/product/icons/attachments.png' className='h-12 ' />
                             <h1 className='text-2xl font-medium '>
-                                Attachments
+                                KRAs
                             </h1>
                         </div>
                         <p className='mt-4 max-w-md text-muted-foreground'>
@@ -132,11 +142,12 @@ export default function TaskFeatures({ }: Props) {
                         <div className='flex gap-4  mt-8 items-center'>
                             <img src='/product/icons/reminders.png' className='h-12 ' />
                             <h1 className='text-2xl font-medium '>
-                                Reminders
+                                Templates Directory
+
                             </h1>
                         </div>
                         <p className='mt-4 max-w-md text-muted-foreground'>
-                            Every team leader and manager will be able to assign, modify and delete KRAs to each team member.
+                            Predefined department-wise task templates for you to use.
                         </p>
                         <div className='flex gap-4  mt-8 items-center'>
                             <img src='/product/icons/export.png' className='h-12 ' />

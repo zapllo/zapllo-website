@@ -30,7 +30,10 @@ export default function Footer() {
 
     return (
         <footer className='max-w-full  p-4 w-full overflow-hidden'>
-            <Separator className=' w-[95%] flex mt-12' />
+            <div className='flex justify-center'>
+                <Separator className=' w-[95%] flex mt-12' />
+
+            </div>
             <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
                 <div className='Zapllo my-8  '>
                     <img src='/logo.png' className='h-6' />
@@ -53,7 +56,7 @@ export default function Footer() {
                         <img src="/facebook.png" alt="" className='h-8' />
                         <img src="/instagram.png" alt="" className='h-8' />
                     </div>
-                    <div className='flex w-full justify-start -ml-14 mt-8'>
+                    <div className='flex w-full justify-start  mt-8'>
                         {/* <Link
                             href="/dashboard"
                             className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] "
@@ -86,15 +89,16 @@ export default function Footer() {
 
                         <div>
                             <h1 className='text-lg   font-bold'>Subscribe to Zapllo Insider</h1>
-                            <p className='text-[#676B93] text-xs mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI for 10X results</p>
+                            <p className='text-[#676B93] text-xs w-56  mt-2'>Get latest updates on how technology is transforming Businesses and leveraging AI for 10X results</p>
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
                     <Newsletter />
                 </div>
             </div>
-            <Separator className=' w-[95%] flex -mt-6' />
-
+            <div className='flex justify-center'>
+                <Separator className=' w-[95%] flex -mt-6' />
+            </div>
             <div className='md:flex md:justify-between px-6 '>
                 <div className='md:max-w-[600px]'>
                     <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>

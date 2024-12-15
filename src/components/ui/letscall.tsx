@@ -5,7 +5,7 @@ import { MessageSquare, Phone } from "lucide-react";
 
 export  function LetsCall() {
     return (
-        <div className="z-10 flex w-full   items-center justify-center">
+        <div className="z-10 flex w-full   items-center justify-start">
             <div
                 className={cn(
                     "group rounded-full  border px-4    border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#A587FF] hover:-mt-2 to-[#5E29FF] dark:hover:bg-blue-800",

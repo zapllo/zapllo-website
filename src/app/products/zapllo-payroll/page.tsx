@@ -1,3 +1,5 @@
+import Faq from "@/components/globals/faq";
+import Faq2 from "@/components/globals/faq2";
 import Footer from "@/components/globals/Footer";
 import { FloatingNavbar } from "@/components/globals/navbar";
 import Benefits from "@/components/product-components/payroll/benefits";
@@ -31,11 +33,14 @@ export default function Home() {
                 className='scroller relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-8xl py-4 mb-4 overflow- space-x-6'
             >
                 <h1 className="text-center text-2xl">
-                    We are on a mission to help 1 Million MSMEs automate their business and get freedom from daily firefighting.
+                    We are on a mission to help 10 Million MSMEs automate their business and get freedom from daily firefighting.
                 </h1>
             </div>
             <PayrollTestimonials />
             <SaveMore />
+            <div className="flex justify-center mt-24">
+                <Faq2 />
+            </div>
             <div className="flex bg-[#04061E]  mt-56 justify-center">
                 <Footer />
             </div>

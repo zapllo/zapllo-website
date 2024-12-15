@@ -16,10 +16,10 @@ export default function SettingUp3({ }: Props) {
                     <div>
                         <div className=' rounded-xl'>
                             {/* <PayrollFaq /> */}
-                            <img src='/product/icons/addteam.png' className='rounded-xl h-16' />
+                            <img src='/product/icons/leavetype.png' className='rounded-xl h-20' />
                         </div>
-                        <h1 className='text-2xl mt-4'>Define Leave Types</h1>
-                        <p className='text-muted-foreground w-full max-w-lg mt-4 text-sm'>Start by adding your teammates & assigning their reporting managers. This means all leave and attendance requests go straight to the right people for quick approval or rejection. Smooth, organized, and hassle-free!.</p>
+                        <h1 className='text-3xl font-bold mt-4'>Define Leave Types</h1>
+                        <p className='text-muted-foreground w-full max-w-lg mt-4 '>Customize your leave policies effortlessly. Define leave types such as casual, sick, or maternity leave. Decide on the total number of allotted leaves, whether they are paid or unpaid, and set durations from full days to short breaks.</p>
                       
                     </div>
 

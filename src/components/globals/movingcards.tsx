@@ -103,7 +103,7 @@ export const MovingCards = ({
                                     {item.name}
                                     <br />
                                     {item.title}
-                                    <img src="star.png" className="h-4" />
+                                    <img src="/star.png" className="h-4" />
 
                                 </span>
 
