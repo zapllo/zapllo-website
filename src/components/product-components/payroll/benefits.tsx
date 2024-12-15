@@ -25,7 +25,7 @@ export default function Benefits({ }: Props) {
                         </div>
                         <div className=''>
                             <img src='/product/icons/track.png' className='h-12' />
-                            <p className='max-w- w-full'>Track/enhance employee's productivity</p>
+                            <p className='max-w- w-full'>Track/enhance employee&apos;s productivity</p>
                         </div>
                         <div className=''>
                             <img src='/product/icons/graph.png' className='h-12' />
