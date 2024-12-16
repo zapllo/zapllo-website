@@ -21,15 +21,35 @@ export async function GET(request: NextRequest) {
         await connectDB();
         const user = await User.findOne({ _id: managerId }).
             select("-password");
+        if (!user?.organization) {
+            return NextResponse.json(
+                { success: false, message: 'User does not belong to an organization' },
+                { status: 403 }
+            );
+        }
+        
+        const organizationId = user.organization;
+        // Check the user's role
+        if (user.role === 'orgAdmin') {
+            // Fetch all regularization entries for the organization
+            const allRegularizations = await LoginEntry.find({
+                action: 'regularization',
+            })
+                .populate({
+                    path: 'userId',
+                    match: { organization: organizationId }, // Filter by organization via userId
+                    select: 'firstName lastName email', // Select specific fields from the user
+                })
+                .populate({
+                    path: 'approvedBy',
+                    select: 'firstName lastName', // Populate approver details
+                });
 
-        if (user?.role === 'orgAdmin') {
-            // Fetch all regularization entries if the user is an orgAdmin
-            const allRegularizations = await LoginEntry.find({ action: 'regularization' })
-                .populate('userId', 'firstName lastName email')
-                .populate('approvedBy', 'firstName lastName'); // Populate approver details
+            // Remove entries where userId is null (not in the organization)
+            const filteredRegularizations = allRegularizations.filter(entry => entry.userId);
 
             return NextResponse.json(
-                { success: true, regularizations: allRegularizations },
+                { success: true, regularizations: filteredRegularizations },
                 { status: 200 }
             );
         }

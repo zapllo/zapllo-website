@@ -50,7 +50,7 @@ export default function Contact() {
                                 </div>
                             </div>
                             <div className='p-5 mt-12 md:mt-0'>
-                                <h1 className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] w-fit px-4 py-1 to-[#FC8929] text-transparent bg-clip-text text-3xl  font-semibold'>Get a Quote</h1>
+                                <h1 className='bg-gradient-to-r mx-4  from-[#815BF5] via-[#FC8929] w-fit px-4 py-1 to-[#FC8929] text-transparent bg-clip-text text-3xl  font-semibold'>Get Priority Support</h1>
                                 <ContactForm />
                             </div>
                         </div>

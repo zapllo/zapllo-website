@@ -118,7 +118,7 @@ const InfoBar = (props: Props) => {
 
   const getPageTitle = () => {
     if (pathName === "/dashboard") {
-      return "All Apps ";
+      return "My Business Apps ";
     } else if (pathName === "/dashboard/tasks") {
       return "Task Management";
     } else if (pathName === "/dashboard/teams") {
@@ -187,7 +187,7 @@ const InfoBar = (props: Props) => {
         <div className="gap-6 ml-12 border-b  items-center px-4 py-2 w-[100%] z-[10] flex flex-row  bg-[#04061e]">
           {/* <img src='/icons/ellipse.png' className='absolute h-[50%] z-[10]   opacity-30 -ml-32 ' /> */}
           <div
-            className={`flex ml-4   ${pathName === "/dashboard" ? "text-center ml-[48%] w-screen" : ""
+            className={`flex   ${pathName === "/dashboard" ? "text-center ml-[42%] w-screen" : ""
               }`}
           >
             <h1 className={`text-md mt-1 text-white font-bold `}>

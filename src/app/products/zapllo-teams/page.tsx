@@ -45,7 +45,7 @@ export default function Home() {
             <div className="flex justify-center mt-24">
                 <Faq3 />
             </div>
-            <div className="flex bg-[#04061E]  mt-56 justify-center">
+            <div className="flex bg-[#04061E] w-full   mt-56 justify-center">
                 <Footer />
             </div>
         </main>

@@ -37,11 +37,11 @@ export default function Newsletter() {
     };
 
     return (
-        <div>
+        <div className='-'>
             <div className="flex">
                 <input
                     placeholder="Enter Your Email"
-                    className="mt-6 h-12 px-4 outline-none rounded-r-none  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring "
+                    className="mt-6 w-full h-12 px-4 outline-none rounded-r-none  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring "
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />

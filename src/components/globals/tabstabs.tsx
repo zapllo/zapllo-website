@@ -31,6 +31,7 @@ import { Switch } from "../ui/switch";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { FaSearch } from "react-icons/fa";
+import { validateEmail } from "@/helper/emailValidation";
 
 interface User {
   _id: string;
@@ -105,6 +106,28 @@ export default function TeamTabs() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    whatsappNo: "",
+    password: "",
+  });
+
+  const validateInputs = () => {
+    const emailError = validateEmail(newMember.email);
+
+    const newErrors = {
+      email: emailError,
+      firstName: !newMember.firstName.trim() ? "First Name is required" : "",
+      lastName: !newMember.lastName.trim() ? "Last Name is required" : "",
+      whatsappNo: !newMember.whatsappNo.trim() ? "WhatsApp Number is required" : "",
+      password: newMember.password.length < 6 ? "Password must be at least 6 characters long" : "",
+    };
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === "");
+  };
 
 
   const handleCountrySelect = (countryCode: any) => {
@@ -222,6 +245,8 @@ export default function TeamTabs() {
   const handleCreateUser = async () => {
     setLoading(true); // Start loader
     setIsSubmitted(true); // Mark form as submitted
+    if (!validateInputs()) return;
+
 
     try {
       setErrorMessage(""); // Clear any existing error message
@@ -254,7 +279,7 @@ export default function TeamTabs() {
           country: 'IN',
           isTaskAccess: false,
           isLeaveAccess: false,
-        }); 
+        });
         setSelectedManager("");
         toast(<div className=" w-full mb-6 gap-2 m-auto  ">
           <div className="w-full flex  justify-center">
@@ -518,16 +543,20 @@ export default function TeamTabs() {
                   />
                   <input
                     placeholder="Email"
-                    className={`py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.email.trim() ? "border-red-500" : ""
+                    className={`py-2 px-2 focus-within:border-[#815BF5] text-xs bg-transparent border rounded outline-none ${isSubmitted && !newMember.email.trim() && errors.email ? "border-red-500" : ""
                       }`}
                     value={newMember.email}
                     onChange={(e) => {
                       setNewMember({ ...newMember, email: e.target.value });
-                      if (errorMessage) {
-                        setErrorMessage(""); // Clear error message when email is modified
+                      if (errors.email) {
+                        setErrors({ ...errors, email: "" }); // Clear error when user starts typing
                       }
                     }}
                   />
+                   {isSubmitted && errors.email && (
+                        <p className="text-red-500 text-xs -my-3">{errors.email}</p>
+                    )}
+
                   {errorMessage && (
                     <p className="text-red-500 text-xs ml-1 -my-3  ">
                       {errorMessage}

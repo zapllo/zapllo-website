@@ -5,12 +5,12 @@ import { SendEmailOptions, sendEmail } from '@/lib/sendEmail';
 
 export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 
-const sendWebhookNotification = async (phoneNumber: string, templateName: string, mediaUrl: string, firstName: string,) => {
+const sendWebhookNotification = async (phoneNumber: string, country: string, templateName: string, mediaUrl: string, firstName: string,) => {
     const payload = {
         phoneNumber,
+        country,
         bodyVariables: [firstName],
         templateName,
-        mediaUrl,
     };
 
     try {
@@ -55,18 +55,28 @@ export async function POST(request: NextRequest) {
         const emailOptions: SendEmailOptions = {
             to: email,
             cc: 'support@zapllo.com',
-            subject: 'We have Received Your Inquiry!',
+            subject: 'We have Received Your Inquiry',
             text: `Zapllo`,
-            html: `<div style="font-family: Arial, sans-serif; background-color: #13173F; color: #FFFFFF; padding: 20px; border-radius: 10px;">
-                <img src='https://www.zapllo.com/logo.png'  style="height:40px; " />
-               <p> Dear ${firstName},\n\nThank you for reaching out to Zapllo!</p>
-               <p> We are thrilled to hear from you and appreciate your interest in our services. Our team is already on it, and you can expect to hear back from us within the next 24 hours. Whether it is about our custom Notion systems, automation solutions, or business workflow consultation, we are here to help you achieve your goals with innovative and powerful solutions. In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.</p>\n\nThanks & Regards\nTeam Zapllo`,
+            html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+    <div style="background-color: #f0f4f8; padding: 20px; ">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <div style="padding: 20px; text-align: center; ">
+                <img src="https://res.cloudinary.com/dndzbt8al/image/upload/v1724000375/orjojzjia7vfiycfzfly.png" alt="Zapllo Logo" style="max-width: 150px; height: auto;">
+            </div>
+          <div style="background: linear-gradient(90deg, #7451F8, #F57E57); color: #ffffff; padding: 20px 40px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; margin: 20px auto; max-width: 80%;">
+    <h1 style="margin: 0; font-size: 20px;">Thanks for Reaching Out!</h1>
+</div>
+ <div style="padding: 20px; color:#000000;">
+               <p> Dear <strong>${firstName}</strong>,\n\n<p>Thank you for reaching out to Zapllo!</p></p>
+               <p>Our team is already on it, and you can expect to hear back from us within the next 24 hours.In the meantime, feel free to explore our website to learn more about what we offer and how we can assist you.</p>\n\nThanks & Regards\n
+               <p><strong>Team Zapllo</strong></p>
+               </div>`,
         };
         await sendEmail(emailOptions);
-        const mediaUrl = "https://interaktprodmediastorage.blob.core.windows.net/mediaprodstoragecontainer/d262fa42-63b2-417e-83f2-87871d3474ff/message_template_media/w4B2cSkUyaf3/logo-02%204.png?se=2029-07-07T15%3A30%3A43Z&sp=rt&sv=2019-12-12&sr=b&sig=EtEFkVbZXLeBLJ%2B9pkZitby/%2BwJ4HzJkGgeT2%2BapgoQ%3D";
+        const mediaUrl = "https://res.cloudinary.com/dndzbt8al/image/upload/v1732650791/50_t0ypt5.png";
         const templateName = 'leadenquirycontactus'
         console.log(mediaUrl, templateName, 'media url & template name');
-        await sendWebhookNotification(mobNo, templateName, mediaUrl, firstName);
+        await sendWebhookNotification(mobNo, "IN", templateName, mediaUrl, firstName);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 

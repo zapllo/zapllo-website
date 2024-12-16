@@ -9,8 +9,22 @@ import { Toaster } from "sonner";
 const inter = Lato({ weight: "400", subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Zapllo - Automate and Upgrade your Business by 10x",
+  title: "Zapllo - Automate and Upgrade your Business to 10X",
   description: "Supercharge your Workflow with Zapllo and unleash the power of AI and Automation. Book your free demo now.",
+  openGraph: {
+    title: "Zapllo - Automate and Upgrade your Business to 10X",
+    description: "India's No.1 SaaS for MSMEs 🚀",
+    url: "https://zapllo.com",
+    type: "website",
+    images: [
+      {
+        url: "https://zapllo.com/og.png",
+        width: 1200, // recommended width
+        height: 630, // recommended height
+        alt: "Image for India's No.1 SaaS for MSMEs - ZAPLLO 🚀 ",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

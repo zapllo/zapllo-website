@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import ShimmerButton from "../magicui/shimmer-button";
 import ShineBorder from "../magicui/shine-border";
 import { Calendar, File } from "lucide-react";
+import { Button } from "./button";
 
 export const FloatingNav = ({
     navItems,
@@ -29,7 +30,7 @@ export const FloatingNav = ({
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                className="flex gap-2 max-w-6xl fixed top-0 md:top-5 py-3 inset-x-0 mx-auto border-transparent rounded-full bg-[#141841] shadow-md z-[5000] px-6 justify-between"
+                className=" gap-2 max-w-6xl fixed top-0 md:top-5 py-3 inset-x-0 mx-auto border-transparent rounded-full bg-[#141841] shadow-md z-[5000] px-6 flex items-center justify-between"
             >
                 <motion.div
                     className={cn(
@@ -77,8 +78,8 @@ export const FloatingNav = ({
                                             </Link>
                                             <Link href="/products/zapllo-payroll">
                                                 <p className="p-2 mt-2  text-sm flex gap-1  hover:bg-[#815bf5]   rounded-md">
-                                                {/* <img src="/branding/attendance.png" className="w-40" /> */}
-                                                Zapllo Payroll
+                                                    {/* <img src="/branding/attendance.png" className="w-40" /> */}
+                                                    Zapllo Payroll
                                                 </p>
                                             </Link>
                                             <Link href="#">
@@ -89,17 +90,17 @@ export const FloatingNav = ({
                                             </Link>
                                             <Link href="#">
                                                 <p className="p-2 mt-2  text-sm flex gap-1  hover:bg-[#815bf5]   rounded-md">
-                                                {/* <img src="/branding/crm.png" className="w-28" />   */}
-                                                 Zapllo CRM (Coming Soon)
+                                                    {/* <img src="/branding/crm.png" className="w-28" />   */}
+                                                    Zapllo CRM (Coming Soon)
                                                 </p>
                                             </Link>
                                             <Link href="#">
                                                 <p className="p-2 mt-2  text-sm flex gap-1 hover:bg-[#815bf5] rounded-md">
-                                                {/* <img src="/branding/invoice.png" className="w-32" />   */}
-                                                 Zapllo Invoice (Coming Soon)
+                                                    {/* <img src="/branding/invoice.png" className="w-32" />   */}
+                                                    Zapllo Invoice (Coming Soon)
                                                 </p>
                                             </Link>
-                                            
+
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -108,24 +109,34 @@ export const FloatingNav = ({
                     ))}
                 </motion.div>
 
-                <div className="py-3">
+                <div className="py-3 ml-6">
                     <Link href="/">
                         <img src="/logo.png" height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
                     </Link>
                 </div>
-                <Link
-                    href="/dashboard"
-                    className="relative   h-10 overflow-hidden rounded-full p-[2px] "
-                >
-                    <ShineBorder borderRadius={50}
-                        className="text-center text-xl font-bold capitalize"
-                        color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+                <div className="flex gap-2">
+
+                    <Button className="bg-black hover:border-[#815bf5] border hover:bg-black rounded-full">
+                        <Link
+                            href="/signup"
+                            className="relative m0 text-white font-medium    overflow-hidden rounded-full "
+                        >
+                            <h1>
+                                Get Started
+                            </h1>
+                        </Link>
+
+                    </Button>
+                    <Link
+                        href="/login"
+                        className="relative  text-white font-medium  overflow-hidden rounded-full  "
                     >
-                        <h1>
-                            Get Started
-                        </h1>
-                    </ShineBorder>
-                </Link>
+
+                        <Button className="rounded-full">
+                            Login
+                        </Button>
+                    </Link>
+                </div>
             </motion.div>
         </AnimatePresence>
     );

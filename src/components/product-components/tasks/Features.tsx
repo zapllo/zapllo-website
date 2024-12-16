@@ -9,7 +9,7 @@ export default function TaskFeatures({ }: Props) {
         <div className='w-full flex justify-center'>
             <div className='mb-16 max-w-5xl w-full mt-20 '>
                 <div className='flex justify-center'>
-                    <h1 className='text-center  text-2xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
+                    <h1 className='text-center  text-3xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
                         Zapllo Tasks App Features
                     </span> </h1>
                 </div>
@@ -156,10 +156,10 @@ export default function TaskFeatures({ }: Props) {
                             </h1>
                         </div>
                         <p className='mt-4 max-w-md text-muted-foreground'>
-                            Every team leader and manager will be able to assign, modify and delete KRAs to each team member.
+                            Every Admin, Manager and Team Members can upload and attach any kind of files which are relatable to the task.
                         </p>
                     </div>
-                    <div className=' h-[648px] -ml-14  relative rounded-xl'>
+                    <div className=' h-[648px] -ml-14  mt-10 relative rounded-xl'>
                         <img src='/product/tasks.png' className='rounded-xl h-full w-full object-cover' />
                     </div>
                 </div>

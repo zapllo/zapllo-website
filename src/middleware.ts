@@ -11,6 +11,15 @@ export function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value || '';
     const loginTime = request.cookies.get('loginTime')?.value || '';
 
+    // Mobile device detection using User-Agent
+    const userAgent = request.headers.get('user-agent') || '';
+    const isMobile = /mobile|android|iphone|ipad|phone/i.test(userAgent);
+
+    // Restrict mobile device access
+    if (isMobile && !isPublicPath) {
+        return NextResponse.redirect(new URL('/mobile-app', request.nextUrl));
+    }
+
     if (loginTime) {
         const currentTime = new Date().getTime();
         const elapsedTime = currentTime - Number(loginTime);

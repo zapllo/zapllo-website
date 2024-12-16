@@ -15,7 +15,7 @@ export default function SettingUp2({ }: Props) {
                     <div>
                         <div className=' rounded-xl'>
                             {/* <PayrollFaq /> */}
-                            <img src='/product/icons/delegate.png' className='rounded-xl h-16' />
+                            <img src='/product/icons/delegate.png' className='rounded-xl h-20' />
                         </div>
                         <h1 className='text-3xl font-bold mt-4'>Delegate Tasks to your team</h1>
                         <p className='text-muted-foreground w-full max-w-lg mt-4 '>Start by adding your teammates & assigning their reporting managers. This means all leave and attendance requests go straight to the right people for quick approval or rejection. Smooth, organized, and hassle-free!.</p>

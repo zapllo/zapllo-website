@@ -16,7 +16,7 @@ export default function SaveMore3({ }: Props) {
                         Start saving money and start investing in growth
                     </h1>
                     <p className="text-sm max-w-lg text-muted-foreground mt-4">
-                        Unlock the Power of TASK DELEGATION APP with WhatsApp Reminders & 10X Team Productivity🚀
+                        Unlock the Power of TASK DELEGATION APP with WhatsApp Reminders & 10X your Team&apos;s Productivity🚀
                     </p>
                     <div className="w-[110%] flex gap-4 mt-8 ">
                         <div className="z-10    min-h-[10rem]   items-center ">

@@ -391,10 +391,10 @@ export default function Billing() {
                 setGstNumber('');
                 return;
             }
-
+            console.log(total, 'total');
             // Proceed with Razorpay checkout for non-zero payable amounts
             const orderData = {
-                amount: total * 100, // Amount in paise
+                amount: Math.round(total * 100), // Convert to paise and ensure it's an integer
                 currency: 'INR',
                 receipt: 'receipt_order_123456',
                 notes: {
@@ -406,8 +406,9 @@ export default function Billing() {
                 subscribedUserCount: userCount, // Store the selected number of users
 
             };
-
+            console.log(orderData, 'order data');
             const { data } = await axios.post('/api/create-order', orderData);
+            console.log(data, 'from razorpay')
             if (!data.orderId) {
                 throw new Error('Order ID not found in the response');
             }

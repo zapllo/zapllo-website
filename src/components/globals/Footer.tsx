@@ -29,20 +29,20 @@ export default function Footer() {
     };
 
     return (
-        <footer className='max-w-full  p-4 w-full overflow-hidden'>
+        <footer className='max-w-8xl  p-4 w-full overflow-hidden'>
             <div className='flex justify-center'>
                 <Separator className=' w-[95%] flex mt-12' />
 
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-3  p-6 gap-12'>
+            <div className='grid grid-cols-1 md:grid-cols-3 w-full  p-6 gap-12'>
                 <div className='Zapllo my-8  '>
                     <img src='/logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
-                        <Link href='/Templates'>
-                            <h1>TEMPLATE</h1>
+                        <Link href='https://zapllo.notion.site/Work-at-Zapllo-9c970622e3d142919bdca4c42ee38aab?pvs=4'>
+                            <h1>CAREERS</h1>    
                         </Link>
-                        <Link href='/successstories'>
-                            <h1>STORIES</h1>
+                        <Link href='/support'>
+                            <h1>SUPPORT</h1>
                         </Link>
                         <Link href='/contact'>
                             <h1>CONTACT</h1>
@@ -81,8 +81,8 @@ export default function Footer() {
                     </motion.div>
                     <img src='/gear.png' className='h-[100%]' />
                 </div>
-                <div className=' overflow-visible my-8  '>
-                    <div className='flex gap-6'>
+                <div className=' overflow-visible  my-8  '>
+                    <div className='flex justify-end gap-6'>
                         {/* <img src='at.png' className='h-full' /> */}
 
                         <img src='/at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   h-20' />
@@ -93,7 +93,9 @@ export default function Footer() {
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
-                    <Newsletter />
+                    <div className='flex justify-end'>
+                        <Newsletter />
+                    </div>
                 </div>
             </div>
             <div className='flex justify-center'>
@@ -113,10 +115,10 @@ export default function Footer() {
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Terms and Conditions</h1>
                     </Link>
                     <h1 className='text-[#676B93] hidden md:block mt-6 text-xs md:text-sm'>|</h1>
-                    <Link href='/refundpolicy'>
+                    {/* <Link href='/refundpolicy'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Refund Policy</h1>
-                    </Link>
-                    <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1>
+                    </Link> */}
+                    {/* <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1> */}
 
                     <Link href='/privacypolicy'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Privacy Policy</h1>

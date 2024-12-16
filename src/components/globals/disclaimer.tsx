@@ -6,6 +6,7 @@ import ShimmerButton from "../magicui/shimmer-button";
 import { BookCall } from "../ui/bookcall";
 import ShineBorder from "../magicui/shine-border";
 import { useEffect } from "react";
+import { Button } from "../ui/button";
 
 export default function Disclaimer() {
     //    useEffect(() => {
@@ -35,23 +36,27 @@ export default function Disclaimer() {
                     <Link href='/'>
                         <img alt="Zapllo Technologies" className="h-7 cursor-pointer" src="/logo.png" />
                     </Link>
-                    <div className="md:flex justify-start  mt-6 md:mt-0 gap-2">
-                        <div className="scale-90  justify-start flex">
-                            <BookCall />
+                    <div className="flex gap-2">
 
-                        </div>
-                        <Link
-                            href="/dashboard"
-                            className="relative inline-fl ex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
-                        >
-                            <ShineBorder borderRadius={50}
-                                className="text-center text-xl font-bold capitalize"
-                                color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+                        <Button className="bg-black hover:border-[#815bf5] border hover:bg-black rounded-full">
+                            <Link
+                                href="/signup"
+                                className="relative m0 text-white font-medium    overflow-hidden rounded-full "
                             >
                                 <h1>
                                     Get Started
                                 </h1>
-                            </ShineBorder>
+                            </Link>
+
+                        </Button>
+                        <Link
+                            href="/login"
+                            className="relative  text-white font-medium  overflow-hidden rounded-full  "
+                        >
+
+                            <Button className="rounded-full">
+                                Login
+                            </Button>
                         </Link>
                     </div>
 

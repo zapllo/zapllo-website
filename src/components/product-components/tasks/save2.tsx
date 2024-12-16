@@ -16,7 +16,7 @@ export default function SaveMore2({ }: Props) {
                         Manage your Team in 10 mins a day
                     </h1>
                     <p className="text-sm  text-muted-foreground mt-4">
-                        Unlock the Power of ZAPLLO TASK DELEGATION APP with WhatsApp Reminders & IOX Team Productivity 🚀
+                        Unlock the Power of TASK DELEGATION APP with WhatsApp Reminders & 1OX your Team&apos;s Productivity 🚀
                     </p>
                     <div className="w-[110%] flex gap-4 mt-8 ">
                         <div className="z-10    min-h-[10rem]   items-center ">
