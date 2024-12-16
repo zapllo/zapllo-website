@@ -8,7 +8,7 @@ export default function MobileAppPage() {
     return (
         <div className="flex items-center justify-center md:w-screen md:h-screen pt-24 bg-black m-auto">
             <div className="space-y-4">
-                <h1 className="text-3xl  text-center font-bold">You're using the web app</h1>
+                <h1 className="text-3xl  text-center font-bold">You&apos;re using the web app</h1>
                 <div className="">
                   <h1 className="text-center"> Download the mobile app for a better experience!</h1>
                         <div className="mt-24 grid md:grid-cols-2 gap-4 w-full">
