@@ -203,9 +203,9 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
                 amount: Math.round(payableAmountWithGst * 100),
                 currency: 'INR',
-                name: formData.selectedPlan,
+                name: `Zapllo`,
                 description: `Payment for ${formData.selectedPlan}`,
-                image: '/logo.png',
+                image: 'https://res.cloudinary.com/dndzbt8al/image/upload/v1732384145/zapllo_pmxgrw.jpg',
                 order_id: orderId,
                 handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string; }) => {
                     const paymentResult = {
@@ -248,12 +248,16 @@ const MultiStepForm = ({ selectedPlan }: { selectedPlan: PlanKeys }) => {
                     }
                 },
                 prefill: {
-                    name: `${formData.firstName} ${formData.lastName}`,
-                    email: formData.email,
-                    contact: formData.whatsappNo,
+                    name: `${formData?.firstName} ${formData?.lastName}`,
+                    email: formData?.email,
+                    contact: formData?.whatsappNo,
+                },
+                notes: {
+                    address: 'Corporate Office',
                 },
                 theme: {
-                    color: '#007A5A',
+                    color: "#04061E", // Replace with your brand's primary color
+                    backdrop_color: "#0B0D26", // Optional: Set a custom background color for the Razorpay modal
                 },
             };
 

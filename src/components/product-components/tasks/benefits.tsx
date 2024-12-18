@@ -34,7 +34,7 @@ export default function Benefits({ }: Props) {
                         </div>
                     </div>
                     <div className='w-full h-full  2xl:scale-125 scale-150 rounded-xl'>
-                        <img src='/product/benefits.png' className='rounded-xl object-cover h-full w-full' />
+                        <img src='/product/taskapp.png' className='rounded-xl object-cover h-full w-full' />
                     </div>
                     <div className='grid grid-cols-1 gap-12 items-center justify-center'>
                         <div className=''>

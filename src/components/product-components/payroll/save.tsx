@@ -9,7 +9,7 @@ export default function SaveMore({ }: Props) {
         <div className='justify-center mx-20  flex '>
             <div className='grid grid-cols-2   mt-4 justify-center items-center '>
                 <div className='w-full'>
-                    <img src="/product/save.png" className='w-[487px] ' />
+                    <img src="/product/update.png" className='w-[487px] ' />
                 </div>
                 <div className="max-w-3xl w-full">
                     <h1 className="text-3xl font-semibold">

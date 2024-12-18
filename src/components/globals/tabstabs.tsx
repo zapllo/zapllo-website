@@ -312,6 +312,8 @@ export default function TeamTabs() {
           </div>);
           setErrorMessage("You have reached the maximum number of members for your current plan.");
         }
+      } else if (error.response.data.error === "A user with this email already exists.") {
+        setErrorMessage("Email already exists")
       } else {
         setErrorMessage("An unexpected error occurred. Please try again.");
       }
@@ -553,9 +555,9 @@ export default function TeamTabs() {
                       }
                     }}
                   />
-                   {isSubmitted && errors.email && (
-                        <p className="text-red-500 text-xs -my-3">{errors.email}</p>
-                    )}
+                  {isSubmitted && errors.email && (
+                    <p className="text-red-500 text-xs -my-3">{errors.email}</p>
+                  )}
 
                   {errorMessage && (
                     <p className="text-red-500 text-xs ml-1 -my-3  ">

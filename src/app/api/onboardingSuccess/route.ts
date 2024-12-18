@@ -7,9 +7,16 @@ import { sendEmail, SendEmailOptions } from '@/lib/sendEmail';
 const sendWebhookNotification = async (user: any) => {
     const payload = {
         phoneNumber: user.whatsappNo,
-        templateName: 'onboarding_purchase',
+        country: user.countryCode, // Ensure this field exists on the user model
+        templateName: 'onboarding_purchased',
         bodyVariables: [
             user.firstName,
+            user.planName,
+            user.companyName,
+            user.subscribedUserCount,
+            user.email,
+
+
         ],
     };
     console.log('Payload for WhatsApp notification:', JSON.stringify(payload, null, 2));
@@ -136,7 +143,14 @@ Zapllo Support Team`,
         const user = {
             whatsappNo,
             firstName,
+            countryCode,
+            companyName,
+            email,
+            subscribedUserCount,
+            planName,
         };
+
+        console.log(user, 'check!')
         try {
             await sendWebhookNotification(user);
         } catch (webhookError) {

@@ -9,7 +9,7 @@ export default function SaveMoreTasks({ }: Props) {
         <div className='justify-center mt-12   w-full  flex '>
             <div className='grid grid-cols-2 gap-2 max-w-5xl w-full  mt-4 justify-center items-center '>
                 <div className='w-full'>
-                    <img src="/product/save.png" className='w-[90%] ' />
+                    <img src="/product/noexcuse.png" className='w-[90%] ' />
                 </div>
                 <div>
                     <div>
