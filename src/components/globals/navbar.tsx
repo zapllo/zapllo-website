@@ -66,7 +66,7 @@ export function FloatingNavbar() {
         <FloatingNav navItems={navItems} />
       </div>
       <div className="flex justify-between md:hidden p-4 ">
-        <img src="logo.png" className="h-7 mt-2" />
+        <img src="/logo.png" className="h-7 mt-2" />
         <Sheet>
           <SheetTrigger asChild>
             <div className="bg-gradient-to-b from-[#1C1F3E] to-[#010313] px-2 py-2 mt-1 rounded-lg">

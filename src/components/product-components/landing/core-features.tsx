@@ -15,11 +15,11 @@ export default function CoreFeatures({ }: Props) {
                 <h1 className='font-bold text-center mb-4 text-3xl mt-4'>
                     Powerful Solutions to Simplify your workflow
                 </h1>
-                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
+                <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
                     <div className=' h-[648px] relative rounded-xl'>
                         <img src='/landing/mockup4.png' className='rounded-xl h-full object-cover' />
                     </div>
-                    <div className='mt-32 rounded-xl'>
+                    <div className='md:mt-32 mx-12 md:mx-0 rounded-xl'>
                         <h1 className='text-3xl font-bold'>Streamlined Business Processes</h1>
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/assigned.png' className='h-12 ' />
@@ -42,8 +42,8 @@ export default function CoreFeatures({ }: Props) {
 
                     </div>
                 </div>
-                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
-                    <div className='mt-20 rounded-xl'>
+                <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
+                    <div className='mt-20 mx-12 md:mx-0 rounded-xl'>
                         <h1 className='text-3xl font-bold'>Integrated Communication</h1>
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/assigned.png' className='h-12 ' />
@@ -70,11 +70,11 @@ export default function CoreFeatures({ }: Props) {
                         <img src='/landing/mockup5.png' className='rounded-xl h-full w-full scale-125 object-cover' />
                     </div>
                 </div>
-                <div className='grid grid-cols-2 max-w-5xl   gap-4'>
+                <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
                     <div className=' h-[648px] -ml-14  relative rounded-xl'>
                         <img src='/landing/mockup6.png' className='rounded-xl h-full w-full object-cover' />
                     </div>
-                    <div className='mt-24 rounded-xl'>
+                    <div className='md:mt-24 mx-12 md:mx-0 rounded-xl'>
                         <h1 className='text-3xl font-bold'>Business Analytics - Real time Dashboards                        </h1>
                         <div className='flex gap-4  mt-4 items-center'>
                             <img src='/product/icons/bell.png' className='h-12 ' />

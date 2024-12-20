@@ -19,7 +19,7 @@ export default function Autopilot() {
                     </div>
                 </div>
                 <div className='flex justify-center '>
-                    <div className='grid grid-cols-4 w-full gap-4   justify-center mt-8     -400'>
+                    <div className='grid grid-cols-2 mx-4 md:grid-cols-4 w-full gap-4   justify-center mt-8     -400'>
                         <div className='bg-[#0A0D28] p-4 rounded'>
                             <img src='/landing/tasks.png' className='h-12 mt-4' />
                             <div className='mt-4'>

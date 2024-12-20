@@ -9,7 +9,7 @@ export default function Solutions3({ }: Props) {
         <div className='w-full flex max-w-8xl items-center justify-center'>
 
             {/**First Setting up */}
-            <div className='grid grid-cols-2 mx-12 gap-4 items-center'>
+            <div className='grid md:grid-cols-2 mx-12 gap-4 items-center'>
                 <div className='mb-4  rounded-xl'>
                     <img src='/landing/mockup3.png' className='rounded-xl object-cover scale-75 ' />
                 </div>

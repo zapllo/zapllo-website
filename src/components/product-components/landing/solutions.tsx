@@ -16,11 +16,11 @@ export default function Solutions({ }: Props) {
                 <h1 className='font-bold text-center mb-4 text-4xl mt-4'>
                     Apps that help you Grow your Business
                 </h1>
-                <p className='text-sm font-extralight mt-4 mb-4 text-center '>
+                <p className='text-sm mx-4 font-extralight mt-4 mb-4 text-center '>
                     Zapllo is dedicated to help Business Owners get freedom from day to day firefighting<br />​ with the help of their easy to use apps.
                 </p>
                 {/**First Setting up */}
-                <div className='grid grid-cols-2 mx-12 gap-4 items-center'>
+                <div className='grid grid-cols-1 md:grid-cols-2 mx-12 gap-4 items-center'>
                     <div className='mb-4  rounded-xl'>
                         <img src='/landing/mockup1.png' className='rounded-xl object-cover scale-75 ' />
                     </div>

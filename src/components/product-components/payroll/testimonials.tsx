@@ -9,14 +9,14 @@ type Props = {}
 
 export default function PayrollTestimonials({ }: Props) {
     return (
-        <div className='justify-center mx-12  flex '>
+        <div className='justify-center mx-12 m flex '>
             <div className='mb-4 mt-20 '>
                 <div className='flex justify-center   w-full'>
                     <h1 className='text-center  text-3xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
                         Testimonials
                     </span> </h1>
                 </div>
-                <h1 className='font-bold text-center  text-3xl mt-4'>
+                <h1 className='font-bold text-center text-xl  md:text-3xl mt-4'>
                     What Folks Are Saying About #Zapllo
                 </h1>
                 <TestimonialCards />

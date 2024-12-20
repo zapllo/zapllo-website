@@ -17,7 +17,7 @@ export default function WeDifferent({ }: Props) {
                 <h1 className=' text-center  text-3xl font-bold mt-4'>
                     Why are we Different ?
                 </h1>
-                <div className='flex gap-2 justify-center items-center mx-20 -mt-12  2xl:-mt-36 '>
+                <div className='md:flex  gap-2 justify-center items-center md:mx-20 md:-mt-12 mt-12 md:max-w-5xl  max-w-7xl w-full sm:w-full  2xl:-mt-20 '>
                     <div className='grid grid-cols-1  gap-12 items-center justify-center'>
                         <div className=''>
                             <img src='/product/icons/calendar.png' className='h-12' />

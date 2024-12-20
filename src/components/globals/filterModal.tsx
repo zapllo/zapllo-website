@@ -64,7 +64,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="grid grid-cols-1 px-2 py-1 max-h-48 h-full overflow-y-scroll scrollbar-hide gap-2">
+                        <div className="grid grid-cols-1 px-2 py-1 max-h-56 h-full overflow-y-scroll scrollbar-hide gap-2">
                             {categories.filter(category => category.name.toLowerCase().includes(lowercasedSearchTerm)).map(category => (
                                 <div key={category._id} className="flex gap-2 items-center">
                                     <Avatar className="h-9 w-9 rounded-full flex border-[#815BF5] items-center">
@@ -103,7 +103,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="grid grid-cols-1 overflow-y-scroll scrollbar-hide gap-2">
+                        <div className="grid grid-cols-1 max-h-56 h-full overflow-y-scroll scrollbar-hide gap-2">
                             {users.filter(user => (`${user.firstName} ${user.lastName}`).toLowerCase().includes(lowercasedSearchTerm)).map(user => (
                                 <label key={user._id} className='flex justify-between cursor-pointer'>
                                     <div className='flex items-center'>
@@ -128,7 +128,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                                         className="mr-2 rounded-full"
                                     />
                                 </label>
-
                             ))}
                         </div>
                     </div>
@@ -220,8 +219,8 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, closeModal, categorie
                 <DialogHeader>
                     <div className="flex justify-between items-center border-b py-4 px-6">
                         <DialogTitle className="text-lg text-white">Filter Tasks</DialogTitle>
-                        <DialogClose className="text-white hover:text-[#815BF5]">
-                            <CrossCircledIcon className="scale-150 cursor-pointer" />
+                        <DialogClose className="text-white hover:bg-white rounded-full hover:text-[#815BF5]">
+                            <CrossCircledIcon className="scale-150 cursor-pointer " />
                         </DialogClose>
                     </div>
                 </DialogHeader>

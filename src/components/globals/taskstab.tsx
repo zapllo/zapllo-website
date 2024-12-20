@@ -1978,7 +1978,7 @@ export default function TasksTab({
                                   </div>
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] mt-4 hover:bg-[#007A5A] h-8  text-sm"
+                                    className="bg-[#007A5A] mt-4 hover:bg-green-800 h-8  text-sm"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>
@@ -2425,7 +2425,7 @@ export default function TasksTab({
                                   </div>
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] hover:border-[#007A5A] mt-4 h-8"
+                                    className="bg-[#007A5A] hover:bg-green-800 mt-4 h-8"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>
@@ -2877,7 +2877,7 @@ export default function TasksTab({
 
                                   <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-[#007A5A] hover:border-[#007A5A] mt-4 h-8"
+                                    className="bg-[#007A5A] hover:bg-green-800 mt-4 h-8"
                                   >
                                     <FilterIcon className="h-4" /> Filter
                                   </Button>

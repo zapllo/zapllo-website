@@ -82,7 +82,7 @@ export default function Footer() {
                     <img src='/gear.png' className='h-[100%]' />
                 </div>
                 <div className=' overflow-visible  my-8  '>
-                    <div className='flex justify-end gap-6'>
+                    <div className='flex md:justify-end gap-6'>
                         {/* <img src='at.png' className='h-full' /> */}
 
                         <img src='/at.gif' className='bg-gradient-to-r p-3 rounded-2xl from-[#815BF5] via-[#FC8929] to-[#FC8929]   h-20' />
@@ -93,7 +93,7 @@ export default function Footer() {
                         </div>
                         {/* <img src='ellipse.png' className='absolute h- w-48 rounded-full object-cover' /> */}
                     </div>
-                    <div className='flex justify-end'>
+                    <div className='flex md:justify-end'>
                         <Newsletter />
                     </div>
                 </div>

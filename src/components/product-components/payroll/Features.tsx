@@ -12,11 +12,11 @@ export default function PayrollFeatures({ }: Props) {
         // Map accordion values to corresponding images
         const imageMap: Record<string, string> = {
             'item-1': '/product/face.png',
-            'item-2': '/product/geo-tagging.png',
-            'item-3': '/product/apply-ease.png',
-            'item-4': '/product/attendance.png',
+            'item-2': '/product/face.png',
+            'item-3': '/product/applyease.png',
+            'item-4': '/product/attendance-reg.png',
             'item-5': '/product/backdated.png',
-            'item-6': '/product/notifications.png',
+            'item-6': '/product/notifications2.png',
         };
         setCurrentImage(imageMap[value] || '/product/face.png');
     };

@@ -5,7 +5,7 @@ import { SendEmailOptions, sendEmail } from '@/lib/sendEmail';
 
 export const dynamic = 'force-dynamic'; // Ensures the route is always dynamic
 
-const sendWebhookNotification = async (phoneNumber: string, country: string, templateName: string, mediaUrl: string, firstName: string,) => {
+const sendWebhookNotification = async (phoneNumber: string, country: string, templateName: string, firstName: string,) => {
     const payload = {
         phoneNumber,
         country,
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         const mediaUrl = "https://res.cloudinary.com/dndzbt8al/image/upload/v1732650791/50_t0ypt5.png";
         const templateName = 'leadenquirycontactus'
         console.log(mediaUrl, templateName, 'media url & template name');
-        await sendWebhookNotification(mobNo, "IN", templateName, mediaUrl, firstName);
+        await sendWebhookNotification(mobNo, "IN", templateName, firstName);
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 

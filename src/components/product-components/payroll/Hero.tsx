@@ -16,13 +16,13 @@ const golos = Golos_Text({ subsets: ["latin"] });
 export default function PayrollHero() {
 
     return (
-        <div className='bg-[#05071E] '>
-            <div className="z-10 flex items-center justify-center">
+        <div className='bg-[#05071E] w-full '>
+            <div className="z-10 flex items-center w-full justify-center">
                 <AnimatedGradientText>
 
                     <span
                         className={cn(
-                            `inline animate- text-md text-center md:text-xl text-muted-foreground`,
+                            `inline animate- text-md  text-center md:text-xl  text-muted-foreground`,
                         )}
                     >
                         Are you frustrated with employees taking random leaves, coming in late & going early? Then, you&apos;re at the right place!

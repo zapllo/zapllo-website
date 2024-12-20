@@ -34,7 +34,7 @@ export const FloatingNav = ({
             >
                 <motion.div
                     className={cn(
-                        "flex max-w-fit  fixed top-5 md:top-8 inset-x-0 mx-auto border dark:border-[#2C2E44] rounded-full bg-[#141841] shadow-lg z-[5000] px-4 py-2 justify-center space-x-6",
+                        "flex max-w-fit   fixed top-5 md:top-8 inset-x-0 mx-auto border dark:border-[#2C2E44] rounded-full bg-[#141841] shadow-lg z-[5000] px-4 py-2 justify-center space-x-6",
                         className
                     )}
                 >
@@ -114,14 +114,14 @@ export const FloatingNav = ({
                         <img src="/logo.png" height={120} width={120} alt="Zapllo Logo" className="-mt-1" />
                     </Link>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
 
-                    <Button className="bg-black hover:border-[#815bf5] border hover:bg-black rounded-full">
+                    <Button className="bg-gradient-to-t h-10 from-[#1C1F3E] to-[#010313] hover:border-[#815bf5] border hover:bg-black rounded-full">
                         <Link
                             href="/signup"
                             className="relative m0 text-white font-medium    overflow-hidden rounded-full "
                         >
-                            <h1>
+                            <h1 className="text-md">
                                 Get Started
                             </h1>
                         </Link>
@@ -129,11 +129,13 @@ export const FloatingNav = ({
                     </Button>
                     <Link
                         href="/login"
-                        className="relative  text-white font-medium  overflow-hidden rounded-full  "
+                        className="relative h-10 text-white font-medium  overflow-hidden rounded-full  "
                     >
 
-                        <Button className="rounded-full">
-                            Login
+                        <Button className="rounded-full border bg-[#815bf5]">
+                            <h1 className="text-md">
+                                Login
+                                </h1>
                         </Button>
                     </Link>
                 </div>

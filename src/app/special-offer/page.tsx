@@ -268,10 +268,20 @@ export default function Home() {
                         Leaves, and Attendance with WhatsApp Integration!
                     </p>
                 </div>
+                <div id="cards" className="flex gap-4 items-center mt-8  justify-center ">
+                    <div>
+                        <img src="/coffee.png" className="h-20" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl mt-6">
+                            <span className="bg-gradient-to-r font-bold from-[#815BF5] via-[#FC8929] to-[#FC8929]  bg-clip-text text-transparent ">₹ 170/month</span>  which is less than a cup of Coffee
+                        </h1>
+                    </div>
+                </div>
             </div>
 
             {/* Pricing Cards */}
-            <div className="mt-12 bg-[#05071E]  mx-4 flex flex-col items-center gap-8">
+            <div className="mt-20 bg-[#05071E]  mx-4 flex flex-col items-center gap-8">
                 <div className="grid grid-cols-3 w-full max-w-7xl   justify-center gap-12 relative">
                     {/* Left Card */}
                     <div className="bg-[#0A0D28] mt-8 border rounded-[50px_50px_50px_50px] w-full   p-6 text-white relative z-10 shadow-lg">
@@ -665,7 +675,7 @@ export default function Home() {
                         <div className="p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/mockups/whatsappp.png"
+                                src="/mockups/task.png"
                                 alt="Book Cover Placeholder"
                                 className="w-full h-full scale-[180%]"
                             />
@@ -682,27 +692,27 @@ export default function Home() {
                                 {
                                     title: "WhatsApp Notifications",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Automated task assign notification to task owner and task status update notifications to task delegator on WhatsApp & Email.",
                                 },
                                 {
                                     title: "Task Reminders",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Add task-specific reminders to get reminded a certain amount of time before the task is due, for example, 5 minutes before, 1 hour before, etc.",
                                 },
                                 {
                                     title: "Repeated Tasks",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Set up Daily, Weekly, Monthly repeating tasks that need to be done on a periodic basis.",
                                 },
                                 {
-                                    title: "Team Performance",
+                                    title: "Team Performance Report",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Get real-time updates on tasks, including completion notifications. Analyze employee performance with MIS scores, fostering responsibility and accountability.",
                                 },
                                 {
                                     title: "Voice Notes",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "While assigning tasks, you can add an audio note to explain in detail about how to perform a specific task or what to avoid.",
                                 },
                             ].map((feature, index) => (
                                 <div
@@ -758,7 +768,7 @@ export default function Home() {
                                 borderBottom: "1px solid #A485FF",
                             }}
                         >
-                            Get Freedom Offer Now
+                            Get New Year Offer Now
                         </button>
                     </a>
                 </div>
@@ -819,29 +829,29 @@ export default function Home() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full md:w-2/3">
                             {[
                                 {
-                                    title: "Delegate Tasks",
+                                    title: "Facial Recognition",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Employees can effortlessly punch in and out through their mobile phones, enhancing security and efficiency. With real-time face detection, offsite employees can easily manage attendance.",
                                 },
                                 {
-                                    title: "WhatsApp Notifications",
+                                    title: "Geo Location",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Auto Geo-location tagging ensures authenticity by capturing staff locations during logins and logouts, preventing fraud.",
                                 },
                                 {
-                                    title: "Task Reminders",
+                                    title: "Attendance Regularization",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Use Regularisation to mark the attendance of past dates, in which case reporting managers will get a notification from where they can approve/reject such requests.",
                                 },
                                 {
-                                    title: "Repeated Tasks",
+                                    title: "Monthly Report",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Get a detailed report of each employee’s present, absent, and leave counts for each month.",
                                 },
                                 {
-                                    title: "Team Performance",
+                                    title: "WhatsApp Notification",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Reporting Managers get notified whenever there is a regularization request, and employees are notified when managers approve/reject the requests.",
                                 },
                                 {
                                     title: "Voice Notes",
@@ -909,7 +919,7 @@ export default function Home() {
     width={24}
     height={24}
   /> */}
-                            Get Freedom Offer Now
+                            Get New Year Offer Now
                         </button>
                     </a>
                 </div>
@@ -960,9 +970,9 @@ export default function Home() {
                         <div className=" p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/mockups/attendance.png"
+                                src="/mockups/leave.png"
                                 alt="Book Cover Placeholder"
-                                className="w-full h-full scale-[180%]"
+                                className="w-full h-full scale-[125%]"
                             />
                         </div>
 
@@ -970,34 +980,34 @@ export default function Home() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full md:w-2/3">
                             {[
                                 {
-                                    title: "Delegate Tasks",
+                                    title: "Custom Leave Types",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Create your own leave policy by customizing leave types as per your company policy.",
+                                },
+                                {
+                                    title: "Leave Approvals",
+                                    description:
+                                        "Employees can apply for leaves, and their respective reporting managers can approve/reject leave requests."
+                                },
+                                {
+                                    title: "Partial Approval",
+                                    description:
+                                        "Managers have the flexibility to approve partial leave requests; managers can reject leave requests for individual dates.",
                                 },
                                 {
                                     title: "WhatsApp Notifications",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Reporting Managers get notified whenever there is a leave request, and employees are notified when managers approve/reject the requests.",
                                 },
                                 {
-                                    title: "Task Reminders",
+                                    title: "Leave Balance",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "The current leave balance of each employee can be accessed by the reporting managers and Admins.",
                                 },
                                 {
-                                    title: "Repeated Tasks",
+                                    title: "Holidays & Week Offs",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
-                                },
-                                {
-                                    title: "Team Performance",
-                                    description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
-                                },
-                                {
-                                    title: "Voice Notes",
-                                    description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Define the company’s weekly offs and holidays for easy access to yearly company holidays for festivals and other occasions.",
                                 },
                             ].map((feature, index) => (
                                 <div
@@ -1060,7 +1070,7 @@ export default function Home() {
     width={24}
     height={24}
   /> */}
-                            Get Freedom Offer Now
+                            Get New Year Offer Now
                         </button>
                     </a>
                 </div>
@@ -1112,9 +1122,9 @@ export default function Home() {
                         <div className=" p-8 rounded-lg w-full md:w-1/3 flex items-center justify-center">
                             <img
                                 // src="/path-to-image.png" // Replace with actual path
-                                src="/mockups/task.png"
+                                src="/mockups/whatsapp.png"
                                 alt="Book Cover Placeholder"
-                                className="w-full h-full scale-[180%]"
+                                className="w-full h-full scale-[200%]"
                             />
                         </div>
 
@@ -1122,34 +1132,44 @@ export default function Home() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full md:w-2/3">
                             {[
                                 {
-                                    title: "Delegate Tasks",
+                                    title: "Live Agent Support",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Seamlessly transition from automated responses to live agent support for personalized customer interaction, ensuring quick resolutions.",
                                 },
                                 {
-                                    title: "WhatsApp Notifications",
+                                    title: "Send Messages Without Getting Banned",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Use the official WhatsApp Business API to send bulk or individual messages securely and in compliance with WhatsApp’s policies.",
                                 },
                                 {
-                                    title: "Task Reminders",
+                                    title: "Multi-Agent Support",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Allow multiple agents to manage conversations simultaneously using one WhatsApp Business number.",
                                 },
                                 {
-                                    title: "Repeated Tasks",
+                                    title: "Real-Time Notifications",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Send instant alerts, updates, and confirmations directly to your customers via WhatsApp.",
                                 },
                                 {
-                                    title: "Team Performance",
+                                    title: "Message Analytics",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Monitor message delivery, open rates, and customer responses with detailed analytics to optimize communication strategies.",
                                 },
                                 {
-                                    title: "Voice Notes",
+                                    title: "Quick Replies",
                                     description:
-                                        "Track all your tasks to never miss out on any tasks. Assign tasks to your teammates with deadlines, category, and priority.",
+                                        "Use customizable quick reply options to respond faster and provide consistent customer support.",
+                                },
+                                {
+                                    title: "24/7 Automated Chatbots",
+                                    description:
+                                        "Use AI-driven chatbots to provide 24/7 customer support, answer FAQs, and improve efficiency.",
+                                },
+                                {
+                                    title: "Broadcast Messaging",
+                                    description:
+                                        "Send promotional or informational messages to a large audience without spamming or violating WhatsApp policies.",
                                 },
                             ].map((feature, index) => (
                                 <div
@@ -1212,7 +1232,7 @@ export default function Home() {
     width={24}
     height={24}
   /> */}
-                            Get Freedom Offer Now
+                            Get New Year Offer Now
                         </button>
                     </a>
                 </div>
@@ -1246,15 +1266,26 @@ export default function Home() {
                     </h1>
                 </div>
 
-                <div id="cards2" className="flex justify-center ">
+                <div id="cards" className="flex justify-center ">
                     <p
-                        className={`max-w-[1000px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-[#676B93] ${golos.className}`}
+                        className={`max-w-[1000px] text-center mx-4 text-balance md:mx-0 mt-4 md:text-lg leading-relaxed text-muted-foreground ${golos.className}`}
                     >
                         Single Application to Manage Entire Team&apos;s Tasks, Leads,
                         Leaves, and Attendance with WhatsApp Integration!
                     </p>
                 </div>
+                <div id="cards" className="flex gap-4 items-center mt-8  justify-center ">
+                    <div>
+                        <img src="/coffee.png" className="h-20" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl mt-6">
+                            <span className="bg-gradient-to-r font-bold from-[#815BF5] via-[#FC8929] to-[#FC8929]  bg-clip-text text-transparent ">₹ 170/month</span>  which is less than a cup of Coffee
+                        </h1>
+                    </div>
+                </div>
             </div>
+
 
             {/* Pricing Cards */}
             <div className="mt-12 bg-[#05071E]  mx-4 flex flex-col items-center gap-8">

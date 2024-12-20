@@ -53,7 +53,7 @@ export default function Home() {
         {/* <Service /> */}
         <Solutions />
       </div>
-      <div className="mt-12  flex justify-center  bg-[#05071E]">
+      <div className="md:mt-12 mt-36  flex justify-center  bg-[#05071E]">
         {/* <Automate /> */}
         <Solutions2 />
       </div>
@@ -82,9 +82,9 @@ export default function Home() {
         <WeDifferent />
       </div>
       <div
-        className='scroller relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-8xl py-4 mb-4 overflow- space-x-6'
+        className='scroller mt-12 relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-8xl py-4 mb-4 overflow- space-x-6'
       >
-        <h1 className="text-center text-2xl">
+        <h1 className="text-center md:text-2xl mx-4 md:mx-0">
           We are on a mission to help 10 Million MSMEs automate their business and get freedom from daily firefighting.
         </h1>
       </div>
@@ -95,7 +95,7 @@ export default function Home() {
         <SaveLanding />
       </div>
 
-      <div className="flex bg-[#04061E]  mt-56 justify-center">
+      <div className="flex bg-[#04061E] mb-12 md:mb-0   md:mt-56 justify-center">
         <Footer />
       </div>
     </main>

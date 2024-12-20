@@ -30,7 +30,7 @@ export default function PayrollFaq({ onAccordionChange }: Props) {
                     </AccordionItem2>
 
                     <AccordionItem2 value="item-2">
-                        <AccordionTrigger2 iconSrc="/product/icons/map.png">Auto Geo Tagging & Fencing</AccordionTrigger2>
+                        <AccordionTrigger2 iconSrc="/product/icons/map.png">Geo Tagging & Geo Fencing</AccordionTrigger2>
                         <AccordionContent2>
                             <Separator className='absolute w-[500px] -ml-6 -mt-2 ' />
                             Auto Geo-location tagging ensures authenticity by capturing staff locations during logins and logouts, preventing fraud.

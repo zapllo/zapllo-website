@@ -27,7 +27,7 @@ export async function MasterClass() {
               </div>
 
              {/* <img src="/call.gif" className="mt-auto h-5 animate-bounce" />  */}
-              <h1 className=" text-2xl">
+              <h1 className=" md:text-2xl">
                 Join Live Masterclass
               </h1>
             </span>
