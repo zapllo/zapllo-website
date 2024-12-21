@@ -18,15 +18,15 @@ export default function Solutions2({ }: Props) {
                             <h1 className='text-3xl font-bold bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text  text-transparent'>Zapllo Payroll</h1>
                         </div>
                         <div className='text-[#676B93] text-sm'>
-                            <h1 className='font-bold text-2xl mt-4 mb-4 text-white'>Leave & Attendance Tracker</h1>
+                            <h1 className='font-bold text-2xl mt-4 mb-4 text-white'>Leave & Attendance Tracking App</h1>
                             <h1 className='mt-4' >
-                            All-in-One Client Management Solution</h1>
+                            Streamline your HR operations </h1>
                             <h1 className='mt-4' >
-                            Manage all your contacts, leads and products from one place.</h1>
+                            Real-time attendance monitoring & payroll</h1>
                             <h1 className='mt-4' >
-                            Get a clear glance of upcoming follow-ups and lead statuses from dashboard.</h1>
+                            Get a seamless leave requests experience</h1>
                             <h1 className='mt-4' >
-                            Organise your leads using pipelines and manage the stages of each lead.</h1>
+                            Compliance checks fostering a more transparent and efficient workforce</h1>
                         </div>
                     </div>
                     <div className='mb-4  rounded-xl'>

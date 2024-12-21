@@ -32,17 +32,20 @@ export default function HeroLanding() {
             </div>
             <div className='flex justify-center'>
                 <h1 className='text-center text-xl  bg-clip-text    md:text-5xl mt-4   mx-4 max-w-5xl'>
-                    Business Workspace Apps - <span className='bg-gradient-to-r from-[#815BF5] bg-clip-text text-transparent font-semibold   to-[#FC8929]'>Run Your Business on Auto Pilot <br />
-                </span>
+                    Business Workspace Apps Just For You
+
 
                 </h1>
+
             </div>
-           
+            <div className='flex justify-center text-center text-xl  bg-clip-text    md:text-4xl mt-4  '>
+                <h1 className='bg-gradient-to-r from-[#815BF5] bg-clip-text text-transparent font-semibold   to-[#FC8929]'>Run Your Business on Autopilot </h1>
+            </div>
             <div className='flex justify-center '>
-                <p className={`max-w-[700px] text-center mx-4 text-  md:mx-0 mt-4 md:text- leading-relaxed text-muted-foreground ${golos.className}`}>Get access to business-critical applications like Zapllo Tasks, Zapllo Leave & Attendance, Zapllo CRM & Official WhatsApp API
+                <p className={`md:max-w-[900px] max-w-[400px] text-center mx-4 text-sm md:text-  md:mx-0 mt-4 md:text- leading-relaxed text-muted-foreground ${golos.className}`}>Get access to business applications like Task Delegation App, Zapllo Payroll (Leave & Attendance App), <br/>Official WhatsApp API &   Zapllo CRM (Coming Soon)
                 </p>
             </div>
-            <div className='flex -mt-8 justify-center'>
+            <div className='flex -mt-12 justify-center'>
                 <MasterClass />
 
             </div>

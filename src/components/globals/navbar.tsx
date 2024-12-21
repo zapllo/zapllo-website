@@ -6,6 +6,7 @@ import Image from "next/image";
 import ShimmerButton from "../magicui/shimmer-button";
 import Link from "next/link";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { Sheet2, SheetContent2, SheetDescription2, SheetFooter2, SheetTitle2, SheetTrigger2 } from "../ui/sheet2";
 
 export function FloatingNavbar() {
   const navItems = [
@@ -15,19 +16,19 @@ export function FloatingNavbar() {
       icon: <Home className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
     {
-      name: "Products",
+      name: "Business Apps",
       link: "",
       icon: (
         <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
     },
-    {
-      name: "Success Stories",
-      link: "/successstories",
-      icon: (
-        <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
-      ),
-    },
+    // {
+    //   name: "Success Stories",
+    //   link: "/successstories",
+    //   icon: (
+    //     <MessageCircle className="h-4 w-4 text-neutral-500 dark:text-white" />
+    //   ),
+    // },
     // {
     //   name: "Support",
     //   link: "/support",
@@ -67,8 +68,8 @@ export function FloatingNavbar() {
       </div>
       <div className="flex justify-between md:hidden p-4 ">
         <img src="/logo.png" className="h-7 mt-2" />
-        <Sheet>
-          <SheetTrigger asChild>
+        <Sheet2>
+          <SheetTrigger2 asChild>
             <div className="bg-gradient-to-b from-[#1C1F3E] to-[#010313] px-2 py-2 mt-1 rounded-lg">
               <svg
                 width="24"
@@ -89,29 +90,29 @@ export function FloatingNavbar() {
                 <rect y="18" width="24" height="2" fill="url(#grad1)" />
               </svg>
             </div>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetTitle><img src="logo.png" className="h-6" /></SheetTitle>
-            <SheetDescription className="mt-12 my-24">
+          </SheetTrigger2>
+          <SheetContent2 className="">
+            <SheetTitle2><img src="/logo.png" className="h-5" /></SheetTitle2>
+            <SheetDescription2 className="mt-12 my-24">
               <Link href='/'>
-                <h1 className="w-full text-2xl p-2">Home</h1>
+                <h1 className="w-full text-xl p-2">Home</h1>
               </Link>
               {/* <h1 className="w-full text-2xl p-2 mt-2">Templates</h1> */}
               <Link href='/successstories'>
-                <h1 className="w-full text-2xl p-2 mt-2">Success Stories</h1>
+                <h1 className="w-full text-xl md:text-2xl p-2 mt-2">Success Stories</h1>
               </Link>
               <Link href='/contact'>
-                <h1 className="w-full text-2xl p-2 mt-2">Contact</h1>
+                <h1 className="w-full text-xl p-2 mt-2">Contact</h1>
               </Link>
               <Link href='https://zapllo.notion.site/Work-at-Zapllo-9c970622e3d142919bdca4c42ee38aab?pvs=4'>
-                <h1 className="w-full text-2xl p-2 mt-2">Careers</h1>
+                <h1 className="w-full text-xl p-2 mt-2">Careers</h1>
               </Link>
               <Link href='https://zapllo.notion.site/EXT-Referral-Programme-a18f7fe8ee634bffa917ca0c6f24ad0d?pvs=4'>
-                <h1 className="w-full text-2xl p-2 mt-2">Refer Us & Win</h1>
+                <h1 className="w-full text-xl p-2 mt-2">Refer Us & Win</h1>
               </Link>
-            </SheetDescription>
+            </SheetDescription2>
 
-            <SheetFooter>
+            <SheetFooter2>
               <div className="p-2 my-5 ">
                 <Link href='/disclaimer'>
                   <h1 className="text-[#676B93] mt-4">Disclaimer</h1>
@@ -132,9 +133,9 @@ export function FloatingNavbar() {
               <SheetClose asChild>
 
               </SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+            </SheetFooter2>
+          </SheetContent2>
+        </Sheet2>
       </div>
 
     </div>

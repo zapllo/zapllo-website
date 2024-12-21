@@ -17,10 +17,12 @@ import Image from "next/image";
 export default function Home() {
     return (
         // <LoaderLayout>
-        <main className="bg-[#] bg-[#05071E]  mx-auto h-full z-10 overflow-hidden">
+        <main className="bg-[#] bg-[#05071E] w-  mx-auto h-full z-10 overflow-hidden">
             <FloatingNavbar />
             <Image src='/mask.png' height={1000} className=" absolute overflow-hidden w-full " width={1000} alt="Background mask for zapllo automation" />
-            <PayrollHero />
+            <div className="flex justify-center">
+                <PayrollHero />
+            </div>
             <Business product="   Leave & Attendance Tracker App" />
             <PayrollFeatures />
             <SettingUp />
@@ -30,9 +32,9 @@ export default function Home() {
             <SaveMore />
             <Benefits />
             <div
-                className='scroller relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-8xl py-4 mb-4 overflow- space-x-6'
+                className='scroller mt-20 md:mt-12 relative z-20 bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929]  max-w-8xl py-4 mb-4 overflow- space-x-6'
             >
-                <h1 className="text-center text-2xl">
+                <h1 className="text-center text-sm md:text-2xl">
                     We are on a mission to help 10 Million MSMEs automate their business and get freedom from daily firefighting.
                 </h1>
             </div>
@@ -41,7 +43,7 @@ export default function Home() {
             <div className="flex justify-center mt-24">
                 <Faq2 />
             </div>
-            <div className="flex bg-[#04061E]  mt-56 justify-center">
+            <div className="flex bg-[#04061E]  md:mt-56 justify-center">
                 <Footer />
             </div>
         </main>

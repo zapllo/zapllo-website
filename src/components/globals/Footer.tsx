@@ -39,7 +39,7 @@ export default function Footer() {
                     <img src='/logo.png' className='h-6' />
                     <div className='flex gap-3 text-xs mt-6'>
                         <Link href='https://zapllo.notion.site/Work-at-Zapllo-9c970622e3d142919bdca4c42ee38aab?pvs=4'>
-                            <h1>CAREERS</h1>    
+                            <h1>CAREERS</h1>
                         </Link>
                         <Link href='/support'>
                             <h1>SUPPORT</h1>
@@ -103,32 +103,39 @@ export default function Footer() {
             </div>
             <div className='md:flex md:justify-between px-6 '>
                 <div className='md:max-w-[600px]'>
-                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2024 Zapllo Technologies Private Limited. All rights reserved.</h1>
+                    <h1 className='text-[#676B93] mt-6 text-xs md:text-sm'>Copyright © 2025 Zapllo Technologies Private Limited. All rights reserved.</h1>
                     <p className='text-[#676B93] text-xs '>This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
                 </div>
-                <div className='md:flex grid grid-cols-2 gap-1 md:gap-2'>
-                    <Link href='/disclaimer'>
+                <div className='md:flex items-center mt-4 mb-4  gap-1 md:gap-2'>
+                    <h1 className='text-xs w-[500px] md:w-full md:text-md text-[#676B93]'>
+                        🔒 We care about privacy (
+                            
+                        <Link className='hover:underline text-blue-400' href='/privacypolicy'>
+
+                            Privacy Policy
+                        </Link> & <Link className='hover:underline text-blue-400' href='/terms'>Terms of Service</Link>)
+
+                    </h1>
+                    {/* <Link href='/disclaimer'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Disclaimer</h1>
-                    </Link>
-                    <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1>
-                    <Link href='/terms'>
-                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Terms and Conditions</h1>
-                    </Link>
-                    <h1 className='text-[#676B93] hidden md:block mt-6 text-xs md:text-sm'>|</h1>
+                    </Link> */}
+                    {/* <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1> */}
+
+
+
                     {/* <Link href='/refundpolicy'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Refund Policy</h1>
                     </Link> */}
                     {/* <h1 className='text-[#676B93] mt-6  hidden md:block text-xs md:text-sm'>|</h1> */}
 
-                    <Link href='/privacypolicy'>
-                        <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Privacy Policy</h1>
-                    </Link>
-                    <h1 className='text-[#676B93] mt-6 hidden md:block text-xs md:text-sm'>|</h1>
-                    <Link href='/contactus'>
+
+                    {/* <h1 className='text-[#676B93] mt-6 hidden md:block text-xs md:text-sm'>|</h1> */}
+                    {/* <Link href='/contactus'>
                         <h1 className='text-[#676B93] mt-6 text-xs md:text-sm cursor-pointer hover:text-gray-200'>Contact Us</h1>
-                    </Link>
+                    </Link> */}
+
                 </div>
-            </div>
+            </div >
         </footer >
     )
 }

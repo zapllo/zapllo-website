@@ -9,16 +9,16 @@ export default function SettingUp3({ }: Props) {
     return (
         <div className='w-full flex -mt-24 max-w-8xl items-center justify-center'>
             <div className=''>
-                <div className='grid grid-cols-2  items-center'>
-                    <div className='w-full h-[648px] rounded-xl'>
+                <div className='grid md:grid-cols-2  items-center'>
+                    <div className='w-full md:h-[648px] h-full md:scale-110 scale-90 rounded-xl'>
                         <img src='/product/notifications.png' className='rounded-xl object-cover h-full w-full' />
                     </div>
-                    <div>
+                    <div className='mx-12'>
                         <div className=' rounded-xl'>
                             {/* <PayrollFaq /> */}
-                            <img src='/product/icons/notifications.png' className='rounded-xl h-20' />
+                            <img src='/product/icons/notifications.png' className='rounded-xl h-16 md:h-20' />
                         </div>
-                        <h1 className='text-3xl font-bold mt-4'>Team will receive Notifications</h1>
+                        <h1 className='md:text-3xl text-2xl font-bold mt-4'>Team will receive Notifications</h1>
                         <p className='text-muted-foreground w-full max-w-lg mt-4 text-'>Instant WhatsApp alerts about new tasks on
                         their mobile devices.</p>
                      

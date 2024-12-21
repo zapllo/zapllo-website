@@ -397,8 +397,7 @@ const AttendanceDashboard: React.FC = () => {
   return (
     <div className="p-6 h-screen overflow-y-scroll">
       {attendanceLoading && (
-        <div className="absolute  w-screen h-screen  z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
-
+        <div className="absolute w-screen h-screen z-[100]  inset-0 bg-[#04061e] -900  bg-opacity-90 rounded-xl flex justify-center items-center">
           <div
             className=" z-[100]  max-h-screen max-w-screen text-[#D0D3D3] w-[100%] rounded-lg ">
             <div className="">
@@ -450,7 +449,6 @@ const AttendanceDashboard: React.FC = () => {
             <div className="flex-1 border  shadow-md rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-medium ">Daily Report</h3>
-
                 <div>
                   {/* <span className="text-sm mr-2">Date:</span> */}
                   {/* <input
@@ -459,7 +457,6 @@ const AttendanceDashboard: React.FC = () => {
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
                   /> */}
-
                   <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                     <DialogTrigger>
                       <Button
@@ -468,7 +465,6 @@ const AttendanceDashboard: React.FC = () => {
                         className=" rounded  border border-[#] bg-[#] hover:bg-[#37384B] px-3 flex gap-1 py-2"
                       >
                         <Calendar className="h-5 text-sm" />
-
                         {/* // Show the selected date if the user has interacted */}
                         <h1 className='text-xs'> {format(selectedDate, 'PPP')}</h1>
 

@@ -7,19 +7,19 @@ type Props = {}
 export default function SaveMore2({ }: Props) {
     return (
         <div className='justify-center mt-20   w-full  flex '>
-            <div className='grid grid-cols-2 gap-2 max-w-5xl w-full  mt-4 justify-center items-center '>
+            <div className='grid md:grid-cols-2 mx-12 gap-2 max-w-5xl w-full  mt-4 justify-center items-center '>
                 <div className='w-full'>
-                    <img src="/product/noexcuse.png" className='w-[90%] ' />
+                    <img src="/product/noexcuse.png" className='md:w-[90%] md:scale-100 scale-75 ' />
                 </div>
-                <div className="w-full">
-                    <h1 className="text-3xl whitespace-nowrap font-semibold">
+                <div className="w-full ">
+                    <h1 className="md:text-3xl text-2xl whitespace-nowrap font-semibold">
                         Manage your Team in 10 mins a day
                     </h1>
-                    <p className="text-sm  text-muted-foreground mt-4">
+                    <p className="text-md  text-muted-foreground mt-4">
                         Unlock the Power of TASK DELEGATION APP with WhatsApp Reminders & 1OX your Team&apos;s Productivity 🚀
                     </p>
-                    <div className="w-[110%] flex gap-4 mt-8 ">
-                        <div className="z-10    min-h-[10rem]   items-center ">
+                    <div className="md:w-[110%] w-56 md:flex gap-4 mt-8 ">
+                        <div className="z-10  min-h-[4rem]  md:min-h-[10rem]   items-center ">
                             <div
                                 className={cn(
                                     "group rounded-full border border-black/5  transition-all ease-in  text-base text-white  hover:cursor-pointer  dark:border-white/5 dark:hover:text-white dark:bg-gradient-to-r from-[#A587FF] to-[#5E29FF] dark:hover:bg-blue-800",
@@ -43,7 +43,7 @@ export default function SaveMore2({ }: Props) {
 
                         </div>
                         <div className=''>
-                            <button className='bg-gradient-to-b text-sm from-[#1C1F3E]  to-[#010313] border px-4 py-2 rounded-3xl text-[#815BF5]'>Create Your Free Account </button>
+                            <button className='bg-gradient-to-b text-sm from-[#1C1F3E]  to-[#010313] border px-4 py-2 w-56 rounded-3xl text-[#815BF5]'>Create Your Free Account </button>
                         </div>
                     </div>
                 </div>

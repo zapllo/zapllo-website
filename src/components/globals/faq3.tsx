@@ -8,9 +8,9 @@ export default function Faq3() {
             <GradientText>
                 <h1 className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent text-center font-bold text-3xl'>FAQ</h1>
             </GradientText>
-            <h1 className='text-3xl text-center mx-4 md:mx-0 font-bold mt-2'>You have Questions, We have Answers</h1>
-            <div className='mt-4 space-y-4'>
-                <Accordion type="single" collapsible className='md:w-[900px] space-y-4'>
+            <h1 className='md:text-3xl text-2xl text-center mx-4 md:mx-0 font-bold mt-2'>You have Questions, We have Answers</h1>
+            <div className='mt-12 space-y-4'>
+                <Accordion type="single" collapsible className='md:w-[900px] md:mx-0 mx-4 space-y-4'>
                     <AccordionItem value="item-1">
                         <AccordionTrigger>What is Zapllo Task Delegation App, and how can it help my business?
                         </AccordionTrigger>

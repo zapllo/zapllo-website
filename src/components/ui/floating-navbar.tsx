@@ -41,8 +41,8 @@ export const FloatingNav = ({
                     {navItems.map((navItem: any, idx: number) => (
                         <div
                             key={`link=${idx}`}
-                            onMouseEnter={() => navItem.name === "Products" && setIsProductsHovered(true)}
-                            onMouseLeave={() => navItem.name === "Products" && setIsProductsHovered(false)}
+                            onMouseEnter={() => navItem.name === "Business Apps" && setIsProductsHovered(true)}
+                            onMouseLeave={() => navItem.name === "Business Apps" && setIsProductsHovered(false)}
                             className="relative"
                         >
                             <Link
@@ -61,7 +61,7 @@ export const FloatingNav = ({
                             </Link>
 
                             {/* Dropdown for Products */}
-                            {navItem.name === "Products" && (
+                            {navItem.name === "Business Apps" && (
                                 <AnimatePresence>
                                     {isProductsHovered && (
                                         <motion.div

@@ -71,7 +71,7 @@ export default function CoreFeatures({ }: Props) {
                     </div>
                 </div>
                 <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
-                    <div className=' h-[648px] -ml-14  relative rounded-xl'>
+                    <div className='h-full md:h-[648px] -ml-14  relative rounded-xl'>
                         <img src='/landing/mockup6.png' className='rounded-xl h-full w-full object-cover' />
                     </div>
                     <div className='md:mt-24 mx-12 md:mx-0 rounded-xl'>

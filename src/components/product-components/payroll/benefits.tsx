@@ -14,10 +14,10 @@ export default function Benefits({ }: Props) {
                         </span>
                     </span> </h1>
                 </div>
-                <h1 className='font-bold text-center mb-4 text-3xl mt-4'>
+                <h1 className='font-bold text-center mb-4 md:text-3xl mt-4'>
                     Benefits Of Using Leave & Attendance Tracker App
                 </h1>
-                <div className='flex gap-2 justify-center items-center mx-20   '>
+                <div className='md:flex gap-2 justify-center mt-12 md:mt-0 items-center md:mx-20   '>
                     <div className='grid grid-cols-1  gap-12 items-center justify-center'>
                         <div className=''>
                             <img src='/product/icons/calendar.png' className='h-12' />

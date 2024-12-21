@@ -9,8 +9,8 @@ type Props = {
 
 export default function PayrollFaq({ onAccordionChange }: Props) {
     return (
-        <div className=''>
-            <div className='mt-4  space-y-4'>
+        <div className='md:mx-0 mx-12'>
+            <div className='md:mt-4  space-y-4'>
                 <Accordion2
                     onValueChange={(value) => onAccordionChange(value)} // Call the prop function on change
                     type="single"

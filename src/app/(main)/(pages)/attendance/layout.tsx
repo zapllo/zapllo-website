@@ -60,7 +60,6 @@ const Layout = (props: Props) => {
         getUserDetails();
     }, []);
 
-
     if (isTrialExpired) {
         return (
             <div className='p-4 text-center mt-32'>
@@ -73,17 +72,13 @@ const Layout = (props: Props) => {
         );
     }
 
-
     return (
         <div className={`flex overflow-hidden  dark:bg-[#04061e] scrollbar-hide h-full w-full `}>
-
             <LeavesSidebar />
             <div className='w-full overflow-hidden please h-screen '>
                 <div className='  mt-12 ml-48 '>
                     {props.children}
-
                 </div>
-
             </div>
         </div>
 

@@ -10,14 +10,14 @@ export default function Solutions({ }: Props) {
             <div className=' mt-20 '>
                 <div className='flex justify-center   w-full'>
                     <h1 className='text-center  text-3xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
-                        Solutions
+                       Our Solutions
                     </span> </h1>
                 </div>
                 <h1 className='font-bold text-center mb-4 text-4xl mt-4'>
                     Apps that help you Grow your Business
                 </h1>
-                <p className='text-sm mx-4 font-extralight mt-4 mb-4 text-center '>
-                    Zapllo is dedicated to help Business Owners get freedom from day to day firefighting<br />​ with the help of their easy to use apps.
+                <p className='text-lg text-[#676B93] mx-4 font-medium mt-4 mb-4 text-center '>
+                    Zapllo is dedicated to help Business Owners get freedom from day to day firefighting<br />
                 </p>
                 {/**First Setting up */}
                 <div className='grid grid-cols-1 md:grid-cols-2 mx-12 gap-4 items-center'>

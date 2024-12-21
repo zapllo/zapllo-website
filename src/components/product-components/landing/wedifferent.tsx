@@ -20,14 +20,14 @@ export default function WeDifferent({ }: Props) {
                 <div className='md:flex  gap-2 justify-center items-center md:mx-20 md:-mt-12 mt-12 md:max-w-5xl  max-w-7xl w-full sm:w-full  2xl:-mt-20 '>
                     <div className='grid grid-cols-1  gap-12 items-center justify-center'>
                         <div className=''>
-                            <img src='/product/icons/calendar.png' className='h-12' />
+                            <img src='/product/icons/leavetype.png' className='h-12' />
                             <p className='max-w- font-bold mt-2 text-lg w-full'>Login to All Apps</p>
                             <p className='text-sm max-w-lg mt-2 text-[#676B93]'>
                                 Control all applications from a single, user-friendly interface, eliminating the need to switch between multiple tools
                             </p>
                         </div>
                         <div className=''>
-                            <img src='/product/icons/calendar.png' className='h-12' />
+                        <img src='/product/icons/setup.png' className='h-12' />
                             <p className='max-w- font-bold mt-2 text-lg w-full'>No Technical Skills Required</p>
                             <p className='text-sm max-w-lg mt-2 text-[#676B93]'>
                                 You can manage all your business processes and automations with easy drags and clicks. No tech expertise required.
@@ -40,14 +40,14 @@ export default function WeDifferent({ }: Props) {
                     </div>
                     <div className='grid grid-cols-1 gap-12 items-center justify-center'>
                     <div className=''>
-                            <img src='/product/icons/calendar.png' className='h-12' />
+                    <img src='/product/icons/wifi.png' className='h-12' />
                             <p className='max-w- font-bold mt-2 text-lg w-full'>24*7 Support</p>
                             <p className='text-sm max-w-lg mt-2 text-[#676B93]'>
                             Get assistance in real time 24x7 whether related to app usage, billiing or guidance.
                             </p>
                         </div>
                         <div className=''>
-                            <img src='/product/icons/calendar.png' className='h-12' />
+                        <img src='/product/icons/records.png' className='h-12' />
                             <p className='max-w- font-bold mt-2 text-lg w-full'>Access To Business Owners Community</p>
                             <p className='text-sm max-w-lg mt-2 text-[#676B93]'>
                             Connect with thousands of like-minded business owners who are also on a journey towards growth. Learn together and grow together.

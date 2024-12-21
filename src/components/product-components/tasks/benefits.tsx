@@ -14,10 +14,10 @@ export default function Benefits({ }: Props) {
                         </span>
                     </span> </h1>
                 </div>
-                <h1 className=' text-center  text-3xl font-bold mt-4'>
+                <h1 className=' text-center  md:text-3xl font-bold mt-4'>
                     Benefits Of Using Task Delegation App
                 </h1>
-                <div className='flex gap-2 justify-center items-center mx-20 -mt-12  2xl:-mt-36 '>
+                <div className='md:flex gap-2 justify-center items-center md:mx-20 md:-mt-12 mt-12  2xl:-mt-36 '>
                     <div className='grid grid-cols-1  gap-12 items-center justify-center'>
                         <div className=''>
                             <img src='/product/icons/calendar.png' className='h-12' />

@@ -7,10 +7,10 @@ type Props = {
 
 export default function Business({ product }: Props) {
     return (
-        <div className='w-full flex justify-center'>
+        <div className='w-full  flex justify-center'>
             <div className='mb-16 mt-20 '>
                 <div className='flex justify-center'>
-                    <h1 className='text-center  text-3xl font-bold md:max-w-xl'>Smart Business Owners using <span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
+                    <h1 className='text-center  md:text-3xl text-xl font-bold  md:max-w-xl'>Smart Business Owners using<br/> <span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] text-2xl md:text-3xl bg-clip-text text-transparent '>
                         {product}
                     </span> </h1>
                 </div>

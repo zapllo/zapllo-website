@@ -24,11 +24,11 @@ export default function Solutions3({ }: Props) {
                         <h1 className='mt-4' >
                         Automate & Grow Your Business 24/7 on WhatsApp</h1>
                         <h1 className='mt-4' >
-                        Track employees&apos; attendance, punch-in, punch-outs and daily work hours.</h1>
+                        Accelerate your business growth with Official WhatsApp API, doubling your conversion rates through enhanced lead management</h1>
                         <h1 className='mt-4' >
-                            Receive real-time task updates, while analyzing employee performance with MIS scores for accountability.</h1>
+                        Personalized customer interactions, and data-driven insights.</h1>
                         <h1 className='mt-4' >
-                            Send Automated notifications & follow up reminders on WhatsApp & Email.</h1>
+                            Chatbots & Automated Support Systems for your Business.</h1>
                     </div>
                 </div>
 

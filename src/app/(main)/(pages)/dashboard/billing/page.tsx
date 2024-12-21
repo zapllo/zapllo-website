@@ -47,7 +47,6 @@ export default function BillingPage() {
     return (
         <div className='mt-12'>
             <Billing />
-
         </div>
     )
 }
