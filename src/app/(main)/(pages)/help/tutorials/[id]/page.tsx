@@ -55,8 +55,8 @@ export default function Tutorials() {
                     <h1 className="text-xl ">{tutorial.title}</h1>
                 </div>
 
-                <div className="w-full max-w-4xl aspect-video">
-                    <iframe width="920" height="415" src={tutorial.link} title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen ></iframe>
+                <div className="w-full border rounded max-w-4xl mt-4 aspect-video">
+                    <iframe className='rounded w-full h-full'  src={tutorial.link} title="Zapllo Tutorials" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen ></iframe>
                 </div>
             </div>
         </div>

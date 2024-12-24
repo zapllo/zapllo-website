@@ -896,7 +896,7 @@ export default function Home() {
                             lineHeight: "28.8px",
                         }}
                     >
-                        Total Value - <span style={{ fontWeight: "700" }}>₹50,000</span> per
+                        Total Value - <span style={{ fontWeight: "700" }}>₹12,000</span> per
                         employee
                     </p>
 
@@ -1047,7 +1047,7 @@ export default function Home() {
                             lineHeight: "28.8px",
                         }}
                     >
-                        Total Value - <span style={{ fontWeight: "700" }}>₹50,000</span> per
+                        Total Value - <span style={{ fontWeight: "700" }}>₹25,000</span> per
                         employee
                     </p>
 
@@ -1209,7 +1209,7 @@ export default function Home() {
                             lineHeight: "28.8px",
                         }}
                     >
-                        Total Value - <span style={{ fontWeight: "700" }}>₹50,000</span> per
+                        Total Value - <span style={{ fontWeight: "700" }}>₹35,000</span> per
                         employee
                     </p>
 

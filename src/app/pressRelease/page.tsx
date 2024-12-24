@@ -25,7 +25,7 @@ export default function PressRelease({ }: Props) {
 
                                         className="text-3xl mt-4 font-semibold  "
                                     >
-                                        Zapllo Technologies launches Task Delegation App (ANI News)
+                                        Zapllo Technologies launches Task Delegation App
                                     </h1>
                                     <p className='text-[#676B93] text-xl mt-4'>
                                         Zapllo Technologies Private Limited, an automation solutions company, is thrilled to announce the launch of its Task Delegation app, providing business automation solutions for businesses on a budget.

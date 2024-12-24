@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Loader from "@/components/ui/loader";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
@@ -44,6 +44,23 @@ export default function Profile({ }: Props) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [isRemoving, setIsRemoving] = useState(false);
+
+  const [timezone, setTimezone] = useState<string>("");
+  const [availableTimezones, setAvailableTimezones] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Detect the user's current timezone
+    const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setTimezone(detectedTimezone);
+
+    // Set a list of all available timezones
+    setAvailableTimezones(Intl.supportedValuesOf("timeZone"));
+  }, []);
+
+  const handleTimezoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTimezone(e.target.value);
+  };
+
 
 
   useEffect(() => {
@@ -208,12 +225,12 @@ export default function Profile({ }: Props) {
 
 
   return (
-    <div className="mt-16">
-      <div className="flex justify-center w-full p-2">
+    <div className="mt-16 h-full overflow-y-scroll scrollbar-thin scrollbar-thumb-[#815BF5] hover:scrollbar-thumb-[#815BF5] active:scrollbar-thumb-[#815BF5] scrollbar-track-gray-800  ">
+      <div className="flex justify-center  w-full p-2">
         <div className="flex cursor-pointer bg-transparent border border-lg  w-fit rounded-xl text-xs px-4 py-2 items-center justify-center">
           <div className="flex items-center text-[#E0E0E0] gap-4">
             {/* Dialog to open Modal */}
-                        {/* <Toaster /> */}
+            {/* <Toaster /> */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
                 <div
@@ -345,10 +362,71 @@ export default function Profile({ }: Props) {
             </div>
           </Link>
           <Link href="/help/tickets">
-            <div className="p-2 mt-2 h-10">
+            <div className="p-2 border-b mt-2 h-10">
               <h1 className="text-sm">Raise a Ticket</h1>
             </div>
           </Link>
+          <Link href="/help/mobile-app">
+            <div className="p-2 border-b mt-2 h-10">
+              <h1 className="text-sm">Mobile App</h1>
+            </div>
+          </Link>
+          <Link href="/help/events">
+            <div className="p-2 border-b mt-2 h-10">
+              <h1 className="text-sm">Events</h1>
+            </div>
+          </Link>
+
+          <div className="p-2 mt-2 border-b cursor-pointer h-10">
+            <Dialog>
+              {/* Trigger for Dialog */}
+              <DialogTrigger asChild>
+                <h1 className="text-sm">Timezone</h1>
+              </DialogTrigger>
+
+              {/* Dialog Content */}
+              <DialogContent className="p-6">
+                <DialogHeader>
+                  <DialogTitle>Timezone</DialogTitle>
+
+                </DialogHeader>
+                <div className="p-4">
+                  {/* Add your timezone options or logic here */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1> Timezone</h1>
+                    </div>
+                    <div>
+                      <label className="absolute bg-[#0b0d29] ml-2 text-xs text-[#787CA5] -mt-2 px-1">
+                        Timezone </label>
+                      <select
+                        value={timezone}
+                        onChange={handleTimezoneChange}
+                        className="w-full border bg-[#0B0D29] text-sm overflow-y-scroll scrollbar-thin scrollbar-thumb-[#815BF5] hover:scrollbar-thumb-[#815BF5] active:scrollbar-thumb-[#815BF5] scrollbar-track-gray-800   p-2 rounded bg-transparent outline-none focus-within:border-[#815BF5]"
+                      >
+                        {availableTimezones.map((tz) => (
+                          <option className="bg-[#0B0D29] text-sm" key={tz} value={tz}>
+                            {tz}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button className="w-full bg-[#017a5b] hover:bg-[#23ac8a]">Save</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <Link href="#">
+            <div className="p-2 border-b mt-2 h-10">
+              <h1 className="text-sm">Change Language (Coming Soon)</h1>
+            </div>
+          </Link>
+
           <div className="flex mt-4 justify-center">
             <div
               onClick={logout}

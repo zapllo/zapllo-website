@@ -74,9 +74,12 @@ export async function POST(request: NextRequest) {
         };
         await sendEmail(emailOptions);
         const mediaUrl = "https://res.cloudinary.com/dndzbt8al/image/upload/v1732650791/50_t0ypt5.png";
-        const templateName = 'leadenquirycontactus'
-        console.log(mediaUrl, templateName, 'media url & template name');
-        await sendWebhookNotification(mobNo, "IN", templateName, firstName);
+        const templateName = 'leadenquirycontactus';
+        try {
+            await sendWebhookNotification(mobNo, "IN", templateName, firstName);
+        } catch (error) {
+            console.warn("WhatsApp notification failed, but proceeding with response:", error);
+        }
 
         return NextResponse.json({ message: 'Lead Captured successfully!' }, { status: 201 });
 

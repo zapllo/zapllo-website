@@ -41,6 +41,8 @@ import Link from "next/link";
 import { BellIcon } from "@radix-ui/react-icons";
 import { Label } from "../ui/label";
 import MainLoader from "../loaders/loader";
+import { ModeToggle2 } from "../globals/mode-toggle2";
+import { FaAndroid, FaApple } from "react-icons/fa";
 
 type Props = {};
 
@@ -295,8 +297,33 @@ const InfoBar = (props: Props) => {
                       {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
                     </DropdownMenuItem>
                   </Link>
+                  <DropdownMenuSeparator />
+                  <Link href="/help/mobile-app">
+                    <DropdownMenuItem className="gap-1 ">
+                      <div className="flex items-center gap-2 px-1 ">
+                        <FaAndroid className="h-4" />
+                        <h1>Android App</h1>
+                      </div>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/help/mobile-app">
+                    <DropdownMenuItem className="gap-1">
+                      <div className="flex items-center gap-2 px-1 ">
+                        <FaApple className="h-4" />
+                        <h1>Iphone App</h1>
+                      </div>
+                    </DropdownMenuItem>
+                  </Link>
+
+                  <DropdownMenuSeparator />
+
+                  <div className="gap-1 p-2">
+                    <ModeToggle2 />
+                  </div>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+
+
                 <DropdownMenuItem className="gap-1" onClick={logout}>
                   <LogOut className="h-4" />
                   Log out
