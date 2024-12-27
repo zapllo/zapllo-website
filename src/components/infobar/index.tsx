@@ -192,7 +192,7 @@ const InfoBar = (props: Props) => {
             className={`flex   ${pathName === "/dashboard" ? "text-center ml-[42%] w-screen" : ""
               }`}
           >
-            <h1 className={`text-md mt-1 text-white font-bold `}>
+            <h1 className={`text-md mt-1 ml-4 text-white font-bold `}>
               {getPageTitle()}
             </h1>
           </div>

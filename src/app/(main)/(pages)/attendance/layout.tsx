@@ -27,10 +27,17 @@ const Layout = (props: Props) => {
 
                 setIsLeaveAccess(user.isLeaveAccess);
 
-                const isExpired = organization.trialExpires && new Date(organization.trialExpires) <= new Date();
+                const isExpired = organization.attendanceTrialExpires && new Date(organization.attendanceTrialExpires) <= new Date();
                 setIsTrialExpired(isExpired);
+                const isAllowedPlan = ['Money Saver Bundle'].includes(organization.subscribedPlan);
+                const isSubscriptionValid = organization.subscriptionExpires &&
+                    new Date(organization.subscriptionExpires) > new Date();
 
-                if (!user.isLeaveAccess || isExpired) {
+                if (
+                    !user.isLeaveAccess ||
+                    (isTrialExpired && !isSubscriptionValid) ||
+                    (!isAllowedPlan && !isSubscriptionValid)
+                ) {
                     router.push('/dashboard');
                 }
             } catch (error) {
@@ -60,17 +67,7 @@ const Layout = (props: Props) => {
         getUserDetails();
     }, []);
 
-    if (isTrialExpired) {
-        return (
-            <div className='p-4 text-center mt-32'>
-                <h1 className='text-xl font-bold text-red-500'>Your trial has expired!</h1>
-                <p>Please purchase a subscription to continue using the Task Management features.</p>
-                <Link href='/dashboard/billing'>
-                    <Button className='h-10 bg-white text-black hover:text-white mt-4 text-lg '>👑 Upgrade to Pro</Button>
-                </Link>
-            </div>
-        );
-    }
+
 
     return (
         <div className={`flex overflow-hidden  dark:bg-[#04061e] scrollbar-hide h-full w-full `}>

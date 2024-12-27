@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
             message: "Login successful",
             success: true,
             data: user,
+            token,
         })
         console.log(user, 'user')
 
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
             maxAge: 15 * 24 * 60 * 60, // 15 days in seconds
             path: "/",  // The path scope of the cookie
         });
-        
+
         // Set the loginTime as an HTTP-only cookie (current time in milliseconds)
         const loginTime = new Date().getTime();
         response.cookies.set("loginTime", loginTime.toString(), {

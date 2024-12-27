@@ -10,7 +10,7 @@ export default function SettingUp3({ }: Props) {
         <div className='w-full flex -mt-24 max-w-8xl items-center justify-center'>
             <div className=''>
                 <div className='grid md:grid-cols-2  items-center'>
-                    <div className='w-full md:h-[648px] h-full md:scale-110 scale-90 rounded-xl'>
+                    <div className='w-full md:h-[648px] h-full md:block hidden md:scale-110 scale-90 rounded-xl'>
                         <img src='/product/notifications.png' className='rounded-xl object-cover h-full w-full' />
                     </div>
                     <div className='mx-12'>
@@ -23,7 +23,9 @@ export default function SettingUp3({ }: Props) {
                         their mobile devices.</p>
                      
                     </div>
-
+                    <div className='w-full md:h-[648px] h-full block md:hidden md:scale-110 scale-90 rounded-xl'>
+                        <img src='/product/notifications.png' className='rounded-xl object-cover h-full w-full' />
+                    </div>
                 </div>
 
               

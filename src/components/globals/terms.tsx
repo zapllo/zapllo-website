@@ -9,7 +9,7 @@ export default function TermsAndConditions() {
                     <Link href="/">
                         <img alt="Zapllo Technologies" className="h-7 cursor-pointer" src="/logo.png" />
                     </Link>
-                    <div className="flex gap-2">
+                    <div className="flex mt-12 md:mt-0 gap-2">
                         <Button className="bg-black hover:border-[#815bf5] border hover:bg-black rounded-full">
                             <Link
                                 href="/signup"

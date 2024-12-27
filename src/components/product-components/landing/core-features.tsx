@@ -16,10 +16,10 @@ export default function CoreFeatures({ }: Props) {
                     Powerful Solutions to Simplify your workflow
                 </h1>
                 <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
-                    <div className=' h-[648px] relative rounded-xl'>
-                        <img src='/landing/mockup4.png' className='rounded-xl h-full object-cover' />
+                    <div className=' h-[648px] hidden md:block rounded-xl'>
+                        <img src='/landing/mockup4.png' className='rounded-xl h-full scale-90 md:scale-100 object-cover' />
                     </div>
-                    <div className='md:mt-32 mx-12 md:mx-0 rounded-xl'>
+                    <div className='md:mt-32 mt-12 mx-12 md:mx-0 rounded-xl'>
                         <h1 className='text-3xl font-bold'>Streamlined Business Processes</h1>
                         <div className='flex gap-4 mt-4 items-center'>
                             <img src='/product/icons/assigned.png' className='h-12 ' />
@@ -40,6 +40,9 @@ export default function CoreFeatures({ }: Props) {
                             Ensure smooth operations by optimizing efficiency allowing your team to focus on strategic objectives.
                         </p>
 
+                    </div>
+                    <div className=' h-[648px] md:hidden relative rounded-xl'>
+                        <img src='/landing/mockup4.png' className='rounded-xl h-full scale-90 md:scale-100 object-cover' />
                     </div>
                 </div>
                 <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
@@ -67,11 +70,11 @@ export default function CoreFeatures({ }: Props) {
 
                     </div>
                     <div className='h-full w-full relative rounded-xl'>
-                        <img src='/landing/mockup5.png' className='rounded-xl h-full w-full scale-125 object-cover' />
+                        <img src='/landing/mockup5.png' className='rounded-xl h-full w-full scale-110 md:scale-125 object-cover' />
                     </div>
                 </div>
                 <div className='grid md:grid-cols-2 max-w-5xl   gap-4'>
-                    <div className='h-full md:h-[648px] -ml-14  relative rounded-xl'>
+                    <div className='h-full md:h-[648px] -ml-14 hidden md:block rounded-xl'>
                         <img src='/landing/mockup6.png' className='rounded-xl h-full w-full object-cover' />
                     </div>
                     <div className='md:mt-24 mx-12 md:mx-0 rounded-xl'>
@@ -96,7 +99,9 @@ export default function CoreFeatures({ }: Props) {
                         </p>
                      
                     </div>
-
+                    <div className='h-full md:h-[648px] -ml-14 md:hidden block rounded-xl'>
+                        <img src='/landing/mockup6.png' className='rounded-xl h-full w-full object-cover' />
+                    </div>
 
                 </div>
             

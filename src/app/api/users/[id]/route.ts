@@ -21,6 +21,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
                 firstName: user.firstName,
             },
         });
+        
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 400 });
     }

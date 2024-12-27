@@ -36,7 +36,7 @@ export default function Disclaimer() {
                     <Link href='/'>
                         <img alt="Zapllo Technologies" className="h-7 cursor-pointer" src="/logo.png" />
                     </Link>
-                    <div className="flex gap-2">
+                    <div className="flex md:mt-0 mt-12 gap-2">
 
                         <Button className="bg-black hover:border-[#815bf5] border hover:bg-black rounded-full">
                             <Link

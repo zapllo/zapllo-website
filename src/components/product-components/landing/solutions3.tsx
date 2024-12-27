@@ -10,7 +10,7 @@ export default function Solutions3({ }: Props) {
 
             {/**First Setting up */}
             <div className='grid md:grid-cols-2 mx-12 gap-4 items-center'>
-                <div className='mb-4  rounded-xl'>
+                <div className='mb-4 hidden md:block rounded-xl'>
                     <img src='/landing/mockup3.png' className='rounded-xl object-cover scale-75 ' />
                 </div>
                 <div>
@@ -31,7 +31,9 @@ export default function Solutions3({ }: Props) {
                             Chatbots & Automated Support Systems for your Business.</h1>
                     </div>
                 </div>
-
+                <div className='mb-4 md:hidden block rounded-xl'>
+                    <img src='/landing/mockup3.png' className='rounded-xl object-cover scale-75 ' />
+                </div>
             </div>
 
 

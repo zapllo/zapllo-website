@@ -98,9 +98,9 @@ export function FloatingNavbar() {
                 <h1 className="w-full text-xl p-2">Home</h1>
               </Link>
               {/* <h1 className="w-full text-2xl p-2 mt-2">Templates</h1> */}
-              <Link href='/successstories'>
+              {/* <Link href='/successstories'>
                 <h1 className="w-full text-xl md:text-2xl p-2 mt-2">Success Stories</h1>
-              </Link>
+              </Link> */}
               <Link href='/contact'>
                 <h1 className="w-full text-xl p-2 mt-2">Contact</h1>
               </Link>
@@ -120,15 +120,7 @@ export function FloatingNavbar() {
                 <Link href='/terms'>
                   <h1 className="text-[#676B93] mt-4">Terms & Conditions</h1>
                 </Link>
-                <Link href='/privacypolicy'>
-                  <h1 className="text-[#676B93] mt-4">Privacy Policy</h1>
-                </Link>
-                <Link href='/refundpolicy'>
-                  <h1 className="text-[#676B93] mt-4">Refund Policy</h1>
-                </Link>
-                <Link href='/contactus'>
-                  <h1 className="text-[#676B93] mt-4">Contact Us</h1>
-                </Link>
+             
               </div>
               <SheetClose asChild>
 

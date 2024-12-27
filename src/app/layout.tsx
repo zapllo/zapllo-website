@@ -46,7 +46,6 @@ export default function RootLayout({
           duration: 2500, // Sets default duration to 2 seconds for all toasts
           classNames: {
             toast: 'bg-white text-black ',
-            
           },
         }}
         position="bottom-center" />

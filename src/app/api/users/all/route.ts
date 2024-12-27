@@ -7,7 +7,7 @@ connectDB();
 export async function GET(request: NextRequest) {
     try {
         // Fetch all users from the database
-        const users = await User.find().select("-password"); // Exclude password field
+        const users = await User.find({})
         return NextResponse.json({
             message: "Users fetched successfully",
             data: users,

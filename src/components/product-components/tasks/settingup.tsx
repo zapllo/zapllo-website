@@ -10,14 +10,14 @@ export default function SettingUp({ }: Props) {
         <div className='w-full flex max-w-8xl  items-center justify-center'>
             <div className=' mt-20 '>
                 <div className='flex justify-center   w-full'>
-                    <h1 className='text-center  text-3xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
+                    <h1 className='text-center text-xl md:text-3xl font-bold md:max-w-xl'><span className='bg-gradient-to-r from-[#815BF5] via-[#FC8929] to-[#FC8929] bg-clip-text text-transparent '>
                       Task Delegation App
                     </span> </h1>
                 </div>
-                <h1 className='font-bold text-center mb-4 text-3xl mt-4'>How Zapllo Tasks Work?</h1>
+                <h1 className='font-bold text-center mb-4 text-xl md:text-3xl mt-4'>How Zapllo Tasks Work?</h1>
                 {/**First Setting up */}
                 <div className='grid mx-12 md:grid-cols-2 items-center'>
-                    <div className='w-full scale-150 md:scale-100 md:mt-0 mt-12 md:h-[648px] rounded-xl'>
+                    <div className='w-full hidden md:block scale-150 md:scale-100 md:mt-0 mt-12 md:h-[648px] rounded-xl'>
                         <img src='/product/addmember.png' className='rounded-xl object-cover h-full w-full' />
                     </div>
                     <div>
@@ -32,7 +32,9 @@ export default function SettingUp({ }: Props) {
                         </p>
                       
                     </div>
-
+                    <div className='w-full block md:hidden scale-150 md:scale-100 md:mt-0 mt-12 md:h-[648px] rounded-xl'>
+                        <img src='/product/addmember.png' className='rounded-xl object-cover h-full w-full' />
+                    </div>
                 </div>
 
               
